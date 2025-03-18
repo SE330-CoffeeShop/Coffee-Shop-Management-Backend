@@ -41,6 +41,7 @@ public class ProductVariant extends AbstractBaseEntity {
     @Column(name = "var_is_deleted", nullable = false)
     private Boolean varIsDeleted;
 
-    @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product_ProductVariant> product_ProductVariants;
+    @ManyToOne
+    @JoinColumn(name = "fk_product-variant_product")
+    private Product product;
 }
