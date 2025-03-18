@@ -49,7 +49,7 @@ public class Product extends AbstractBaseEntity {
     private Boolean proIsDeleted;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductVariant> variants;
+    private List<Product_ProductVariant> product_ProductVariants;
 
     @ManyToOne
     @JoinColumn(name = "fk_product_product-category")

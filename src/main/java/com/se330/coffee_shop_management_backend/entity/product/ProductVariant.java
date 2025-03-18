@@ -4,6 +4,8 @@ import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "product_variants")
 @Getter
@@ -39,7 +41,6 @@ public class ProductVariant extends AbstractBaseEntity {
     @Column(name = "var_is_deleted", nullable = false)
     private Boolean varIsDeleted;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "fk_product-variant_product", nullable = false)
-    private Product product;
+    @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product_ProductVariant> product_ProductVariants;
 }
