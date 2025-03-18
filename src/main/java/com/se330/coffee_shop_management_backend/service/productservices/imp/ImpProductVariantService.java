@@ -7,7 +7,6 @@ import com.se330.coffee_shop_management_backend.service.productservices.IProduct
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -20,8 +19,8 @@ public class ImpProductVariantService implements IProductVariantService {
     }
 
     @Override
-    public Optional<ProductVariant> findByIdProductVariant(UUID id) {
-        return productVariantRepository.findById(id);
+    public ProductVariant findByIdProductVariant(UUID id) {
+        return productVariantRepository.findById(id).orElse(null);
     }
 
     @Override

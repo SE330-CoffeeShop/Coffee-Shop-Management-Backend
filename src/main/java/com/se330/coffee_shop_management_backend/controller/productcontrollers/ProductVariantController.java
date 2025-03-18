@@ -21,11 +21,11 @@ public class ProductVariantController {
     }
 
     @GetMapping("/{id}")
-    public Optional<ProductVariant> findByIdProductVariant(@PathVariable UUID id) {
+    public ProductVariant findByIdProductVariant(@PathVariable UUID id) {
         return productVariantService.findByIdProductVariant(id);
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public List<ProductVariant> findAllProductVariants() {
         return productVariantService.findAllProductVariants();
     }
@@ -43,6 +43,6 @@ public class ProductVariantController {
     @DeleteMapping("/{id}")
     public String deleteProductVariant(@PathVariable UUID id) {
         productVariantService.deleteProductVariant(id);
-        return "Product deleted successfully";
+        return "Product variant deleted successfully";
     }
 }

@@ -1,11 +1,11 @@
 package com.se330.coffee_shop_management_backend.controller.productcontrollers;
 
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -19,23 +19,23 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Product> findByIdProduct(@PathVariable UUID id) {
+    public Product findByIdProduct(@PathVariable UUID id) {
         return productService.findByIdProduct(id);
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public List<Product> findAllProducts() {
         return productService.findAllProducts();
     }
 
     @PostMapping("/")
-    public Product createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
+    public Product createProduct(@RequestBody ProductRequestDTO productRequestDTO) {
+        return productService.createProduct(productRequestDTO);
     }
 
     @PatchMapping("/")
-    public Product updateProduct(@RequestBody Product product) {
-        return productService.updateProduct(product);
+    public Product updateProduct(@RequestBody ProductRequestDTO productRequestDTO) {
+        return productService.updateProduct(productRequestDTO);
     }
 
     @DeleteMapping("/{id}")

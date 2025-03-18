@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.entity.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.Digits;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -49,7 +51,8 @@ public class Product extends AbstractBaseEntity {
     private Boolean proIsDeleted;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductVariant> productVariants;
+    @JsonIgnore
+    private List<ProductVariant> productVariants = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "fk_product_product-category")
