@@ -19,11 +19,11 @@ public class ProductCategoryController {
     }
 
     @GetMapping("/{id}")
-    public Optional<ProductCategory> findByIdProductCategory(@PathVariable UUID id) {
+    public ProductCategory findByIdProductCategory(@PathVariable UUID id) {
         return productCategoryService.findByIdProductCategory(id);
     }
 
-    @GetMapping("/")
+    @GetMapping("/all")
     public List<ProductCategory> findAllProductCategories() {
         return productCategoryService.findAllProductCategories();
     }
@@ -41,6 +41,6 @@ public class ProductCategoryController {
     @DeleteMapping("/{id}")
     public String deleteProductCategory(@PathVariable UUID id) {
         productCategoryService.deleteProductCategory(id);
-        return "Product deleted successfully";
+        return "Product category deleted successfully";
     }
 }

@@ -6,7 +6,6 @@ import com.se330.coffee_shop_management_backend.service.productservices.IProduct
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -19,8 +18,8 @@ public class ImpProductCategoryService implements IProductCategoryService {
     }
 
     @Override
-    public Optional<ProductCategory> findByIdProductCategory(UUID id) {
-        return productCategoryRepository.findById(id);
+    public ProductCategory findByIdProductCategory(UUID id) {
+        return productCategoryRepository.findById(id).orElse(null);
     }
 
     @Override

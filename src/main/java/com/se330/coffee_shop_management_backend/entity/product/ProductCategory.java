@@ -1,9 +1,11 @@
 package com.se330.coffee_shop_management_backend.entity.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,5 +26,6 @@ public class ProductCategory extends AbstractBaseEntity {
     private String catDescription;
 
     @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products;
+    @JsonIgnore
+    private List<Product> products= new ArrayList<>();
 }
