@@ -51,7 +51,7 @@ public class Product extends AbstractBaseEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariant> variants;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "cat_id", referencedColumnName = "cat_id", nullable = false)
-    private ProductCategory category;
+    @ManyToOne
+    @JoinColumn(name = "fk_product_product-category")
+    private ProductCategory productCategory;
 }

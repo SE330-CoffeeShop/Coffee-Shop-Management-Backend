@@ -4,6 +4,8 @@ import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "product_categories")
 @Getter
@@ -21,6 +23,6 @@ public class ProductCategory extends AbstractBaseEntity {
     @Column(name = "cat_description", nullable = false)
     private String catDescription;
 
-    @OneToOne(mappedBy = "category", fetch = FetchType.LAZY)
-    private Product product;
+    @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products;
 }
