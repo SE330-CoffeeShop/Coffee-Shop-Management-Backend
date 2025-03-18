@@ -51,7 +51,6 @@ public class Product extends AbstractBaseEntity {
     private Boolean proIsDeleted;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     private List<ProductVariant> productVariants = new ArrayList<>();
 
     @ManyToOne

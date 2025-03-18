@@ -1,11 +1,11 @@
 package com.se330.coffee_shop_management_backend.controller.productcontrollers;
 
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductVariantRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductVariantService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -31,13 +31,13 @@ public class ProductVariantController {
     }
 
     @PostMapping("/")
-    public ProductVariant createProductVariant(@RequestBody ProductVariant productVariant) {
-        return productVariantService.createProductVariant(productVariant);
+    public ProductVariant createProductVariant(@RequestBody ProductVariantRequestDTO  productVariantRequestDTO) {
+        return productVariantService.createProductVariant(productVariantRequestDTO);
     }
 
     @PatchMapping("/")
-    public ProductVariant updateProductVariant(@RequestBody ProductVariant productVariant) {
-        return productVariantService.updateProductVariant(productVariant);
+    public ProductVariant updateProductVariant(@RequestBody ProductVariantRequestDTO productVariantRequestDTO) {
+        return productVariantService.updateProductVariant(productVariantRequestDTO);
     }
 
     @DeleteMapping("/{id}")

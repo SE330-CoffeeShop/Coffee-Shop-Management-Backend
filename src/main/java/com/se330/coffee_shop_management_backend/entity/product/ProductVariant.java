@@ -4,8 +4,6 @@ import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "product_variants")
 @Getter
