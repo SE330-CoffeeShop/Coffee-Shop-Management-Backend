@@ -2,22 +2,22 @@ package com.se330.coffee_shop_management_backend.controller.productcontrollers;
 
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductVariantRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
+import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.product.ProductVariantResponseDTO;
-import com.se330.coffee_shop_management_backend.dto.response.user.UserResponse;
+import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductVariantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -42,7 +42,7 @@ public class ProductVariantController {
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Success operation",
+                            description = "Successfully retrieved product variant",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ProductVariantResponseDTO.class)
@@ -50,7 +50,7 @@ public class ProductVariantController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Bad request",
+                            description = "Invalid ID format",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -58,7 +58,7 @@ public class ProductVariantController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Full authentication is required to access this resource",
+                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -66,15 +66,7 @@ public class ProductVariantController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Not Found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "422",
-                            description = "Validation Failed",
+                            description = "Product variant not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -88,44 +80,20 @@ public class ProductVariantController {
 
     @GetMapping("/all")
     @Operation(
-            summary = "Get all product variants",
+            summary = "Get all product variants with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Success operation",
+                            description = "Successfully retrieved product variant list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductVariantResponseDTO.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Bad request",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
+                                    schema = @Schema(implementation = PageResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Full authentication is required to access this resource",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "422",
-                            description = "Validation Failed",
+                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -133,7 +101,7 @@ public class ProductVariantController {
                     )
             }
     )
-    public ResponseEntity<List<ProductVariantResponseDTO>> findAllProductVariants(
+    public ResponseEntity<PageResponse<ProductVariantResponseDTO>> findAllProductVariants(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(required = false) Integer offset,
@@ -143,28 +111,42 @@ public class ProductVariantController {
     ) {
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
 
-        return ResponseEntity.ok(ProductVariantResponseDTO.convert(productVariantService.findAllProductVariants(pageable).getContent())
-            // TODO: add language
-            // , lan
+        Page<ProductVariant> variantPage = productVariantService.findAllProductVariants(pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        ProductVariantResponseDTO.convert(variantPage.getContent()),
+                        variantPage.getTotalElements(),
+                        variantPage.getNumber(),
+                        variantPage.getSize()
+                )
         );
     }
 
     @PostMapping("/")
     @Operation(
-            summary = "Create product variant",
+            summary = "Create new product variant",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
-                            responseCode = "200",
-                            description = "Success operation",
+                            responseCode = "201",
+                            description = "Product variant created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UserResponse.class)
+                                    schema = @Schema(implementation = ProductVariantResponseDTO.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Bad request",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Product variant already exists",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -172,23 +154,7 @@ public class ProductVariantController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Full authentication is required to access this resource",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "422",
-                            description = "Validation Failed",
+                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -196,8 +162,9 @@ public class ProductVariantController {
                     )
             }
     )
-    public ResponseEntity<ProductVariantResponseDTO> createProductVariant(@RequestBody ProductVariantRequestDTO  productVariantRequestDTO) {
-        return ResponseEntity.ok(ProductVariantResponseDTO.convert(productVariantService.createProductVariant(productVariantRequestDTO)));
+    public ResponseEntity<ProductVariantResponseDTO> createProductVariant(@RequestBody ProductVariantRequestDTO productVariantRequestDTO) {
+        ProductVariantResponseDTO createdVariant = ProductVariantResponseDTO.convert(productVariantService.createProductVariant(productVariantRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdVariant);
     }
 
     @PatchMapping("/")
@@ -207,7 +174,7 @@ public class ProductVariantController {
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Success operation",
+                            description = "Product variant updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ProductVariantResponseDTO.class)
@@ -215,15 +182,7 @@ public class ProductVariantController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Bad request",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Full authentication is required to access this resource",
+                            description = "Invalid input data",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -231,15 +190,15 @@ public class ProductVariantController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Not Found",
+                            description = "Product variant not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "422",
-                            description = "Validation Failed",
+                            responseCode = "401",
+                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -248,12 +207,40 @@ public class ProductVariantController {
             }
     )
     public ResponseEntity<ProductVariantResponseDTO> updateProductVariant(@RequestBody ProductVariantRequestDTO productVariantRequestDTO) {
-        return ResponseEntity.ok(ProductVariantResponseDTO.convert(productVariantService.updateProductVariant(productVariantRequestDTO)));
+        ProductVariantResponseDTO updatedVariant = ProductVariantResponseDTO.convert(
+                productVariantService.updateProductVariant(productVariantRequestDTO));
+        return ResponseEntity.ok(updatedVariant);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteProductVariant(@PathVariable UUID id) {
+    @Operation(
+            summary = "Delete product variant",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Product variant deleted successfully"
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Product variant not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<Void> deleteProductVariant(@PathVariable UUID id) {
         productVariantService.deleteProductVariant(id);
-        return "Product variant deleted successfully";
+        return ResponseEntity.noContent().build();
     }
 }

@@ -2,19 +2,22 @@ package com.se330.coffee_shop_management_backend.controller.productcontrollers;
 
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
+import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.product.ProductResponseDTO;
+import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -37,7 +40,7 @@ public class ProductController {
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Success operation",
+                            description = "Successfully retrieved product",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ProductResponseDTO.class)
@@ -45,7 +48,7 @@ public class ProductController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Bad request",
+                            description = "Invalid ID format",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -53,7 +56,7 @@ public class ProductController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Full authentication is required to access this resource",
+                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -61,15 +64,7 @@ public class ProductController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Not Found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "422",
-                            description = "Validation Failed",
+                            description = "Product not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -83,44 +78,20 @@ public class ProductController {
 
     @GetMapping("/all")
     @Operation(
-            summary = "Get all products",
+            summary = "Get all products with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Success operation",
+                            description = "Successfully retrieved product list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Bad request",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
+                                    schema = @Schema(implementation = PageResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Full authentication is required to access this resource",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "422",
-                            description = "Validation Failed",
+                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -128,7 +99,7 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<List<ProductResponseDTO>> findAllProducts(
+    public ResponseEntity<PageResponse<ProductResponseDTO>> findAllProducts(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(required = false) Integer offset,
@@ -137,20 +108,25 @@ public class ProductController {
             @RequestParam(required = false) String sortBy
     ) {
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Product> productPages = productService.findAllProducts(pageable);
 
-        return ResponseEntity.ok(ProductResponseDTO.convert(productService.findAllProducts(pageable).getContent())
-            // , lan -> TODO: get the vietnamese/english response
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        ProductResponseDTO.convert(productPages.getContent()),
+                        productPages.getTotalElements(),
+                        productPages.getNumber(),
+                        productPages.getSize()
+                )
         );
     }
 
-    @PostMapping("/")
     @Operation(
-            summary = "Create product",
+            summary = "Create new product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
-                            responseCode = "200",
-                            description = "Success operation",
+                            responseCode = "201",
+                            description = "Product created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ProductResponseDTO.class)
@@ -158,7 +134,7 @@ public class ProductController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Bad request",
+                            description = "Invalid input data",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -166,23 +142,15 @@ public class ProductController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Full authentication is required to access this resource",
+                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "404",
-                            description = "Not Found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "422",
-                            description = "Validation Failed",
+                            responseCode = "409",
+                            description = "Product already exists",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -191,17 +159,17 @@ public class ProductController {
             }
     )
     public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO) {
-        return ResponseEntity.ok(ProductResponseDTO.convert(productService.createProduct(productRequestDTO)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ProductResponseDTO.convert(productService.createProduct(productRequestDTO)));
     }
 
-    @PatchMapping("/")
+    @PatchMapping("/{id}")
     @Operation(
             summary = "Update product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Success operation",
+                            description = "Product updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ProductResponseDTO.class)
@@ -209,7 +177,7 @@ public class ProductController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Bad request",
+                            description = "Invalid input data",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -217,7 +185,7 @@ public class ProductController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Full authentication is required to access this resource",
+                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -225,15 +193,7 @@ public class ProductController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Not Found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "422",
-                            description = "Validation Failed",
+                            description = "Product not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -246,8 +206,26 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable UUID id) {
+    @Operation(
+            summary = "Delete product",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Product deleted successfully"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Not Found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteProduct(id);
-        return "Product deleted successfully";
+        return ResponseEntity.noContent().build();
     }
 }
