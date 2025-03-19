@@ -3,6 +3,8 @@ package com.se330.coffee_shop_management_backend.service.productservices.imp;
 import com.se330.coffee_shop_management_backend.entity.product.ProductCategory;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductCategoryRepository;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductCategoryService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +25,8 @@ public class ImpProductCategoryService implements IProductCategoryService {
     }
 
     @Override
-    public List<ProductCategory> findAllProductCategories() {
-        return productCategoryRepository.findAll();
+    public Page<ProductCategory> findAllProductCategories(Pageable pageable) {
+        return productCategoryRepository.findAll(pageable);
     }
 
     @Override

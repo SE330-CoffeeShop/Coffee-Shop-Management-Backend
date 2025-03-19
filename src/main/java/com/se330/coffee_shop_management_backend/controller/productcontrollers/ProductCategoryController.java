@@ -10,6 +10,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -127,8 +130,17 @@ public class ProductCategoryController {
                     )
             }
     )
-    public ResponseEntity<List<ProductCategoryResponseDTO>> findAllProductCategories() {
-        return ResponseEntity.ok(ProductCategoryResponseDTO.convert(productCategoryService.findAllProductCategories()));
+    public ResponseEntity<List<ProductCategoryResponseDTO>> findAllProductCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sortBy = Sort.by(sortDirection, sort);
+        Pageable pageable = PageRequest.of(page, size, sortBy);
+
+        return ResponseEntity.ok(ProductCategoryResponseDTO.convert(productCategoryService.findAllProductCategories(pageable).getContent()));
     }
 
     @PostMapping("/")

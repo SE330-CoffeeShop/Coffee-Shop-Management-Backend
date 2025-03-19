@@ -4,16 +4,21 @@ import com.se330.coffee_shop_management_backend.dto.request.product.ProductReque
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.product.ProductResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.user.UserResponse;
+import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -127,8 +132,17 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<List<ProductResponseDTO>> findAllProducts() {
-        return ResponseEntity.ok(ProductResponseDTO.convert(productService.findAllProducts()));
+    public ResponseEntity<List<ProductResponseDTO>> findAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "desc") String direction
+    ) {
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sortBy = Sort.by(sortDirection, sort);
+        Pageable pageable = PageRequest.of(page, size, sortBy);
+
+        return ResponseEntity.ok(ProductResponseDTO.convert(productService.findAllProducts(pageable).getContent()));
     }
 
     @PostMapping("/")

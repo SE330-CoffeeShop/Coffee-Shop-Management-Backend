@@ -8,6 +8,8 @@ import com.se330.coffee_shop_management_backend.repository.productrepositories.P
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductVariantService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,8 +35,8 @@ public class ImpProductVariantService implements IProductVariantService {
     }
 
     @Override
-    public List<ProductVariant> findAllProductVariants() {
-        return productVariantRepository.findAll();
+    public Page<ProductVariant> findAllProductVariants(Pageable pageable) {
+        return productVariantRepository.findAll(pageable);
     }
 
     @Override
