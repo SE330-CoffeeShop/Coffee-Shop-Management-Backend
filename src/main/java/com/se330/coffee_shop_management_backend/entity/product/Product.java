@@ -50,7 +50,7 @@ public class Product extends AbstractBaseEntity {
     @Column(name = "pro_is_deleted", nullable = false)
     private Boolean proIsDeleted;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ProductVariant> productVariants = new ArrayList<>();
 
     @ManyToOne
