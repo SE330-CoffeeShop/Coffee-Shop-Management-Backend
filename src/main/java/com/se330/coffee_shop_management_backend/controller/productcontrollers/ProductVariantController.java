@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,6 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
+import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.createPageable;
 
 @RestController
 @RequestMapping("/product/variant")
@@ -45,7 +45,7 @@ public class ProductVariantController {
                             description = "Success operation",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UserResponse.class)
+                                    schema = @Schema(implementation = ProductVariantResponseDTO.class)
                             )
                     ),
                     @ApiResponse(
@@ -96,7 +96,7 @@ public class ProductVariantController {
                             description = "Success operation",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UserResponse.class)
+                                    schema = @Schema(implementation = ProductVariantResponseDTO.class)
                             )
                     ),
                     @ApiResponse(
@@ -134,16 +134,19 @@ public class ProductVariantController {
             }
     )
     public ResponseEntity<List<ProductVariantResponseDTO>> findAllProductVariants(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "id") String sort,
-            @RequestParam(defaultValue = "desc") String direction
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(required = false) Integer offset,
+            @RequestParam(defaultValue = "vi") String lan,
+            @RequestParam(required = false) String sortType,
+            @RequestParam(required = false) String sortBy
     ) {
-        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sortBy = Sort.by(sortDirection, sort);
-        Pageable pageable = PageRequest.of(page, size, sortBy);
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
 
-        return ResponseEntity.ok(ProductVariantResponseDTO.convert(productVariantService.findAllProductVariants(pageable).getContent()));
+        return ResponseEntity.ok(ProductVariantResponseDTO.convert(productVariantService.findAllProductVariants(pageable).getContent())
+            // TODO: add language
+            // , lan
+        );
     }
 
     @PostMapping("/")
@@ -207,7 +210,7 @@ public class ProductVariantController {
                             description = "Success operation",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UserResponse.class)
+                                    schema = @Schema(implementation = ProductVariantResponseDTO.class)
                             )
                     ),
                     @ApiResponse(
