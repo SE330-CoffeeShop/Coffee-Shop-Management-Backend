@@ -1,7 +1,6 @@
 package com.se330.coffee_shop_management_backend.dto.response.product;
 
 import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
-import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
