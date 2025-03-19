@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,9 +49,15 @@ public class ProductCategoryResponseDTO extends AbstractBaseResponse {
 
     public static ProductCategoryResponseDTO convert(ProductCategory productCategory) {
 
-        List<String> productIds = productCategory.getProducts().stream()
-                .map(entity -> entity.getId().toString())
-                .collect(Collectors.toList());
+        List<String> productIds;
+
+        if (productCategory.getProducts() == null ||  productCategory.getProducts().isEmpty()) {
+            productIds = Collections.emptyList();
+        } else {
+            productIds = productCategory.getProducts().stream()
+                    .map(entity -> entity.getId().toString())
+                    .collect(Collectors.toList());
+        }
 
         return ProductCategoryResponseDTO.builder()
                 .id(productCategory.getId().toString())
@@ -63,6 +70,10 @@ public class ProductCategoryResponseDTO extends AbstractBaseResponse {
     }
 
     public static List<ProductCategoryResponseDTO> convert(List<ProductCategory> productCategories) {
+        if (productCategories == null || productCategories.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         return productCategories.stream()
                 .map(ProductCategoryResponseDTO::convert)
                 .collect(Collectors.toList());

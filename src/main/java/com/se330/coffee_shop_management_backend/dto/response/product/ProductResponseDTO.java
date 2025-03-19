@@ -2,6 +2,7 @@ package com.se330.coffee_shop_management_backend.dto.response.product;
 
 import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
+import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,9 +59,16 @@ public class ProductResponseDTO extends AbstractBaseResponse {
 
     public static ProductResponseDTO convert(Product product) {
 
-        List<String> productVariantIds = product.getProductVariants().stream()
-                .map(entity -> entity.getId().toString())
-                .collect(Collectors.toList());
+        List<String> productVariantIds;
+
+        List<ProductVariant> tmpList = product.getProductVariants();
+        if (tmpList == null || tmpList.isEmpty()) {
+            productVariantIds = Collections.emptyList();
+        } else {
+            productVariantIds = product.getProductVariants().stream()
+                    .map(entity -> entity.getId().toString())
+                    .collect(Collectors.toList());
+        }
 
         return ProductResponseDTO.builder()
                 .id(product.getId().toString())
@@ -79,6 +88,10 @@ public class ProductResponseDTO extends AbstractBaseResponse {
     }
 
     public static List<ProductResponseDTO> convert(List<Product> products) {
+        if (products == null || products.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         return products.stream()
                 .map(ProductResponseDTO::convert)
                 .collect(Collectors.toList());

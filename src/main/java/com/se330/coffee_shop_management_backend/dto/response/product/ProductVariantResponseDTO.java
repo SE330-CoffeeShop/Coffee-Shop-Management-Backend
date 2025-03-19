@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,6 +71,9 @@ public class ProductVariantResponseDTO extends AbstractBaseResponse {
     }
 
     public static List<ProductVariantResponseDTO> convert(List<ProductVariant> productVariants) {
+        if (productVariants == null || productVariants.isEmpty()) {
+            return Collections.emptyList();
+        }
         return productVariants.stream()
                 .map(ProductVariantResponseDTO::convert)
                 .collect(Collectors.toList());
