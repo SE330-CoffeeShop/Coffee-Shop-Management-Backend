@@ -12,14 +12,14 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class ProductRequestDTO extends AbstractBaseEntity {
-    private String proName;
-    private String proThumb;
-    private String proDescription;
-    private BigDecimal proPrice;
-    private String proSlug;
-    private String proRatingsAverage;
-    private Boolean proIsPublished;
-    private Boolean proIsDeleted;
+    private String productName;
+    private String productThumb;
+    private String productDescription;
+    private BigDecimal productPrice;
+    private String productSlug;
+    private String productRatingsAverage;
+    private Boolean productIsPublished;
+    private Boolean productIsDeleted;
     private UUID productCategory;
     private List<UUID> productVariants;
 }

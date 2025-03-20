@@ -51,14 +51,14 @@ public class ImpProductService implements IProductService {
         return productRepository.save(
                 Product.builder()
                         .productCategory(category)
-                        .proDescription(productRequestDTO.getProDescription())
-                        .proPrice(productRequestDTO.getProPrice())
-                        .proName(productRequestDTO.getProName())
-                        .proIsDeleted(productRequestDTO.getProIsDeleted())
-                        .proSlug(productRequestDTO.getProSlug())
-                        .proIsPublished(productRequestDTO.getProIsPublished())
-                        .proRatingsAverage(productRequestDTO.getProRatingsAverage())
-                        .proThumb(productRequestDTO.getProThumb())
+                        .productDescription(productRequestDTO.getProductDescription())
+                        .productPrice(productRequestDTO.getProductPrice())
+                        .productName(productRequestDTO.getProductName())
+                        .productIsDeleted(productRequestDTO.getProductIsDeleted())
+                        .productSlug(productRequestDTO.getProductSlug())
+                        .productIsPublished(productRequestDTO.getProductIsPublished())
+                        .productRatingsAverage(productRequestDTO.getProductRatingsAverage())
+                        .productThumb(productRequestDTO.getProductThumb())
                         .build()
         );
     }
@@ -72,14 +72,14 @@ public class ImpProductService implements IProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productRequestDTO.getProductCategory()));
 
         existingProduct.setProductCategory(category);
-        existingProduct.setProDescription(productRequestDTO.getProDescription());
-        existingProduct.setProPrice(productRequestDTO.getProPrice());
-        existingProduct.setProName(productRequestDTO.getProName());
-        existingProduct.setProIsDeleted(productRequestDTO.getProIsDeleted());
-        existingProduct.setProSlug(productRequestDTO.getProSlug());
-        existingProduct.setProIsPublished(productRequestDTO.getProIsPublished());
-        existingProduct.setProRatingsAverage(productRequestDTO.getProRatingsAverage());
-        existingProduct.setProThumb(productRequestDTO.getProThumb());
+        existingProduct.setProductDescription(productRequestDTO.getProductDescription());
+        existingProduct.setProductPrice(productRequestDTO.getProductPrice());
+        existingProduct.setProductName(productRequestDTO.getProductName());
+        existingProduct.setProductIsDeleted(productRequestDTO.getProductIsDeleted());
+        existingProduct.setProductSlug(productRequestDTO.getProductSlug());
+        existingProduct.setProductIsPublished(productRequestDTO.getProductIsPublished());
+        existingProduct.setProductRatingsAverage(productRequestDTO.getProductRatingsAverage());
+        existingProduct.setProductThumb(productRequestDTO.getProductThumb());
 
         List<UUID> productVariantIds = productRequestDTO.getProductVariants();
         List<ProductVariant> productVariants = productVariantRepository.findAllById(productVariantIds);

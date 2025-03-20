@@ -46,14 +46,14 @@ public class ImpProductVariantService implements IProductVariantService {
 
         return productVariantRepository.save(
                 ProductVariant.builder()
-                        .varTierIdx(productVariantRequestDTO.getVarTierIdx())
-                        .varDefault(productVariantRequestDTO.getVarDefault())
-                        .varSlug(productVariantRequestDTO.getVarSlug())
-                        .varSort(productVariantRequestDTO.getVarSort())
-                        .varPrice(productVariantRequestDTO.getVarPrice())
-                        .varStock(productVariantRequestDTO.getVarStock())
-                        .varIsPublished(productVariantRequestDTO.getVarIsPublished())
-                        .varIsDeleted(productVariantRequestDTO.getVarIsDeleted())
+                        .variantTierIdx(productVariantRequestDTO.getVariantTierIdx())
+                        .variantDefault(productVariantRequestDTO.getVariantDefault())
+                        .variantSlug(productVariantRequestDTO.getVariantSlug())
+                        .variantSort(productVariantRequestDTO.getVariantSort())
+                        .variantPrice(productVariantRequestDTO.getVariantPrice())
+                        .variantStock(productVariantRequestDTO.getVariantStock())
+                        .variantIsPublished(productVariantRequestDTO.getVariantIsPublished())
+                        .variantIsDeleted(productVariantRequestDTO.getVariantIsDeleted())
                         .product(product)
                         .build()
         );
@@ -67,14 +67,14 @@ public class ImpProductVariantService implements IProductVariantService {
         ProductVariant existingVariant = productVariantRepository.findById(productVariantRequestDTO.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with ID: " + productVariantRequestDTO.getId()));
 
-        existingVariant.setVarTierIdx(productVariantRequestDTO.getVarTierIdx());
-        existingVariant.setVarDefault(productVariantRequestDTO.getVarDefault());
-        existingVariant.setVarSlug(productVariantRequestDTO.getVarSlug());
-        existingVariant.setVarSort(productVariantRequestDTO.getVarSort());
-        existingVariant.setVarPrice(productVariantRequestDTO.getVarPrice());
-        existingVariant.setVarStock(productVariantRequestDTO.getVarStock());
-        existingVariant.setVarIsPublished(productVariantRequestDTO.getVarIsPublished());
-        existingVariant.setVarIsDeleted(productVariantRequestDTO.getVarIsDeleted());
+        existingVariant.setVariantTierIdx(productVariantRequestDTO.getVariantTierIdx());
+        existingVariant.setVariantDefault(productVariantRequestDTO.getVariantDefault());
+        existingVariant.setVariantSlug(productVariantRequestDTO.getVariantSlug());
+        existingVariant.setVariantSort(productVariantRequestDTO.getVariantSort());
+        existingVariant.setVariantPrice(productVariantRequestDTO.getVariantPrice());
+        existingVariant.setVariantStock(productVariantRequestDTO.getVariantStock());
+        existingVariant.setVariantIsPublished(productVariantRequestDTO.getVariantIsPublished());
+        existingVariant.setVariantIsDeleted(productVariantRequestDTO.getVariantIsDeleted());
         existingVariant.setProduct(product);
 
         return productVariantRepository.save(existingVariant);

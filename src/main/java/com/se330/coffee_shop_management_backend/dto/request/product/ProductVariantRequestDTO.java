@@ -11,13 +11,13 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class ProductVariantRequestDTO extends AbstractBaseEntity {
-    private String varTierIdx;
-    private Boolean varDefault;
-    private String varSlug;
-    private int varSort;
-    private Long varPrice;
-    private int varStock;
-    private Boolean varIsPublished;
-    private Boolean varIsDeleted;
+    private String variantTierIdx;
+    private Boolean variantDefault;
+    private String variantSlug;
+    private int variantSort;
+    private Long variantPrice;
+    private int variantStock;
+    private Boolean variantIsPublished;
+    private Boolean variantIsDeleted;
     private UUID product;
 }

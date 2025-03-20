@@ -20,35 +20,35 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @AttributeOverrides({
-        @AttributeOverride(name = "id", column = @Column(name = "pro_id"))
+        @AttributeOverride(name = "id", column = @Column(name = "product_id"))
 })
 public class Product extends AbstractBaseEntity {
-    @Column(name = "pro_name", nullable = false)
-    private String proName;
+    @Column(name = "product_name", nullable = false)
+    private String productName;
 
-    @Column(name = "pro_thumb", nullable = false)
-    private String proThumb;
+    @Column(name = "product_thumb", nullable = false)
+    private String productThumb;
 
-    @Column(name = "pro_description", nullable = false, length = 1000)
-    private String proDescription;
+    @Column(name = "product_description", nullable = false, length = 1000)
+    private String productDescription;
 
-    @Column(name = "pro_price", nullable = false)
-    private BigDecimal proPrice;
+    @Column(name = "product_price", nullable = false)
+    private BigDecimal productPrice;
 
-    @Column(name = "pro_slug", nullable = false)
-    private String proSlug;
+    @Column(name = "product_slug", nullable = false)
+    private String productSlug;
 
     @DecimalMin(value = "0.0", inclusive = true)
     @DecimalMax(value = "10.0", inclusive = true)
     @Digits(integer = 2, fraction = 1)
-    @Column(name = "pro_ratings_average", nullable = false, precision = 3, scale = 1)
-    private String proRatingsAverage;
+    @Column(name = "product_ratings_average", nullable = false, precision = 3, scale = 1)
+    private String productRatingsAverage;
 
-    @Column(name = "pro_is_published", nullable = false)
-    private Boolean proIsPublished;
+    @Column(name = "product_is_published", nullable = false)
+    private Boolean productIsPublished;
 
-    @Column(name = "pro_is_deleted", nullable = false)
-    private Boolean proIsDeleted;
+    @Column(name = "product_is_deleted", nullable = false)
+    private Boolean productIsDeleted;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ProductVariant> productVariants = new ArrayList<>();

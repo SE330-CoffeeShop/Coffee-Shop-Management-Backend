@@ -43,14 +43,14 @@ public class ProductVariantResponseDTO extends AbstractBaseResponse {
     )
     private LocalDateTime updatedAt;
 
-    private String varTierIdx;
-    private Boolean varDefault;
-    private String varSlug;
-    private int varSort;
-    private Long varPrice;
-    private int varStock;
-    private Boolean varIsPublished;
-    private Boolean varIsDeleted;
+    private String variantTierIdx;
+    private Boolean variantDefault;
+    private String variantSlug;
+    private int variantSort;
+    private Long variantPrice;
+    private int variantStock;
+    private Boolean variantIsPublished;
+    private Boolean variantIsDeleted;
     private ProductResponseDTO product;
 
     public static ProductVariantResponseDTO convert(ProductVariant productVariant) {
@@ -58,14 +58,14 @@ public class ProductVariantResponseDTO extends AbstractBaseResponse {
                 .id(productVariant.getId().toString())
                 .createdAt(productVariant.getCreatedAt())
                 .updatedAt(productVariant.getUpdatedAt())
-                .varTierIdx(productVariant.getVarTierIdx())
-                .varDefault(productVariant.getVarDefault())
-                .varSlug(productVariant.getVarSlug())
-                .varSort(productVariant.getVarSort())
-                .varPrice(productVariant.getVarPrice())
-                .varStock(productVariant.getVarStock())
-                .varIsPublished(productVariant.getVarIsPublished())
-                .varIsDeleted(productVariant.getVarIsDeleted())
+                .variantTierIdx(productVariant.getVariantTierIdx())
+                .variantDefault(productVariant.getVariantDefault())
+                .variantSlug(productVariant.getVariantSlug())
+                .variantSort(productVariant.getVariantSort())
+                .variantPrice(productVariant.getVariantPrice())
+                .variantStock(productVariant.getVariantStock())
+                .variantIsPublished(productVariant.getVariantIsPublished())
+                .variantIsDeleted(productVariant.getVariantIsDeleted())
                 .product(ProductResponseDTO.convert(productVariant.getProduct()))
                 .build();
     }

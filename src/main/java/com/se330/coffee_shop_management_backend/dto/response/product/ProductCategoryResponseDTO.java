@@ -43,8 +43,8 @@ public class ProductCategoryResponseDTO extends AbstractBaseResponse {
     )
     private LocalDateTime updatedAt;
 
-    private String catName;
-    private String catDescription;
+    private String categoryName;
+    private String categoryDescription;
     private List<String> products;
 
     public static ProductCategoryResponseDTO convert(ProductCategory productCategory) {
@@ -63,8 +63,8 @@ public class ProductCategoryResponseDTO extends AbstractBaseResponse {
                 .id(productCategory.getId().toString())
                 .createdAt(productCategory.getCreatedAt())
                 .updatedAt(productCategory.getUpdatedAt())
-                .catName(productCategory.getCatName())
-                .catDescription(productCategory.getCatDescription())
+                .categoryName(productCategory.getCategoryName())
+                .categoryDescription(productCategory.getCategoryDescription())
                 .products(productIds)
                 .build();
     }

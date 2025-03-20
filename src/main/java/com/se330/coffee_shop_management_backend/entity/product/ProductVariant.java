@@ -15,29 +15,29 @@ import lombok.*;
         @AttributeOverride(name = "id", column = @Column(name = "var_id"))
 })
 public class ProductVariant extends AbstractBaseEntity {
-    @Column(name = "var_tier_idx", nullable = false)
-    private String varTierIdx;
+    @Column(name = "variant_tier_idx", nullable = false)
+    private String variantTierIdx;
 
-    @Column(name = "var_default", nullable = false)
-    private Boolean varDefault;
+    @Column(name = "variant_default", nullable = false)
+    private Boolean variantDefault;
 
-    @Column(name = "var_slug", nullable = false)
-    private String varSlug;
+    @Column(name = "variant_slug", nullable = false)
+    private String variantSlug;
 
-    @Column(name = "var_sort", nullable = false)
-    private int varSort;
+    @Column(name = "variant_sort", nullable = false)
+    private int variantSort;
 
-    @Column(name = "var_price", nullable = false)
-    private Long varPrice;
+    @Column(name = "variant_price", nullable = false)
+    private Long variantPrice;
 
-    @Column(name = "var_stock", nullable = false)
-    private int varStock;
+    @Column(name = "variant_stock", nullable = false)
+    private int variantStock;
 
-    @Column(name = "var_is_published", nullable = false)
-    private Boolean varIsPublished;
+    @Column(name = "variant_is_published", nullable = false)
+    private Boolean variantIsPublished;
 
-    @Column(name = "var_is_deleted", nullable = false)
-    private Boolean varIsDeleted;
+    @Column(name = "variant_is_deleted", nullable = false)
+    private Boolean variantIsDeleted;
 
     @ManyToOne
     @JoinColumn(name = "fk_product-variant_product")

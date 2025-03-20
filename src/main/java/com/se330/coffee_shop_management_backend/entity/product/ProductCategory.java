@@ -16,14 +16,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @AttributeOverrides({
-        @AttributeOverride(name = "id", column = @Column(name = "cat_id"))
+        @AttributeOverride(name = "id", column = @Column(name = "category_id"))
 })
 public class ProductCategory extends AbstractBaseEntity {
-    @Column(name = "cat_name", nullable = false)
-    private String catName;
+    @Column(name = "category_name", nullable = false)
+    private String categoryName;
 
-    @Column(name = "cat_description", nullable = false)
-    private String catDescription;
+    @Column(name = "category_description", nullable = false)
+    private String categoryDescription;
 
     @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Product> products= new ArrayList<>();

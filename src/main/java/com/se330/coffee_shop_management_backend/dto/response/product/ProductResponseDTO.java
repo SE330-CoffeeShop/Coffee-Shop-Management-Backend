@@ -45,14 +45,14 @@ public class ProductResponseDTO extends AbstractBaseResponse {
     )
     private LocalDateTime updatedAt;
 
-    private String proName;
-    private String proThumb;
-    private String proDescription;
-    private BigDecimal proPrice;
-    private String proSlug;
-    private String proRatingsAverage;
-    private Boolean proIsPublished;
-    private Boolean proIsDeleted;
+    private String productName;
+    private String productThumb;
+    private String productDescription;
+    private BigDecimal productPrice;
+    private String productSlug;
+    private String productRatingsAverage;
+    private Boolean productIsPublished;
+    private Boolean productIsDeleted;
     private String productCategory;
     private List<String> productVariants;
     private ProductCategoryResponseDTO productCategoryResponseDTO;
@@ -74,14 +74,14 @@ public class ProductResponseDTO extends AbstractBaseResponse {
                 .id(product.getId().toString())
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
-                .proName(product.getProName())
-                .proThumb(product.getProThumb())
-                .proDescription(product.getProDescription())
-                .proPrice(product.getProPrice())
-                .proSlug(product.getProSlug())
-                .proRatingsAverage(product.getProRatingsAverage())
-                .proIsPublished(product.getProIsPublished())
-                .proIsDeleted(product.getProIsDeleted())
+                .productName(product.getProductName())
+                .productThumb(product.getProductThumb())
+                .productDescription(product.getProductDescription())
+                .productPrice(product.getProductPrice())
+                .productSlug(product.getProductSlug())
+                .productRatingsAverage(product.getProductRatingsAverage())
+                .productIsPublished(product.getProductIsPublished())
+                .productIsDeleted(product.getProductIsDeleted())
                 .productVariants(productVariantIds)
                 .productCategoryResponseDTO(ProductCategoryResponseDTO.convert(product.getProductCategory()))
                 .build();
