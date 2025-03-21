@@ -120,6 +120,7 @@ public class ProductController {
         );
     }
 
+    @PostMapping("/")
     @Operation(
             summary = "Create new product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
