@@ -54,8 +54,9 @@ public class ProductResponseDTO extends AbstractBaseResponse {
     private Boolean productIsPublished;
     private Boolean productIsDeleted;
     private String productCategory;
+
     private List<String> productVariants;
-    private ProductCategoryResponseDTO productCategoryResponseDTO;
+    private String productCategoryId;
 
     public static ProductResponseDTO convert(Product product) {
 
@@ -83,7 +84,7 @@ public class ProductResponseDTO extends AbstractBaseResponse {
                 .productIsPublished(product.getProductIsPublished())
                 .productIsDeleted(product.getProductIsDeleted())
                 .productVariants(productVariantIds)
-                .productCategoryResponseDTO(ProductCategoryResponseDTO.convert(product.getProductCategory()))
+                .productCategoryId(product.getProductCategory().getId().toString())
                 .build();
     }
 

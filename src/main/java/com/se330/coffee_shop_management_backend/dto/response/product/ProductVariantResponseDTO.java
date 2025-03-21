@@ -51,7 +51,8 @@ public class ProductVariantResponseDTO extends AbstractBaseResponse {
     private int variantStock;
     private Boolean variantIsPublished;
     private Boolean variantIsDeleted;
-    private ProductResponseDTO product;
+
+    private String productId;
 
     public static ProductVariantResponseDTO convert(ProductVariant productVariant) {
         return ProductVariantResponseDTO.builder()
@@ -66,7 +67,7 @@ public class ProductVariantResponseDTO extends AbstractBaseResponse {
                 .variantStock(productVariant.getVariantStock())
                 .variantIsPublished(productVariant.getVariantIsPublished())
                 .variantIsDeleted(productVariant.getVariantIsDeleted())
-                .product(ProductResponseDTO.convert(productVariant.getProduct()))
+                .productId(productVariant.getProduct().getId().toString())
                 .build();
     }
 

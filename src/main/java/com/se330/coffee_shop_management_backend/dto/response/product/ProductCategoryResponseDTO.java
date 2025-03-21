@@ -45,6 +45,7 @@ public class ProductCategoryResponseDTO extends AbstractBaseResponse {
 
     private String categoryName;
     private String categoryDescription;
+
     private List<String> products;
 
     public static ProductCategoryResponseDTO convert(ProductCategory productCategory) {
