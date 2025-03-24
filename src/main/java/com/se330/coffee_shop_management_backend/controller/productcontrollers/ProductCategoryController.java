@@ -107,11 +107,11 @@ public class ProductCategoryController {
     public ResponseEntity<PageResponse<ProductCategoryResponseDTO>> findAllProductCategories(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(required = false) Integer offset,
             @RequestParam(defaultValue = "vi") String lan,
-            @RequestParam(required = false) String sortType,
-            @RequestParam(required = false) String sortBy
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
+        Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
 
         Page<ProductCategory> categoryPage = productCategoryService.findAllProductCategories(pageable);
