@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.controller.productcontrollers;
 
-import com.se330.coffee_shop_management_backend.dto.request.product.ProductVariantRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductVariantCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductVariantUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.product.ProductVariantResponseDTO;
@@ -162,7 +163,7 @@ public class ProductVariantController {
                     )
             }
     )
-    public ResponseEntity<ProductVariantResponseDTO> createProductVariant(@RequestBody ProductVariantRequestDTO productVariantRequestDTO) {
+    public ResponseEntity<ProductVariantResponseDTO> createProductVariant(@RequestBody ProductVariantCreateRequestDTO productVariantRequestDTO) {
         ProductVariantResponseDTO createdVariant = ProductVariantResponseDTO.convert(productVariantService.createProductVariant(productVariantRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVariant);
     }
@@ -206,7 +207,7 @@ public class ProductVariantController {
                     )
             }
     )
-    public ResponseEntity<ProductVariantResponseDTO> updateProductVariant(@RequestBody ProductVariantRequestDTO productVariantRequestDTO) {
+    public ResponseEntity<ProductVariantResponseDTO> updateProductVariant(@RequestBody ProductVariantUpdateRequestDTO productVariantRequestDTO) {
         ProductVariantResponseDTO updatedVariant = ProductVariantResponseDTO.convert(
                 productVariantService.updateProductVariant(productVariantRequestDTO));
         return ResponseEntity.ok(updatedVariant);

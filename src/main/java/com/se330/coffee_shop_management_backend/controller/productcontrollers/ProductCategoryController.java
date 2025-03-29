@@ -1,5 +1,7 @@
 package com.se330.coffee_shop_management_backend.controller.productcontrollers;
 
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductCategoryUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.product.ProdutCategoryCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.product.ProductCategoryResponseDTO;
@@ -161,8 +163,8 @@ public class ProductCategoryController {
                     )
             }
     )
-    public ResponseEntity<ProductCategoryResponseDTO> createProductCategory(@RequestBody ProductCategory product) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(ProductCategoryResponseDTO.convert(productCategoryService.createProductCategory(product)));
+    public ResponseEntity<ProductCategoryResponseDTO> createProductCategory(@RequestBody ProdutCategoryCreateRequestDTO productCategoryRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ProductCategoryResponseDTO.convert(productCategoryService.createProductCategory(productCategoryRequestDTO)));
     }
 
     @PatchMapping("/")
@@ -200,8 +202,8 @@ public class ProductCategoryController {
                     )
             }
     )
-    public ResponseEntity<ProductCategoryResponseDTO> updateProductCategory(@RequestBody ProductCategory product) {
-        return ResponseEntity.ok(ProductCategoryResponseDTO.convert(productCategoryService.updateProductCategory(product)));
+    public ResponseEntity<ProductCategoryResponseDTO> updateProductCategory(@RequestBody ProductCategoryUpdateRequestDTO productCategoryRequestDTO) {
+        return ResponseEntity.ok(ProductCategoryResponseDTO.convert(productCategoryService.updateProductCategory(productCategoryRequestDTO)));
     }
 
     @DeleteMapping("/{id}")

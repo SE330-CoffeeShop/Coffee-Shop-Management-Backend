@@ -20,10 +20,10 @@ import java.util.List;
 })
 public class ProductCategory extends AbstractBaseEntity {
     @Column(name = "category_name", nullable = false)
-    private String categoryName;
+    private String categoryName = "";
 
     @Column(name = "category_description", nullable = false)
-    private String categoryDescription;
+    private String categoryDescription = "";
 
     @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Product> products= new ArrayList<>();

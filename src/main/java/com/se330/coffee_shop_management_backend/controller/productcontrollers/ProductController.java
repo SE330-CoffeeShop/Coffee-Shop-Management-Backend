@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.controller.productcontrollers;
 
-import com.se330.coffee_shop_management_backend.dto.request.product.ProductRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.product.ProductResponseDTO;
@@ -159,7 +160,7 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO) {
+    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductCreateRequestDTO productRequestDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ProductResponseDTO.convert(productService.createProduct(productRequestDTO)));
     }
 
@@ -202,7 +203,7 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<ProductResponseDTO> updateProduct(@RequestBody ProductRequestDTO productRequestDTO) {
+    public ResponseEntity<ProductResponseDTO> updateProduct(@RequestBody ProductUpdateRequestDTO productRequestDTO) {
         return ResponseEntity.ok(ProductResponseDTO.convert(productService.updateProduct(productRequestDTO)));
     }
 

@@ -16,28 +16,28 @@ import lombok.*;
 })
 public class ProductVariant extends AbstractBaseEntity {
     @Column(name = "variant_tier_idx", nullable = false)
-    private String variantTierIdx;
+    private String variantTierIdx = "";
 
     @Column(name = "variant_default", nullable = false)
-    private Boolean variantDefault;
+    private Boolean variantDefault = false;
 
     @Column(name = "variant_slug", nullable = false)
-    private String variantSlug;
+    private String variantSlug = "";
 
     @Column(name = "variant_sort", nullable = false)
-    private int variantSort;
+    private int variantSort = 0;
 
     @Column(name = "variant_price", nullable = false)
-    private Long variantPrice;
+    private Long variantPrice = 0L;
 
     @Column(name = "variant_stock", nullable = false)
-    private int variantStock;
+    private int variantStock = 0;
 
     @Column(name = "variant_is_published", nullable = false)
-    private Boolean variantIsPublished;
+    private Boolean variantIsPublished = false;
 
     @Column(name = "variant_is_deleted", nullable = false)
-    private Boolean variantIsDeleted;
+    private Boolean variantIsDeleted = false;
 
     @ManyToOne
     @JoinColumn(name = "fk_product-variant_product")

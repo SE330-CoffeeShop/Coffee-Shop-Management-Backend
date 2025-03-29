@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.service.productservices.imp;
 
-import com.se330.coffee_shop_management_backend.dto.request.product.ProductRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.entity.product.ProductCategory;
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
@@ -44,44 +45,45 @@ public class ImpProductService implements IProductService {
     }
 
     @Override
-    public Product createProduct(ProductRequestDTO productRequestDTO) {
-        ProductCategory category = productCategoryRepository.findById(productRequestDTO.getProductCategory())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productRequestDTO.getProductCategory()));
+    public Product createProduct(ProductCreateRequestDTO productCreateRequestDTO) {
+        ProductCategory category = productCategoryRepository.findById(productCreateRequestDTO.getProductCategory())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productCreateRequestDTO.getProductCategory()));
 
         return productRepository.save(
                 Product.builder()
                         .productCategory(category)
-                        .productDescription(productRequestDTO.getProductDescription())
-                        .productPrice(productRequestDTO.getProductPrice())
-                        .productName(productRequestDTO.getProductName())
-                        .productIsDeleted(productRequestDTO.getProductIsDeleted())
-                        .productSlug(productRequestDTO.getProductSlug())
-                        .productIsPublished(productRequestDTO.getProductIsPublished())
-                        .productRatingsAverage(productRequestDTO.getProductRatingsAverage())
-                        .productThumb(productRequestDTO.getProductThumb())
+                        .productDescription(productCreateRequestDTO.getProductDescription())
+                        .productPrice(productCreateRequestDTO.getProductPrice())
+                        .productName(productCreateRequestDTO.getProductName())
+                        .productThumb(productCreateRequestDTO.getProductThumb())
+                        .productIsDeleted(false)
+                        .productIsPublished(false)
+                        .productSlug("") // TODO: slugify product name
+                        .productCommentCount(0)
+                        .productRatingsAverage("0.0")
                         .build()
         );
     }
 
     @Override
-    public Product updateProduct(ProductRequestDTO productRequestDTO) {
-        Product existingProduct = productRepository.findById(productRequestDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productRequestDTO.getId()));
+    public Product updateProduct(ProductUpdateRequestDTO productUpdateRequestDTO) {
+        Product existingProduct = productRepository.findById(productUpdateRequestDTO.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productUpdateRequestDTO.getId()));
 
-        ProductCategory category = productCategoryRepository.findById(productRequestDTO.getProductCategory())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productRequestDTO.getProductCategory()));
+        ProductCategory category = productCategoryRepository.findById(productUpdateRequestDTO.getProductCategory())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productUpdateRequestDTO.getProductCategory()));
 
         existingProduct.setProductCategory(category);
-        existingProduct.setProductDescription(productRequestDTO.getProductDescription());
-        existingProduct.setProductPrice(productRequestDTO.getProductPrice());
-        existingProduct.setProductName(productRequestDTO.getProductName());
-        existingProduct.setProductIsDeleted(productRequestDTO.getProductIsDeleted());
-        existingProduct.setProductSlug(productRequestDTO.getProductSlug());
-        existingProduct.setProductIsPublished(productRequestDTO.getProductIsPublished());
-        existingProduct.setProductRatingsAverage(productRequestDTO.getProductRatingsAverage());
-        existingProduct.setProductThumb(productRequestDTO.getProductThumb());
+        existingProduct.setProductDescription(productUpdateRequestDTO.getProductDescription());
+        existingProduct.setProductPrice(productUpdateRequestDTO.getProductPrice());
+        existingProduct.setProductName(productUpdateRequestDTO.getProductName());
+        existingProduct.setProductIsDeleted(productUpdateRequestDTO.getProductIsDeleted());
+        existingProduct.setProductSlug(productUpdateRequestDTO.getProductSlug());
+        existingProduct.setProductIsPublished(productUpdateRequestDTO.getProductIsPublished());
+        existingProduct.setProductRatingsAverage(productUpdateRequestDTO.getProductRatingsAverage());
+        existingProduct.setProductThumb(productUpdateRequestDTO.getProductThumb());
 
-        List<UUID> productVariantIds = productRequestDTO.getProductVariants();
+        List<UUID> productVariantIds = productUpdateRequestDTO.getProductVariants();
         List<ProductVariant> productVariants = productVariantRepository.findAllById(productVariantIds);
         existingProduct.setProductVariants(productVariants);
 

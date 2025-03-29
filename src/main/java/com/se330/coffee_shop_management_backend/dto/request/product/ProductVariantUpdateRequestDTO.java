@@ -10,7 +10,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class ProductVariantRequestDTO extends AbstractBaseEntity {
+public class ProductVariantUpdateRequestDTO extends AbstractBaseEntity {
     private String variantTierIdx;
     private Boolean variantDefault;
     private String variantSlug;
