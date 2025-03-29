@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.entity;
 
+import com.se330.coffee_shop_management_backend.entity.employee.Employee;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -89,6 +90,10 @@ public class User extends AbstractBaseEntity {
 
     @Column(name = "blocked_at")
     private LocalDateTime blockedAt;
+
+    // association with employee
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Employee employee;
 
     /**
      * Get full name of user.
