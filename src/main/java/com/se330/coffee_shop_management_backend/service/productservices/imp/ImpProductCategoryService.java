@@ -54,6 +54,9 @@ public class ImpProductCategoryService implements IProductCategoryService {
 
     @Override
     public void deleteProductCategory(UUID id) {
+        productCategoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + id));
+
         productCategoryRepository.deleteById(id);
     }
 }

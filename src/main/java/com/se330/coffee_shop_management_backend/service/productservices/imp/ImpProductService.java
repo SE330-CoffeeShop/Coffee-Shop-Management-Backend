@@ -92,6 +92,9 @@ public class ImpProductService implements IProductService {
 
     @Override
     public void deleteProduct(UUID id) {
+        productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
+
         productRepository.deleteById(id);
     }
 }

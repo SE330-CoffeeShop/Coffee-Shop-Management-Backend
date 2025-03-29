@@ -81,6 +81,9 @@ public class ImpProductVariantService implements IProductVariantService {
 
     @Override
     public void deleteProductVariant(UUID id) {
+        productVariantRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with ID: " + id));
+
         productVariantRepository.deleteById(id);
     }
 }
