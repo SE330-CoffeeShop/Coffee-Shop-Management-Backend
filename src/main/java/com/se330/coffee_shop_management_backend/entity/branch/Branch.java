@@ -32,7 +32,7 @@ public class Branch extends AbstractBaseEntity {
     private String branchEmail = "";
 
     // One branch has many employees
-    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<Employee> employees = new ArrayList<>();
 }

@@ -10,6 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.branchrepositories.Br
 import com.se330.coffee_shop_management_backend.repository.employeerepositories.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.service.employeeservices.IEmployeeService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -82,11 +83,22 @@ public class ImpEmployeeService implements IEmployeeService {
         return employeeRepository.save(existingEmployee);
     }
 
+    @Transactional
     @Override
     public void deleteEmployee(UUID id) {
-        employeeRepository.findById(id)
+        Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + id));
 
-        employeeRepository.deleteById(id);
+        // Clear relationships before deletion
+        if (employee.getUser() != null) {
+            employee.getUser().setEmployee(null);
+        }
+        if (employee.getBranch() != null) {
+            employee.getBranch().getEmployees().remove(employee);
+            employee.setBranch(null);
+        }
+
+        employeeRepository.delete(employee);
     }
+
 }
