@@ -1,6 +1,6 @@
-package com.se330.coffee_shop_management_backend.repository.employeerepositories;
+package com.se330.coffee_shop_management_backend.repository;
 
-import com.se330.coffee_shop_management_backend.entity.employee.Employee;
+import com.se330.coffee_shop_management_backend.entity.Branch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, UUID>, JpaSpecificationExecutor<Employee> {
+public interface BranchRepository extends JpaRepository<Branch, UUID>, JpaSpecificationExecutor<Branch> {
     @Override
-    Page<Employee> findAll(Pageable pageable);
+    Page<Branch> findAll(Pageable pageable);
 }

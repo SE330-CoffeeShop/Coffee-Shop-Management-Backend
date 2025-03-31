@@ -2,7 +2,7 @@ package com.se330.coffee_shop_management_backend.service.employeeservices;
 
 import com.se330.coffee_shop_management_backend.dto.request.employee.EmployeeCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.employee.EmployeeUpdateRequestDTO;
-import com.se330.coffee_shop_management_backend.entity.employee.Employee;
+import com.se330.coffee_shop_management_backend.entity.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -19,7 +19,7 @@ public class ProductUpdateRequestDTO extends AbstractBaseEntity {
     private BigDecimal productPrice;
     private String productSlug;
     private int productCommentCount;
-    private String productRatingsAverage;
+    private BigDecimal productRatingsAverage;
     private Boolean productIsPublished;
     private Boolean productIsDeleted;
     private UUID productCategory;

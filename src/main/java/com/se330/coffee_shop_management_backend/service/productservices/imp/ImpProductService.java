@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,7 +61,7 @@ public class ImpProductService implements IProductService {
                         .productIsPublished(false)
                         .productSlug("") // TODO: slugify product name
                         .productCommentCount(0)
-                        .productRatingsAverage("0.0")
+                        .productRatingsAverage(BigDecimal.valueOf(0))
                         .build()
         );
     }

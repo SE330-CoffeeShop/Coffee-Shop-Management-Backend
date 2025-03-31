@@ -2,7 +2,7 @@ package com.se330.coffee_shop_management_backend.service.branchservices;
 
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchUpdateRequestDTO;
-import com.se330.coffee_shop_management_backend.entity.branch.Branch;
+import com.se330.coffee_shop_management_backend.entity.Branch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -1,12 +1,11 @@
-package com.se330.coffee_shop_management_backend.entity.employee;
+package com.se330.coffee_shop_management_backend.entity;
 
-import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
-import com.se330.coffee_shop_management_backend.entity.User;
-import com.se330.coffee_shop_management_backend.entity.branch.Branch;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "employees")
@@ -50,4 +49,11 @@ public class Employee extends AbstractBaseEntity {
             )
     )
     private User user;
+
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Order order;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<Shift> shifts = new ArrayList<>();
 }

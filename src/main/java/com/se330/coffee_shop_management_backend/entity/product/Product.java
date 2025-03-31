@@ -2,6 +2,7 @@ package com.se330.coffee_shop_management_backend.entity.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
+import com.se330.coffee_shop_management_backend.entity.Comment;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -43,9 +44,9 @@ public class Product extends AbstractBaseEntity {
 
     @DecimalMin(value = "0.0", inclusive = true)
     @DecimalMax(value = "5.0", inclusive = true)
-    @Digits(integer = 2, fraction = 1)
-    @Column(name = "product_ratings_average", nullable = false, precision = 3, scale = 1)
-    private String productRatingsAverage = "0.0";
+    @Digits(integer = 1, fraction = 1)
+    @Column(name = "product_ratings_average", nullable = false, precision = 2, scale = 1)
+    private BigDecimal productRatingsAverage = BigDecimal.valueOf(0.0);
 
     @Column(name = "product_is_published", nullable = false)
     private Boolean productIsPublished = false;
@@ -59,4 +60,8 @@ public class Product extends AbstractBaseEntity {
     @ManyToOne
     @JoinColumn(name = "fk_product_product-category")
     private ProductCategory productCategory;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<Comment> comments = new ArrayList<>();
 }

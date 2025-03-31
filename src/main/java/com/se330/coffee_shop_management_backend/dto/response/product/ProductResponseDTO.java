@@ -50,7 +50,7 @@ public class ProductResponseDTO extends AbstractBaseResponse {
     private String productDescription;
     private BigDecimal productPrice;
     private String productSlug;
-    private String productRatingsAverage;
+    private BigDecimal productRatingsAverage;
     private Boolean productIsPublished;
     private Boolean productIsDeleted;
     private String productCategory;

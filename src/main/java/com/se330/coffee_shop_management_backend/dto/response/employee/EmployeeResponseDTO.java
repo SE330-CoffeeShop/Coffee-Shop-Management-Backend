@@ -1,7 +1,7 @@
 package com.se330.coffee_shop_management_backend.dto.response.employee;
 
 import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
-import com.se330.coffee_shop_management_backend.entity.employee.Employee;
+import com.se330.coffee_shop_management_backend.entity.Employee;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

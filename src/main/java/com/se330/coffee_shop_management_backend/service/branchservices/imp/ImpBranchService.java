@@ -2,8 +2,8 @@ package com.se330.coffee_shop_management_backend.service.branchservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchUpdateRequestDTO;
-import com.se330.coffee_shop_management_backend.entity.branch.Branch;
-import com.se330.coffee_shop_management_backend.repository.branchrepositories.BranchRepository;
+import com.se330.coffee_shop_management_backend.entity.Branch;
+import com.se330.coffee_shop_management_backend.repository.BranchRepository;
 import com.se330.coffee_shop_management_backend.service.branchservices.IBranchService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;

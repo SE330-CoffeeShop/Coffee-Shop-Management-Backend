@@ -1,8 +1,13 @@
 package com.se330.coffee_shop_management_backend.entity.product;
 
 import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
+import com.se330.coffee_shop_management_backend.entity.OrderDetail;
+import com.se330.coffee_shop_management_backend.entity.Recipe;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "product_variants")
@@ -42,4 +47,13 @@ public class ProductVariant extends AbstractBaseEntity {
     @ManyToOne
     @JoinColumn(name = "fk_product-variant_product")
     private Product product;
+
+    // Add to ProductVariant.java
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<OrderDetail> orderDetails = new ArrayList<>();
+
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<Recipe> recipes = new ArrayList<>();
 }
