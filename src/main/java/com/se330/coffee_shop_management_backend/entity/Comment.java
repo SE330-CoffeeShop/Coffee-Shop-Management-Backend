@@ -30,13 +30,13 @@ public class Comment {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "comment_content", nullable = false, columnDefinition = "VARCHAR(1000)")
+    @Column(name = "comment_content", nullable = false)
     private String commentContent;
 
-    @Column(name = "comment_left", nullable = false, columnDefinition = "INTEGER(10)")
+    @Column(name = "comment_left", nullable = false)
     private int commentLeft;
 
-    @Column(name = "comment_right", nullable = false, columnDefinition = "INTEGER(10)")
+    @Column(name = "comment_right", nullable = false)
     private int commentRight;
 
     @Column(name = "comment_is_deleted", nullable = false)

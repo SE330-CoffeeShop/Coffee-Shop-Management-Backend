@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface ICommentService {
     Comment findByIdComment(int id);
     Page<Comment> findAllComments(Pageable pageable);
+    Page<Comment> findAllCommentsByProductId(String productId, Pageable pageable);
     Comment createComment(CommentCreateRequestDTO commentCreateRequestDTO);
     Comment updateComment(CommentUpdateDTO commentUpdateDTO);
     void deleteComment(int id);

@@ -16,7 +16,7 @@ import java.util.Date;
         @AttributeOverride(name = "id", column = @Column(name = "inventory_id"))
 })
 public class Inventory extends AbstractBaseEntity {
-    @Column(name = "inventory_quantity", columnDefinition = "INTEGER(10)", nullable = false)
+    @Column(name = "inventory_quantity",nullable = false)
     private int inventoryQuantity;
 
     @Column(name = "inventory_expire_date", nullable = false)

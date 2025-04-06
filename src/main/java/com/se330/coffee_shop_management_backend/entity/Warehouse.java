@@ -17,16 +17,16 @@ import java.util.List;
         @AttributeOverride(name = "id", column = @Column(name = "warehouse_id"))
 })
 public class Warehouse extends AbstractBaseEntity {
-    @Column(name = "warehouse_name", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "warehouse_name",nullable = false)
     private String warehouseName;
 
-    @Column(name = "warehouse_phone", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "warehouse_phone", nullable = false)
     private String warehousePhone;
 
-    @Column(name = "warehouse_email", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "warehouse_email", nullable = false)
     private String warehouseEmail;
 
-    @Column(name = "warehouse_address", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "warehouse_address", nullable = false)
     private String warehouseAddress;
 
     // Replace ManyToOne with OneToMany for invoices

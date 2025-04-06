@@ -37,6 +37,13 @@ public class ImpCommentService implements ICommentService {
     }
 
     @Override
+    public Page<Comment> findAllCommentsByProductId(String productId, Pageable pageable) {
+        Product product = productRepository.findById(UUID.fromString(productId))
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productId));
+        return commentRepository.findByProductId(product.getId(), pageable);
+    }
+
+    @Override
     public Comment createComment(CommentCreateRequestDTO commentCreateRequestDTO) {
         Product product = productRepository.findById(UUID.fromString(commentCreateRequestDTO.getProductId()))
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + commentCreateRequestDTO.getProductId()));

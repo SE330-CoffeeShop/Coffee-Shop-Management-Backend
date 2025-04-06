@@ -14,10 +14,10 @@ import lombok.*;
         @AttributeOverride(name = "id", column = @Column(name = "transfer_detail_id"))
 })
 public class TransferDetail extends AbstractBaseEntity {
-    @Column(name = "transfer_detail_quantity", columnDefinition = "INTEGER(10)", nullable = false)
+    @Column(name = "transfer_detail_quantity", nullable = false)
     private int transferDetailQuantity;
 
-    @Column(name = "transfer_detail_unit", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "transfer_detail_unit", nullable = false)
     private String transferDetailUnit;
 
     @ManyToOne(fetch = FetchType.EAGER)

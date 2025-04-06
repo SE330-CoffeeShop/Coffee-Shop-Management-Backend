@@ -20,7 +20,7 @@ import java.util.UUID;
 public class AbstractBaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "VARCHAR(255)")
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
     @CreationTimestamp

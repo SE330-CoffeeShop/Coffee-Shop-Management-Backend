@@ -18,13 +18,13 @@ import java.util.List;
         @AttributeOverride(name = "id", column = @Column(name = "invoice_id"))
 })
 public class Invoice extends AbstractBaseEntity {
-    @Column(name = "invoice_description", columnDefinition = "VARCHAR(1000)", nullable = false)
+    @Column(name = "invoice_description", nullable = false)
     private String invoiceDescription;
 
-    @Column(name = "invoice_tracking_number", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "invoice_tracking_number", nullable = false)
     private String invoiceTrackingNumber;
 
-    @Column(name = "invoice_transfer_total_cost", columnDefinition = "NUMERIC(38,2)", nullable = false)
+    @Column(name = "invoice_transfer_total_cost", nullable = false)
     private BigDecimal invoiceTransferTotalCost;
 
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

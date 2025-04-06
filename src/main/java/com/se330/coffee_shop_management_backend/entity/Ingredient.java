@@ -18,16 +18,16 @@ import java.util.List;
         @AttributeOverride(name = "id", column = @Column(name = "ingredient_id"))
 })
 public class Ingredient extends AbstractBaseEntity {
-    @Column(name = "ingredient_name", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "ingredient_name", nullable = false)
     private String ingredientName;
 
-    @Column(name = "ingredient_description", columnDefinition = "VARCHAR(1000)", nullable = false)
+    @Column(name = "ingredient_description", nullable = false)
     private String ingredientDescription;
 
-    @Column(name = "ingredient_price", columnDefinition = "NUMERIC(2,2)", nullable = false)
+    @Column(name = "ingredient_price", nullable = false)
     private BigDecimal ingredientPrice;
 
-    @Column(name = "ingredient_type", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "ingredient_type", nullable = false)
     private String ingredientType;
 
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

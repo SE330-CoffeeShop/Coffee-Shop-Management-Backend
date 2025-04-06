@@ -18,13 +18,13 @@ import java.util.List;
         @AttributeOverride(name = "id", column = @Column(name = "order_id"))
 })
 public class Order extends AbstractBaseEntity {
-    @Column(name = "order_total_cost", columnDefinition = "NUMERIC(38,2)", nullable = false)
+    @Column(name = "order_total_cost", nullable = false)
     private BigDecimal orderTotalCost;
 
     @Column(name = "order_status", nullable = false)
     private boolean orderStatus;
 
-    @Column(name = "order_tracking_number", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "order_tracking_number", nullable = false)
     private BigDecimal orderTrackingNumber;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
