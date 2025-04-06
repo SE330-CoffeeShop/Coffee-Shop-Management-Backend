@@ -9,10 +9,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class ProductUpdateRequestDTO extends AbstractBaseEntity {
+public class ProductUpdateRequestDTO {
+    private UUID productId;
     private String productName;
     private String productThumb;
     private String productDescription;

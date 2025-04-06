@@ -45,8 +45,8 @@ public class ImpBranchService implements IBranchService {
 
     @Override
     public Branch updateBranch(BranchUpdateRequestDTO branchUpdateRequestDTO) {
-        Branch existingBranch = branchRepository.findById(branchUpdateRequestDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchUpdateRequestDTO.getId()));
+        Branch existingBranch = branchRepository.findById(branchUpdateRequestDTO.getBranchId())
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchUpdateRequestDTO.getBranchId()));
 
         existingBranch.setBranchName(branchUpdateRequestDTO.getBranchName());
         existingBranch.setBranchAddress(branchUpdateRequestDTO.getBranchAddress());

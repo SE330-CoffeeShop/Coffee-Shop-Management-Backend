@@ -8,7 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "comments")
@@ -42,9 +41,6 @@ public class Comment {
 
     @Column(name = "comment_is_deleted", nullable = false)
     private boolean commentIsDeleted;
-
-    @Column(name = "comment_date", nullable = false)
-    private Date commentDate;
 
     @Column(name = "comment_rating", nullable = false, precision = 2, scale = 2)
     private BigDecimal commentRating;

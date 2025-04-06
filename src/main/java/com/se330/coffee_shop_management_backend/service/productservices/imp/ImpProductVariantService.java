@@ -63,8 +63,8 @@ public class ImpProductVariantService implements IProductVariantService {
         Product product = productRepository.findById(productVariantUpdateRequestDTO.getProduct())
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productVariantUpdateRequestDTO.getProduct()));
 
-        ProductVariant existingVariant = productVariantRepository.findById(productVariantUpdateRequestDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with ID: " + productVariantUpdateRequestDTO.getId()));
+        ProductVariant existingVariant = productVariantRepository.findById(productVariantUpdateRequestDTO.getVariantId())
+                .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with ID: " + productVariantUpdateRequestDTO.getVariantId()));
 
         existingVariant.setVariantTierIdx(productVariantUpdateRequestDTO.getVariantTierIdx());
         existingVariant.setVariantDefault(productVariantUpdateRequestDTO.getVariantDefault());

@@ -43,8 +43,8 @@ public class ImpProductCategoryService implements IProductCategoryService {
 
     @Override
     public ProductCategory updateProductCategory(ProductCategoryUpdateRequestDTO productCategoryRequestDTO) {
-        ProductCategory existingCategory = productCategoryRepository.findById(productCategoryRequestDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productCategoryRequestDTO.getId()));
+        ProductCategory existingCategory = productCategoryRepository.findById(productCategoryRequestDTO.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productCategoryRequestDTO.getCategoryId()));
 
         existingCategory.setCategoryName(productCategoryRequestDTO.getCategoryName());
         existingCategory.setCategoryDescription(productCategoryRequestDTO.getCategoryDescription());

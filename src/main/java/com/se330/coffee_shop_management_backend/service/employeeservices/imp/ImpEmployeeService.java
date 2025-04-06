@@ -65,8 +65,8 @@ public class ImpEmployeeService implements IEmployeeService {
 
     @Override
     public Employee updateEmployee(EmployeeUpdateRequestDTO employeeUpdateRequestDTO) {
-        Employee existingEmployee = employeeRepository.findById(employeeUpdateRequestDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + employeeUpdateRequestDTO.getId()));
+        Employee existingEmployee = employeeRepository.findById(employeeUpdateRequestDTO.getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + employeeUpdateRequestDTO.getEmployeeId()));
 
         Branch branch = branchRepository.findById(employeeUpdateRequestDTO.getBranchId())
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + employeeUpdateRequestDTO.getBranchId()));

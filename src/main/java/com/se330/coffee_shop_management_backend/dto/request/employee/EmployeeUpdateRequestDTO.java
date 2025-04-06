@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class EmployeeUpdateRequestDTO extends AbstractBaseEntity {
+public class EmployeeUpdateRequestDTO {
+    private UUID employeeId;
     private String employeePosition;
     private String employeeDepartment;
     private Date employeeHireDate;

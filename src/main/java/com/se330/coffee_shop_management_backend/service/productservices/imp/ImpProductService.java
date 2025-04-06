@@ -68,8 +68,8 @@ public class ImpProductService implements IProductService {
 
     @Override
     public Product updateProduct(ProductUpdateRequestDTO productUpdateRequestDTO) {
-        Product existingProduct = productRepository.findById(productUpdateRequestDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productUpdateRequestDTO.getId()));
+        Product existingProduct = productRepository.findById(productUpdateRequestDTO.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productUpdateRequestDTO.getProductId()));
 
         ProductCategory category = productCategoryRepository.findById(productUpdateRequestDTO.getProductCategory())
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productUpdateRequestDTO.getProductCategory()));
