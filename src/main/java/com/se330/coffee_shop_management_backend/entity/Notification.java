@@ -3,6 +3,7 @@ package com.se330.coffee_shop_management_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -20,7 +21,7 @@ public class Notification extends AbstractBaseEntity {
     private int notificationType;
 
     @Column(name = "notification_date", nullable = false)
-    private Date notificationDate;
+    private LocalDateTime notificationDate;
 
     @Column(name = "notification_content", nullable = false)
     private int notificationContent;

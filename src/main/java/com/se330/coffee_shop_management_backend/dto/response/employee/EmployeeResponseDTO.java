@@ -46,7 +46,7 @@ public class EmployeeResponseDTO extends AbstractBaseResponse {
 
     private String employeePosition;
     private String employeeDepartment;
-    private Date employeeHireDate;
+    private LocalDateTime employeeHireDate;
 
     // Related entities
     private String branchId;

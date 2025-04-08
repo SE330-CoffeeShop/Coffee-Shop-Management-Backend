@@ -3,6 +3,7 @@ package com.se330.coffee_shop_management_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -20,7 +21,7 @@ public class Inventory extends AbstractBaseEntity {
     private int inventoryQuantity;
 
     @Column(name = "inventory_expire_date", nullable = false)
-    private Date inventoryExpireDate;
+    private LocalDateTime inventoryExpireDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(

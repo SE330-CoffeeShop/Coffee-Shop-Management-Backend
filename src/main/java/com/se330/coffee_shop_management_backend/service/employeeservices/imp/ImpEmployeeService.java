@@ -89,16 +89,7 @@ public class ImpEmployeeService implements IEmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + id));
 
-        // Clear relationships before deletion
-        if (employee.getUser() != null) {
-            employee.getUser().setEmployee(null);
-        }
-        if (employee.getBranch() != null) {
-            employee.getBranch().getEmployees().remove(employee);
-            employee.setBranch(null);
-        }
-
-        employeeRepository.delete(employee);
+        employeeRepository.deleteById(id);
     }
 
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -33,10 +34,10 @@ public class Discount extends AbstractBaseEntity {
     private String discountCode;
 
     @Column(name = "discount_start_date", nullable = false)
-    private Date discountStartDate;
+    private LocalDateTime discountStartDate;
 
     @Column(name = "discount_end_date", nullable = false)
-    private Date discountEndDate;
+    private LocalDateTime discountEndDate;
 
     @Column(name = "discount_max_users",nullable = false)
     private int discountMaxUsers;

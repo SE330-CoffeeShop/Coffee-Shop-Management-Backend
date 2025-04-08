@@ -3,6 +3,7 @@ package com.se330.coffee_shop_management_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,7 @@ public class Employee extends AbstractBaseEntity {
     private String employeeDepartment = "";
 
     @Column(name = "employee_hire_date", nullable = false)
-    private Date employeeHireDate = new Date();
+    private LocalDateTime employeeHireDate;
 
     // Many employees can belong to one branch
     @ManyToOne(fetch = FetchType.EAGER)
