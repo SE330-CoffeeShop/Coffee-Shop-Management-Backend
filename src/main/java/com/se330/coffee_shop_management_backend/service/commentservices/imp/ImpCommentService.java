@@ -76,8 +76,21 @@ public class ImpCommentService implements ICommentService {
 
     @Override
     public void deleteComment(int id) {
-        commentRepository.findById(id)
+        Comment existingComment = commentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found with ID: " + id));
+
+        if (existingComment.getProduct() != null) {
+            Product product = existingComment.getProduct();
+            product.setProductCommentCount(product.getProductCommentCount() - 1);
+            product.setProductRatingsAverage(
+                    product.getProductRatingsAverage()
+                            .subtract(existingComment.getCommentRating())
+                            .divide(BigDecimal.valueOf(product.getProductCommentCount()), BigDecimal.ROUND_HALF_UP)
+            );
+            product.getComments().remove(existingComment);
+
+            productRepository.save(product);
+        }
 
         commentRepository.deleteById(id);
     }

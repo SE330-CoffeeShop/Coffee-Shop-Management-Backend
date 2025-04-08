@@ -71,6 +71,10 @@ public class ImpShiftService implements IShiftService {
         Shift existingShift = shiftRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Shift not found"));
 
+        if (existingShift.getEmployee() != null) {
+            existingShift.getEmployee().getShifts().remove(existingShift);
+        }
+
         shiftRepository.deleteById(id);
     }
 }
