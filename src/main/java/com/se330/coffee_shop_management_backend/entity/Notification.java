@@ -20,11 +20,8 @@ public class Notification extends AbstractBaseEntity {
     @Column(name = "notification_type", nullable = false)
     private int notificationType;
 
-    @Column(name = "notification_date", nullable = false)
-    private LocalDateTime notificationDate;
-
     @Column(name = "notification_content", nullable = false)
-    private int notificationContent;
+    private String notificationContent;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
