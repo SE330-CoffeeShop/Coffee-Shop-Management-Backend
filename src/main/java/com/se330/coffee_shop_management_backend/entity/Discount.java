@@ -1,11 +1,14 @@
 package com.se330.coffee_shop_management_backend.entity;
 
+import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "discounts")
@@ -63,4 +66,8 @@ public class Discount extends AbstractBaseEntity {
             )
     )
     private Branch branch;
+
+    @ManyToMany(mappedBy = "discounts", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<ProductVariant> productVariants = new ArrayList<>();
 }

@@ -53,6 +53,8 @@ public class ProductVariantResponseDTO extends AbstractBaseResponse {
     private Boolean variantIsDeleted;
 
     private String productId;
+    private List<String> discountIds;
+    private List<String> orderDetailIds;
 
     public static ProductVariantResponseDTO convert(ProductVariant productVariant) {
         return ProductVariantResponseDTO.builder()
@@ -68,6 +70,12 @@ public class ProductVariantResponseDTO extends AbstractBaseResponse {
                 .variantIsPublished(productVariant.getVariantIsPublished())
                 .variantIsDeleted(productVariant.getVariantIsDeleted())
                 .productId(productVariant.getProduct().getId().toString())
+                .discountIds(productVariant.getDiscounts() != null ? productVariant.getDiscounts().stream()
+                        .map(discount -> discount.getId().toString())
+                        .collect(Collectors.toList()) : Collections.emptyList())
+                .orderDetailIds(productVariant.getOrderDetails() != null ? productVariant.getOrderDetails().stream()
+                        .map(orderDetail -> orderDetail.getId().toString())
+                        .collect(Collectors.toList()) : Collections.emptyList())
                 .build();
     }
 

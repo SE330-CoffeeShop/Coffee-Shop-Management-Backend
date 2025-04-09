@@ -48,13 +48,11 @@ public class BranchResponseDTO extends AbstractBaseResponse {
     private String branchPhone;
     private String branchEmail;
     private List<String> employeeIds;
+    private List<String> transferIds;
+    private List<String> inventoryIds;
+    private List<String> discountIds;
 
     public static BranchResponseDTO convert(Branch branch) {
-        List<String> employeeIds = branch.getEmployees() == null ? Collections.emptyList() :
-                branch.getEmployees().stream()
-                        .map(employee -> employee.getId().toString())
-                        .collect(Collectors.toList());
-
         return BranchResponseDTO.builder()
                 .id(branch.getId().toString())
                 .createdAt(branch.getCreatedAt())
@@ -63,7 +61,18 @@ public class BranchResponseDTO extends AbstractBaseResponse {
                 .branchAddress(branch.getBranchAddress())
                 .branchPhone(branch.getBranchPhone())
                 .branchEmail(branch.getBranchEmail())
-                .employeeIds(employeeIds)
+                .employeeIds(branch.getEmployees() != null ? branch.getEmployees().stream()
+                        .map(employee -> employee.getId().toString())
+                        .collect(Collectors.toList()) : Collections.emptyList())
+                .transferIds(branch.getTransfers() != null ? branch.getTransfers().stream()
+                        .map(transfer -> transfer.getId().toString())
+                        .collect(Collectors.toList()) : Collections.emptyList())
+                .inventoryIds(branch.getInventories() != null ? branch.getInventories().stream()
+                        .map(inventory -> inventory.getId().toString())
+                        .collect(Collectors.toList()) : Collections.emptyList())
+                .discountIds(branch.getDiscounts() != null ? branch.getDiscounts().stream()
+                        .map(discount -> discount.getId().toString())
+                        .collect(Collectors.toList()) : Collections.emptyList())
                 .build();
     }
 

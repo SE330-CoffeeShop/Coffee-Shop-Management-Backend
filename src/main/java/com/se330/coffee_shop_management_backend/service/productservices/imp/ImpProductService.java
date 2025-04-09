@@ -84,10 +84,6 @@ public class ImpProductService implements IProductService {
         existingProduct.setProductRatingsAverage(productUpdateRequestDTO.getProductRatingsAverage());
         existingProduct.setProductThumb(productUpdateRequestDTO.getProductThumb());
 
-        List<UUID> productVariantIds = productUpdateRequestDTO.getProductVariants();
-        List<ProductVariant> productVariants = productVariantRepository.findAllById(productVariantIds);
-        existingProduct.setProductVariants(productVariants);
-
         return productRepository.save(existingProduct);
     }
 

@@ -12,7 +12,6 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
@@ -44,7 +43,7 @@ public class ShippingAddressesResponseDTO extends AbstractBaseResponse {
     )
     private LocalDateTime updatedAt;
 
-    private UUID userId;
+    private String userId;
     private String addressLine;
     private String addressCity;
     private String addressDistrict;
@@ -59,7 +58,7 @@ public class ShippingAddressesResponseDTO extends AbstractBaseResponse {
                 .id(shippingAddresses.getId().toString())
                 .createdAt(shippingAddresses.getCreatedAt())
                 .updatedAt(shippingAddresses.getUpdatedAt())
-                .userId(existingUser.getId())
+                .userId(existingUser.getId().toString())
                 .addressLine(shippingAddresses.getAddressLine())
                 .addressCity(shippingAddresses.getAddressCity())
                 .addressDistrict(shippingAddresses.getAddressDistrict())

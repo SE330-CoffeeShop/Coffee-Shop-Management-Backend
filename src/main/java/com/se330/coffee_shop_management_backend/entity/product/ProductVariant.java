@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.entity.product;
 
 import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
+import com.se330.coffee_shop_management_backend.entity.Discount;
 import com.se330.coffee_shop_management_backend.entity.OrderDetail;
 import com.se330.coffee_shop_management_backend.entity.Recipe;
 import jakarta.persistence.*;
@@ -56,4 +57,13 @@ public class ProductVariant extends AbstractBaseEntity {
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<Recipe> recipes = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "product_variant_discounts",
+            joinColumns = @JoinColumn(name = "var_id"),
+            inverseJoinColumns = @JoinColumn(name = "discount_id")
+    )
+    @Builder.Default
+    private List<Discount> discounts = new ArrayList<>();
 }

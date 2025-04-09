@@ -23,5 +23,4 @@ public class ProductUpdateRequestDTO {
     private Boolean productIsPublished;
     private Boolean productIsDeleted;
     private UUID productCategory;
-    private List<UUID> productVariants;
 }
