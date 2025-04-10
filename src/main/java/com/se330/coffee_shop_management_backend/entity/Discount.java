@@ -67,7 +67,7 @@ public class Discount extends AbstractBaseEntity {
     )
     private Branch branch;
 
-    @ManyToMany(mappedBy = "discounts", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "discounts", fetch = FetchType.EAGER)
     @Builder.Default
     private List<ProductVariant> productVariants = new ArrayList<>();
 }

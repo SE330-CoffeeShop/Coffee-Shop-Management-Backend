@@ -58,7 +58,7 @@ public class ProductVariant extends AbstractBaseEntity {
     @Builder.Default
     private List<Recipe> recipes = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "product_variant_discounts",
             joinColumns = @JoinColumn(name = "var_id"),

@@ -1,12 +1,12 @@
 package com.se330.coffee_shop_management_backend.controller;
 
-import com.se330.coffee_shop_management_backend.dto.request.ingredient.IngredientCreateRequestDTO;
-import com.se330.coffee_shop_management_backend.dto.request.ingredient.IngredientUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.recipe.RecipeCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.recipe.RecipeUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
-import com.se330.coffee_shop_management_backend.dto.response.ingredient.IngredientResponseDTO;
-import com.se330.coffee_shop_management_backend.entity.Ingredient;
-import com.se330.coffee_shop_management_backend.service.ingredientservices.IIngredientService;
+import com.se330.coffee_shop_management_backend.dto.response.recipe.RecipeResponseDTO;
+import com.se330.coffee_shop_management_backend.entity.Recipe;
+import com.se330.coffee_shop_management_backend.service.recipeservices.IRecipeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,26 +25,26 @@ import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_S
 import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.createPageable;
 
 @RestController
-@RequestMapping("/ingredient")
-public class IngredientController {
+@RequestMapping("/recipes")
+public class RecipeController {
 
-    private final IIngredientService ingredientService;
+    private final IRecipeService recipeService;
 
-    public IngredientController(IIngredientService ingredientService) {
-        this.ingredientService = ingredientService;
+    public RecipeController(IRecipeService recipeService) {
+        this.recipeService = recipeService;
     }
 
     @GetMapping("/{id}")
     @Operation(
-            summary = "Get ingredient detail",
+            summary = "Get recipe detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved ingredient",
+                            description = "Successfully retrieved recipe",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = Ingredient.class)
+                                    schema = @Schema(implementation = RecipeResponseDTO.class)
                             )
                     ),
                     @ApiResponse(
@@ -65,7 +65,7 @@ public class IngredientController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Ingredient not found",
+                            description = "Recipe not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -73,18 +73,18 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<IngredientResponseDTO> findByIdIngredient(@PathVariable UUID id) {
-        return ResponseEntity.ok(IngredientResponseDTO.convert(ingredientService.findByIdIngredient(id)));
+    public ResponseEntity<RecipeResponseDTO> findByIdRecipe(@PathVariable UUID id) {
+        return ResponseEntity.ok(RecipeResponseDTO.convert(recipeService.findByIdRecipe(id)));
     }
 
     @GetMapping("/all")
     @Operation(
-            summary = "Get all ingredients with pagination",
+            summary = "Get all recipes with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved ingredient list",
+                            description = "Successfully retrieved recipe list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
@@ -100,7 +100,7 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<PageResponse<IngredientResponseDTO>> findAllIngredients(
+    public ResponseEntity<PageResponse<RecipeResponseDTO>> findAllRecipes(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "vi") String lan,
@@ -109,29 +109,29 @@ public class IngredientController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Ingredient> ingredientPage = ingredientService.findAllIngredients(pageable);
+        Page<Recipe> recipePages = recipeService.findAllRecipes(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        IngredientResponseDTO.convert(ingredientPage.getContent()),
-                        ingredientPage.getTotalElements(),
-                        ingredientPage.getNumber(),
-                        ingredientPage.getSize()
+                        RecipeResponseDTO.convert(recipePages.getContent()),
+                        recipePages.getTotalElements(),
+                        recipePages.getNumber(),
+                        recipePages.getSize()
                 )
         );
     }
 
     @PostMapping("/")
     @Operation(
-            summary = "Create new ingredient",
+            summary = "Create new recipe",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Ingredient created successfully",
+                            description = "Recipe created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = Ingredient.class)
+                                    schema = @Schema(implementation = RecipeResponseDTO.class)
                             )
                     ),
                     @ApiResponse(
@@ -152,22 +152,21 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<IngredientResponseDTO> createIngredient(@RequestBody IngredientCreateRequestDTO ingredientCreateRequestDTO) {
-        Ingredient createdIngredient = ingredientService.createIngredient(ingredientCreateRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(IngredientResponseDTO.convert(createdIngredient));
+    public ResponseEntity<RecipeResponseDTO> createRecipe(@RequestBody RecipeCreateRequestDTO recipeCreateRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(RecipeResponseDTO.convert(recipeService.createRecipe(recipeCreateRequestDTO)));
     }
 
     @PatchMapping("/")
     @Operation(
-            summary = "Update ingredient",
+            summary = "Update recipe",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Ingredient updated successfully",
+                            description = "Recipe updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = Ingredient.class)
+                                    schema = @Schema(implementation = RecipeResponseDTO.class)
                             )
                     ),
                     @ApiResponse(
@@ -188,7 +187,7 @@ public class IngredientController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Ingredient not found",
+                            description = "Recipe not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -196,19 +195,18 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<IngredientResponseDTO> updateIngredient(@RequestBody IngredientUpdateRequestDTO ingredientUpdateRequestDTO) {
-        Ingredient updatedIngredient = ingredientService.updateIngredient(ingredientUpdateRequestDTO);
-        return ResponseEntity.ok(IngredientResponseDTO.convert(updatedIngredient));
+    public ResponseEntity<RecipeResponseDTO> updateRecipe(@RequestBody RecipeUpdateRequestDTO recipeUpdateRequestDTO) {
+        return ResponseEntity.ok(RecipeResponseDTO.convert(recipeService.updateRecipe(recipeUpdateRequestDTO)));
     }
 
     @DeleteMapping("/{id}")
     @Operation(
-            summary = "Delete ingredient",
+            summary = "Delete recipe",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "204",
-                            description = "Ingredient deleted successfully"
+                            description = "Recipe deleted successfully"
                     ),
                     @ApiResponse(
                             responseCode = "401",
@@ -220,7 +218,7 @@ public class IngredientController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Ingredient not found",
+                            description = "Recipe not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -228,8 +226,8 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<Void> deleteIngredient(@PathVariable UUID id) {
-        ingredientService.deleteIngredient(id);
+    public ResponseEntity<Void> deleteRecipe(@PathVariable UUID id) {
+        recipeService.deleteRecipe(id);
         return ResponseEntity.noContent().build();
     }
 }

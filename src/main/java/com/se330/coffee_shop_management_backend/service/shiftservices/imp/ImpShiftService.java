@@ -7,6 +7,7 @@ import com.se330.coffee_shop_management_backend.entity.Shift;
 import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.repository.ShiftRepository;
 import com.se330.coffee_shop_management_backend.service.shiftservices.IShiftService;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,7 @@ public class ImpShiftService implements IShiftService {
         return shiftRepository.save(existingShift);
     }
 
+    @Transactional
     @Override
     public void deleteShift(UUID id) {
         Shift existingShift = shiftRepository.findById(id)
