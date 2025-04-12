@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -58,13 +59,21 @@ public class ImpProductVariantService implements IProductVariantService {
         );
     }
 
+    @Transactional
     @Override
     public ProductVariant updateProductVariant(ProductVariantUpdateRequestDTO productVariantUpdateRequestDTO) {
-        Product product = productRepository.findById(productVariantUpdateRequestDTO.getProduct())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productVariantUpdateRequestDTO.getProduct()));
 
         ProductVariant existingVariant = productVariantRepository.findById(productVariantUpdateRequestDTO.getVariantId())
                 .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with ID: " + productVariantUpdateRequestDTO.getVariantId()));
+
+        Product product = productRepository.findById(productVariantUpdateRequestDTO.getProduct())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productVariantUpdateRequestDTO.getProduct()));
+
+        if (existingVariant.getProduct() != null) {
+            existingVariant.getProduct().getProductVariants().remove(existingVariant);
+            existingVariant.setProduct(product);
+            product.getProductVariants().add(existingVariant);
+        }
 
         existingVariant.setVariantTierIdx(productVariantUpdateRequestDTO.getVariantTierIdx());
         existingVariant.setVariantDefault(productVariantUpdateRequestDTO.getVariantDefault());
@@ -74,11 +83,11 @@ public class ImpProductVariantService implements IProductVariantService {
         existingVariant.setVariantStock(productVariantUpdateRequestDTO.getVariantStock());
         existingVariant.setVariantIsPublished(productVariantUpdateRequestDTO.getVariantIsPublished());
         existingVariant.setVariantIsDeleted(productVariantUpdateRequestDTO.getVariantIsDeleted());
-        existingVariant.setProduct(product);
 
         return productVariantRepository.save(existingVariant);
     }
 
+    @Transactional
     @Override
     public void deleteProductVariant(UUID id) {
         ProductVariant existingProductVariant = productVariantRepository.findById(id)
@@ -86,6 +95,7 @@ public class ImpProductVariantService implements IProductVariantService {
 
         if (existingProductVariant.getProduct() != null) {
             existingProductVariant.getProduct().getProductVariants().remove(existingProductVariant);
+            existingProductVariant.setProduct(null);
         }
 
         productVariantRepository.deleteById(id);

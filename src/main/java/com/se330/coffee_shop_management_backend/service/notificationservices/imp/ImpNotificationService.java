@@ -7,7 +7,7 @@ import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.repository.NotificationRepository;
 import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -78,6 +78,7 @@ public class ImpNotificationService implements INotificationService {
         );
     }
 
+    @Transactional
     @Override
     public Notification updateNotification(NotificationUpdateRequestDTO notificationUpdateRequestDTO) {
         User sender = userRepository.findById(UUID.fromString(notificationUpdateRequestDTO.getSenderId()))
@@ -89,10 +90,20 @@ public class ImpNotificationService implements INotificationService {
         Notification existingNotification = notificationRepository.findById(notificationUpdateRequestDTO.getNotificationId())
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
 
+        if (existingNotification.getSender() != null) {
+            existingNotification.getSender().getSentNotifications().remove(existingNotification);
+            existingNotification.setSender(sender);
+            sender.getSentNotifications().add(existingNotification);
+        }
+
+        if (existingNotification.getReceiver() != null) {
+            existingNotification.getReceiver().getReceivedNotifications().remove(existingNotification);
+            existingNotification.setReceiver(receiver);
+            receiver.getReceivedNotifications().add(existingNotification);
+        }
+
         existingNotification.setNotificationContent(notificationUpdateRequestDTO.getNotificationContent());
         existingNotification.setNotificationType(notificationUpdateRequestDTO.getNotificationType());
-        existingNotification.setSender(sender);
-        existingNotification.setReceiver(receiver);
 
         return notificationRepository.save(existingNotification);
     }

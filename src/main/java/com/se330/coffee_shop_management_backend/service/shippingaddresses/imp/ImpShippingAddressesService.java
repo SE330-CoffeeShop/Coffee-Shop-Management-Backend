@@ -7,7 +7,7 @@ import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.repository.ShippingAddressesRepository;
 import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.service.shippingaddresses.IShippingAddressesService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -54,6 +54,7 @@ public class ImpShippingAddressesService implements IShippingAddressesService {
         );
     }
 
+    @Transactional
     @Override
     public ShippingAddresses updateShippingAddresses(ShippingAddressesUpdateRequestDTO shippingAddressesUpdateRequestDTO) {
         ShippingAddresses existingShippingAddresses = shippingAddressesRepository.findById(shippingAddressesUpdateRequestDTO.getShippingAddressId())
@@ -62,11 +63,16 @@ public class ImpShippingAddressesService implements IShippingAddressesService {
         User existingUser = userRepository.findById(shippingAddressesUpdateRequestDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (existingShippingAddresses.getUser() != null) {
+            existingShippingAddresses.getUser().getShippingAddresses().remove(existingShippingAddresses);
+            existingShippingAddresses.setUser(existingUser);
+            existingUser.getShippingAddresses().add(existingShippingAddresses);
+        }
+
         existingShippingAddresses.setAddressLine(shippingAddressesUpdateRequestDTO.getAddressLine());
         existingShippingAddresses.setAddressCity(shippingAddressesUpdateRequestDTO.getAddressCity());
         existingShippingAddresses.setAddressDistrict(shippingAddressesUpdateRequestDTO.getAddressDistrict());
         existingShippingAddresses.setAddressIsDefault(shippingAddressesUpdateRequestDTO.isAddressIsDefault());
-        existingShippingAddresses.setUser(existingUser);
 
         return shippingAddressesRepository.save(existingShippingAddresses);
     }
@@ -79,6 +85,7 @@ public class ImpShippingAddressesService implements IShippingAddressesService {
 
         if (existingShippingAddresses.getUser() != null) {
             existingShippingAddresses.getUser().getShippingAddresses().remove(existingShippingAddresses);
+            existingShippingAddresses.setUser(null);
         }
 
         shippingAddressesRepository.deleteById(id);

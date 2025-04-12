@@ -5,7 +5,7 @@ import com.se330.coffee_shop_management_backend.dto.request.ingredient.Ingredien
 import com.se330.coffee_shop_management_backend.entity.Ingredient;
 import com.se330.coffee_shop_management_backend.repository.IngredientRepository;
 import com.se330.coffee_shop_management_backend.service.ingredientservices.IIngredientService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

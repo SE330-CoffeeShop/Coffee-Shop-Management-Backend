@@ -9,7 +9,7 @@ import com.se330.coffee_shop_management_backend.repository.BranchRepository;
 import com.se330.coffee_shop_management_backend.repository.IngredientRepository;
 import com.se330.coffee_shop_management_backend.repository.InventoryRepository;
 import com.se330.coffee_shop_management_backend.service.inventoryservices.IInventoryService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -61,6 +61,7 @@ public class ImpInventoryService implements IInventoryService {
         );
     }
 
+    @Transactional
     @Override
     public Inventory updateInventory(InventoryUpdateRequestDTO inventoryUpdateRequestDTO) {
         Inventory existingInventory = inventoryRepository.findById(inventoryUpdateRequestDTO.getInventoryId())
@@ -72,8 +73,18 @@ public class ImpInventoryService implements IInventoryService {
         Branch existingBranch = branchRepository.findById(inventoryUpdateRequestDTO.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch not found"));
 
-        existingInventory.setIngredient(existingIngredient);
-        existingInventory.setBranch(existingBranch);
+        if (existingInventory.getIngredient() != null) {
+            existingInventory.getIngredient().getInventories().remove(existingInventory);
+            existingInventory.setIngredient(existingIngredient);
+            existingIngredient.getInventories().add(existingInventory);
+        }
+
+        if (existingInventory.getBranch() != null) {
+            existingInventory.getBranch().getInventories().remove(existingInventory);
+            existingInventory.setBranch(existingBranch);
+            existingBranch.getInventories().add(existingInventory);
+        }
+
         existingInventory.setInventoryQuantity(inventoryUpdateRequestDTO.getInventoryQuantity());
         existingInventory.setInventoryExpireDate(inventoryUpdateRequestDTO.getInventoryExpireDate());
 
@@ -88,10 +99,12 @@ public class ImpInventoryService implements IInventoryService {
 
         if (existingInventory.getIngredient() != null) {
             existingInventory.getIngredient().getInventories().remove(existingInventory);
+            existingInventory.setIngredient(null);
         }
 
         if (existingInventory.getBranch() != null) {
             existingInventory.getBranch().getInventories().remove(existingInventory);
+            existingInventory.setBranch(null);
         }
 
         inventoryRepository.deleteById(id);

@@ -10,7 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.SupplierRepository;
 import com.se330.coffee_shop_management_backend.repository.WarehouseRepository;
 import com.se330.coffee_shop_management_backend.service.invoiceservices.IInvoiceService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -63,6 +63,7 @@ public class ImpInvoiceService implements IInvoiceService {
         );
     }
 
+    @Transactional
     @Override
     public Invoice updateInvoice(InvoiceUpdateRequestDTO invoiceUpdateRequestDTO) {
         Warehouse existingWarehouse = warehouseRepository.findById(invoiceUpdateRequestDTO.getWarehouseId())
@@ -74,8 +75,18 @@ public class ImpInvoiceService implements IInvoiceService {
         Invoice existingInvoice = invoiceRepository.findById(invoiceUpdateRequestDTO.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Invoice not found with id: " + invoiceUpdateRequestDTO.getId()));
 
-        existingInvoice.setWarehouse(existingWarehouse);
-        existingInvoice.setSupplier(existingSupplier);
+        if (existingInvoice.getSupplier() != null) {
+            existingInvoice.getSupplier().getInvoices().remove(existingInvoice);
+            existingInvoice.setSupplier(existingSupplier);
+            existingInvoice.getSupplier().getInvoices().add(existingInvoice);
+        }
+
+        if (existingInvoice.getWarehouse() != null) {
+            existingInvoice.getWarehouse().getInvoices().remove(existingInvoice);
+            existingInvoice.setWarehouse(existingWarehouse);
+            existingInvoice.getWarehouse().getInvoices().add(existingInvoice);
+        }
+
         existingInvoice.setInvoiceDescription(invoiceUpdateRequestDTO.getInvoiceDescription());
         existingInvoice.setInvoiceTrackingNumber(invoiceUpdateRequestDTO.getInvoiceTrackingNumber());
         existingInvoice.setInvoiceTransferTotalCost(invoiceUpdateRequestDTO.getInvoiceTransferTotalCost());
@@ -91,10 +102,12 @@ public class ImpInvoiceService implements IInvoiceService {
 
         if(existingInvoice.getSupplier() != null) {
             existingInvoice.getSupplier().getInvoices().remove(existingInvoice);
+            existingInvoice.setSupplier(null);
         }
 
         if(existingInvoice.getWarehouse() != null) {
             existingInvoice.getWarehouse().getInvoices().remove(existingInvoice);
+            existingInvoice.setWarehouse(null);
         }
 
         invoiceRepository.delete(existingInvoice);

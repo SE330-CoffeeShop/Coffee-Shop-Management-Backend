@@ -6,7 +6,7 @@ import com.se330.coffee_shop_management_backend.entity.Warehouse;
 import com.se330.coffee_shop_management_backend.repository.WarehouseRepository;
 import com.se330.coffee_shop_management_backend.service.warehouse.IWarehouseService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

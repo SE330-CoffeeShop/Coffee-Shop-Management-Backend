@@ -10,7 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.TransferRepository;
 import com.se330.coffee_shop_management_backend.repository.WarehouseRepository;
 import com.se330.coffee_shop_management_backend.service.transfer.ITransferService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -63,6 +63,7 @@ public class ImpTransferService implements ITransferService {
         );
     }
 
+    @Transactional
     @Override
     public Transfer updateTransfer(TransferUpdateRequestDTO transferUpdateRequestDTO) {
         Transfer existingTransfer = transferRepository.findById(transferUpdateRequestDTO.getId())
@@ -74,8 +75,18 @@ public class ImpTransferService implements ITransferService {
         Branch existingBranch = branchRepository.findById(transferUpdateRequestDTO.getBranchId())
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + transferUpdateRequestDTO.getBranchId()));
 
-        existingTransfer.setWarehouse(existingWarehouse);
-        existingTransfer.setBranch(existingBranch);
+        if (existingTransfer.getWarehouse() != null) {
+            existingTransfer.getWarehouse().getTransfers().remove(existingTransfer);
+            existingTransfer.setWarehouse(existingWarehouse);
+            existingWarehouse.getTransfers().add(existingTransfer);
+        }
+
+        if (existingTransfer.getBranch() != null) {
+            existingTransfer.getBranch().getTransfers().remove(existingTransfer);
+            existingTransfer.setBranch(existingBranch);
+            existingBranch.getTransfers().add(existingTransfer);
+        }
+
         existingTransfer.setTransferDescription(transferUpdateRequestDTO.getTransferDescription());
         existingTransfer.setTransferTrackingNumber(transferUpdateRequestDTO.getTransferTrackingNumber());
         existingTransfer.setTransferTotalCost(transferUpdateRequestDTO.getTransferTotalCost());
@@ -91,10 +102,12 @@ public class ImpTransferService implements ITransferService {
 
         if(existingTransfer.getWarehouse() != null) {
             existingTransfer.getWarehouse().getTransfers().remove(existingTransfer);
+            existingTransfer.setWarehouse(null);
         }
 
         if(existingTransfer.getBranch() != null) {
             existingTransfer.getBranch().getTransfers().remove(existingTransfer);
+            existingTransfer.setBranch(null);
         }
 
         transferRepository.delete(existingTransfer);

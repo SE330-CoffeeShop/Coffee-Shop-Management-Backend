@@ -10,7 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.BranchRepository;
 import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.service.employeeservices.IEmployeeService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -63,22 +63,29 @@ public class ImpEmployeeService implements IEmployeeService {
         );
     }
 
+    @Transactional
     @Override
     public Employee updateEmployee(EmployeeUpdateRequestDTO employeeUpdateRequestDTO) {
         Employee existingEmployee = employeeRepository.findById(employeeUpdateRequestDTO.getEmployeeId())
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + employeeUpdateRequestDTO.getEmployeeId()));
 
-        Branch branch = branchRepository.findById(employeeUpdateRequestDTO.getBranchId())
+        Branch newBranch = branchRepository.findById(employeeUpdateRequestDTO.getBranchId())
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + employeeUpdateRequestDTO.getBranchId()));
 
-        User user = userRepository.findById(employeeUpdateRequestDTO.getUserId())
+        User newUser = userRepository.findById(employeeUpdateRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + employeeUpdateRequestDTO.getUserId()));
+
+        if (existingEmployee.getBranch() != null) {
+            existingEmployee.getBranch().getEmployees().remove(existingEmployee);
+        }
 
         existingEmployee.setEmployeePosition(employeeUpdateRequestDTO.getEmployeePosition());
         existingEmployee.setEmployeeDepartment(employeeUpdateRequestDTO.getEmployeeDepartment());
         existingEmployee.setEmployeeHireDate(employeeUpdateRequestDTO.getEmployeeHireDate());
-        existingEmployee.setBranch(branch);
-        existingEmployee.setUser(user);
+        existingEmployee.setBranch(newBranch);
+        existingEmployee.setUser(newUser);
+
+        newBranch.getEmployees().add(existingEmployee);
 
         return employeeRepository.save(existingEmployee);
     }
@@ -91,10 +98,12 @@ public class ImpEmployeeService implements IEmployeeService {
 
         if (employee.getBranch() != null) {
             employee.getBranch().getEmployees().remove(employee);
+            employee.setBranch(null);
         }
 
         if (employee.getUser() != null) {
             employee.getUser().setEmployee(null);
+            employee.setUser(null);
         }
 
         employeeRepository.deleteById(id);

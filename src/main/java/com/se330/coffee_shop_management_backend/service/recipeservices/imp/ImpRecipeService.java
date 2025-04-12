@@ -9,7 +9,7 @@ import com.se330.coffee_shop_management_backend.repository.IngredientRepository;
 import com.se330.coffee_shop_management_backend.repository.RecipeRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.recipeservices.IRecipeService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -63,6 +63,7 @@ public class ImpRecipeService implements IRecipeService {
         );
     }
 
+    @Transactional
     @Override
     public Recipe updateRecipe(RecipeUpdateRequestDTO recipeUpdateRequestDTO) {
         Recipe existingRecipe = recipeRepository.findById(recipeUpdateRequestDTO.getRecipeId())
@@ -74,8 +75,18 @@ public class ImpRecipeService implements IRecipeService {
         Ingredient existingIngredient = ingredientRepository.findById(recipeUpdateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));
 
-        existingRecipe.setProductVariant(existingProductVariant);
-        existingRecipe.setIngredient(existingIngredient);
+        if (existingRecipe.getProductVariant() != null) {
+            existingRecipe.getProductVariant().getRecipes().remove(existingRecipe);
+            existingRecipe.setProductVariant(existingProductVariant);
+            existingProductVariant.getRecipes().add(existingRecipe);
+        }
+
+        if (existingRecipe.getIngredient() != null) {
+            existingRecipe.getIngredient().getRecipes().remove(existingRecipe);
+            existingRecipe.setIngredient(existingIngredient);
+            existingIngredient.getRecipes().add(existingRecipe);
+        }
+
         existingRecipe.setRecipeQuantity(recipeUpdateRequestDTO.getRecipeQuantity());
         existingRecipe.setRecipeUnit(recipeUpdateRequestDTO.getRecipeUnit());
         existingRecipe.setRecipeIsTopping(recipeUpdateRequestDTO.isRecipeIsTopping());
@@ -91,10 +102,12 @@ public class ImpRecipeService implements IRecipeService {
 
         if (existingRecipe.getProductVariant() != null) {
             existingRecipe.getProductVariant().getRecipes().remove(existingRecipe);
+            existingRecipe.setProductVariant(null);
         }
 
         if (existingRecipe.getIngredient() != null) {
             existingRecipe.getIngredient().getRecipes().remove(existingRecipe);
+            existingRecipe.setIngredient(null);
         }
 
         recipeRepository.deleteById(id);

@@ -7,7 +7,7 @@ import com.se330.coffee_shop_management_backend.entity.Shift;
 import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.repository.ShiftRepository;
 import com.se330.coffee_shop_management_backend.service.shiftservices.IShiftService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,6 +52,7 @@ public class ImpShiftService implements IShiftService {
         );
     }
 
+    @Transactional
     @Override
     public Shift updateShift(ShiftUpdateRequestDTO shiftUpdateRequestDTO) {
         Shift existingShift = shiftRepository.findById(shiftUpdateRequestDTO.getShiftId())
@@ -60,7 +61,12 @@ public class ImpShiftService implements IShiftService {
         Employee existingEmployee = employeeRepository.findById(shiftUpdateRequestDTO.getEmployeeId())
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        existingShift.setEmployee(existingEmployee);
+        if (existingShift.getEmployee() != null) {
+            existingShift.getEmployee().getShifts().remove(existingShift);
+            existingShift.setEmployee(existingEmployee);
+            existingEmployee.getShifts().add(existingShift);
+        }
+
         existingShift.setShiftStartTime(shiftUpdateRequestDTO.getShiftStartTime());
         existingShift.setShiftEndTime(shiftUpdateRequestDTO.getShiftEndTime());
 
@@ -75,6 +81,7 @@ public class ImpShiftService implements IShiftService {
 
         if (existingShift.getEmployee() != null) {
             existingShift.getEmployee().getShifts().remove(existingShift);
+            existingShift.setEmployee(null);
         }
 
         shiftRepository.deleteById(id);

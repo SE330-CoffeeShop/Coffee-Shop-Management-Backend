@@ -10,7 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.InvoiceDetailReposito
 import com.se330.coffee_shop_management_backend.repository.InvoiceRepository;
 import com.se330.coffee_shop_management_backend.service.invoiceservices.IInvoiceDetailService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -62,19 +62,31 @@ public class ImpInvoiceDetailService implements IInvoiceDetailService {
         );
     }
 
+    @Transactional
     @Override
     public InvoiceDetail updateInvoiceDetail(InvoiceDetailUpdateRequestDTO invoiceDetailUpdateRequestDTO) {
+
+        InvoiceDetail existingInvoiceDetail = invoiceDetailRepository.findById(invoiceDetailUpdateRequestDTO.getId())
+                .orElseThrow(() -> new EntityNotFoundException("InvoiceDetail not found with ID: " + invoiceDetailUpdateRequestDTO.getId()));
+
         Invoice existingInvoice = invoiceRepository.findById(invoiceDetailUpdateRequestDTO.getInvoiceId())
                 .orElseThrow(() -> new EntityNotFoundException("Invoice not found with ID: " + invoiceDetailUpdateRequestDTO.getInvoiceId()));
 
         Ingredient existingIngredient = ingredientRepository.findById(invoiceDetailUpdateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new EntityNotFoundException("Ingredient not found with ID: " + invoiceDetailUpdateRequestDTO.getIngredientId()));
 
-        InvoiceDetail existingInvoiceDetail = invoiceDetailRepository.findById(invoiceDetailUpdateRequestDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("InvoiceDetail not found with ID: " + invoiceDetailUpdateRequestDTO.getId()));
+        if (existingInvoiceDetail.getInvoice() != null) {
+            existingInvoiceDetail.getInvoice().getInvoiceDetails().remove(existingInvoiceDetail);
+            existingInvoiceDetail.setInvoice(existingInvoice);
+            existingInvoice.getInvoiceDetails().add(existingInvoiceDetail);
+        }
 
-        existingInvoiceDetail.setInvoice(existingInvoice);
-        existingInvoiceDetail.setIngredient(existingIngredient);
+        if (existingInvoiceDetail.getIngredient() != null) {
+            existingInvoiceDetail.getIngredient().getInvoiceDetails().remove(existingInvoiceDetail);
+            existingInvoiceDetail.setIngredient(existingIngredient);
+            existingIngredient.getInvoiceDetails().add(existingInvoiceDetail);
+        }
+
         existingInvoiceDetail.setInvoiceDetailQuantity(invoiceDetailUpdateRequestDTO.getInvoiceDetailQuantity());
         existingInvoiceDetail.setInvoiceDetailUnit(invoiceDetailUpdateRequestDTO.getInvoiceDetailUnit());
 
@@ -89,10 +101,12 @@ public class ImpInvoiceDetailService implements IInvoiceDetailService {
 
         if(existingInvoiceDetail.getInvoice() != null) {
             existingInvoiceDetail.getInvoice().getInvoiceDetails().remove(existingInvoiceDetail);
+            existingInvoiceDetail.setInvoice(null);
         }
 
         if(existingInvoiceDetail.getIngredient() != null) {
             existingInvoiceDetail.getIngredient().getInvoiceDetails().remove(existingInvoiceDetail);
+            existingInvoiceDetail.setIngredient(null);
         }
 
         invoiceDetailRepository.delete(existingInvoiceDetail);

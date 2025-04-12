@@ -12,7 +12,7 @@ import com.se330.coffee_shop_management_backend.repository.SupplierRepository;
 import com.se330.coffee_shop_management_backend.repository.WarehouseRepository;
 import com.se330.coffee_shop_management_backend.service.stockservices.IStockService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -72,6 +72,7 @@ public class ImpStockService implements IStockService {
         );
     }
 
+    @Transactional
     @Override
     public Stock updateStock(StockUpdateRequestDTO stockUpdateRequestDTO) {
         Stock existingStock = stockRepository.findById(stockUpdateRequestDTO.getStockId())
@@ -88,9 +89,24 @@ public class ImpStockService implements IStockService {
 
         existingStock.setStockQuantity(stockUpdateRequestDTO.getStockQuantity());
         existingStock.setStockUnit(stockUpdateRequestDTO.getStockUnit());
-        existingStock.setIngredient(existingIngredient);
-        existingStock.setWarehouse(existingWarehouse);
-        existingStock.setSupplier(existingSupplier);
+
+        if (existingStock.getIngredient() != null) {
+            existingStock.getIngredient().getStocks().remove(existingStock);
+            existingStock.setIngredient(existingIngredient);
+            existingIngredient.getStocks().add(existingStock);
+        }
+
+        if (existingStock.getWarehouse() != null) {
+            existingStock.getWarehouse().getStocks().remove(existingStock);
+            existingStock.setWarehouse(existingWarehouse);
+            existingWarehouse.getStocks().add(existingStock);
+        }
+
+        if (existingStock.getSupplier() != null) {
+            existingStock.getSupplier().getStocks().remove(existingStock);
+            existingStock.setSupplier(existingSupplier);
+            existingSupplier.getStocks().add(existingStock);
+        }
 
         return stockRepository.save(existingStock);
     }
@@ -103,14 +119,17 @@ public class ImpStockService implements IStockService {
 
         if (existingStock.getIngredient() != null) {
             existingStock.getIngredient().getStocks().remove(existingStock);
+            existingStock.setIngredient(null);
         }
 
         if (existingStock.getWarehouse() != null) {
             existingStock.getWarehouse().getStocks().remove(existingStock);
+            existingStock.setWarehouse(null);
         }
 
         if (existingStock.getSupplier() != null) {
             existingStock.getSupplier().getStocks().remove(existingStock);
+            existingStock.setSupplier(null);
         }
 
         stockRepository.delete(existingStock);
