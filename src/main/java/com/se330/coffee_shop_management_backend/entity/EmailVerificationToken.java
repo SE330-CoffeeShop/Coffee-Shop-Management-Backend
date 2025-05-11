@@ -19,6 +19,7 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.EMAIL_VERIFICATION_TOKEN_LENGTH;

@@ -17,16 +17,16 @@ import java.util.List;
         @AttributeOverride(name = "id", column = @Column(name = "supplier_id"))
 })
 public class Supplier extends AbstractBaseEntity {
-    @Column(name = "supplier_name", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "supplier_name", nullable = false)
     private String supplierName;
 
-    @Column(name = "supplier_phone", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "supplier_phone", nullable = false)
     private String supplierPhone;
 
-    @Column(name = "supplier_email", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "supplier_email", nullable = false)
     private String supplierEmail;
 
-    @Column(name = "supplier_address", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "supplier_address", nullable = false)
     private String supplierAddress;
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

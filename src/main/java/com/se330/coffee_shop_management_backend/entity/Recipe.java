@@ -15,13 +15,13 @@ import lombok.*;
         @AttributeOverride(name = "id", column = @Column(name = "recipe_id"))
 })
 public class Recipe extends AbstractBaseEntity {
-    @Column(name = "recipe_quantity", columnDefinition = "INTEGER(10)", nullable = false)
+    @Column(name = "recipe_quantity", nullable = false)
     private int recipeQuantity;
 
-    @Column(name = "recipe_unit", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "recipe_unit", nullable = false)
     private String recipeUnit;
 
-    @Column(name = "recipe_is_topping", columnDefinition = "BOOLEAN", nullable = false)
+    @Column(name = "recipe_is_topping", nullable = false)
     private boolean recipeIsTopping;
 
     @ManyToOne(fetch = FetchType.EAGER)

@@ -1,16 +1,14 @@
 package com.se330.coffee_shop_management_backend.dto.request.product;
 
-import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class ProductVariantUpdateRequestDTO extends AbstractBaseEntity {
+public class ProductVariantUpdateRequestDTO {
+    private UUID variantId;
     private String variantTierIdx;
     private Boolean variantDefault;
     private String variantSlug;

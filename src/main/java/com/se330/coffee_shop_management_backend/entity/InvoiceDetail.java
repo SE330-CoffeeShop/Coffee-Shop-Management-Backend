@@ -14,10 +14,10 @@ import lombok.*;
         @AttributeOverride(name = "id", column = @Column(name = "invoice_detail_id"))
 })
 public class InvoiceDetail extends AbstractBaseEntity {
-    @Column(name = "invoice_detail_quantity", columnDefinition = "INTEGER(10)", nullable = false)
+    @Column(name = "invoice_detail_quantity", nullable = false)
     private int invoiceDetailQuantity;
 
-    @Column(name = "invoice_detail_unit", columnDefinition = "INTEGER(10)", nullable = false)
+    @Column(name = "invoice_detail_unit", nullable = false)
     private int invoiceDetailUnit;
 
     @ManyToOne(fetch = FetchType.EAGER)
