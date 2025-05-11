@@ -3,6 +3,7 @@ package com.se330.coffee_shop_management_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -16,14 +17,11 @@ import java.util.Date;
         @AttributeOverride(name = "id", column = @Column(name = "notification_id"))
 })
 public class Notification extends AbstractBaseEntity {
-    @Column(name = "notification_type", columnDefinition = "INTEGER(10)", nullable = false)
+    @Column(name = "notification_type", nullable = false)
     private int notificationType;
 
-    @Column(name = "notification_date", nullable = false)
-    private Date notificationDate;
-
-    @Column(name = "notification_content", columnDefinition = "VARCHAR(255)", nullable = false)
-    private int notificationContent;
+    @Column(name = "notification_content", nullable = false)
+    private String notificationContent;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(

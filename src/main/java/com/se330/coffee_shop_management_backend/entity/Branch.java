@@ -17,16 +17,16 @@ import java.util.List;
         @AttributeOverride(name = "id", column = @Column(name = "branch_id"))
 })
 public class Branch extends AbstractBaseEntity {
-    @Column(name = "branch_name", nullable = false, unique = true, columnDefinition = "VARCHAR(255)")
+    @Column(name = "branch_name", nullable = false, unique = true)
     private String branchName;
 
-    @Column(name = "branch_address", nullable = false, columnDefinition = "VARCHAR(255)")
+    @Column(name = "branch_address", nullable = false)
     private String branchAddress;
 
-    @Column(name = "branch_phone", nullable = false, columnDefinition = "VARCHAR(255)")
+    @Column(name = "branch_phone", nullable = false)
     private String branchPhone;
 
-    @Column(name = "branch_email", nullable = false, columnDefinition = "VARCHAR(255)")
+    @Column(name = "branch_email", nullable = false)
     private String branchEmail;
 
     // One branch has many employees

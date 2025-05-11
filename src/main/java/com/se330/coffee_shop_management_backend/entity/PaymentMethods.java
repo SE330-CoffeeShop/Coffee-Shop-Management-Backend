@@ -14,10 +14,10 @@ import lombok.*;
         @AttributeOverride(name = "id", column = @Column(name = "payment_method_id"))
 })
 public class PaymentMethods extends AbstractBaseEntity {
-    @Column(name = "method_type", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "method_type", nullable = false)
     private String methodType;
 
-    @Column(name = "method_details", columnDefinition = "VARCHAR(1000)", nullable = false)
+    @Column(name = "method_details", nullable = false)
     private String methodDetails;
 
     @Column(name = "method_is_default", nullable = false)

@@ -4,18 +4,16 @@ import com.se330.coffee_shop_management_backend.dto.request.product.ProductCreat
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.entity.product.ProductCategory;
-import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductCategoryRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository;
-import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,16 +21,13 @@ public class ImpProductService implements IProductService {
 
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
-    private final ProductVariantRepository productVariantRepository;
 
     public ImpProductService(
             ProductRepository productRepository,
-            ProductCategoryRepository productCategoryRepository,
-            ProductVariantRepository productVariantRepository
+            ProductCategoryRepository productCategoryRepository
     ) {
         this.productRepository = productRepository;
         this.productCategoryRepository = productCategoryRepository;
-        this.productVariantRepository = productVariantRepository;
     }
 
     @Override
@@ -66,15 +61,21 @@ public class ImpProductService implements IProductService {
         );
     }
 
+    @Transactional
     @Override
     public Product updateProduct(ProductUpdateRequestDTO productUpdateRequestDTO) {
-        Product existingProduct = productRepository.findById(productUpdateRequestDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productUpdateRequestDTO.getId()));
+        Product existingProduct = productRepository.findById(productUpdateRequestDTO.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productUpdateRequestDTO.getProductId()));
 
         ProductCategory category = productCategoryRepository.findById(productUpdateRequestDTO.getProductCategory())
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productUpdateRequestDTO.getProductCategory()));
 
-        existingProduct.setProductCategory(category);
+        if (existingProduct.getProductCategory() != null) {
+            existingProduct.getProductCategory().getProducts().remove(existingProduct);
+            existingProduct.setProductCategory(category);
+            category.getProducts().add(existingProduct);
+        }
+
         existingProduct.setProductDescription(productUpdateRequestDTO.getProductDescription());
         existingProduct.setProductPrice(productUpdateRequestDTO.getProductPrice());
         existingProduct.setProductName(productUpdateRequestDTO.getProductName());
@@ -84,17 +85,19 @@ public class ImpProductService implements IProductService {
         existingProduct.setProductRatingsAverage(productUpdateRequestDTO.getProductRatingsAverage());
         existingProduct.setProductThumb(productUpdateRequestDTO.getProductThumb());
 
-        List<UUID> productVariantIds = productUpdateRequestDTO.getProductVariants();
-        List<ProductVariant> productVariants = productVariantRepository.findAllById(productVariantIds);
-        existingProduct.setProductVariants(productVariants);
-
         return productRepository.save(existingProduct);
     }
 
+    @Transactional
     @Override
     public void deleteProduct(UUID id) {
-        productRepository.findById(id)
+        Product existingProduct = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + id));
+
+        if (existingProduct.getProductCategory() != null) {
+            existingProduct.getProductCategory().getProducts().remove(existingProduct);
+            existingProduct.setProductCategory(null);
+        }
 
         productRepository.deleteById(id);
     }

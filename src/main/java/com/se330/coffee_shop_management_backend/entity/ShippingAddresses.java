@@ -14,13 +14,13 @@ import lombok.*;
         @AttributeOverride(name = "id", column = @Column(name = "shipping_address_id"))
 })
 public class ShippingAddresses extends AbstractBaseEntity {
-    @Column(name = "address_line", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "address_line", nullable = false)
     private String addressLine;
 
-    @Column(name = "address_city", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "address_city",  nullable = false)
     private String addressCity;
 
-    @Column(name = "address_district", columnDefinition = "VARCHAR(255)", nullable = false)
+    @Column(name = "address_district", nullable = false)
     private String addressDistrict;
 
     @Column(name = "address_is_default", nullable = false)

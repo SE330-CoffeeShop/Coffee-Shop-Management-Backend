@@ -53,10 +53,10 @@ public class ProductResponseDTO extends AbstractBaseResponse {
     private BigDecimal productRatingsAverage;
     private Boolean productIsPublished;
     private Boolean productIsDeleted;
-    private String productCategory;
 
     private List<String> productVariants;
     private String productCategoryId;
+    private List<String> commentIds;
 
     public static ProductResponseDTO convert(Product product) {
 
@@ -85,6 +85,9 @@ public class ProductResponseDTO extends AbstractBaseResponse {
                 .productIsDeleted(product.getProductIsDeleted())
                 .productVariants(productVariantIds)
                 .productCategoryId(product.getProductCategory().getId().toString())
+                .commentIds(product.getComments().stream()
+                        .map(entity -> entity.getCommentId() + "") // Cast int to String
+                        .collect(Collectors.toList()))
                 .build();
     }
 

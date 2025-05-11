@@ -3,6 +3,7 @@ package com.se330.coffee_shop_management_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -17,10 +18,10 @@ import java.util.Date;
 })
 public class Shift extends AbstractBaseEntity {
     @Column(name = "shift_start_time", nullable = false)
-    private Date shiftStartTime;
+    private LocalDateTime shiftStartTime;
 
     @Column(name = "shift_end_time", nullable = false)
-    private Date shiftEndTime;
+    private LocalDateTime shiftEndTime;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
