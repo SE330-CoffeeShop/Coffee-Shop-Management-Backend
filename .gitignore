@@ -33,3 +33,12 @@ build/
 .vscode/
 
 !**/var/
+
+### Environment ###
+.env
+.env.local
+.env.dev
+
+### Logs ###
+logs
+*.log
