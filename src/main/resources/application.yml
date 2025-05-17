@@ -1,39 +1,37 @@
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT}
   servlet:
-    context-path: ${SERVER_SERVLET_CONTEXT_PATH:/}
-  # CORS network error (URL scheme must be "http" or "https" for CORS request) solution.
-  # Ref: https://stackoverflow.com/a/73376127
+    context-path: ${SERVER_SERVLET_CONTEXT_PATH}
   forward-headers-strategy: framework
 
 app:
-  secret: ${APP_SECRET:c04nKbDFfJ2v0XSRtNKHQQq5Km3zMSZxla7paMSUzBOI/ORhgnTC7eJrqqEZQGKm}
+  secret: ${APP_SECRET}
   jwt:
     token:
-      expires-in: ${APP_JWT_TOKEN_EXPIRES_IN:#{60 * 60 * 1000}} # 60 minutes in milliseconds
+      expires-in: ${APP_JWT_TOKEN_EXPIRES_IN}
     refresh-token:
-      expires-in: ${APP_JWT_REFRESH_TOKEN_EXPIRES_IN:#{24 * 60 * 60 * 1000}} # 24 hours in milliseconds
+      expires-in: ${APP_JWT_REFRESH_TOKEN_EXPIRES_IN}
     remember-me:
-      expires-in: ${APP_JWT_REMEMBER_ME_EXPIRES_IN:#{24 * 60 * 60 * 1000 * 7}} # 7 days in milliseconds
+      expires-in: ${APP_JWT_REMEMBER_ME_EXPIRES_IN}
   registration:
     email:
       token:
-        expires-in: ${APP_REGISTRATION_EMAIL_TOKEN_EXPIRES_IN:#{60 * 60 * 1000}} # 60 minutes in milliseconds
+        expires-in: ${APP_REGISTRATION_EMAIL_TOKEN_EXPIRES_IN}
     password:
       token:
-        expires-in: ${APP_REGISTRATION_PASSWORD_TOKEN_EXPIRES_IN:#{60 * 60 * 1000}} # 60 minutes in milliseconds
-  default-locale: ${APP_DEFAULT_LOCALE:en}
-  default-timezone: ${APP_DEFAULT_TIMEZONE:Europe/Istanbul}
-  url: ${APP_URL:http://localhost:${server.port}}
-  frontend-url: ${APP_FRONTEND_URL:http://localhost:3000}
+        expires-in: ${APP_REGISTRATION_PASSWORD_TOKEN_EXPIRES_IN}
+  default-locale: ${APP_DEFAULT_LOCALE}
+  default-timezone: ${APP_DEFAULT_TIMEZONE}
+  url: ${APP_URL}
+  frontend-url: ${APP_FRONTEND_URL}
 
 spring:
   application:
-    name: ${APP_NAME:AppName}
-    description: ${APP_DESCRIPTION:App Description}
+    name: ${APP_NAME}
+    description: ${APP_DESCRIPTION}
   jpa:
     hibernate:
-      ddl-auto: ${DB_DDL_AUTO:none}
+      ddl-auto: ${DB_DDL_AUTO}
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -42,27 +40,27 @@ spring:
         globally_quoted_identifiers: true
     open-in-view: false
   datasource:
-    url: jdbc:postgresql://${POSTGRESQL_HOST:localhost}:${POSTGRESQL_PORT:5432}/${POSTGRESQL_DB:app_db}
-    username: ${POSTGRESQL_USER:postgres}
-    password: ${POSTGRESQL_PASSWORD:secret}
+    url: jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRESQL_DB}
+    username: ${POSTGRESQL_USER}
+    password: ${POSTGRESQL_PASSWORD}
   data:
     redis:
-      database: ${REDIS_DATABASE:0}
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:secret}
-      timeout: ${REDIS_TIMEOUT:60000}
+      database: ${REDIS_DATABASE}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      timeout: ${REDIS_TIMEOUT}
     web:
       pageable:
-        default-page-size: ${PAGEABLE_DEFAULT_PAGE_SIZE:20}
+        default-page-size: ${PAGEABLE_DEFAULT_PAGE_SIZE}
   servlet:
     multipart:
-      max-file-size: ${MULTIPART_MAX_FILE_SIZE:50MB}
-      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:50MB}
+      max-file-size: ${MULTIPART_MAX_FILE_SIZE}
+      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE}
   messages:
     basename: locales.messages
     encoding: UTF-8
-    cache-duration: ${MESSAGES_CACHE_DURATION:-1}
+    cache-duration: ${MESSAGES_CACHE_DURATION}
   jackson:
     mapper:
       accept-case-insensitive-enums: true
@@ -73,10 +71,10 @@ spring:
     mode: HTML
     cache: false
   mail:
-    host: ${MAIL_HOST:localhost}
-    port: ${MAIL_PORT:1025}
-    username: ${MAIL_USERNAME:test@email.com}
-    password: ${MAIL_PASSWORD:}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         transport:
@@ -84,35 +82,36 @@ spring:
         smtp:
           auth: true
           ssl:
-            enable: ${MAIL_SSL:false}
+            enable: ${MAIL_SSL}
           tls:
-            enable: ${MAIL_TLS:false}
+            enable: ${MAIL_TLS}
   liquibase:
-    enabled: ${LIQUIBASE_ENABLED:true}
+    enabled: ${LIQUIBASE_ENABLED}
     change-log: classpath:/db/changelog/master.xml
   docker:
     compose:
       lifecycle-management: none
+      enabled: false
 
 springdoc:
   api-docs:
-    enabled: ${API_DOCS_ENABLED:true}
+    enabled: ${API_DOCS_ENABLED}
     path: /api-docs
   swagger-ui:
-    enabled: ${SWAGGER_ENABLED:true}
+    enabled: ${SWAGGER_ENABLED}
     operationsSorter: alpha
     tagsSorter: alpha
-    path: ${SWAGGER_PATH:/swagger-ui}
+    path: ${SWAGGER_PATH}
   show-actuator: true
 
 logging:
   level:
-    root: ${LOGGING_LEVEL_ROOT:INFO}
+    root: ${LOGGING_LEVEL_ROOT}
     org:
       hibernate:
-        type: ${LOGGING_LEVEL_HIBERNATE:INFO}
+        type: ${LOGGING_LEVEL_HIBERNATE}
       springframework:
-        web: ${LOGGING_LEVEL_SPRING:INFO}
+        web: ${LOGGING_LEVEL_SPRING}
   file:
     name: ./var/logs/app.log
   pattern:
