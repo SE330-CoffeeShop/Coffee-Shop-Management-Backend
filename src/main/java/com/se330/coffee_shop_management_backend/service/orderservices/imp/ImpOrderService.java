@@ -1,9 +1,11 @@
 package com.se330.coffee_shop_management_backend.service.orderservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.*;
+import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -11,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,19 +25,22 @@ public class ImpOrderService implements IOrderService {
     private final PaymentMethodsRepository paymentMethodsRepository;
     private final UserRepository userRepository;
     private final ShippingAddressesRepository shippingAddressesRepository;
+    private final IOrderDetailService orderDetailService;
 
     public ImpOrderService(
             OrderRepository orderRepository,
             EmployeeRepository employeeRepository,
             PaymentMethodsRepository paymentMethodsRepository,
             UserRepository userRepository,
-            ShippingAddressesRepository shippingAddressesRepository
+            ShippingAddressesRepository shippingAddressesRepository,
+            IOrderDetailService orderDetailService
     ) {
         this.orderRepository = orderRepository;
         this.employeeRepository = employeeRepository;
         this.paymentMethodsRepository = paymentMethodsRepository;
         this.userRepository = userRepository;
         this.shippingAddressesRepository = shippingAddressesRepository;
+        this.orderDetailService = orderDetailService;
     }
 
     @Override
@@ -47,12 +54,13 @@ public class ImpOrderService implements IOrderService {
     }
 
     @Override
+    @Transactional
     public Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) {
-        Employee exisingEmployee = employeeRepository.findById(orderCreateRequestDTO.getEmployeeId())
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id:" + orderCreateRequestDTO.getEmployeeId()));
+        Employee existingEmployee = employeeRepository.findById(orderCreateRequestDTO.getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + orderCreateRequestDTO.getEmployeeId()));
 
-        PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(orderCreateRequestDTO.getPaymentMethodId())
-                .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + orderCreateRequestDTO.getPaymentMethodId()));
+        //PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(orderCreateRequestDTO.getPaymentMethodId())
+         //       .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + orderCreateRequestDTO.getPaymentMethodId()));
 
         User existingUser = userRepository.findById(orderCreateRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderCreateRequestDTO.getUserId()));
@@ -60,16 +68,32 @@ public class ImpOrderService implements IOrderService {
         ShippingAddresses existingShippingAddress = shippingAddressesRepository.findById(orderCreateRequestDTO.getShippingAddressId())
                 .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with id:" + orderCreateRequestDTO.getShippingAddressId()));
 
-        return orderRepository.save(
-                Order.builder()
-                        .employee(exisingEmployee)
-                        .orderStatus(orderCreateRequestDTO.isOrderStatus())
-                        .orderTrackingNumber(orderCreateRequestDTO.getOrderTrackingNumber())
-                        .paymentMethod(existingPaymentMethod)
-                        .user(existingUser)
-                        .shippingAddress(existingShippingAddress)
-                        .build()
+        // create order first
+
+        Order newOrder = orderRepository.save(
+            Order.builder()
+                    .employee(existingEmployee)
+                    .orderStatus(orderCreateRequestDTO.isOrderStatus())
+                    .orderTrackingNumber(orderCreateRequestDTO.getOrderTrackingNumber())
+                    .paymentMethod(null)
+                    .user(existingUser)
+                    .shippingAddress(existingShippingAddress)
+                    .orderTotalCost(BigDecimal.ZERO)
+                    .build()
         );
+
+        // now then add order details
+        for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderCreateRequestDTO.getOrderDetails()) {
+            orderDetailCreateRequestDTO.setOrderId(newOrder.getId());
+            orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
+        }
+
+        // update total cost
+        BigDecimal totalCost = updateTotalCost(newOrder);
+        newOrder.setOrderTotalCost(totalCost);
+        orderRepository.save(newOrder);
+
+        return newOrder;
     }
 
     @Override
@@ -91,6 +115,30 @@ public class ImpOrderService implements IOrderService {
         existingOrder.setShippingAddress(existingShippingAddress);
         existingOrder.setOrderStatus(orderUpdateRequestDTO.isOrderStatus());
         existingOrder.setOrderTrackingNumber(orderUpdateRequestDTO.getOrderTrackingNumber());
+
+        List<OrderDetail> orderDetailOlds = existingOrder.getOrderDetails();
+
+        for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderUpdateRequestDTO.getOrderDetails()) {
+            for (OrderDetail oldOrderDetail : orderDetailOlds) {
+                if (
+                        oldOrderDetail.getOrderDetailQuantity() == orderDetailCreateRequestDTO.getOrderDetailQuantity() &&
+                        oldOrderDetail.getOrderDetailUnitPrice() == orderDetailCreateRequestDTO.getOrderDetailUnitPrice() &&
+                        oldOrderDetail.getProductVariant().getId() == orderDetailCreateRequestDTO.getProductVariantId()
+                ) {
+                    // which means this order detail have no change
+                    continue;
+                }
+
+                // remove old, create new
+                orderDetailService.deleteOrderDetail(oldOrderDetail.getId());
+                orderDetailCreateRequestDTO.setOrderId(existingOrder.getId());
+                orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
+            }
+        }
+
+        // update total cost
+        BigDecimal totalCost = updateTotalCost(existingOrder);
+        existingOrder.setOrderTotalCost(totalCost);
 
         return orderRepository.save(existingOrder);
     }
@@ -118,5 +166,17 @@ public class ImpOrderService implements IOrderService {
         }
 
         orderRepository.delete(existingOrder);
+    }
+
+
+    private BigDecimal updateTotalCost(Order order) {
+        BigDecimal totalCost = BigDecimal.ZERO;
+
+        for (OrderDetail orderDetail : order.getOrderDetails()) {
+            BigDecimal itemCost = BigDecimal.valueOf((long) orderDetail.getOrderDetailUnitPrice() * orderDetail.getOrderDetailQuantity());
+            totalCost = totalCost.add(itemCost);
+        }
+
+        return totalCost;
     }
 }
