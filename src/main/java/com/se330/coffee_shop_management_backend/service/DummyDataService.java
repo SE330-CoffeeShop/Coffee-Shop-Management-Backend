@@ -55,6 +55,8 @@ public class DummyDataService implements CommandLineRunner {
         List<String> roleList = new ArrayList<>();
         roleList.add(Constants.RoleEnum.ADMIN.getValue());
         roleList.add(Constants.RoleEnum.CUSTOMER.getValue());
+        roleList.add(Constants.RoleEnum.MANAGER.getValue());
+        roleList.add(Constants.RoleEnum.EMPLOYEE.getValue());
         String defaultPassword = "P@sswd123.";
 
         userService.create(CreateUserRequest.builder()
@@ -73,6 +75,26 @@ public class DummyDataService implements CommandLineRunner {
             .name("Jane")
             .lastName("DOE")
             .roles(List.of(roleList.get(1)))
+            .isEmailVerified(true)
+            .isBlocked(false)
+            .build());
+
+        userService.create(CreateUserRequest.builder()
+            .email("manager@example.com")
+            .password(defaultPassword)
+            .name("Mike")
+            .lastName("SMITH")
+            .roles(List.of(roleList.get(1), roleList.get(2))) // CUSTOMER and MANAGER roles
+            .isEmailVerified(true)
+            .isBlocked(false)
+            .build());
+
+        userService.create(CreateUserRequest.builder()
+            .email("employee@example.com")
+            .password(defaultPassword)
+            .name("Emily")
+            .lastName("JOHNSON")
+            .roles(List.of(roleList.get(1), roleList.get(3))) // CUSTOMER and EMPLOYEE roles
             .isEmailVerified(true)
             .isBlocked(false)
             .build());
