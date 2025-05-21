@@ -41,7 +41,7 @@ public class DummyDataService implements CommandLineRunner {
     private void createRoles() {
         List<Role> roleList = new ArrayList<>();
         roleList.add(Role.builder().name(Constants.RoleEnum.ADMIN).build());
-        roleList.add(Role.builder().name(Constants.RoleEnum.USER).build());
+        roleList.add(Role.builder().name(Constants.RoleEnum.CUSTOMER).build());
 
         roleService.saveList(roleList);
     }
@@ -54,7 +54,7 @@ public class DummyDataService implements CommandLineRunner {
     private void createUsers() throws BindException {
         List<String> roleList = new ArrayList<>();
         roleList.add(Constants.RoleEnum.ADMIN.getValue());
-        roleList.add(Constants.RoleEnum.USER.getValue());
+        roleList.add(Constants.RoleEnum.CUSTOMER.getValue());
         String defaultPassword = "P@sswd123.";
 
         userService.create(CreateUserRequest.builder()
