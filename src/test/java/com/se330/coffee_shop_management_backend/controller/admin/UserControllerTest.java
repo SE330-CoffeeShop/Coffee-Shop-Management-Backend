@@ -68,7 +68,7 @@ class UserControllerTest {
     @Nested
     @DisplayName("Test class for users list scenarios")
     public class ListTest {
-        private final List<String> roles = List.of(Constants.RoleEnum.USER.toString());
+        private final List<String> roles = List.of(Constants.RoleEnum.CUSTOMER.toString());
 
         @Test
         @DisplayName("Happy path")

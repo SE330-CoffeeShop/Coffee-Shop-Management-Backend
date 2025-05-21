@@ -353,7 +353,7 @@ class UserServiceTest {
         void given_whenCreate_thenAssertBody() throws BindException {
             // Given
             CreateUserRequest request = Instancio.create(CreateUserRequest.class);
-            request.setRoles(List.of(Constants.RoleEnum.USER.name()));
+            request.setRoles(List.of(Constants.RoleEnum.CUSTOMER.name()));
             request.setIsEmailVerified(true);
             user.setEmailVerifiedAt(LocalDateTime.MIN);
             request.setIsBlocked(true);
@@ -389,7 +389,7 @@ class UserServiceTest {
         @DisplayName("Happy path - Email verified")
         void given_whenUpdate_thenAssertBodyWithEmailVerified() throws BindException {
             // Given
-            request.setRoles(List.of(Constants.RoleEnum.USER.name()));
+            request.setRoles(List.of(Constants.RoleEnum.CUSTOMER.name()));
             request.setIsEmailVerified(true);
             user.setEmail("oldEmail");
             request.setEmail("newEmail");

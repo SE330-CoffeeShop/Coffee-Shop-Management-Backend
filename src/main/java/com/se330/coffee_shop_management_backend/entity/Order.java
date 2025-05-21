@@ -31,7 +31,7 @@ public class Order extends AbstractBaseEntity {
     @Builder.Default
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "employee_id",
             foreignKey = @ForeignKey(

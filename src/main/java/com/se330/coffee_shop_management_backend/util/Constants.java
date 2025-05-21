@@ -27,6 +27,9 @@ public final class Constants {
     @AllArgsConstructor
     public enum RoleEnum {
         ADMIN("ADMIN"),
+        CUSTOMER("CUSTOMER"),
+        EMPLOYEE("EMPLOYEE"),
+        MANAGER("MANAGER"),
         USER("USER");
 
         private final String value;
