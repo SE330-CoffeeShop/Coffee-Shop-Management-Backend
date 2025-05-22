@@ -123,7 +123,7 @@ public class BranchController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Create new branch",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -167,6 +167,7 @@ public class BranchController {
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Update branch",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

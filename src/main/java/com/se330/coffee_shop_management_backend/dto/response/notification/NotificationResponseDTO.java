@@ -42,7 +42,7 @@ public class NotificationResponseDTO extends AbstractBaseResponse {
     )
     private LocalDateTime updatedAt;
 
-    private int notificationType;
+    private String notificationType;
     private String notificationContent;
     private String senderId;
     private String receiverId;
@@ -52,7 +52,7 @@ public class NotificationResponseDTO extends AbstractBaseResponse {
                 .id(notification.getId().toString())
                 .createdAt(notification.getCreatedAt())
                 .updatedAt(notification.getUpdatedAt())
-                .notificationType(notification.getNotificationType())
+                .notificationType(notification.getNotificationType().toString())
                 .notificationContent(notification.getNotificationContent())
                 .senderId(notification.getSender() != null ? notification.getSender().getId().toString() : null)
                 .receiverId(notification.getReceiver() != null ? notification.getReceiver().getId().toString() : null)

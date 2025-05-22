@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -122,6 +123,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Create new employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -165,6 +167,7 @@ public class EmployeeController {
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE', 'ADMIN')")
     @Operation(
             summary = "Update employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

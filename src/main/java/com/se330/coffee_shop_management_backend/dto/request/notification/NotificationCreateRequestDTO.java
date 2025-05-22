@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class NotificationCreateRequestDTO {
-    private int notificationType;
+    private String notificationType;
     private String notificationContent;
     private String senderId;
     private String receiverId;

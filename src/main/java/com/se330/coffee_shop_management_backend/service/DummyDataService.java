@@ -838,7 +838,7 @@ public class DummyDataService implements CommandLineRunner {
 
             // Order status notification
             notifications.add(Notification.builder()
-                    .notificationType(1) // Order status notification type
+                    .notificationType(Constants.NotificationTypeEnum.SYSTEM) // Order status notification type
                     .notificationContent("Your order #ORD-2023" + (1000 + i) + " has been confirmed and is being processed.")
                     .sender(adminUser)
                     .receiver(receiver)
@@ -846,7 +846,7 @@ public class DummyDataService implements CommandLineRunner {
 
             // Promotional notification
             notifications.add(Notification.builder()
-                    .notificationType(2) // Promotional notification type
+                    .notificationType(Constants.NotificationTypeEnum.SYSTEM) // Promotional notification type
                     .notificationContent("Enjoy 15% off on all beverages this weekend with code WEEKEND15!")
                     .sender(adminUser)
                     .receiver(receiver)
@@ -854,7 +854,7 @@ public class DummyDataService implements CommandLineRunner {
 
             // Account notification
             notifications.add(Notification.builder()
-                    .notificationType(3) // Account notification type
+                    .notificationType(Constants.NotificationTypeEnum.SYSTEM) // Account notification type
                     .notificationContent("Your account profile has been updated successfully.")
                     .sender(adminUser)
                     .receiver(receiver)
@@ -874,7 +874,7 @@ public class DummyDataService implements CommandLineRunner {
                 User receiver = staffUsers.get((i + 1) % staffUsers.size());
 
                 notifications.add(Notification.builder()
-                        .notificationType(4) // Staff communication notification type
+                        .notificationType(Constants.NotificationTypeEnum.SYSTEM) // Staff communication notification type
                         .notificationContent("Please check the updated shift schedule for next week.")
                         .sender(sender)
                         .receiver(receiver)

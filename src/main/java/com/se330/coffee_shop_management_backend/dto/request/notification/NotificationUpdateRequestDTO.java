@@ -9,7 +9,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class NotificationUpdateRequestDTO {
     private UUID notificationId;
-    private int notificationType;
+    private String notificationType;
     private String notificationContent;
     private String senderId;
     private String receiverId;

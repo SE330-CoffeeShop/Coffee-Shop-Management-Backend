@@ -60,6 +60,23 @@ public final class Constants {
         }
     }
 
+    @Getter
+    @AllArgsConstructor
+    public enum NotificationTypeEnum {
+        ORDER("ORDER"),
+        PAYMENT("PAYMENT"),
+        SYSTEM("SYSTEM");
+
+        private final String value;
+
+        public static NotificationTypeEnum get(final String name) {
+            return Stream.of(NotificationTypeEnum.values())
+                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid notification type name: %s", name)));
+        }
+    }
+
     public static String getTokenFromPath(final String path) {
         if (path == null || path.isEmpty())
             return null;

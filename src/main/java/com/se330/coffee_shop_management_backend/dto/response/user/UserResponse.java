@@ -86,6 +86,12 @@ public class UserResponse extends AbstractBaseResponse {
     )
     private LocalDateTime updatedAt;
 
+    private List<String> notificationSentIds;
+    private List<String> notificationReceivedIds;
+    private List<String> orderIds;
+    private List<String> paymentMethodIds;
+    private List<String> shippingAddressIds;
+
     /**
      * Convert User to UserResponse
      * @param user User
@@ -102,6 +108,26 @@ public class UserResponse extends AbstractBaseResponse {
             .blockedAt(user.getBlockedAt())
             .createdAt(user.getCreatedAt())
             .updatedAt(user.getUpdatedAt())
+            .notificationSentIds(user.getSentNotifications() != null ?
+                    user.getSentNotifications().stream()
+                            .map(notification -> notification.getId().toString())
+                            .toList() : null)
+            .notificationReceivedIds(user.getReceivedNotifications() != null ?
+                    user.getReceivedNotifications().stream()
+                            .map(notification -> notification.getId().toString())
+                            .toList() : null)
+            .shippingAddressIds(user.getShippingAddresses() != null ?
+                    user.getShippingAddresses().stream()
+                            .map(shippingAddress -> shippingAddress.getId().toString())
+                            .toList() : null)
+            .orderIds(user.getOrders() != null?
+                user.getOrders().stream()
+                        .map(order -> order.getId().toString())
+                        .toList() : null)
+            .paymentMethodIds(user.getPaymentMethods() != null ?
+                user.getPaymentMethods().stream()
+                        .map(paymentMethod -> paymentMethod.getId().toString())
+                        .toList() : null)
             .build();
     }
 }
