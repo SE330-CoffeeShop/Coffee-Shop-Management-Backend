@@ -45,7 +45,7 @@ public class OrderResponseDTO extends AbstractBaseResponse {
     private LocalDateTime updatedAt;
 
     private BigDecimal orderTotalCost;
-    private boolean orderStatus;
+    private String orderStatus;
     private BigDecimal orderTrackingNumber;
 
     private String employeeId;
@@ -66,7 +66,7 @@ public class OrderResponseDTO extends AbstractBaseResponse {
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
                 .orderTotalCost(order.getOrderTotalCost())
-                .orderStatus(order.isOrderStatus())
+                .orderStatus(order.getOrderStatus().toString())
                 .orderTrackingNumber(order.getOrderTrackingNumber())
                 .employeeId(order.getEmployee() != null ? order.getEmployee().getId().toString() : null)
                 .paymentMethodId(order.getPaymentMethod() != null ? order.getPaymentMethod().getId().toString() : null)

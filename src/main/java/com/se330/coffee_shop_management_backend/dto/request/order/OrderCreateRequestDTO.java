@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class OrderCreateRequestDTO {
-    private boolean orderStatus;
+    private String orderStatus;
     private BigDecimal orderTrackingNumber;
     private UUID employeeId;
     private UUID paymentMethodId;

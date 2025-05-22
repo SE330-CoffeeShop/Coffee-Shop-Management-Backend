@@ -42,6 +42,24 @@ public final class Constants {
         }
     }
 
+    @Getter
+    @AllArgsConstructor
+    public enum OrderStatusEnum {
+        PENDING("PENDING"),
+        PROCESSING("PROCESSING"),
+        COMPLETED("COMPLETED"),
+        CANCELLED("CANCELLED");
+
+        private final String value;
+
+        public static OrderStatusEnum get(final String name) {
+            return Stream.of(OrderStatusEnum.values())
+                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid order status name: %s", name)));
+        }
+    }
+
     public static String getTokenFromPath(final String path) {
         if (path == null || path.isEmpty())
             return null;

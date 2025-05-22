@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OrderUpdateRequestDTO {
     private UUID orderId;
-    private boolean orderStatus;
+    private String orderStatus;
     private BigDecimal orderTrackingNumber;
     private UUID employeeId;
     private UUID paymentMethodId;

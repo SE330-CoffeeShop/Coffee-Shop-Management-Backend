@@ -1,12 +1,15 @@
 package com.se330.coffee_shop_management_backend.service.orderservices.imp;
 
+import com.se330.coffee_shop_management_backend.dto.request.invoice.InvoiceCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.*;
+import com.se330.coffee_shop_management_backend.service.invoiceservices.IInvoiceService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,8 +62,7 @@ public class ImpOrderService implements IOrderService {
         Employee existingEmployee = employeeRepository.findById(orderCreateRequestDTO.getEmployeeId())
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + orderCreateRequestDTO.getEmployeeId()));
 
-        //PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(orderCreateRequestDTO.getPaymentMethodId())
-         //       .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + orderCreateRequestDTO.getPaymentMethodId()));
+        PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(orderCreateRequestDTO.getPaymentMethodId()).orElse(null);
 
         User existingUser = userRepository.findById(orderCreateRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderCreateRequestDTO.getUserId()));
@@ -73,9 +75,9 @@ public class ImpOrderService implements IOrderService {
         Order newOrder = orderRepository.save(
             Order.builder()
                     .employee(existingEmployee)
-                    .orderStatus(orderCreateRequestDTO.isOrderStatus())
+                    .orderStatus(Constants.OrderStatusEnum.get(orderCreateRequestDTO.getOrderStatus()))
                     .orderTrackingNumber(orderCreateRequestDTO.getOrderTrackingNumber())
-                    .paymentMethod(null)
+                    .paymentMethod(existingPaymentMethod)
                     .user(existingUser)
                     .shippingAddress(existingShippingAddress)
                     .orderTotalCost(BigDecimal.ZERO)
@@ -114,7 +116,7 @@ public class ImpOrderService implements IOrderService {
         existingOrder.setPaymentMethod(existingPaymentMethod);
         existingOrder.setUser(existingUser);
         existingOrder.setShippingAddress(existingShippingAddress);
-        existingOrder.setOrderStatus(orderUpdateRequestDTO.isOrderStatus());
+        existingOrder.setOrderStatus(Constants.OrderStatusEnum.get(orderUpdateRequestDTO.getOrderStatus()));
         existingOrder.setOrderTrackingNumber(orderUpdateRequestDTO.getOrderTrackingNumber());
 
         List<OrderDetail> orderDetailOlds = existingOrder.getOrderDetails();
