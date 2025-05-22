@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -30,6 +31,7 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'EMPLOYEE', 'MANAGER')")
     @Operation(
             summary = "Get customer of specific branch details sorted by the most recent order",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -76,6 +78,7 @@ public class CustomerController {
     }
 
     @GetMapping("/branch/{branchId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'EMPLOYEE', 'MANAGER')")
     @Operation(
             summary = "Get all customers of a branch with pagination, sorted by the most recent order",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
