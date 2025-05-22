@@ -1,12 +1,12 @@
 package com.se330.coffee_shop_management_backend.controller;
 
-import com.se330.coffee_shop_management_backend.dto.request.branch.BranchCreateRequestDTO;
-import com.se330.coffee_shop_management_backend.dto.request.branch.BranchUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
-import com.se330.coffee_shop_management_backend.dto.response.branch.BranchResponseDTO;
-import com.se330.coffee_shop_management_backend.entity.Branch;
-import com.se330.coffee_shop_management_backend.service.branchservices.IBranchService;
+import com.se330.coffee_shop_management_backend.dto.response.order.OrderDetailResponseDTO;
+import com.se330.coffee_shop_management_backend.entity.OrderDetail;
+import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -26,26 +25,26 @@ import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_S
 import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.createPageable;
 
 @RestController
-@RequestMapping("/branch")
-public class BranchController {
+@RequestMapping("/order-details")
+public class OrderDetailController {
 
-    private final IBranchService branchService;
+    private final IOrderDetailService orderDetailService;
 
-    public BranchController(IBranchService branchService) {
-        this.branchService = branchService;
+    public OrderDetailController(IOrderDetailService orderDetailService) {
+        this.orderDetailService = orderDetailService;
     }
 
     @GetMapping("/{id}")
     @Operation(
-            summary = "Get branch detail",
+            summary = "Get order detail by id",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved branch",
+                            description = "Successfully retrieved order detail",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BranchResponseDTO.class)
+                                    schema = @Schema(implementation = OrderDetailResponseDTO.class)
                             )
                     ),
                     @ApiResponse(
@@ -66,7 +65,7 @@ public class BranchController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Branch not found",
+                            description = "Order detail not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -74,18 +73,18 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<BranchResponseDTO> findByIdBranch(@PathVariable UUID id) {
-        return ResponseEntity.ok(BranchResponseDTO.convert(branchService.findByIdBranch(id)));
+    public ResponseEntity<OrderDetailResponseDTO> findByIdOrderDetail(@PathVariable UUID id) {
+        return ResponseEntity.ok(OrderDetailResponseDTO.convert(orderDetailService.findByIdOrderDetail(id)));
     }
 
     @GetMapping("/all")
     @Operation(
-            summary = "Get all branches with pagination",
+            summary = "Get all order details with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved branch list",
+                            description = "Successfully retrieved order detail list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
@@ -101,7 +100,7 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<PageResponse<BranchResponseDTO>> findAllBranches(
+    public ResponseEntity<PageResponse<OrderDetailResponseDTO>> findAllOrderDetails(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "vi") String lan,
@@ -110,30 +109,29 @@ public class BranchController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Branch> branchPages = branchService.findAllBranches(pageable);
+        Page<OrderDetail> orderDetailPages = orderDetailService.findAllOrderDetails(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        BranchResponseDTO.convert(branchPages.getContent()),
-                        branchPages.getTotalElements(),
-                        branchPages.getNumber(),
-                        branchPages.getSize()
+                        OrderDetailResponseDTO.convert(orderDetailPages.getContent()),
+                        orderDetailPages.getTotalElements(),
+                        orderDetailPages.getNumber(),
+                        orderDetailPages.getSize()
                 )
         );
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
-            summary = "Create new branch",
+            summary = "Create new order detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Branch created successfully",
+                            description = "Order detail created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BranchResponseDTO.class)
+                                    schema = @Schema(implementation = OrderDetailResponseDTO.class)
                             )
                     ),
                     @ApiResponse(
@@ -151,32 +149,28 @@ public class BranchController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "Branch already exists",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<BranchResponseDTO> createBranch(@RequestBody BranchCreateRequestDTO branchRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(BranchResponseDTO.convert(branchService.createBranch(branchRequestDTO)));
+    public ResponseEntity<OrderDetailResponseDTO> createOrderDetail(@RequestBody OrderDetailCreateRequestDTO orderDetailCreateRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                OrderDetailResponseDTO.convert(
+                        orderDetailService.createOrderDetail(orderDetailCreateRequestDTO)
+                )
+        );
     }
 
     @PatchMapping("/")
     @Operation(
-            summary = "Update branch",
+            summary = "Update order detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Branch updated successfully",
+                            description = "Order detail updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BranchResponseDTO.class)
+                                    schema = @Schema(implementation = OrderDetailResponseDTO.class)
                             )
                     ),
                     @ApiResponse(
@@ -197,7 +191,7 @@ public class BranchController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Branch not found",
+                            description = "Order detail not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -205,26 +199,22 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<BranchResponseDTO> updateBranch(@RequestBody BranchUpdateRequestDTO branchRequestDTO) {
-        return ResponseEntity.ok(BranchResponseDTO.convert(branchService.updateBranch(branchRequestDTO)));
+    public ResponseEntity<OrderDetailResponseDTO> updateOrderDetail(@RequestBody OrderDetailUpdateRequestDTO orderDetailUpdateRequestDTO) {
+        return ResponseEntity.ok(
+                OrderDetailResponseDTO.convert(
+                        orderDetailService.updateOrderDetail(orderDetailUpdateRequestDTO)
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
     @Operation(
-            summary = "Delete branch",
+            summary = "Delete order detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "204",
-                            description = "Branch deleted successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Branch not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
+                            description = "Order detail deleted successfully"
                     ),
                     @ApiResponse(
                             responseCode = "401",
@@ -233,11 +223,19 @@ public class BranchController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Order detail not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
                     )
             }
     )
-    public ResponseEntity<Void> deleteBranch(@PathVariable UUID id) {
-        branchService.deleteBranch(id);
+    public ResponseEntity<Void> deleteOrderDetail(@PathVariable UUID id) {
+        orderDetailService.deleteOrderDetail(id);
         return ResponseEntity.noContent().build();
     }
 }
