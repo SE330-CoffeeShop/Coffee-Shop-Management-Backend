@@ -1,16 +1,12 @@
 package com.se330.coffee_shop_management_backend.service.orderservices.imp;
 
-import com.se330.coffee_shop_management_backend.dto.request.invoice.InvoiceCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
-import com.se330.coffee_shop_management_backend.dto.request.paymentmethod.PaymentMethodCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.*;
-import com.se330.coffee_shop_management_backend.service.invoiceservices.IInvoiceService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
-import com.se330.coffee_shop_management_backend.service.paymentmethodservices.IPaymentMethodService;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -20,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -32,7 +27,6 @@ public class ImpOrderService implements IOrderService {
     private final UserRepository userRepository;
     private final ShippingAddressesRepository shippingAddressesRepository;
     private final IOrderDetailService orderDetailService;
-    private final IPaymentMethodService paymentMethodService;
 
     public ImpOrderService(
             OrderRepository orderRepository,
@@ -40,8 +34,7 @@ public class ImpOrderService implements IOrderService {
             PaymentMethodsRepository paymentMethodsRepository,
             UserRepository userRepository,
             ShippingAddressesRepository shippingAddressesRepository,
-            IOrderDetailService orderDetailService,
-            IPaymentMethodService paymentMethodService
+            IOrderDetailService orderDetailService
     ) {
         this.orderRepository = orderRepository;
         this.employeeRepository = employeeRepository;
@@ -49,7 +42,6 @@ public class ImpOrderService implements IOrderService {
         this.userRepository = userRepository;
         this.shippingAddressesRepository = shippingAddressesRepository;
         this.orderDetailService = orderDetailService;
-        this.paymentMethodService = paymentMethodService;
     }
 
     @Override
@@ -74,24 +66,21 @@ public class ImpOrderService implements IOrderService {
         ShippingAddresses existingShippingAddress = shippingAddressesRepository.findById(orderCreateRequestDTO.getShippingAddressId())
                 .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with id:" + orderCreateRequestDTO.getShippingAddressId()));
 
+        PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(orderCreateRequestDTO.getPaymentMethodId())
+                .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + orderCreateRequestDTO.getPaymentMethodId()));
+
         // create order first
         Order newOrder = orderRepository.save(
             Order.builder()
                     .employee(existingEmployee)
                     .orderStatus(Constants.OrderStatusEnum.get(orderCreateRequestDTO.getOrderStatus()))
                     .orderTrackingNumber(orderCreateRequestDTO.getOrderTrackingNumber())
-                    .paymentMethod(null)
+                    .paymentMethod(existingPaymentMethod)
                     .user(existingUser)
                     .shippingAddress(existingShippingAddress)
                     .orderTotalCost(BigDecimal.ZERO)
                     .build()
         );
-
-        // then create payment method
-        PaymentMethods newPaymentMethod = paymentMethodService.createPaymentMethod(orderCreateRequestDTO.getPaymentMethod());
-
-        // set payment method to order
-        newOrder.setPaymentMethod(newPaymentMethod);
 
         // now then add order details
         for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderCreateRequestDTO.getOrderDetails()) {
@@ -148,14 +137,6 @@ public class ImpOrderService implements IOrderService {
                 orderDetailCreateRequestDTO.setOrderId(existingOrder.getId());
                 orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
             }
-        }
-
-        // remove old payment method if needed
-        if (!Objects.equals(existingPaymentMethod.getMethodDetails(), orderUpdateRequestDTO.getPaymentMethod().getMethodDetails())
-            || !Objects.equals(existingPaymentMethod.getMethodType(), orderUpdateRequestDTO.getPaymentMethod().getMethodType())) {
-            paymentMethodService.deletePaymentMethod(existingPaymentMethod.getId());
-            PaymentMethods newPaymentMethod = paymentMethodService.createPaymentMethod(orderUpdateRequestDTO.getPaymentMethod());
-            existingOrder.setPaymentMethod(newPaymentMethod);
         }
 
         // update total cost

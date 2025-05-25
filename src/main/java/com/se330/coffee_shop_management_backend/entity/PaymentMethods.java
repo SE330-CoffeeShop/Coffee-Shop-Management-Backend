@@ -3,6 +3,9 @@ package com.se330.coffee_shop_management_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "payment_methods")
 @Getter
@@ -23,8 +26,9 @@ public class PaymentMethods extends AbstractBaseEntity {
     @Column(name = "method_is_default", nullable = false)
     private boolean methodIsDefault;
 
-    @OneToOne(mappedBy = "paymentMethod", fetch = FetchType.EAGER)
-    private Order order;
+    @OneToMany(mappedBy = "paymentMethod", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<Order> orders = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(

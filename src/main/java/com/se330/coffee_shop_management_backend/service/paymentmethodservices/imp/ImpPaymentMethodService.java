@@ -2,10 +2,8 @@ package com.se330.coffee_shop_management_backend.service.paymentmethodservices.i
 
 import com.se330.coffee_shop_management_backend.dto.request.paymentmethod.PaymentMethodCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.paymentmethod.PaymentMethodUpdateRequestDTO;
-import com.se330.coffee_shop_management_backend.entity.Order;
 import com.se330.coffee_shop_management_backend.entity.PaymentMethods;
 import com.se330.coffee_shop_management_backend.entity.User;
-import com.se330.coffee_shop_management_backend.repository.OrderRepository;
 import com.se330.coffee_shop_management_backend.repository.PaymentMethodsRepository;
 import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.service.paymentmethodservices.IPaymentMethodService;
@@ -13,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -21,12 +20,10 @@ public class ImpPaymentMethodService implements IPaymentMethodService {
 
     private final PaymentMethodsRepository paymentMethodsRepository;
     private final UserRepository userRepository;
-    private final OrderRepository orderRepository;
 
-    public ImpPaymentMethodService(PaymentMethodsRepository paymentMethodsRepository, UserRepository userRepository, OrderRepository orderRepository) {
+    public ImpPaymentMethodService(PaymentMethodsRepository paymentMethodsRepository, UserRepository userRepository) {
         this.paymentMethodsRepository = paymentMethodsRepository;
         this.userRepository = userRepository;
-        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -48,16 +45,12 @@ public class ImpPaymentMethodService implements IPaymentMethodService {
                     .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + paymentMethodCreateRequestDTO.getUserId()));
         }
 
-        Order order = orderRepository.findById(paymentMethodCreateRequestDTO.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + paymentMethodCreateRequestDTO.getOrderId()));
-
         return paymentMethodsRepository.save(
                 PaymentMethods.builder()
                         .methodType(paymentMethodCreateRequestDTO.getMethodType())
                         .methodDetails(paymentMethodCreateRequestDTO.getMethodDetails())
                         .methodIsDefault(paymentMethodCreateRequestDTO.isMethodIsDefault())
                         .user(user)
-                        .order(order)
                         .build()
         );
     }
@@ -73,28 +66,26 @@ public class ImpPaymentMethodService implements IPaymentMethodService {
                     .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + paymentMethodUpdateRequestDTO.getUserId()));
         }
 
-        Order order = orderRepository.findById(paymentMethodUpdateRequestDTO.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + paymentMethodUpdateRequestDTO.getOrderId()));
-
         existingPaymentMethod.setMethodType(paymentMethodUpdateRequestDTO.getMethodType());
         existingPaymentMethod.setMethodDetails(paymentMethodUpdateRequestDTO.getMethodDetails());
         existingPaymentMethod.setMethodIsDefault(paymentMethodUpdateRequestDTO.isMethodIsDefault());
         existingPaymentMethod.setUser(user);
-        existingPaymentMethod.setOrder(order);
 
         return paymentMethodsRepository.save(existingPaymentMethod);
     }
 
     @Override
+    @Transactional
     public void deletePaymentMethod(UUID id) {
         PaymentMethods paymentMethod = paymentMethodsRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id: " + id));
 
-        if (paymentMethod.getOrder() != null) {
-            paymentMethod.getOrder().setPaymentMethod(null);
-            paymentMethod.setOrder(null);
+        User owner = paymentMethod.getUser();
+        if (owner != null) {
+            owner.getPaymentMethods().remove(paymentMethod);
+            userRepository.save(owner);
         }
 
-        paymentMethodsRepository.deleteById(id);
+        paymentMethodsRepository.delete(paymentMethod);
     }
 }

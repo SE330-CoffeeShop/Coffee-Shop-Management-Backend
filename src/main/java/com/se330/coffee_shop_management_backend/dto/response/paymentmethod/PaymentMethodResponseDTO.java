@@ -20,7 +20,7 @@ public class PaymentMethodResponseDTO {
     private String methodDetails;
     private boolean methodIsDefault;
     private String userId;
-    private String orderId;
+    private List<String> orderIds;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -31,13 +31,19 @@ public class PaymentMethodResponseDTO {
                 .methodDetails(paymentMethod.getMethodDetails())
                 .methodIsDefault(paymentMethod.isMethodIsDefault())
                 .userId(paymentMethod.getUser() != null ? paymentMethod.getUser().getId().toString() : null)
-                .orderId(paymentMethod.getOrder() != null ? paymentMethod.getOrder().getId().toString() : null)
+                .orderIds(paymentMethod.getOrders() != null ? paymentMethod.getOrders().stream()
+                        .map(order -> order.getId().toString())
+                        .collect(Collectors.toList()) : null)
                 .createdAt(paymentMethod.getCreatedAt())
                 .updatedAt(paymentMethod.getUpdatedAt())
                 .build();
     }
 
     public static List<PaymentMethodResponseDTO> convert(List<PaymentMethods> paymentMethods) {
+        if (paymentMethods == null || paymentMethods.isEmpty()) {
+            return List.of();
+        }
+
         return paymentMethods.stream()
                 .map(PaymentMethodResponseDTO::convert)
                 .collect(Collectors.toList());

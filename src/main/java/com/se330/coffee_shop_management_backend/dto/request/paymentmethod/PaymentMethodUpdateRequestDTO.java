@@ -13,5 +13,4 @@ public class PaymentMethodUpdateRequestDTO {
     private String methodDetails;
     private boolean methodIsDefault;
     private UUID userId;
-    private UUID orderId;
 }

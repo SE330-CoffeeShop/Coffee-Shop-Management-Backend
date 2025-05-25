@@ -12,5 +12,4 @@ public class PaymentMethodCreateRequestDTO {
     private String methodDetails;
     private boolean methodIsDefault;
     private UUID userId;
-    private UUID orderId;
 }

@@ -45,7 +45,7 @@ public class Order extends AbstractBaseEntity {
     )
     private Employee employee;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "payment_method_id",
             foreignKey = @ForeignKey(

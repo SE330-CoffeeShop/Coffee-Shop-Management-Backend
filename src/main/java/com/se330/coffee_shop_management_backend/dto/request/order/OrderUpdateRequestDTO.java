@@ -1,6 +1,5 @@
 package com.se330.coffee_shop_management_backend.dto.request.order;
 
-import com.se330.coffee_shop_management_backend.dto.request.paymentmethod.PaymentMethodCreateRequestDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +16,6 @@ public class OrderUpdateRequestDTO {
     private UUID employeeId;
     private UUID userId;
     private UUID shippingAddressId;
-    private PaymentMethodCreateRequestDTO paymentMethod;
+    private UUID paymentMethodId;
     private List<OrderDetailCreateRequestDTO> orderDetails;
 }
