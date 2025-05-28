@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -62,5 +63,32 @@ public class ImpBranchService implements IBranchService {
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + id));
 
         branchRepository.deleteById(id);
+    }
+
+    @Override
+    public BigDecimal getTotalOrderCostByBranchAndYear(UUID branchId, int year) {
+        Branch branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
+
+        return branchRepository.calculateTotalOrderCostByBranchAndYear(branchId, year)
+                .orElse(BigDecimal.ZERO);
+    }
+
+    @Override
+    public BigDecimal getTotalOrderCostByBranchAndMonthAndYear(UUID branchId, int month, int year) {
+        Branch branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
+
+        return branchRepository.calculateTotalOrderCostByBranchAndMonthAndYear(branchId, month, year)
+                .orElse(BigDecimal.ZERO);
+    }
+
+    @Override
+    public BigDecimal getTotalOrderCostByBranchAndDayAndMonthAndYear(UUID branchId, int day, int month, int year) {
+        Branch branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
+
+        return branchRepository.calculateTotalOrderCostByBranchAndDayAndMonthAndYear(branchId, day, month, year)
+                .orElse(BigDecimal.ZERO);
     }
 }

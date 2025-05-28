@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -240,5 +241,128 @@ public class BranchController {
     public ResponseEntity<Void> deleteBranch(@PathVariable UUID id) {
         branchService.deleteBranch(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/revenue/year")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    @Operation(
+            summary = "Get branch total revenue by year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch revenue",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = BigDecimal.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied - Requires MANAGER role",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<BigDecimal> getBranchRevenueByYear(
+            @RequestParam UUID branchId,
+            @RequestParam int year
+    ) {
+        BigDecimal revenue = branchService.getTotalOrderCostByBranchAndYear(branchId, year);
+        return ResponseEntity.ok(revenue);
+    }
+
+    @GetMapping("/revenue/month-year")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    @Operation(
+            summary = "Get branch total revenue by month and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch revenue",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = BigDecimal.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied - Requires MANAGER role",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<BigDecimal> getBranchRevenueByMonthAndYear(
+            @RequestParam UUID branchId,
+            @RequestParam int month,
+            @RequestParam int year
+    ) {
+        BigDecimal revenue = branchService.getTotalOrderCostByBranchAndMonthAndYear(branchId, month, year);
+        return ResponseEntity.ok(revenue);
+    }
+
+    @GetMapping("/revenue/day-month-year")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    @Operation(
+            summary = "Get branch total revenue by day, month and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch revenue",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = BigDecimal.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied - Requires MANAGER role",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<BigDecimal> getBranchRevenueByDayMonthAndYear(
+            @RequestParam UUID branchId,
+            @RequestParam int day,
+            @RequestParam int month,
+            @RequestParam int year
+    ) {
+        BigDecimal revenue = branchService.getTotalOrderCostByBranchAndDayAndMonthAndYear(branchId, day, month, year);
+        return ResponseEntity.ok(revenue);
     }
 }
