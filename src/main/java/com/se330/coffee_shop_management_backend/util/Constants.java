@@ -27,6 +27,9 @@ public final class Constants {
     @AllArgsConstructor
     public enum RoleEnum {
         ADMIN("ADMIN"),
+        CUSTOMER("CUSTOMER"),
+        EMPLOYEE("EMPLOYEE"),
+        MANAGER("MANAGER"),
         USER("USER");
 
         private final String value;
@@ -36,6 +39,58 @@ public final class Constants {
                 .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid role name: %s", name)));
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum OrderStatusEnum {
+        PENDING("PENDING"),
+        PROCESSING("PROCESSING"),
+        COMPLETED("COMPLETED"),
+        CANCELLED("CANCELLED");
+
+        private final String value;
+
+        public static OrderStatusEnum get(final String name) {
+            return Stream.of(OrderStatusEnum.values())
+                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid order status name: %s", name)));
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum NotificationTypeEnum {
+        ORDER("ORDER"),
+        PAYMENT("PAYMENT"),
+        DISCOUNT("DISCOUNT"),
+        SYSTEM("SYSTEM");
+
+        private final String value;
+
+        public static NotificationTypeEnum get(final String name) {
+            return Stream.of(NotificationTypeEnum.values())
+                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid notification type name: %s", name)));
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum DiscountTypeEnum {
+        PERCENTAGE("PERCENTAGE"),
+        AMOUNT("AMOUNT");
+
+        private final String value;
+
+        public static DiscountTypeEnum get(final String name) {
+            return Stream.of(DiscountTypeEnum.values())
+                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid discount type name: %s", name)));
         }
     }
 
