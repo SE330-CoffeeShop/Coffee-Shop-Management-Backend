@@ -28,7 +28,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "FROM OrderDetail od " +
             "JOIN od.productVariant pv " +
             "JOIN od.order o " +
-            "WHERE FUNCTION('YEAR', o.createdAt) = :year " +
+            "WHERE EXTRACT(YEAR FROM o.createdAt) = :year " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
     Page<Object[]> findBestSellingProductsByYear(
@@ -40,8 +40,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "FROM OrderDetail od " +
             "JOIN od.productVariant pv " +
             "JOIN od.order o " +
-            "WHERE FUNCTION('YEAR', o.createdAt) = :year " +
-            "AND FUNCTION('MONTH', o.createdAt) = :month " +
+            "WHERE EXTRACT(YEAR FROM o.createdAt) = :year " +
+            "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
     Page<Object[]> findBestSellingProductsByMonthAndYear(
@@ -54,9 +54,9 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "FROM OrderDetail od " +
             "JOIN od.productVariant pv " +
             "JOIN od.order o " +
-            "WHERE FUNCTION('YEAR', o.createdAt) = :year " +
-            "AND FUNCTION('MONTH', o.createdAt) = :month " +
-            "AND FUNCTION('DAY', o.createdAt) = :day " +
+            "WHERE EXTRACT(YEAR FROM o.createdAt) = :year " +
+            "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
+            "AND EXTRACT(DAY FROM o.createdAt) = :day " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
     Page<Object[]> findBestSellingProductsByDayAndMonthAndYear(
@@ -87,7 +87,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "JOIN o.employee e " +
             "JOIN e.branch b " +
             "WHERE b.id = :branchId " +
-            "AND FUNCTION('YEAR', o.createdAt) = :year " +
+            "AND EXTRACT(YEAR FROM o.createdAt) = :year " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
     Page<Object[]> findBestSellingProductsByBranchAndYear(
@@ -103,8 +103,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "JOIN o.employee e " +
             "JOIN e.branch b " +
             "WHERE b.id = :branchId " +
-            "AND FUNCTION('YEAR', o.createdAt) = :year " +
-            "AND FUNCTION('MONTH', o.createdAt) = :month " +
+            "AND EXTRACT(YEAR FROM o.createdAt) = :year " +
+            "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
     Page<Object[]> findBestSellingProductsByBranchAndMonthAndYear(
@@ -121,9 +121,9 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "JOIN o.employee e " +
             "JOIN e.branch b " +
             "WHERE b.id = :branchId " +
-            "AND FUNCTION('YEAR', o.createdAt) = :year " +
-            "AND FUNCTION('MONTH', o.createdAt) = :month " +
-            "AND FUNCTION('DAY', o.createdAt) = :day " +
+            "AND EXTRACT(YEAR FROM o.createdAt) = :year " +
+            "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
+            "AND EXTRACT(DAY FROM o.createdAt) = :day " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
     Page<Object[]> findBestSellingProductsByBranchAndDayAndMonthAndYear(

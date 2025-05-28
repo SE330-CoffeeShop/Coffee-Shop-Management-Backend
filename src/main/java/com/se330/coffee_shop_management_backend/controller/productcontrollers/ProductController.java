@@ -263,7 +263,7 @@ public class ProductController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
+            @RequestParam(defaultValue = "totalQuantity") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
@@ -290,7 +290,7 @@ public class ProductController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
+            @RequestParam(defaultValue = "totalQuantity") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
@@ -318,7 +318,7 @@ public class ProductController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
+            @RequestParam(defaultValue = "totalQuantity") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
@@ -347,7 +347,7 @@ public class ProductController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
+            @RequestParam(defaultValue = "totalQuantity") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
@@ -374,7 +374,7 @@ public class ProductController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
+            @RequestParam(defaultValue = "totalQuantity") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
@@ -402,7 +402,7 @@ public class ProductController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
+            @RequestParam(defaultValue = "productSoldCount") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
@@ -431,7 +431,7 @@ public class ProductController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
+            @RequestParam(defaultValue = "totalQuantity") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
@@ -461,7 +461,7 @@ public class ProductController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
+            @RequestParam(defaultValue = "totalQuantity") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
