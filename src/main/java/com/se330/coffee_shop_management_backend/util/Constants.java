@@ -65,6 +65,7 @@ public final class Constants {
     public enum NotificationTypeEnum {
         ORDER("ORDER"),
         PAYMENT("PAYMENT"),
+        DISCOUNT("DISCOUNT"),
         SYSTEM("SYSTEM");
 
         private final String value;

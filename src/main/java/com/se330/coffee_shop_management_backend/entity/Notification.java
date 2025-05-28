@@ -21,7 +21,7 @@ public class Notification extends AbstractBaseEntity {
     @Column(name = "notification_type", nullable = false)
     private Constants.NotificationTypeEnum notificationType;
 
-    @Column(name = "notification_content", nullable = false)
+    @Column(name = "notification_content")
     private String notificationContent;
 
     @ManyToOne(fetch = FetchType.EAGER)

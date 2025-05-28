@@ -3,6 +3,7 @@ package com.se330.coffee_shop_management_backend.service.discountservices.imp;
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.UsedDiscountCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Branch;
 import com.se330.coffee_shop_management_backend.entity.Discount;
 import com.se330.coffee_shop_management_backend.entity.OrderDetail;
@@ -12,6 +13,7 @@ import com.se330.coffee_shop_management_backend.repository.OrderDetailRepository
 import com.se330.coffee_shop_management_backend.repository.UsedDiscountRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
+import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.useddiscount.IUsedDiscountService;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,6 +36,7 @@ public class ImpDiscountService implements IDiscountService {
     private final OrderDetailRepository orderDetailRepository;
     private final UsedDiscountRepository usedDiscountRepository;
     private final IUsedDiscountService usedDiscountService;
+    private final INotificationService notificationService;
 
     public ImpDiscountService(
             DiscountRepository discountRepository,
@@ -41,7 +44,8 @@ public class ImpDiscountService implements IDiscountService {
             ProductVariantRepository productVariantRepository,
             OrderDetailRepository orderDetailRepository,
             UsedDiscountRepository usedDiscountRepository,
-            IUsedDiscountService usedDiscountService
+            IUsedDiscountService usedDiscountService,
+            INotificationService notificationService
     ) {
         this.discountRepository = discountRepository;
         this.branchRepository = branchRepository;
@@ -49,6 +53,7 @@ public class ImpDiscountService implements IDiscountService {
         this.orderDetailRepository = orderDetailRepository;
         this.usedDiscountRepository = usedDiscountRepository;
         this.usedDiscountService = usedDiscountService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -75,11 +80,14 @@ public class ImpDiscountService implements IDiscountService {
     }
 
     @Override
+    @Transactional
     public Discount createDiscount(DiscountCreateRequestDTO discountCreateRequestDTO) {
         Branch existingBranch = branchRepository.findById(discountCreateRequestDTO.getBranchId())
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + discountCreateRequestDTO.getBranchId()));
 
-        return discountRepository.save(
+        // TODO: validate the sender employee is a manager of the branch
+
+        Discount returnDiscount = discountRepository.save(
                 Discount.builder()
                         .discountName(discountCreateRequestDTO.getDiscountName())
                         .discountDescription(discountCreateRequestDTO.getDiscountDescription())
@@ -101,7 +109,20 @@ public class ImpDiscountService implements IDiscountService {
                                                     .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id));
                                         }).toList() : List.of())
                         .build()
+
         );
+
+        // if the discount is active, send a notification to every user
+        notificationService.sendNotificationToAllUsers(
+                new NotificationCreateRequestDTO(
+                    Constants.NotificationTypeEnum.DISCOUNT.name(),
+                    "New Discount Available: " + discountCreateRequestDTO.getDiscountName() + " at " + existingBranch.getBranchName(),
+                    UUID.randomUUID(),
+                    UUID.randomUUID()
+                )
+        );
+
+        return returnDiscount;
     }
 
     @Override

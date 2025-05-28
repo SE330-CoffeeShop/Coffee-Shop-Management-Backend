@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -68,11 +69,11 @@ public class ImpNotificationService implements INotificationService {
         User sender = null;
 
         if (!Objects.equals(notificationCreateRequestDTO.getNotificationType(), Constants.NotificationTypeEnum.SYSTEM.getValue())) {
-            sender = userRepository.findById(UUID.fromString(notificationCreateRequestDTO.getSenderId()))
+            sender = userRepository.findById(notificationCreateRequestDTO.getSenderId())
                     .orElseThrow(() -> new RuntimeException("Sender not found"));
         }
 
-        User receiver = userRepository.findById(UUID.fromString(notificationCreateRequestDTO.getReceiverId()))
+        User receiver = userRepository.findById(notificationCreateRequestDTO.getReceiverId())
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
 
         return notificationRepository.save(
@@ -92,11 +93,11 @@ public class ImpNotificationService implements INotificationService {
         User sender = null;
 
         if (!Objects.equals(notificationUpdateRequestDTO.getNotificationType(), Constants.NotificationTypeEnum.SYSTEM.getValue())) {
-            sender = userRepository.findById(UUID.fromString(notificationUpdateRequestDTO.getSenderId()))
+            sender = userRepository.findById(notificationUpdateRequestDTO.getSenderId())
                     .orElseThrow(() -> new RuntimeException("Sender not found"));
         }
 
-        User receiver = userRepository.findById(UUID.fromString(notificationUpdateRequestDTO.getReceiverId()))
+        User receiver = userRepository.findById(notificationUpdateRequestDTO.getReceiverId())
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
 
         Notification existingNotification = notificationRepository.findById(notificationUpdateRequestDTO.getNotificationId())
@@ -119,6 +120,21 @@ public class ImpNotificationService implements INotificationService {
         existingNotification.setNotificationType(Constants.NotificationTypeEnum.valueOf(notificationUpdateRequestDTO.getNotificationType()));
 
         return notificationRepository.save(existingNotification);
+    }
+
+    @Override
+    public void sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO) {
+        List<User> users = userRepository.findAll();
+        User sender = userRepository.findById(notificationCreateRequestDTO.getSenderId()).orElse(null);
+        for (User user : users) {
+            Notification notification = Notification.builder()
+                    .notificationContent(notificationCreateRequestDTO.getNotificationContent())
+                    .notificationType(Constants.NotificationTypeEnum.valueOf(notificationCreateRequestDTO.getNotificationType()))
+                    .receiver(user)
+                    .sender(sender)
+                    .build();
+            notificationRepository.save(notification);
+        }
     }
 
     @Transactional
