@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -44,9 +45,10 @@ public class OrderDetailResponseDTO extends AbstractBaseResponse {
     private LocalDateTime updatedAt;
 
     private int orderDetailQuantity;
-    private int orderDetailUnitPrice;
+    private BigDecimal orderDetailUnitPrice;
     private String productVariantId;
     private String orderId;
+    private List<String> usedDiscountId;
 
     public static OrderDetailResponseDTO convert(OrderDetail orderDetail) {
         return OrderDetailResponseDTO.builder()
@@ -59,6 +61,9 @@ public class OrderDetailResponseDTO extends AbstractBaseResponse {
                         orderDetail.getProductVariant().getId().toString() : null)
                 .orderId(orderDetail.getOrder() != null ?
                         orderDetail.getOrder().getId().toString() : null)
+                .usedDiscountId(orderDetail.getUsedDiscounts() != null ? orderDetail.getUsedDiscounts().stream()
+                        .map(discount -> discount.getId().toString())
+                        .collect(Collectors.toList()) : List.of())
                 .build();
     }
 

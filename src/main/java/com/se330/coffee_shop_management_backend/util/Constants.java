@@ -77,6 +77,22 @@ public final class Constants {
         }
     }
 
+    @Getter
+    @AllArgsConstructor
+    public enum DiscountTypeEnum {
+        PERCENTAGE("PERCENTAGE"),
+        AMOUNT("AMOUNT");
+
+        private final String value;
+
+        public static DiscountTypeEnum get(final String name) {
+            return Stream.of(DiscountTypeEnum.values())
+                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid discount type name: %s", name)));
+        }
+    }
+
     public static String getTokenFromPath(final String path) {
         if (path == null || path.isEmpty())
             return null;

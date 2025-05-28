@@ -549,7 +549,7 @@ public class DummyDataService implements CommandLineRunner {
         discounts.add(Discount.builder()
                 .discountName("Summer Special")
                 .discountDescription("Special discount for the summer season")
-                .discountType("PERCENTAGE")
+                .discountType(Constants.DiscountTypeEnum.PERCENTAGE)
                 .discountValue(new BigDecimal("15.00"))
                 .discountCode("SUMMER15")
                 .discountStartDate(now)
@@ -557,7 +557,7 @@ public class DummyDataService implements CommandLineRunner {
                 .discountMaxUsers(1000)
                 .discountUserCount(0)
                 .discountMaxPerUser(1)
-                .discountMinOrderValue(20)
+                .discountMinOrderValue(BigDecimal.valueOf(20))
                 .discountIsActive(true)
                 .branch(defaultBranch)
                 .build());
@@ -565,7 +565,7 @@ public class DummyDataService implements CommandLineRunner {
         discounts.add(Discount.builder()
                 .discountName("Welcome Discount")
                 .discountDescription("Discount for new customers")
-                .discountType("PERCENTAGE")
+                .discountType(Constants.DiscountTypeEnum.PERCENTAGE)
                 .discountValue(new BigDecimal("10.00"))
                 .discountCode("WELCOME10")
                 .discountStartDate(now)
@@ -573,7 +573,7 @@ public class DummyDataService implements CommandLineRunner {
                 .discountMaxUsers(5000)
                 .discountUserCount(0)
                 .discountMaxPerUser(1)
-                .discountMinOrderValue(0)
+                .discountMinOrderValue(BigDecimal.valueOf(0))
                 .discountIsActive(true)
                 .branch(defaultBranch)
                 .build());
@@ -581,7 +581,7 @@ public class DummyDataService implements CommandLineRunner {
         discounts.add(Discount.builder()
                 .discountName("Loyalty Reward")
                 .discountDescription("Special discount for loyal customers")
-                .discountType("FIXED")
+                .discountType(Constants.DiscountTypeEnum.AMOUNT)
                 .discountValue(new BigDecimal("5.00"))
                 .discountCode("LOYAL5")
                 .discountStartDate(now)
@@ -589,7 +589,7 @@ public class DummyDataService implements CommandLineRunner {
                 .discountMaxUsers(2000)
                 .discountUserCount(0)
                 .discountMaxPerUser(5)
-                .discountMinOrderValue(15)
+                .discountMinOrderValue(BigDecimal.valueOf(15))
                 .discountIsActive(true)
                 .branch(branches.size() > 1 ? branches.get(1) : defaultBranch)
                 .build());
@@ -597,7 +597,7 @@ public class DummyDataService implements CommandLineRunner {
         discounts.add(Discount.builder()
                 .discountName("Holiday Special")
                 .discountDescription("Special discount for the holiday season")
-                .discountType("PERCENTAGE")
+                .discountType(Constants.DiscountTypeEnum.PERCENTAGE)
                 .discountValue(new BigDecimal("20.00"))
                 .discountCode("HOLIDAY20")
                 .discountStartDate(now.withMonth(11).withDayOfMonth(20))
@@ -605,7 +605,7 @@ public class DummyDataService implements CommandLineRunner {
                 .discountMaxUsers(3000)
                 .discountUserCount(0)
                 .discountMaxPerUser(2)
-                .discountMinOrderValue(25)
+                .discountMinOrderValue(BigDecimal.valueOf(25))
                 .discountIsActive(true)
                 .branch(branches.size() > 2 ? branches.get(2) : defaultBranch)
                 .build());
@@ -615,7 +615,7 @@ public class DummyDataService implements CommandLineRunner {
         discounts.add(Discount.builder()
                 .discountName("Weekend Deal")
                 .discountDescription("Special discount for weekend orders")
-                .discountType("PERCENTAGE")
+                .discountType(Constants.DiscountTypeEnum.PERCENTAGE)
                 .discountValue(new BigDecimal("12.50"))
                 .discountCode("WEEKEND12")
                 .discountStartDate(now)
@@ -623,7 +623,7 @@ public class DummyDataService implements CommandLineRunner {
                 .discountMaxUsers(unlimited)
                 .discountUserCount(0)
                 .discountMaxPerUser(unlimited)
-                .discountMinOrderValue(30)
+                .discountMinOrderValue(BigDecimal.valueOf(30))
                 .discountIsActive(true)
                 .branch(branches.size() > 3 ? branches.get(3) : defaultBranch)
                 .build());
@@ -900,7 +900,7 @@ public class DummyDataService implements CommandLineRunner {
         for (ProductVariant productVariant : orderProductVariants) {
             // Create reasonable quantities and unit prices
             int quantity = 1 + random.nextInt(3); // 1-3 items
-            int unitPrice = productVariant.getVariantPrice().intValue();
+            BigDecimal unitPrice = BigDecimal.valueOf(productVariant.getVariantPrice());
 
             OrderDetail orderDetail = OrderDetail.builder()
                     .orderDetailQuantity(quantity)

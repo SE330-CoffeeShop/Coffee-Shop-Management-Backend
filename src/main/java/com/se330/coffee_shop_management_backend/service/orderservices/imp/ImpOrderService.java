@@ -5,6 +5,7 @@ import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCre
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.*;
+import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
 import com.se330.coffee_shop_management_backend.util.Constants;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -27,6 +29,7 @@ public class ImpOrderService implements IOrderService {
     private final UserRepository userRepository;
     private final ShippingAddressesRepository shippingAddressesRepository;
     private final IOrderDetailService orderDetailService;
+    private final IDiscountService discountService;
 
     public ImpOrderService(
             OrderRepository orderRepository,
@@ -34,7 +37,8 @@ public class ImpOrderService implements IOrderService {
             PaymentMethodsRepository paymentMethodsRepository,
             UserRepository userRepository,
             ShippingAddressesRepository shippingAddressesRepository,
-            IOrderDetailService orderDetailService
+            IOrderDetailService orderDetailService,
+            IDiscountService discountService
     ) {
         this.orderRepository = orderRepository;
         this.employeeRepository = employeeRepository;
@@ -42,6 +46,7 @@ public class ImpOrderService implements IOrderService {
         this.userRepository = userRepository;
         this.shippingAddressesRepository = shippingAddressesRepository;
         this.orderDetailService = orderDetailService;
+        this.discountService = discountService;
     }
 
     @Override
@@ -54,6 +59,26 @@ public class ImpOrderService implements IOrderService {
         return orderRepository.findAll(pageable);
     }
 
+    /**
+     * Creates a new order with associated order details and applies available discounts.
+     *
+     * <p>This method performs the following steps:</p>
+     * <ol>
+     *   <li>Validates and retrieves required entities (employee, user, shipping address, payment method)</li>
+     *   <li>Creates a new Order with initial total cost of zero</li>
+     *   <li>Creates OrderDetail entities for each product in the request</li>
+     *   <li>Calculates the initial total cost</li>
+     *   <li>Applies the most valuable discount to each order detail based on total order value</li>
+     *   <li>Recalculates the final total cost after discounts are applied</li>
+     *   <li>Updates and returns the completed order</li>
+     * </ol>
+     *
+     * @param orderCreateRequestDTO The data transfer object containing all information needed to create the order:
+     *                             employee ID, user ID, shipping address ID, payment method ID, order status,
+     *                             tracking number, and list of order details with product variants and quantities
+     * @return The fully created and populated Order entity with all relationships established and total cost calculated
+     * @throws EntityNotFoundException If any referenced entity (employee, user, shipping address, payment method) cannot be found
+     */
     @Override
     @Transactional
     public Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) {
@@ -88,8 +113,18 @@ public class ImpOrderService implements IOrderService {
             orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
         }
 
-        // update total cost
+        // Calculate total cost
         BigDecimal totalCost = updateTotalCost(newOrder);
+
+        // now we loop for each order detail to apply discount for them
+        for (OrderDetail orderDetail : newOrder.getOrderDetails()) {
+            discountService.applyMostValuableDiscountOfOrderDetail(orderDetail.getId(), totalCost);
+        }
+
+        // update again the new total cost since the unit price of some order details have been changed
+        totalCost = updateTotalCost(newOrder);
+
+        // set the new total cost
         newOrder.setOrderTotalCost(totalCost);
 
         // save order again to update total cost and payment method
@@ -125,7 +160,7 @@ public class ImpOrderService implements IOrderService {
             for (OrderDetail oldOrderDetail : orderDetailOlds) {
                 if (
                         oldOrderDetail.getOrderDetailQuantity() == orderDetailCreateRequestDTO.getOrderDetailQuantity() &&
-                        oldOrderDetail.getOrderDetailUnitPrice() == orderDetailCreateRequestDTO.getOrderDetailUnitPrice() &&
+                                Objects.equals(oldOrderDetail.getOrderDetailUnitPrice(), orderDetailCreateRequestDTO.getOrderDetailUnitPrice()) &&
                         oldOrderDetail.getProductVariant().getId() == orderDetailCreateRequestDTO.getProductVariantId()
                 ) {
                     // which means this order detail have no change
@@ -141,7 +176,17 @@ public class ImpOrderService implements IOrderService {
 
         // update total cost
         BigDecimal totalCost = updateTotalCost(existingOrder);
+
+        // then apply discount
+        for (OrderDetail orderDetail : existingOrder.getOrderDetails()) {
+            discountService.applyMostValuableDiscountOfOrderDetail(orderDetail.getId(), totalCost);
+        }
+
+        totalCost = updateTotalCost(existingOrder);
+
         existingOrder.setOrderTotalCost(totalCost);
+
+        orderRepository.save(existingOrder);
 
         return orderRepository.findById(existingOrder.getId())
                 .orElseThrow(() -> new EntityNotFoundException("HOW THE FUCK CAN YOU EVEN GET HERE"));
@@ -177,7 +222,7 @@ public class ImpOrderService implements IOrderService {
         BigDecimal totalCost = BigDecimal.ZERO;
 
         for (OrderDetail orderDetail : order.getOrderDetails()) {
-            BigDecimal itemCost = BigDecimal.valueOf((long) orderDetail.getOrderDetailUnitPrice() * orderDetail.getOrderDetailQuantity());
+            BigDecimal itemCost = orderDetail.getOrderDetailUnitPrice().multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
             totalCost = totalCost.add(itemCost);
         }
 
