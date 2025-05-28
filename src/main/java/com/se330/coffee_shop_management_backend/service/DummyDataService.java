@@ -1415,6 +1415,7 @@ public class DummyDataService implements CommandLineRunner {
                 shifts.add(Shift.builder()
                         .shiftStartTime(morningStart)
                         .shiftEndTime(morningEnd)
+                        .shiftSalary(BigDecimal.valueOf(1000 + random.nextInt(1000)))
                         .employee(availableEmployees.get(i))
                         .build());
             }
@@ -1432,6 +1433,7 @@ public class DummyDataService implements CommandLineRunner {
                         .shiftStartTime(afternoonStart)
                         .shiftEndTime(afternoonEnd)
                         .employee(availableEmployees.get(i))
+                        .shiftSalary(BigDecimal.valueOf(1000 + random.nextInt(1000)))
                         .build());
             }
 
@@ -1451,6 +1453,7 @@ public class DummyDataService implements CommandLineRunner {
                             .shiftStartTime(eveningStart)
                             .shiftEndTime(eveningEnd)
                             .employee(availableEmployees.get(i))
+                            .shiftSalary(BigDecimal.valueOf(1000 + random.nextInt(1000)))
                             .build());
                 }
             }
