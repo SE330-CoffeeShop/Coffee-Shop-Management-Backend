@@ -13,5 +13,4 @@ public class StockUpdateRequestDTO {
     private int stockUnit;
     private UUID ingredientId;
     private UUID warehouseId;
-    private UUID supplierId;
 }

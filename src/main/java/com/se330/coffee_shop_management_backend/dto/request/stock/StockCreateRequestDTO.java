@@ -12,5 +12,4 @@ public class StockCreateRequestDTO {
     private int stockUnit;
     private UUID ingredientId;
     private UUID warehouseId;
-    private UUID supplierId;
 }

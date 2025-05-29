@@ -39,16 +39,4 @@ public class Stock extends AbstractBaseEntity {
             )
     )
     private Warehouse warehouse;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(
-            name = "supplier_id",
-            foreignKey = @ForeignKey(
-                    name = "fk_stock_supplier",
-                    foreignKeyDefinition = "FOREIGN KEY (supplier_id) REFERENCES suppliers (supplier_id) ON DELETE CASCADE"
-            )
-    )
-    private Supplier supplier;
-
-
 }

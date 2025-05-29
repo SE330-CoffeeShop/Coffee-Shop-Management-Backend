@@ -76,7 +76,6 @@ public class ImpInvoiceService implements IInvoiceService {
             invoiceDetailCreateRequestDTO.setInvoiceId(newInvoice.getId());
             InvoiceDetail invoiceDetail = invoiceDetailService.createInvoiceDetail(invoiceDetailCreateRequestDTO);
 
-            // first check if the stock is for ware house
             if (newInvoice.getWarehouse() != null) {
                 // now find and update stock in that warehouse
                 boolean stockExists = false;
@@ -94,27 +93,6 @@ public class ImpInvoiceService implements IInvoiceService {
                     Stock newStock = Stock.builder()
                             .ingredient(invoiceDetail.getIngredient())
                             .warehouse(existingWarehouse)
-                            .stockQuantity(invoiceDetailCreateRequestDTO.getInvoiceDetailQuantity())
-                            .build();
-                    stockRepository.save(newStock);
-                }
-            } // if the invoice is for supplier
-            else if (newInvoice.getSupplier() != null) {
-                boolean stockExists = false;
-                for (Stock stock : existingSupplier.getStocks()) {
-                    if (stock.getIngredient().getId().equals(invoiceDetailCreateRequestDTO.getIngredientId())) {
-                        stockExists = true;
-                        stock.setStockQuantity(stock.getStockQuantity() + invoiceDetailCreateRequestDTO.getInvoiceDetailQuantity());
-                        stockRepository.save(stock);
-                        break;
-                    }
-                }
-
-                // if stock does not exist, create a new stock entry
-                if (!stockExists) {
-                    Stock newStock = Stock.builder()
-                            .ingredient(invoiceDetail.getIngredient())
-                            .supplier(existingSupplier)
                             .stockQuantity(invoiceDetailCreateRequestDTO.getInvoiceDetailQuantity())
                             .build();
                     stockRepository.save(newStock);

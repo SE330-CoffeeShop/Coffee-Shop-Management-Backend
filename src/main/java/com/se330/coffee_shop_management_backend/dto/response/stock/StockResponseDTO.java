@@ -44,7 +44,6 @@ public class StockResponseDTO extends AbstractBaseResponse {
     private int stockUnit;
     private String ingredientId;
     private String warehouseId;
-    private String supplierId;
 
     public static StockResponseDTO convert(Stock stock) {
         return StockResponseDTO.builder()
@@ -55,7 +54,6 @@ public class StockResponseDTO extends AbstractBaseResponse {
                 .stockUnit(stock.getStockUnit())
                 .ingredientId(stock.getIngredient() != null ? stock.getIngredient().getId().toString() : null)
                 .warehouseId(stock.getWarehouse() != null ? stock.getWarehouse().getId().toString() : null)
-                .supplierId(stock.getSupplier() != null ? stock.getSupplier().getId().toString() : null)
                 .build();
     }
 
