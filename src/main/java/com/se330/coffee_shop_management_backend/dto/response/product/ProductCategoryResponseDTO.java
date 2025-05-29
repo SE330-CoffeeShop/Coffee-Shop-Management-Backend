@@ -45,6 +45,7 @@ public class ProductCategoryResponseDTO extends AbstractBaseResponse {
 
     private String categoryName;
     private String categoryDescription;
+    private Integer catalogId;
 
     private List<String> products;
 
@@ -67,6 +68,7 @@ public class ProductCategoryResponseDTO extends AbstractBaseResponse {
                 .categoryName(productCategory.getCategoryName())
                 .categoryDescription(productCategory.getCategoryDescription())
                 .products(productIds)
+                .catalogId(productCategory.getCatalog() != null ? productCategory.getCatalog().getId() : null)
                 .build();
     }
 
