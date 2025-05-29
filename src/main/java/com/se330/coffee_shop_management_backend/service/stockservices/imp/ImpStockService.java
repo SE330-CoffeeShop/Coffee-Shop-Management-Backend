@@ -50,11 +50,6 @@ public class ImpStockService implements IStockService {
     }
 
     @Override
-    public Page<Stock> findAllStocksBySupplierId(UUID supplierId, Pageable pageable) {
-        return stockRepository.findAllBySupplier_Id(supplierId, pageable);
-    }
-
-    @Override
     public Stock createStock(StockCreateRequestDTO stockCreateRequestDTO) {
         Ingredient existingIngredient = ingredientRepository.findById(stockCreateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new EntityNotFoundException("Ingredient not found with ID: " + stockCreateRequestDTO.getIngredientId()));

@@ -1617,7 +1617,6 @@ public class DummyDataService implements CommandLineRunner {
                         .stockUnit(unit)
                         .ingredient(ingredient)
                         .warehouse(warehouse)
-                        .supplier(supplier)
                         .build());
             }
         }

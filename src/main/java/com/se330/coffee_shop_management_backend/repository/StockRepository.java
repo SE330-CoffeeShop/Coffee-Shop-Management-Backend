@@ -12,6 +12,4 @@ import java.util.UUID;
 @Repository
 public interface StockRepository extends JpaRepository<Stock, UUID>, JpaSpecificationExecutor<Stock> {
     Page<Stock> findAllByWarehouse_Id(UUID warehouseId, Pageable pageable);
-
-    Page<Stock> findAllBySupplier_Id(UUID supplierId, Pageable pageable);
 }

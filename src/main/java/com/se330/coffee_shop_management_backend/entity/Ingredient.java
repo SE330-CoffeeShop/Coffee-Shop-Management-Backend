@@ -30,6 +30,9 @@ public class Ingredient extends AbstractBaseEntity {
     @Column(name = "ingredient_type", nullable = false)
     private String ingredientType;
 
+    @Column(name = "shelfLifeDays", nullable = false)
+    private long shelfLifeDays;
+
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<TransferDetail> transferDetails = new ArrayList<>();
