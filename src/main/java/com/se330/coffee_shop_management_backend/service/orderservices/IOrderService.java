@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface IOrderService {
     Order findByIdOrder(UUID id);
     Page<Order> findAllOrders(Pageable pageable);
+    Page<Order> findAllOrderByCustomerId(UUID customerId, Pageable pageable);
     Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO);
     Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO);
     void deleteOrder(UUID id);

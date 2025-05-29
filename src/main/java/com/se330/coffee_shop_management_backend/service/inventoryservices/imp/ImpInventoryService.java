@@ -44,6 +44,11 @@ public class ImpInventoryService implements IInventoryService {
     }
 
     @Override
+    public Page<Inventory> findAllInventoriesByBrachId(UUID branchId, Pageable pageable) {
+        return inventoryRepository.findAllByBranch_Id(branchId, pageable);
+    }
+
+    @Override
     public Inventory createInventory(InventoryCreateRequestDTO inventoryCreateRequestDTO) {
         Ingredient existingIngredient = ingredientRepository.findById(inventoryCreateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));

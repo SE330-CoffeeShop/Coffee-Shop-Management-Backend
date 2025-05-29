@@ -59,6 +59,11 @@ public class ImpOrderService implements IOrderService {
         return orderRepository.findAll(pageable);
     }
 
+    @Override
+    public Page<Order> findAllOrderByCustomerId(UUID customerId, Pageable pageable) {
+        return orderRepository.findAllByUser_Id(customerId, pageable);
+    }
+
     /**
      * Creates a new order with associated order details and applies available discounts.
      *
