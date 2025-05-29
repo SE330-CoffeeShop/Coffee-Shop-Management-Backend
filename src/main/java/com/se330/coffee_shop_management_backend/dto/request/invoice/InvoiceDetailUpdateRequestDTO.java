@@ -10,7 +10,7 @@ import java.util.UUID;
 public class InvoiceDetailUpdateRequestDTO {
     private UUID id;
     private int invoiceDetailQuantity;
-    private int invoiceDetailUnit;
+    private String invoiceDetailUnit;
     private UUID ingredientId;
     private UUID invoiceId;
 }

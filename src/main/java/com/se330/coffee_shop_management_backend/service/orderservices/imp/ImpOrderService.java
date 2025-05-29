@@ -128,10 +128,7 @@ public class ImpOrderService implements IOrderService {
         newOrder.setOrderTotalCost(totalCost);
 
         // save order again to update total cost and payment method
-        orderRepository.save(newOrder);
-
-        return orderRepository.findById(newOrder.getId())
-            .orElseThrow(() -> new EntityNotFoundException("HOW THE FUCK CAN YOU EVEN GET HERE"));
+        return orderRepository.save(newOrder);
     }
 
     @Override
@@ -186,10 +183,7 @@ public class ImpOrderService implements IOrderService {
 
         existingOrder.setOrderTotalCost(totalCost);
 
-        orderRepository.save(existingOrder);
-
-        return orderRepository.findById(existingOrder.getId())
-                .orElseThrow(() -> new EntityNotFoundException("HOW THE FUCK CAN YOU EVEN GET HERE"));
+        return orderRepository.save(existingOrder);
     }
 
     @Override

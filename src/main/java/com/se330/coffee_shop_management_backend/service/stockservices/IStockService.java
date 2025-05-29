@@ -11,6 +11,8 @@ import java.util.UUID;
 public interface IStockService {
     Stock findByIdStock(UUID id);
     Page<Stock> findAllStocks(Pageable pageable);
+    Page<Stock> findAllStocksByWarehouseId(UUID stockId, Pageable pageable);
+    Page<Stock> findAllStocksBySupplierId(UUID supplierId, Pageable pageable);
     Stock createStock(StockCreateRequestDTO stockCreateRequestDTO);
     Stock updateStock(StockUpdateRequestDTO stockUpdateRequestDTO);
     void deleteStock(UUID id);

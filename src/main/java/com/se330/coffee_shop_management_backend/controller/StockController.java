@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class StockController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get stock detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -78,6 +80,7 @@ public class StockController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all stocks with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -122,6 +125,7 @@ public class StockController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new stock",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -161,6 +165,7 @@ public class StockController {
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update stock",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -208,6 +213,7 @@ public class StockController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete stock",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -237,5 +243,113 @@ public class StockController {
     public ResponseEntity<Void> deleteStock(@PathVariable UUID id) {
         stockService.deleteStock(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/warehouse/{warehouseId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all stocks by warehouse ID with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved stocks for the warehouse",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Warehouse not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<StockResponseDTO>> findAllStocksByWarehouseId(
+            @PathVariable UUID warehouseId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "vi") String lan,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Stock> stockPage = stockService.findAllStocksByWarehouseId(warehouseId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        StockResponseDTO.convert(stockPage.getContent()),
+                        stockPage.getTotalElements(),
+                        stockPage.getNumber(),
+                        stockPage.getSize()
+                )
+        );
+    }
+
+    @GetMapping("/supplier/{supplierId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all stocks by supplier ID with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved stocks for the supplier",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Supplier not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<StockResponseDTO>> findAllStocksBySupplierId(
+            @PathVariable UUID supplierId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "vi") String lan,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Stock> stockPage = stockService.findAllStocksBySupplierId(supplierId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        StockResponseDTO.convert(stockPage.getContent()),
+                        stockPage.getTotalElements(),
+                        stockPage.getNumber(),
+                        stockPage.getSize()
+                )
+        );
     }
 }

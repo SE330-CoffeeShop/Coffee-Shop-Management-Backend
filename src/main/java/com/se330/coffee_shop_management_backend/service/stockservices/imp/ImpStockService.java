@@ -51,15 +51,23 @@ public class ImpStockService implements IStockService {
     }
 
     @Override
+    public Page<Stock> findAllStocksByWarehouseId(UUID warehouseId, Pageable pageable) {
+        return stockRepository.findAllByWarehouse_Id(warehouseId, pageable);
+    }
+
+    @Override
+    public Page<Stock> findAllStocksBySupplierId(UUID supplierId, Pageable pageable) {
+        return stockRepository.findAllBySupplier_Id(supplierId, pageable);
+    }
+
+    @Override
     public Stock createStock(StockCreateRequestDTO stockCreateRequestDTO) {
         Ingredient existingIngredient = ingredientRepository.findById(stockCreateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new EntityNotFoundException("Ingredient not found with ID: " + stockCreateRequestDTO.getIngredientId()));
 
-        Warehouse existingWarehouse = warehouseRepository.findById(stockCreateRequestDTO.getWarehouseId())
-                .orElseThrow(() -> new EntityNotFoundException("Warehouse not found with ID: " + stockCreateRequestDTO.getWarehouseId()));
+        Warehouse existingWarehouse = warehouseRepository.findById(stockCreateRequestDTO.getWarehouseId()).orElse(null);
 
-        Supplier existingSupplier = supplierRepository.findById(stockCreateRequestDTO.getSupplierId())
-                .orElseThrow(() -> new EntityNotFoundException("Supplier not found with ID: " + stockCreateRequestDTO.getSupplierId()));
+        Supplier existingSupplier = supplierRepository.findById(stockCreateRequestDTO.getSupplierId()).orElse(null);
 
         return stockRepository.save(
                 Stock.builder()
@@ -81,11 +89,9 @@ public class ImpStockService implements IStockService {
         Ingredient existingIngredient = ingredientRepository.findById(stockUpdateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new EntityNotFoundException("Ingredient not found with ID: " + stockUpdateRequestDTO.getIngredientId()));
 
-        Warehouse existingWarehouse = warehouseRepository.findById(stockUpdateRequestDTO.getWarehouseId())
-                .orElseThrow(() -> new EntityNotFoundException("Warehouse not found with ID: " + stockUpdateRequestDTO.getWarehouseId()));
+        Warehouse existingWarehouse = warehouseRepository.findById(stockUpdateRequestDTO.getWarehouseId()).orElse(null);
 
-        Supplier existingSupplier = supplierRepository.findById(stockUpdateRequestDTO.getSupplierId())
-                .orElseThrow(() -> new EntityNotFoundException("Supplier not found with ID: " + stockUpdateRequestDTO.getSupplierId()));
+        Supplier existingSupplier = supplierRepository.findById(stockUpdateRequestDTO.getSupplierId()).orElse(null);
 
         existingStock.setStockQuantity(stockUpdateRequestDTO.getStockQuantity());
         existingStock.setStockUnit(stockUpdateRequestDTO.getStockUnit());

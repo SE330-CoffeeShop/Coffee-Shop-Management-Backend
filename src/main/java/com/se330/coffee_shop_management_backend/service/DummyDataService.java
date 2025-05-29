@@ -786,14 +786,11 @@ public class DummyDataService implements CommandLineRunner {
                     default -> 5 + (int)(Math.random() * 15); // 5-20 units
                 };
 
-                // Unit price is the ingredient price
-                int unitPrice = ingredient.getIngredientPrice().intValue();
-
                 InvoiceDetail invoiceDetail = InvoiceDetail.builder()
                         .invoice(invoice)
                         .ingredient(ingredient)
                         .invoiceDetailQuantity(quantity)
-                        .invoiceDetailUnit(unitPrice)
+                        .invoiceDetailUnit("Some unit price")
                         .build();
 
                 invoiceDetails.add(invoiceDetail);
@@ -1907,7 +1904,7 @@ public class DummyDataService implements CommandLineRunner {
                 // Create the invoice detail
                 invoiceDetails.add(InvoiceDetail.builder()
                         .invoiceDetailQuantity(quantity)
-                        .invoiceDetailUnit(unit)
+                        .invoiceDetailUnit("package")
                         .ingredient(ingredient)
                         .invoice(invoice)
                         .build());
