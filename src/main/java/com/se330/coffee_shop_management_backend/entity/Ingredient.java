@@ -30,7 +30,7 @@ public class Ingredient extends AbstractBaseEntity {
     @Column(name = "ingredient_type", nullable = false)
     private String ingredientType;
 
-    @Column(name = "shelfLifeDays", nullable = false)
+    @Column(name = "shelf_life_days", nullable = false)
     private long shelfLifeDays;
 
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

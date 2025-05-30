@@ -18,7 +18,7 @@ public class Stock extends AbstractBaseEntity {
     private int stockQuantity;
 
     @Column(name = "stock_unit", nullable = false)
-    private int stockUnit;
+    private String stockUnit;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(

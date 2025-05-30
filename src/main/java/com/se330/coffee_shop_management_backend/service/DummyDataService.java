@@ -1614,7 +1614,7 @@ public class DummyDataService implements CommandLineRunner {
 
                 stocks.add(Stock.builder()
                         .stockQuantity(baseQuantity)
-                        .stockUnit(unit)
+                        .stockUnit(String.valueOf(unit))
                         .ingredient(ingredient)
                         .warehouse(warehouse)
                         .build());

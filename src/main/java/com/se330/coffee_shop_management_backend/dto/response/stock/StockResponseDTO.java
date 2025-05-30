@@ -41,7 +41,7 @@ public class StockResponseDTO extends AbstractBaseResponse {
     private LocalDateTime updatedAt;
 
     private int stockQuantity;
-    private int stockUnit;
+    private String stockUnit;
     private String ingredientId;
     private String warehouseId;
 
