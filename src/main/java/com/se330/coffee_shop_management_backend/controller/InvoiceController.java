@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get invoice detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -78,6 +80,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all invoices with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -122,6 +125,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new invoice",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -158,6 +162,7 @@ public class InvoiceController {
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update invoice",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -202,6 +207,7 @@ public class InvoiceController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete invoice",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

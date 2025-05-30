@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.branch.BranchCreateR
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.branch.BranchIdWithRevenueResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.branch.BranchResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Branch;
 import com.se330.coffee_shop_management_backend.service.branchservices.IBranchService;
@@ -17,8 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -122,6 +125,7 @@ public class BranchController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Create new branch",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -165,6 +169,7 @@ public class BranchController {
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Update branch",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -237,5 +242,290 @@ public class BranchController {
     public ResponseEntity<Void> deleteBranch(@PathVariable UUID id) {
         branchService.deleteBranch(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/revenue/year")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    @Operation(
+            summary = "Get branch total revenue by year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch revenue",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = BigDecimal.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied - Requires MANAGER role",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<BigDecimal> getBranchRevenueByYear(
+            @RequestParam UUID branchId,
+            @RequestParam int year
+    ) {
+        BigDecimal revenue = branchService.getTotalOrderCostByBranchAndYear(branchId, year);
+        return ResponseEntity.ok(revenue);
+    }
+
+    @GetMapping("/revenue/month-year")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    @Operation(
+            summary = "Get branch total revenue by month and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch revenue",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = BigDecimal.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied - Requires MANAGER role",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<BigDecimal> getBranchRevenueByMonthAndYear(
+            @RequestParam UUID branchId,
+            @RequestParam int month,
+            @RequestParam int year
+    ) {
+        BigDecimal revenue = branchService.getTotalOrderCostByBranchAndMonthAndYear(branchId, month, year);
+        return ResponseEntity.ok(revenue);
+    }
+
+    @GetMapping("/revenue/day-month-year")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    @Operation(
+            summary = "Get branch total revenue by day, month and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch revenue",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = BigDecimal.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied - Requires MANAGER role",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<BigDecimal> getBranchRevenueByDayMonthAndYear(
+            @RequestParam UUID branchId,
+            @RequestParam int day,
+            @RequestParam int month,
+            @RequestParam int year
+    ) {
+        BigDecimal revenue = branchService.getTotalOrderCostByBranchAndDayAndMonthAndYear(branchId, day, month, year);
+        return ResponseEntity.ok(revenue);
+    }
+
+    @GetMapping("/all-with-revenue/year")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Operation(
+            summary = "Get all branches with revenue by year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branches with revenue",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied - Requires ADMIN role",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BranchIdWithRevenueResponseDTO>> findAllBranchesWithRevenueByYear(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "branchRevenue") String sortBy,
+            @RequestParam int year
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BranchIdWithRevenueResponseDTO> branchPages = branchService.findAllBranchesWithRevenueWithYear(pageable, year);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        branchPages.getContent(),
+                        branchPages.getTotalElements(),
+                        branchPages.getNumber(),
+                        branchPages.getSize()
+                )
+        );
+    }
+
+    @GetMapping("/all-with-revenue/month-year")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Operation(
+            summary = "Get all branches with revenue by month and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branches with revenue",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied - Requires ADMIN role",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BranchIdWithRevenueResponseDTO>> findAllBranchesWithRevenueByMonthYear(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "branchRevenue") String sortBy,
+            @RequestParam int month,
+            @RequestParam int year
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BranchIdWithRevenueResponseDTO> branchPages = branchService.findAllBranchesWithRevenueWithMonthYear(pageable, month, year);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        branchPages.getContent(),
+                        branchPages.getTotalElements(),
+                        branchPages.getNumber(),
+                        branchPages.getSize()
+                )
+        );
+    }
+
+    @GetMapping("/all-with-revenue/day-month-year")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Operation(
+            summary = "Get all branches with revenue by day, month, and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branches with revenue",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Access denied - Requires ADMIN role",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BranchIdWithRevenueResponseDTO>> findAllBranchesWithRevenueByDayMonthYear(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "branchRevenue") String sortBy,
+            @RequestParam int day,
+            @RequestParam int month,
+            @RequestParam int year
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BranchIdWithRevenueResponseDTO> branchPages = branchService.findAllBranchesWithRevenueWithDayMonthYear(pageable, day, month, year);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        branchPages.getContent(),
+                        branchPages.getTotalElements(),
+                        branchPages.getNumber(),
+                        branchPages.getSize()
+                )
+        );
     }
 }

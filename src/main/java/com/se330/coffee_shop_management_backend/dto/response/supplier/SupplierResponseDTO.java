@@ -44,7 +44,6 @@ public class SupplierResponseDTO extends AbstractBaseResponse {
     private String supplierPhone;
     private String supplierEmail;
     private String supplierAddress;
-    private List<String> stockIds;
     private List<String> invoiceIds;
 
     public static SupplierResponseDTO convert(Supplier supplier) {
@@ -56,8 +55,6 @@ public class SupplierResponseDTO extends AbstractBaseResponse {
                 .supplierPhone(supplier.getSupplierPhone())
                 .supplierEmail(supplier.getSupplierEmail())
                 .supplierAddress(supplier.getSupplierAddress())
-                .stockIds(supplier.getStocks() != null ? supplier.getStocks().stream()
-                        .map(stock -> stock.getId().toString()).toList() : List.of())
                 .invoiceIds(supplier.getInvoices() != null ? supplier.getInvoices().stream()
                         .map(invoice -> invoice.getId().toString()).toList() : List.of())
                 .build();

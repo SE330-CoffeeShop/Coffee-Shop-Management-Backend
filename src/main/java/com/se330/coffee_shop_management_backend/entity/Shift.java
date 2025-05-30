@@ -3,8 +3,10 @@ package com.se330.coffee_shop_management_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "shifts")
@@ -32,4 +34,17 @@ public class Shift extends AbstractBaseEntity {
             )
     )
     private Employee employee;
+
+    @Column(name = "month", nullable = false)
+    private int month;
+
+    @Column(name = "year", nullable = false)
+    private int year;
+
+    @Column(name = "shift_salary", nullable = false)
+    private BigDecimal shiftSalary;
+
+    @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<Checkin> checkins = new ArrayList<>();
 }
