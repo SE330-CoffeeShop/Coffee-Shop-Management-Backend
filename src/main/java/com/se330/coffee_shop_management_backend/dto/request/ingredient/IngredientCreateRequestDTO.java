@@ -12,4 +12,5 @@ public class IngredientCreateRequestDTO {
     private String ingredientDescription;
     private BigDecimal ingredientPrice;
     private String ingredientType;
+    private long shelfLifeDays;
 }

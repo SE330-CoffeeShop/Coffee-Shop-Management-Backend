@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -122,6 +123,7 @@ public class ShippingAddressController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     @Operation(
             summary = "Create new shipping address",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -161,6 +163,7 @@ public class ShippingAddressController {
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     @Operation(
             summary = "Update shipping address",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -208,6 +211,7 @@ public class ShippingAddressController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER')")
     @Operation(
             summary = "Delete shipping address",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

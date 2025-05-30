@@ -9,8 +9,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class StockCreateRequestDTO {
     private int stockQuantity;
-    private int stockUnit;
+    private String stockUnit;
     private UUID ingredientId;
     private UUID warehouseId;
-    private UUID supplierId;
 }

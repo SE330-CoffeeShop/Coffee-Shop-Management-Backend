@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class InventoryController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get inventory detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -78,6 +80,7 @@ public class InventoryController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all inventories with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -122,6 +125,7 @@ public class InventoryController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new inventory",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -158,6 +162,7 @@ public class InventoryController {
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update inventory",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -202,6 +207,7 @@ public class InventoryController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete inventory",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -231,5 +237,59 @@ public class InventoryController {
     public ResponseEntity<Void> deleteInventory(@PathVariable UUID id) {
         inventoryService.deleteInventory(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/branch/{branchId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all inventories by branch ID with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch's inventory list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid branch ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<InventoryResponseDTO>> findAllInventoriesByBranchId(
+            @PathVariable UUID branchId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "vi") String lan,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Inventory> inventoryPage = inventoryService.findAllInventoriesByBrachId(branchId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        InventoryResponseDTO.convert(inventoryPage.getContent()),
+                        inventoryPage.getTotalElements(),
+                        inventoryPage.getNumber(),
+                        inventoryPage.getSize()
+                )
+        );
     }
 }

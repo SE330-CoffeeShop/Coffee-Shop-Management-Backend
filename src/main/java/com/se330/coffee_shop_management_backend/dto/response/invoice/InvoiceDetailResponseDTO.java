@@ -41,7 +41,7 @@ public class InvoiceDetailResponseDTO extends AbstractBaseResponse {
     private LocalDateTime updatedAt;
 
     private int invoiceDetailQuantity;
-    private int invoiceDetailUnit;
+    private String invoiceDetailUnit;
     private String ingredientId;
     private String invoiceId;
 

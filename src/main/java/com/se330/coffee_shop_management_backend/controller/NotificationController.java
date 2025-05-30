@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class NotificationController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER','EMPLOYEE','MANAGER')")
     @Operation(
             summary = "Get notification detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -78,6 +80,7 @@ public class NotificationController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER','EMPLOYEE','MANAGER')")
     @Operation(
             summary = "Get all notifications with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -122,6 +125,7 @@ public class NotificationController {
     }
 
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER','EMPLOYEE','MANAGER')")
     @Operation(
             summary = "Get all notifications for a specific user",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -175,6 +179,7 @@ public class NotificationController {
     }
 
     @GetMapping("/sent/{userId}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER','EMPLOYEE','MANAGER')")
     @Operation(
             summary = "Get all sent notifications by a specific user",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

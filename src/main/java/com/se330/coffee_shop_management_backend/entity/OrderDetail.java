@@ -4,6 +4,10 @@ import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "order_details")
 @Getter
@@ -19,7 +23,7 @@ public class OrderDetail extends AbstractBaseEntity {
     private int orderDetailQuantity;
 
     @Column(name = "order_detail_unit_price", nullable = false)
-    private int orderDetailUnitPrice;
+    private BigDecimal orderDetailUnitPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -40,4 +44,8 @@ public class OrderDetail extends AbstractBaseEntity {
             )
     )
     private Order order;
+
+    @OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<UsedDiscount> usedDiscounts = new ArrayList<>();
 }

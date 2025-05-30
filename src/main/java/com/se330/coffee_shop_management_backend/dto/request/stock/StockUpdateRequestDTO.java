@@ -10,8 +10,7 @@ import java.util.UUID;
 public class StockUpdateRequestDTO {
     private UUID stockId;
     private int stockQuantity;
-    private int stockUnit;
+    private String stockUnit;
     private UUID ingredientId;
     private UUID warehouseId;
-    private UUID supplierId;
 }

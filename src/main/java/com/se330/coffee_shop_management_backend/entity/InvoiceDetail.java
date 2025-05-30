@@ -18,7 +18,7 @@ public class InvoiceDetail extends AbstractBaseEntity {
     private int invoiceDetailQuantity;
 
     @Column(name = "invoice_detail_unit", nullable = false)
-    private int invoiceDetailUnit;
+    private String invoiceDetailUnit;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(

@@ -2,6 +2,7 @@ package com.se330.coffee_shop_management_backend.entity.product;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
+import com.se330.coffee_shop_management_backend.entity.Catalog;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,4 +29,8 @@ public class ProductCategory extends AbstractBaseEntity {
     @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<Product> products = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "catalog_id")
+    private Catalog catalog;
 }

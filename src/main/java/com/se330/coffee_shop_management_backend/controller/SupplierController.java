@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class SupplierController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE', 'ADMIN')")
     @Operation(
             summary = "Get supplier detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -78,6 +80,7 @@ public class SupplierController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE', 'ADMIN')")
     @Operation(
             summary = "Get all suppliers with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -122,6 +125,7 @@ public class SupplierController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new supplier",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -161,6 +165,7 @@ public class SupplierController {
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update supplier",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -208,6 +213,7 @@ public class SupplierController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete supplier",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

@@ -53,6 +53,7 @@ public class EmployeeResponseDTO extends AbstractBaseResponse {
     private String userId;
     private String userFullName;
     private List<String> shiftIds;
+    private List<String> orderIds;
 
     public static EmployeeResponseDTO convert(Employee employee) {
         return EmployeeResponseDTO.builder()
@@ -67,6 +68,9 @@ public class EmployeeResponseDTO extends AbstractBaseResponse {
                 .userFullName(employee.getUser() != null ? employee.getUser().getFullName() : null)
                 .shiftIds(employee.getShifts() != null ? employee.getShifts().stream()
                         .map(shift -> shift.getId().toString())
+                        .collect(Collectors.toList()) : Collections.emptyList())
+                .orderIds(employee.getOrders() != null ? employee.getOrders().stream()
+                        .map(order -> order.getId().toString())
                         .collect(Collectors.toList()) : Collections.emptyList())
                 .build();
     }
