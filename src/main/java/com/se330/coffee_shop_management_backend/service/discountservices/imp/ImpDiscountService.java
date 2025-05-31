@@ -252,9 +252,11 @@ public class ImpDiscountService implements IDiscountService {
         // now we got the new total cost of the order detail,
         // then we divide to get the new unit price of each variant in the order detail
         BigDecimal newUnitPrice = lowestCostOfOrderDetail.divide(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()), 2, RoundingMode.HALF_UP);
+        BigDecimal discountCost = orderDetail.getOrderDetailUnitPrice().subtract(newUnitPrice).multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
 
         // then save the new unit price
-        orderDetail.setOrderDetailUnitPrice(newUnitPrice);
+        orderDetail.setOrderDetailDiscountCost(discountCost);
+        orderDetail.setOrderDetailUnitPriceAfterDiscount(newUnitPrice);
         orderDetailRepository.save(orderDetail);
     }
 }

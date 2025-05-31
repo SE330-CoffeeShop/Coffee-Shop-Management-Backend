@@ -20,6 +20,13 @@ import java.util.List;
         @AttributeOverride(name = "id", column = @Column(name = "order_id"))
 })
 public class Order extends AbstractBaseEntity {
+
+    @Column(name = "order_total_cost_after_discount", nullable = false)
+    private BigDecimal orderTotalCostAfterDiscount;
+
+    @Column(name = "order_discount_cost", nullable = false)
+    private BigDecimal orderDiscountCost;
+
     @Column(name = "order_total_cost", nullable = false)
     private BigDecimal orderTotalCost;
 

@@ -3,7 +3,6 @@ package com.se330.coffee_shop_management_backend.service.orderservices.imp;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
-import com.se330.coffee_shop_management_backend.dto.response.order.PreConfirmOrderResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
@@ -18,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -122,6 +119,7 @@ public class ImpOrderService implements IOrderService {
 
         // Calculate total cost
         BigDecimal totalCost = updateTotalCost(newOrder);
+        newOrder.setOrderTotalCost(totalCost);
 
         // now we loop for each order detail to apply discount for them
         for (OrderDetail orderDetail : newOrder.getOrderDetails()) {
@@ -130,9 +128,11 @@ public class ImpOrderService implements IOrderService {
 
         // update again the new total cost since the unit price of some order details have been changed
         totalCost = updateTotalCost(newOrder);
+        BigDecimal discountCost = newOrder.getOrderTotalCost().subtract(totalCost);
 
         // set the new total cost
-        newOrder.setOrderTotalCost(totalCost);
+        newOrder.setOrderDiscountCost(discountCost);
+        newOrder.setOrderTotalCostAfterDiscount(totalCost);
 
         // save order again to update total cost and payment method
         return orderRepository.save(newOrder);
@@ -140,57 +140,67 @@ public class ImpOrderService implements IOrderService {
 
     @Override
     public Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO) {
-        Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Order not found with id:" + orderUpdateRequestDTO.getOrderId()));
+//        Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
+//                .orElseThrow(() -> new EntityNotFoundException("Order not found with id:" + orderUpdateRequestDTO.getOrderId()));
+//
+//        PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(existingOrder.getPaymentMethod().getId())
+//                .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + existingOrder.getPaymentMethod().getId()));
+//
+//        User existingUser = userRepository.findById(orderUpdateRequestDTO.getUserId())
+//                .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderUpdateRequestDTO.getUserId()));
+//
+//        ShippingAddresses existingShippingAddress = shippingAddressesRepository.findById(orderUpdateRequestDTO.getShippingAddressId())
+//                .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with id:" + orderUpdateRequestDTO.getShippingAddressId()));
+//
+//        existingOrder.setPaymentMethod(existingPaymentMethod);
+//        existingOrder.setUser(existingUser);
+//        existingOrder.setShippingAddress(existingShippingAddress);
+//        existingOrder.setOrderStatus(Constants.OrderStatusEnum.get(orderUpdateRequestDTO.getOrderStatus()));
+//        existingOrder.setOrderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"));
+//
+//        List<OrderDetail> orderDetailOlds = existingOrder.getOrderDetails();
+//
+//        for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderUpdateRequestDTO.getOrderDetails()) {
+//            for (OrderDetail oldOrderDetail : orderDetailOlds) {
+//                if (
+//                        oldOrderDetail.getOrderDetailQuantity() == orderDetailCreateRequestDTO.getOrderDetailQuantity() &&
+//                                Objects.equals(oldOrderDetail.getOrderDetailUnitPrice(), orderDetailCreateRequestDTO.getOrderDetailUnitPrice()) &&
+//                        oldOrderDetail.getProductVariant().getId() == orderDetailCreateRequestDTO.getProductVariantId()
+//                ) {
+//                    // which means this order detail have no change
+//                    continue;
+//                }
+//
+//                // remove old, create new
+//                orderDetailService.deleteOrderDetail(oldOrderDetail.getId());
+//                orderDetailCreateRequestDTO.setOrderId(existingOrder.getId());
+//                orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
+//            }
+//        }
+//
+//        // update total cost
+//        BigDecimal totalCost = updateTotalCost(existingOrder);
+//
+//        // then apply discount
+//        for (OrderDetail orderDetail : existingOrder.getOrderDetails()) {
+//            discountService.applyMostValuableDiscountOfOrderDetail(orderDetail.getId(), totalCost);
+//        }
+//
+//        totalCost = updateTotalCost(existingOrder);
+//
+//        existingOrder.setOrderTotalCost(totalCost);
+//
+//        return orderRepository.save(existingOrder);
 
-        PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(existingOrder.getPaymentMethod().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + existingOrder.getPaymentMethod().getId()));
-
-        User existingUser = userRepository.findById(orderUpdateRequestDTO.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderUpdateRequestDTO.getUserId()));
-
-        ShippingAddresses existingShippingAddress = shippingAddressesRepository.findById(orderUpdateRequestDTO.getShippingAddressId())
-                .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with id:" + orderUpdateRequestDTO.getShippingAddressId()));
-
-        existingOrder.setPaymentMethod(existingPaymentMethod);
-        existingOrder.setUser(existingUser);
-        existingOrder.setShippingAddress(existingShippingAddress);
-        existingOrder.setOrderStatus(Constants.OrderStatusEnum.get(orderUpdateRequestDTO.getOrderStatus()));
-        existingOrder.setOrderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"));
-
-        List<OrderDetail> orderDetailOlds = existingOrder.getOrderDetails();
-
-        for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderUpdateRequestDTO.getOrderDetails()) {
-            for (OrderDetail oldOrderDetail : orderDetailOlds) {
-                if (
-                        oldOrderDetail.getOrderDetailQuantity() == orderDetailCreateRequestDTO.getOrderDetailQuantity() &&
-                                Objects.equals(oldOrderDetail.getOrderDetailUnitPrice(), orderDetailCreateRequestDTO.getOrderDetailUnitPrice()) &&
-                        oldOrderDetail.getProductVariant().getId() == orderDetailCreateRequestDTO.getProductVariantId()
-                ) {
-                    // which means this order detail have no change
-                    continue;
-                }
-
-                // remove old, create new
-                orderDetailService.deleteOrderDetail(oldOrderDetail.getId());
-                orderDetailCreateRequestDTO.setOrderId(existingOrder.getId());
-                orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
-            }
-        }
-
-        // update total cost
-        BigDecimal totalCost = updateTotalCost(existingOrder);
-
-        // then apply discount
-        for (OrderDetail orderDetail : existingOrder.getOrderDetails()) {
-            discountService.applyMostValuableDiscountOfOrderDetail(orderDetail.getId(), totalCost);
-        }
-
-        totalCost = updateTotalCost(existingOrder);
-
-        existingOrder.setOrderTotalCost(totalCost);
-
-        return orderRepository.save(existingOrder);
+        deleteOrder(orderUpdateRequestDTO.getOrderId());
+        return createOrder(OrderCreateRequestDTO.builder()
+                .employeeId(orderUpdateRequestDTO.getEmployeeId())
+                .userId(orderUpdateRequestDTO.getUserId())
+                .shippingAddressId(orderUpdateRequestDTO.getShippingAddressId())
+                .paymentMethodId(orderUpdateRequestDTO.getPaymentMethodId())
+                .orderStatus(orderUpdateRequestDTO.getOrderStatus())
+                .orderDetails(orderUpdateRequestDTO.getOrderDetails())
+                .build());
     }
 
     @Override

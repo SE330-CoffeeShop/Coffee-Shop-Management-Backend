@@ -25,6 +25,12 @@ public class OrderDetail extends AbstractBaseEntity {
     @Column(name = "order_detail_unit_price", nullable = false)
     private BigDecimal orderDetailUnitPrice;
 
+    @Column(name = "order_detail_unit_price_after_discount", nullable = false)
+    private BigDecimal orderDetailUnitPriceAfterDiscount;
+
+    @Column(name = "order_detail_discount_cost", nullable = false)
+    private BigDecimal orderDetailDiscountCost;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "var_id",
