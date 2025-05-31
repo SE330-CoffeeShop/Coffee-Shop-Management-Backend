@@ -10,6 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.SupplierRepository;
 import com.se330.coffee_shop_management_backend.repository.WarehouseRepository;
 import com.se330.coffee_shop_management_backend.service.invoiceservices.IInvoiceDetailService;
 import com.se330.coffee_shop_management_backend.service.invoiceservices.IInvoiceService;
+import com.se330.coffee_shop_management_backend.util.CreateTrackingNumber;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -66,7 +67,7 @@ public class ImpInvoiceService implements IInvoiceService {
                         .warehouse(existingWarehouse)
                         .supplier(existingSupplier)
                         .invoiceDescription(invoiceCreateRequestDTO.getInvoiceDescription())
-                        .invoiceTrackingNumber(invoiceCreateRequestDTO.getInvoiceTrackingNumber())
+                        .invoiceTrackingNumber(CreateTrackingNumber.createTrackingNumber("INVOICE"))
                         .invoiceTransferTotalCost(invoiceCreateRequestDTO.getInvoiceTransferTotalCost())
                         .build()
         );
@@ -150,7 +151,7 @@ public class ImpInvoiceService implements IInvoiceService {
         }
 
         existingInvoice.setInvoiceDescription(invoiceUpdateRequestDTO.getInvoiceDescription());
-        existingInvoice.setInvoiceTrackingNumber(invoiceUpdateRequestDTO.getInvoiceTrackingNumber());
+        existingInvoice.setInvoiceTrackingNumber(CreateTrackingNumber.createTrackingNumber("INVOICE"));
         existingInvoice.setInvoiceTransferTotalCost(invoiceUpdateRequestDTO.getInvoiceTransferTotalCost());
 
         // Revert stock quantities for all existing invoice details

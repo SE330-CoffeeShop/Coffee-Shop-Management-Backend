@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountCre
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.UsedDiscountCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Branch;
 import com.se330.coffee_shop_management_backend.entity.Discount;
 import com.se330.coffee_shop_management_backend.entity.OrderDetail;

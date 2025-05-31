@@ -10,6 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.TransferRepository;
 import com.se330.coffee_shop_management_backend.repository.WarehouseRepository;
 import com.se330.coffee_shop_management_backend.service.transfer.ITransferDetailService;
 import com.se330.coffee_shop_management_backend.service.transfer.ITransferService;
+import com.se330.coffee_shop_management_backend.util.CreateTrackingNumber;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -66,7 +67,7 @@ public class ImpTransferService implements ITransferService {
                         .warehouse(existingWarehouse)
                         .branch(existingBranch)
                         .transferDescription(transferCreateRequestDTO.getTransferDescription())
-                        .transferTrackingNumber(transferCreateRequestDTO.getTransferTrackingNumber())
+                        .transferTrackingNumber(CreateTrackingNumber.createTrackingNumber("TRANSFER"))
                         .transferTotalCost(transferCreateRequestDTO.getTransferTotalCost())
                         .build()
         );
@@ -119,7 +120,7 @@ public class ImpTransferService implements ITransferService {
         }
 
         existingTransfer.setTransferDescription(transferUpdateRequestDTO.getTransferDescription());
-        existingTransfer.setTransferTrackingNumber(transferUpdateRequestDTO.getTransferTrackingNumber());
+        existingTransfer.setTransferTrackingNumber(CreateTrackingNumber.createTrackingNumber("TRANSFER"));
         existingTransfer.setTransferTotalCost(transferUpdateRequestDTO.getTransferTotalCost());
 
         // Handle transfer details update - delete all existing details and restore stock

@@ -46,7 +46,7 @@ public class OrderResponseDTO extends AbstractBaseResponse {
 
     private BigDecimal orderTotalCost;
     private String orderStatus;
-    private BigDecimal orderTrackingNumber;
+    private String orderTrackingNumber;
 
     private String employeeId;
     private String paymentMethodId;

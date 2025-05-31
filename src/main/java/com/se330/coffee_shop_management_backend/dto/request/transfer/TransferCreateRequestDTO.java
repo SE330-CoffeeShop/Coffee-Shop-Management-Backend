@@ -10,7 +10,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TransferCreateRequestDTO {
     private String transferDescription;
-    private String transferTrackingNumber;
     private BigDecimal transferTotalCost;
     private UUID branchId;
     private UUID warehouseId;

@@ -12,7 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class InvoiceCreateRequestDTO {
     private String invoiceDescription;
-    private String invoiceTrackingNumber;
     private BigDecimal invoiceTransferTotalCost;
     private UUID supplierId;
     private UUID warehouseId;

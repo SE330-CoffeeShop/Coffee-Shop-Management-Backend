@@ -11,7 +11,6 @@ import java.util.UUID;
 public class TransferUpdateRequestDTO {
     private UUID id;
     private String transferDescription;
-    private String transferTrackingNumber;
     private BigDecimal transferTotalCost;
     private UUID branchId;
     private UUID warehouseId;

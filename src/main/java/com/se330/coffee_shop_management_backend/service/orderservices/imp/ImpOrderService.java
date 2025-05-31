@@ -3,12 +3,14 @@ package com.se330.coffee_shop_management_backend.service.orderservices.imp;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.response.order.PreConfirmOrderResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
 import com.se330.coffee_shop_management_backend.util.Constants;
+import com.se330.coffee_shop_management_backend.util.CreateTrackingNumber;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -104,7 +106,7 @@ public class ImpOrderService implements IOrderService {
             Order.builder()
                     .employee(existingEmployee)
                     .orderStatus(Constants.OrderStatusEnum.get(orderCreateRequestDTO.getOrderStatus()))
-                    .orderTrackingNumber(orderCreateRequestDTO.getOrderTrackingNumber())
+                    .orderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"))
                     .paymentMethod(existingPaymentMethod)
                     .user(existingUser)
                     .shippingAddress(existingShippingAddress)
@@ -154,7 +156,7 @@ public class ImpOrderService implements IOrderService {
         existingOrder.setUser(existingUser);
         existingOrder.setShippingAddress(existingShippingAddress);
         existingOrder.setOrderStatus(Constants.OrderStatusEnum.get(orderUpdateRequestDTO.getOrderStatus()));
-        existingOrder.setOrderTrackingNumber(orderUpdateRequestDTO.getOrderTrackingNumber());
+        existingOrder.setOrderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"));
 
         List<OrderDetail> orderDetailOlds = existingOrder.getOrderDetails();
 

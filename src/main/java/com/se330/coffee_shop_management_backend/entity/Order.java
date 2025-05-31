@@ -29,7 +29,7 @@ public class Order extends AbstractBaseEntity {
     private Constants.OrderStatusEnum orderStatus;
 
     @Column(name = "order_tracking_number", nullable = false)
-    private BigDecimal orderTrackingNumber;
+    private String orderTrackingNumber;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default

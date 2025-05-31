@@ -12,7 +12,6 @@ import java.util.UUID;
 public class InvoiceUpdateRequestDTO {
     private UUID id;
     private String invoiceDescription;
-    private String invoiceTrackingNumber;
     private BigDecimal invoiceTransferTotalCost;
     private UUID supplierId;
     private UUID warehouseId;
