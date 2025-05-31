@@ -13,4 +13,6 @@ import java.util.UUID;
 public interface ProductCategoryRepository extends JpaRepository<ProductCategory, UUID>, JpaSpecificationExecutor<ProductCategory> {
     @Override
     Page<ProductCategory> findAll(Pageable pageable);
+
+    Page<ProductCategory> findAllByCatalog_Id(Integer catalogId, Pageable pageable);
 }

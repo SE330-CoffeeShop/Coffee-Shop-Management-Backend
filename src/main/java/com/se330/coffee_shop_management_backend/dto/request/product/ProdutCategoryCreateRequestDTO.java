@@ -8,4 +8,5 @@ import lombok.NoArgsConstructor;
 public class ProdutCategoryCreateRequestDTO {
     private String categoryName;
     private String categoryDescription;
+    private Integer catalogId;
 }

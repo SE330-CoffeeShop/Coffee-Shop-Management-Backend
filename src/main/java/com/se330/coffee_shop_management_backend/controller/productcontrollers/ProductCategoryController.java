@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -129,6 +130,7 @@ public class ProductCategoryController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Create new product category",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -168,6 +170,7 @@ public class ProductCategoryController {
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Update product category",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -234,5 +237,56 @@ public class ProductCategoryController {
     public ResponseEntity<Void> deleteCategory(@PathVariable UUID id) {
         productCategoryService.deleteProductCategory(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/catalog/{catalogId}")
+    @Operation(
+            summary = "Get all product categories by catalog ID with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved category list by catalog ID",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Catalog not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class))
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<ProductCategoryResponseDTO>> findAllProductCategoriesByCatalogId(
+            @PathVariable Integer catalogId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "vi") String lan,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+
+        Page<ProductCategory> categoryPage = productCategoryService.findAllProductCategoriesByCatalogId(catalogId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        ProductCategoryResponseDTO.convert(categoryPage.getContent()),
+                        categoryPage.getTotalElements(),
+                        categoryPage.getNumber(),
+                        categoryPage.getSize()
+                )
+        );
     }
 }

@@ -39,6 +39,7 @@ public class ImpIngredientService implements IIngredientService {
                         .ingredientDescription(ingredientCreateRequestDTO.getIngredientDescription())
                         .ingredientPrice(ingredientCreateRequestDTO.getIngredientPrice())
                         .ingredientType(ingredientCreateRequestDTO.getIngredientType())
+                        .shelfLifeDays(ingredientCreateRequestDTO.getShelfLifeDays())
                         .build()
         );
     }
@@ -52,6 +53,7 @@ public class ImpIngredientService implements IIngredientService {
         existingIngredient.setIngredientDescription(ingredientUpdateRequestDTO.getIngredientDescription());
         existingIngredient.setIngredientPrice(ingredientUpdateRequestDTO.getIngredientPrice());
         existingIngredient.setIngredientType(ingredientUpdateRequestDTO.getIngredientType());
+        existingIngredient.setShelfLifeDays(ingredientUpdateRequestDTO.getShelfLifeDays());
 
         return ingredientRepository.save(existingIngredient);
     }

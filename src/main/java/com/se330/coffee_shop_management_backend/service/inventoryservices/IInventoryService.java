@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface IInventoryService {
     Inventory findByIdInventory(UUID id);
     Page<Inventory> findAllInventories(Pageable pageable);
+    Page<Inventory> findAllInventoriesByBrachId(UUID branchId, Pageable pageable);
     Inventory createInventory(InventoryCreateRequestDTO inventoryCreateRequestDTO);
     Inventory updateInventory(InventoryUpdateRequestDTO inventoryUpdateRequestDTO);
     void deleteInventory(UUID id);
