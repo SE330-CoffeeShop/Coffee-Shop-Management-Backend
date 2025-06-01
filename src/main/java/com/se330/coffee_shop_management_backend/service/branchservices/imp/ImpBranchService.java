@@ -5,15 +5,19 @@ import com.se330.coffee_shop_management_backend.dto.request.branch.BranchUpdateR
 import com.se330.coffee_shop_management_backend.dto.response.branch.BranchIdWithRevenueResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Branch;
 import com.se330.coffee_shop_management_backend.entity.Employee;
+import com.se330.coffee_shop_management_backend.entity.Role;
 import com.se330.coffee_shop_management_backend.repository.BranchRepository;
 import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
+import com.se330.coffee_shop_management_backend.service.RoleService;
 import com.se330.coffee_shop_management_backend.service.branchservices.IBranchService;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,13 +25,16 @@ public class ImpBranchService implements IBranchService {
 
     private final BranchRepository branchRepository;
     private final EmployeeRepository employeeRepository;
+    private final RoleService roleService;
 
     public ImpBranchService(
             BranchRepository branchRepository,
-            EmployeeRepository employeeRepository
+            EmployeeRepository employeeRepository,
+            RoleService roleService
     ) {
         this.branchRepository = branchRepository;
         this.employeeRepository = employeeRepository;
+        this.roleService = roleService;
     }
 
     @Override
@@ -60,8 +67,25 @@ public class ImpBranchService implements IBranchService {
         if (branchUpdateRequestDTO.getManagerId() != null) {
             Employee branchManager = employeeRepository.findById(branchUpdateRequestDTO.getManagerId())
                     .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + branchUpdateRequestDTO.getManagerId()));
+
+            // Remove existing manager from the branch if it was previously set
+            if (existingBranch.getManager() != null) {
+                Employee currentManager = existingBranch.getManager();
+                currentManager.setManagedBranch(null);
+
+                // Remove MANAGER role from the current manager's user roles
+                List<Role> currentUserRoles = currentManager.getUser().getRoles();
+                currentUserRoles.removeIf(role -> role.getName().equals(Constants.RoleEnum.MANAGER));
+                currentManager.getUser().setRoles(currentUserRoles);
+            }
+
             existingBranch.setManager(branchManager);
             branchManager.setManagedBranch(existingBranch);
+
+            // then add MANAGER role to user related to new employee
+            List<Role> userRoles = branchManager.getUser().getRoles();
+            userRoles.add(roleService.findByName(Constants.RoleEnum.MANAGER));
+            branchManager.getUser().setRoles(userRoles);
         }
 
         existingBranch.setBranchName(branchUpdateRequestDTO.getBranchName());
@@ -74,8 +98,19 @@ public class ImpBranchService implements IBranchService {
 
     @Override
     public void deleteBranch(UUID id) {
-        branchRepository.findById(id)
+        Branch existingBranch = branchRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + id));
+
+        // Remove existing manager from the branch if it was previously set
+        if (existingBranch.getManager() != null) {
+            Employee currentManager = existingBranch.getManager();
+            currentManager.setManagedBranch(null);
+
+            // Remove MANAGER role from the current manager's user roles
+            List<Role> currentUserRoles = currentManager.getUser().getRoles();
+            currentUserRoles.removeIf(role -> role.getName().equals(Constants.RoleEnum.MANAGER));
+            currentManager.getUser().setRoles(currentUserRoles);
+        }
 
         branchRepository.deleteById(id);
     }
