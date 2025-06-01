@@ -13,4 +13,5 @@ public class BranchUpdateRequestDTO {
     private String branchAddress;
     private String branchPhone;
     private String branchEmail;
+    private UUID managerId;
 }

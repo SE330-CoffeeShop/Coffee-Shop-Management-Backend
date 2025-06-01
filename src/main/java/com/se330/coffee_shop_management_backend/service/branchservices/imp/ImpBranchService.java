@@ -4,7 +4,9 @@ import com.se330.coffee_shop_management_backend.dto.request.branch.BranchCreateR
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.branch.BranchIdWithRevenueResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Branch;
+import com.se330.coffee_shop_management_backend.entity.Employee;
 import com.se330.coffee_shop_management_backend.repository.BranchRepository;
+import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.service.branchservices.IBranchService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -18,9 +20,14 @@ import java.util.UUID;
 public class ImpBranchService implements IBranchService {
 
     private final BranchRepository branchRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public ImpBranchService(BranchRepository branchRepository) {
+    public ImpBranchService(
+            BranchRepository branchRepository,
+            EmployeeRepository employeeRepository
+    ) {
         this.branchRepository = branchRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -49,6 +56,13 @@ public class ImpBranchService implements IBranchService {
     public Branch updateBranch(BranchUpdateRequestDTO branchUpdateRequestDTO) {
         Branch existingBranch = branchRepository.findById(branchUpdateRequestDTO.getBranchId())
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchUpdateRequestDTO.getBranchId()));
+
+        if (branchUpdateRequestDTO.getManagerId() != null) {
+            Employee branchManager = employeeRepository.findById(branchUpdateRequestDTO.getManagerId())
+                    .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + branchUpdateRequestDTO.getManagerId()));
+            existingBranch.setManager(branchManager);
+            branchManager.setManagedBranch(existingBranch);
+        }
 
         existingBranch.setBranchName(branchUpdateRequestDTO.getBranchName());
         existingBranch.setBranchAddress(branchUpdateRequestDTO.getBranchAddress());

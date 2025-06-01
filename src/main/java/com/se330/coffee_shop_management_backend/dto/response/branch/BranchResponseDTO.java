@@ -47,6 +47,7 @@ public class BranchResponseDTO extends AbstractBaseResponse {
     private String branchAddress;
     private String branchPhone;
     private String branchEmail;
+    private String managerId;
     private List<String> employeeIds;
     private List<String> transferIds;
     private List<String> inventoryIds;
@@ -61,6 +62,7 @@ public class BranchResponseDTO extends AbstractBaseResponse {
                 .branchAddress(branch.getBranchAddress())
                 .branchPhone(branch.getBranchPhone())
                 .branchEmail(branch.getBranchEmail())
+                .managerId(branch.getManager() != null ? branch.getManager().getId().toString() : null)
                 .employeeIds(branch.getEmployees() != null ? branch.getEmployees().stream()
                         .map(employee -> employee.getId().toString())
                         .collect(Collectors.toList()) : Collections.emptyList())

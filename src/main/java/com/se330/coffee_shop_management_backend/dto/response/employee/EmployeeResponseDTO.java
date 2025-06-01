@@ -52,6 +52,7 @@ public class EmployeeResponseDTO extends AbstractBaseResponse {
     private String branchId;
     private String userId;
     private String userFullName;
+    private String managedBranchId;
     private List<String> shiftIds;
     private List<String> orderIds;
 
@@ -63,6 +64,7 @@ public class EmployeeResponseDTO extends AbstractBaseResponse {
                 .employeePosition(employee.getEmployeePosition())
                 .employeeDepartment(employee.getEmployeeDepartment())
                 .employeeHireDate(employee.getEmployeeHireDate())
+                .managedBranchId(employee.getManagedBranch() != null ? employee.getManagedBranch().getId().toString() : null)
                 .branchId(employee.getBranch() != null ? employee.getBranch().getId().toString() : null)
                 .userId(employee.getUser() != null ? employee.getUser().getId().toString() : null)
                 .userFullName(employee.getUser() != null ? employee.getUser().getFullName() : null)

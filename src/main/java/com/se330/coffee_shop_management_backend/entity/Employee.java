@@ -27,6 +27,9 @@ public class Employee extends AbstractBaseEntity {
     @Column(name = "employee_hire_date", nullable = false)
     private LocalDateTime employeeHireDate;
 
+    @OneToOne(mappedBy = "manager")
+    private Branch managedBranch;
+
     // Many employees can belong to one branch
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
