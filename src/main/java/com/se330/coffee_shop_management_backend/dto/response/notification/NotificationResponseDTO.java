@@ -46,6 +46,7 @@ public class NotificationResponseDTO extends AbstractBaseResponse {
     private String notificationContent;
     private String senderId;
     private String receiverId;
+    private boolean isRead;
 
     public static NotificationResponseDTO convert(Notification notification) {
         return NotificationResponseDTO.builder()
@@ -56,6 +57,7 @@ public class NotificationResponseDTO extends AbstractBaseResponse {
                 .notificationContent(notification.getNotificationContent())
                 .senderId(notification.getSender() != null ? notification.getSender().getId().toString() : null)
                 .receiverId(notification.getReceiver() != null ? notification.getReceiver().getId().toString() : null)
+                .isRead(notification.isRead())
                 .build();
     }
 

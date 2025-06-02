@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.stock.StockCreateReq
 import com.se330.coffee_shop_management_backend.dto.request.stock.StockUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.stock.StockResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Stock;
 import com.se330.coffee_shop_management_backend.service.stockservices.IStockService;
@@ -46,20 +47,12 @@ public class StockController {
                             description = "Successfully retrieved stock",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = StockResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid ID format",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -75,8 +68,15 @@ public class StockController {
                     )
             }
     )
-    public ResponseEntity<StockResponseDTO> findByIdStock(@PathVariable UUID id) {
-        return ResponseEntity.ok(StockResponseDTO.convert(stockService.findByIdStock(id)));
+    public ResponseEntity<SingleResponse<StockResponseDTO>> findByIdStock(@PathVariable UUID id) {
+        StockResponseDTO stock = StockResponseDTO.convert(stockService.findByIdStock(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Stock retrieved successfully",
+                        stock
+                )
+        );
     }
 
     @GetMapping("/all")
@@ -92,21 +92,12 @@ public class StockController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
     public ResponseEntity<PageResponse<StockResponseDTO>> findAllStocks(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
@@ -116,10 +107,15 @@ public class StockController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Stocks retrieved successfully",
                         StockResponseDTO.convert(stockPage.getContent()),
-                        stockPage.getTotalElements(),
-                        stockPage.getNumber(),
-                        stockPage.getSize()
+                        new PageResponse.PagingResponse(
+                                stockPage.getNumber(),
+                                stockPage.getSize(),
+                                stockPage.getTotalElements(),
+                                stockPage.getTotalPages()
+                        )
                 )
         );
     }
@@ -135,7 +131,7 @@ public class StockController {
                             description = "Stock created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = StockResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -145,21 +141,16 @@ public class StockController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<StockResponseDTO> createStock(@RequestBody StockCreateRequestDTO stockCreateRequestDTO) {
+    public ResponseEntity<SingleResponse<StockResponseDTO>> createStock(@RequestBody StockCreateRequestDTO stockCreateRequestDTO) {
+        StockResponseDTO stock = StockResponseDTO.convert(stockService.createStock(stockCreateRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                StockResponseDTO.convert(
-                        stockService.createStock(stockCreateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Stock created successfully",
+                        stock
                 )
         );
     }
@@ -175,20 +166,12 @@ public class StockController {
                             description = "Stock updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = StockResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -204,10 +187,13 @@ public class StockController {
                     )
             }
     )
-    public ResponseEntity<StockResponseDTO> updateStock(@RequestBody StockUpdateRequestDTO stockUpdateRequestDTO) {
+    public ResponseEntity<SingleResponse<StockResponseDTO>> updateStock(@RequestBody StockUpdateRequestDTO stockUpdateRequestDTO) {
+        StockResponseDTO stock = StockResponseDTO.convert(stockService.updateStock(stockUpdateRequestDTO));
         return ResponseEntity.ok(
-                StockResponseDTO.convert(
-                        stockService.updateStock(stockUpdateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Stock updated successfully",
+                        stock
                 )
         );
     }
@@ -223,14 +209,6 @@ public class StockController {
                             description = "Stock deleted successfully"
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Stock not found",
                             content = @Content(
@@ -243,59 +221,5 @@ public class StockController {
     public ResponseEntity<Void> deleteStock(@PathVariable UUID id) {
         stockService.deleteStock(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/warehouse/{warehouseId}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
-    @Operation(
-            summary = "Get all stocks by warehouse ID with pagination",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successfully retrieved stocks for the warehouse",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PageResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Warehouse not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
-    public ResponseEntity<PageResponse<StockResponseDTO>> findAllStocksByWarehouseId(
-            @PathVariable UUID warehouseId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Stock> stockPage = stockService.findAllStocksByWarehouseId(warehouseId, pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        StockResponseDTO.convert(stockPage.getContent()),
-                        stockPage.getTotalElements(),
-                        stockPage.getNumber(),
-                        stockPage.getSize()
-                )
-        );
     }
 }

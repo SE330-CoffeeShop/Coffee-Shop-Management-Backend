@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCre
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.order.OrderDetailResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.OrderDetail;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +37,7 @@ public class OrderDetailController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get order detail by id",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -44,7 +47,7 @@ public class OrderDetailController {
                             description = "Successfully retrieved order detail",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = OrderDetailResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -56,14 +59,6 @@ public class OrderDetailController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Order detail not found",
                             content = @Content(
@@ -73,11 +68,19 @@ public class OrderDetailController {
                     )
             }
     )
-    public ResponseEntity<OrderDetailResponseDTO> findByIdOrderDetail(@PathVariable UUID id) {
-        return ResponseEntity.ok(OrderDetailResponseDTO.convert(orderDetailService.findByIdOrderDetail(id)));
+    public ResponseEntity<SingleResponse<OrderDetailResponseDTO>> findByIdOrderDetail(@PathVariable UUID id) {
+        OrderDetailResponseDTO detail = OrderDetailResponseDTO.convert(orderDetailService.findByIdOrderDetail(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Order detail retrieved successfully",
+                        detail
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all order details with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -89,39 +92,36 @@ public class OrderDetailController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
     public ResponseEntity<PageResponse<OrderDetailResponseDTO>> findAllOrderDetails(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<OrderDetail> orderDetailPages = orderDetailService.findAllOrderDetails(pageable);
+        Page<OrderDetail> detailPages = orderDetailService.findAllOrderDetails(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        OrderDetailResponseDTO.convert(orderDetailPages.getContent()),
-                        orderDetailPages.getTotalElements(),
-                        orderDetailPages.getNumber(),
-                        orderDetailPages.getSize()
+                        HttpStatus.OK.value(),
+                        "Order details retrieved successfully",
+                        OrderDetailResponseDTO.convert(detailPages.getContent()),
+                        new PageResponse.PagingResponse(
+                                detailPages.getNumber(),
+                                detailPages.getSize(),
+                                detailPages.getTotalElements(),
+                                detailPages.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new order detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +131,7 @@ public class OrderDetailController {
                             description = "Order detail created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = OrderDetailResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -141,26 +141,22 @@ public class OrderDetailController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<OrderDetailResponseDTO> createOrderDetail(@RequestBody OrderDetailCreateRequestDTO orderDetailCreateRequestDTO) {
+    public ResponseEntity<SingleResponse<OrderDetailResponseDTO>> createOrderDetail(@RequestBody OrderDetailCreateRequestDTO orderDetailCreateRequestDTO) {
+        OrderDetailResponseDTO detail = OrderDetailResponseDTO.convert(orderDetailService.createOrderDetail(orderDetailCreateRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                OrderDetailResponseDTO.convert(
-                        orderDetailService.createOrderDetail(orderDetailCreateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Order detail created successfully",
+                        detail
                 )
         );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update order detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -170,20 +166,12 @@ public class OrderDetailController {
                             description = "Order detail updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = OrderDetailResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -199,15 +187,19 @@ public class OrderDetailController {
                     )
             }
     )
-    public ResponseEntity<OrderDetailResponseDTO> updateOrderDetail(@RequestBody OrderDetailUpdateRequestDTO orderDetailUpdateRequestDTO) {
+    public ResponseEntity<SingleResponse<OrderDetailResponseDTO>> updateOrderDetail(@RequestBody OrderDetailUpdateRequestDTO orderDetailUpdateRequestDTO) {
+        OrderDetailResponseDTO detail = OrderDetailResponseDTO.convert(orderDetailService.updateOrderDetail(orderDetailUpdateRequestDTO));
         return ResponseEntity.ok(
-                OrderDetailResponseDTO.convert(
-                        orderDetailService.updateOrderDetail(orderDetailUpdateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Order detail updated successfully",
+                        detail
                 )
         );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete order detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -215,14 +207,6 @@ public class OrderDetailController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Order detail deleted successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     ),
                     @ApiResponse(
                             responseCode = "404",

@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.inventory.InventoryC
 import com.se330.coffee_shop_management_backend.dto.request.inventory.InventoryUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.inventory.InventoryResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Inventory;
 import com.se330.coffee_shop_management_backend.service.inventoryservices.IInventoryService;
@@ -46,7 +47,7 @@ public class InventoryController {
                             description = "Successfully retrieved inventory",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InventoryResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -75,8 +76,15 @@ public class InventoryController {
                     )
             }
     )
-    public ResponseEntity<InventoryResponseDTO> findByIdInventory(@PathVariable UUID id) {
-        return ResponseEntity.ok(InventoryResponseDTO.convert(inventoryService.findByIdInventory(id)));
+    public ResponseEntity<SingleResponse<InventoryResponseDTO>> findByIdInventory(@PathVariable UUID id) {
+        InventoryResponseDTO inventory = InventoryResponseDTO.convert(inventoryService.findByIdInventory(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Inventory retrieved successfully",
+                        inventory
+                )
+        );
     }
 
     @GetMapping("/all")
@@ -116,10 +124,15 @@ public class InventoryController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Inventories retrieved successfully",
                         InventoryResponseDTO.convert(inventoryPage.getContent()),
-                        inventoryPage.getTotalElements(),
-                        inventoryPage.getNumber(),
-                        inventoryPage.getSize()
+                        new PageResponse.PagingResponse(
+                                inventoryPage.getNumber(),
+                                inventoryPage.getSize(),
+                                inventoryPage.getTotalElements(),
+                                inventoryPage.getTotalPages()
+                        )
                 )
         );
     }
@@ -135,7 +148,7 @@ public class InventoryController {
                             description = "Inventory created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InventoryResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -156,9 +169,15 @@ public class InventoryController {
                     )
             }
     )
-    public ResponseEntity<InventoryResponseDTO> createInventory(@RequestBody InventoryCreateRequestDTO inventoryCreateRequestDTO) {
-        Inventory createdInventory = inventoryService.createInventory(inventoryCreateRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(InventoryResponseDTO.convert(createdInventory));
+    public ResponseEntity<SingleResponse<InventoryResponseDTO>> createInventory(@RequestBody InventoryCreateRequestDTO inventoryCreateRequestDTO) {
+        InventoryResponseDTO inventory = InventoryResponseDTO.convert(inventoryService.createInventory(inventoryCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Inventory created successfully",
+                        inventory
+                )
+        );
     }
 
     @PatchMapping("/")
@@ -172,7 +191,7 @@ public class InventoryController {
                             description = "Inventory updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InventoryResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -201,9 +220,15 @@ public class InventoryController {
                     )
             }
     )
-    public ResponseEntity<InventoryResponseDTO> updateInventory(@RequestBody InventoryUpdateRequestDTO inventoryUpdateRequestDTO) {
-        Inventory updatedInventory = inventoryService.updateInventory(inventoryUpdateRequestDTO);
-        return ResponseEntity.ok(InventoryResponseDTO.convert(updatedInventory));
+    public ResponseEntity<SingleResponse<InventoryResponseDTO>> updateInventory(@RequestBody InventoryUpdateRequestDTO inventoryUpdateRequestDTO) {
+        InventoryResponseDTO inventory = InventoryResponseDTO.convert(inventoryService.updateInventory(inventoryUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Inventory updated successfully",
+                        inventory
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -285,10 +310,15 @@ public class InventoryController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch inventories retrieved successfully",
                         InventoryResponseDTO.convert(inventoryPage.getContent()),
-                        inventoryPage.getTotalElements(),
-                        inventoryPage.getNumber(),
-                        inventoryPage.getSize()
+                        new PageResponse.PagingResponse(
+                                inventoryPage.getNumber(),
+                                inventoryPage.getSize(),
+                                inventoryPage.getTotalElements(),
+                                inventoryPage.getTotalPages()
+                        )
                 )
         );
     }

@@ -2,6 +2,8 @@ package com.se330.coffee_shop_management_backend.controller;
 
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
+import com.se330.coffee_shop_management_backend.dto.response.comment.CommentResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.customer.CustomerResponseDTO;
 import com.se330.coffee_shop_management_backend.service.customerservices.ICustomerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -70,11 +73,17 @@ public class CustomerController {
                     )
             }
     )
-    public ResponseEntity<CustomerResponseDTO> getCustomerById(
-            @PathVariable String id,
+    public ResponseEntity<SingleResponse<CustomerResponseDTO>> getCustomerById(
+            @PathVariable UUID id,
             @RequestParam UUID branchId
     ) {
-        return ResponseEntity.ok(customerService.findByIdCustomer(UUID.fromString(id), branchId));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Customer retrieved successfully",
+                        customerService.findByIdCustomer(id, branchId)
+                )
+        );
     }
 
     @GetMapping("/branch/{branchId}")
@@ -114,10 +123,15 @@ public class CustomerController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        customerPage.getContent(),
-                        customerPage.getTotalElements(),
-                        customerPage.getNumber(),
-                        customerPage.getSize()
+                        HttpStatus.OK.value(),
+                        "Customer retrieved successfully",
+                        customerPage.toList(),
+                        new PageResponse.PagingResponse(
+                                customerPage.getNumber(),
+                                customerPage.getSize(),
+                                customerPage.getTotalElements(),
+                                customerPage.getTotalPages()
+                        )
                 )
         );
     }

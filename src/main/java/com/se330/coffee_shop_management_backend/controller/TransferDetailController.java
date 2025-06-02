@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.transfer.TransferDet
 import com.se330.coffee_shop_management_backend.dto.request.transfer.TransferDetailUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.transfer.TransferDetailResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.TransferDetail;
 import com.se330.coffee_shop_management_backend.service.transfer.ITransferDetailService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,8 +37,9 @@ public class TransferDetailController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
-            summary = "Get transfer detail item",
+            summary = "Get transfer detail by id",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
@@ -44,7 +47,7 @@ public class TransferDetailController {
                             description = "Successfully retrieved transfer detail",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = TransferDetailResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -56,14 +59,6 @@ public class TransferDetailController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Transfer detail not found",
                             content = @Content(
@@ -73,11 +68,19 @@ public class TransferDetailController {
                     )
             }
     )
-    public ResponseEntity<TransferDetailResponseDTO> findByIdTransferDetail(@PathVariable UUID id) {
-        return ResponseEntity.ok(TransferDetailResponseDTO.convert(transferDetailService.findByIdTransferDetail(id)));
+    public ResponseEntity<SingleResponse<TransferDetailResponseDTO>> findById(@PathVariable UUID id) {
+        TransferDetailResponseDTO detail = TransferDetailResponseDTO.convert(transferDetailService.findByIdTransferDetail(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Transfer detail retrieved successfully",
+                        detail
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all transfer details with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -89,39 +92,36 @@ public class TransferDetailController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<PageResponse<TransferDetailResponseDTO>> findAllTransferDetails(
+    public ResponseEntity<PageResponse<TransferDetailResponseDTO>> findAll(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<TransferDetail> transferDetailPages = transferDetailService.findAllTransferDetails(pageable);
+        Page<TransferDetail> detailPage = transferDetailService.findAllTransferDetails(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        TransferDetailResponseDTO.convert(transferDetailPages.getContent()),
-                        transferDetailPages.getTotalElements(),
-                        transferDetailPages.getNumber(),
-                        transferDetailPages.getSize()
+                        HttpStatus.OK.value(),
+                        "Transfer details retrieved successfully",
+                        TransferDetailResponseDTO.convert(detailPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                detailPage.getNumber(),
+                                detailPage.getSize(),
+                                detailPage.getTotalElements(),
+                                detailPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new transfer detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +131,7 @@ public class TransferDetailController {
                             description = "Transfer detail created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = TransferDetailResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -141,26 +141,22 @@ public class TransferDetailController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<TransferDetailResponseDTO> createTransferDetail(@RequestBody TransferDetailCreateRequestDTO transferDetailCreateRequestDTO) {
+    public ResponseEntity<SingleResponse<TransferDetailResponseDTO>> create(@RequestBody TransferDetailCreateRequestDTO dto) {
+        TransferDetailResponseDTO detail = TransferDetailResponseDTO.convert(transferDetailService.createTransferDetail(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                TransferDetailResponseDTO.convert(
-                        transferDetailService.createTransferDetail(transferDetailCreateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Transfer detail created successfully",
+                        detail
                 )
         );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update transfer detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -170,7 +166,7 @@ public class TransferDetailController {
                             description = "Transfer detail updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = TransferDetailResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -182,14 +178,6 @@ public class TransferDetailController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Transfer detail not found",
                             content = @Content(
@@ -199,15 +187,19 @@ public class TransferDetailController {
                     )
             }
     )
-    public ResponseEntity<TransferDetailResponseDTO> updateTransferDetail(@RequestBody TransferDetailUpdateRequestDTO transferDetailUpdateRequestDTO) {
+    public ResponseEntity<SingleResponse<TransferDetailResponseDTO>> update(@RequestBody TransferDetailUpdateRequestDTO dto) {
+        TransferDetailResponseDTO detail = TransferDetailResponseDTO.convert(transferDetailService.updateTransferDetail(dto));
         return ResponseEntity.ok(
-                TransferDetailResponseDTO.convert(
-                        transferDetailService.updateTransferDetail(transferDetailUpdateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Transfer detail updated successfully",
+                        detail
                 )
         );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete transfer detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -217,14 +209,6 @@ public class TransferDetailController {
                             description = "Transfer detail deleted successfully"
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Transfer detail not found",
                             content = @Content(
@@ -234,7 +218,7 @@ public class TransferDetailController {
                     )
             }
     )
-    public ResponseEntity<Void> deleteTransferDetail(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         transferDetailService.deleteTransferDetail(id);
         return ResponseEntity.noContent().build();
     }

@@ -16,4 +16,5 @@ public class NotificationCreateRequestDTO {
     private String notificationContent;
     private UUID senderId;
     private UUID receiverId;
+    private boolean isRead;
 }

@@ -4,7 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.product.ProductCreat
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
-import com.se330.coffee_shop_management_backend.dto.response.product.BestSellingProductResponseDTO;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.product.ProductResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductService;
@@ -37,6 +37,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get product detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -46,7 +47,7 @@ public class ProductController {
                             description = "Successfully retrieved product",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -58,14 +59,6 @@ public class ProductController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Product not found",
                             content = @Content(
@@ -75,11 +68,19 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<ProductResponseDTO> findByIdProduct(@PathVariable UUID id) {
-        return ResponseEntity.ok(ProductResponseDTO.convert(productService.findByIdProduct(id)));
+    public ResponseEntity<SingleResponse<ProductResponseDTO>> findById(@PathVariable UUID id) {
+        ProductResponseDTO product = ProductResponseDTO.convert(productService.findByIdProduct(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Product retrieved successfully",
+                        product
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all products with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -91,40 +92,36 @@ public class ProductController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<PageResponse<ProductResponseDTO>> findAllProducts(
+    public ResponseEntity<PageResponse<ProductResponseDTO>> findAll(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Product> productPages = productService.findAllProducts(pageable);
+        Page<Product> productPage = productService.findAllProducts(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        ProductResponseDTO.convert(productPages.getContent()),
-                        productPages.getTotalElements(),
-                        productPages.getNumber(),
-                        productPages.getSize()
+                        HttpStatus.OK.value(),
+                        "Products retrieved successfully",
+                        ProductResponseDTO.convert(productPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                productPage.getNumber(),
+                                productPage.getSize(),
+                                productPage.getTotalElements(),
+                                productPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -134,7 +131,7 @@ public class ProductController {
                             description = "Product created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -144,31 +141,22 @@ public class ProductController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "Product already exists",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductCreateRequestDTO productRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(ProductResponseDTO.convert(productService.createProduct(productRequestDTO)));
+    public ResponseEntity<SingleResponse<ProductResponseDTO>> create(@RequestBody ProductCreateRequestDTO dto) {
+        ProductResponseDTO product = ProductResponseDTO.convert(productService.createProduct(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Product created successfully",
+                        product
+                )
+        );
     }
 
-    @PatchMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -178,20 +166,12 @@ public class ProductController {
                             description = "Product updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -207,11 +187,19 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<ProductResponseDTO> updateProduct(@RequestBody ProductUpdateRequestDTO productRequestDTO) {
-        return ResponseEntity.ok(ProductResponseDTO.convert(productService.updateProduct(productRequestDTO)));
+    public ResponseEntity<SingleResponse<ProductResponseDTO>> update(@RequestBody ProductUpdateRequestDTO dto) {
+        ProductResponseDTO product = ProductResponseDTO.convert(productService.updateProduct(dto));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Product updated successfully",
+                        product
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -222,7 +210,7 @@ public class ProductController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Not Found",
+                            description = "Product not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -230,250 +218,8 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/best-selling")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
-    @Operation(
-            summary = "Get all best-selling products",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successfully retrieved best-selling products",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PageResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied - Requires MANAGER role",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
-    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findAllBestSellingProducts(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "totalQuantity") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<BestSellingProductResponseDTO> productsPage = productService.findAllBestSellingProducts(pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        productsPage.getContent(),
-                        productsPage.getTotalElements(),
-                        productsPage.getNumber(),
-                        productsPage.getSize()
-                )
-        );
-    }
-
-    @GetMapping("/best-selling/year")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
-    @Operation(
-            summary = "Get best-selling products by year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME)
-    )
-    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByYear(
-            @RequestParam int year,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "totalQuantity") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByYear(year, pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        productsPage.getContent(),
-                        productsPage.getTotalElements(),
-                        productsPage.getNumber(),
-                        productsPage.getSize()
-                )
-        );
-    }
-
-    @GetMapping("/best-selling/month-year")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
-    @Operation(
-            summary = "Get best-selling products by month and year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME)
-    )
-    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByMonthAndYear(
-            @RequestParam int month,
-            @RequestParam int year,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "totalQuantity") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByMonthAndYear(month, year, pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        productsPage.getContent(),
-                        productsPage.getTotalElements(),
-                        productsPage.getNumber(),
-                        productsPage.getSize()
-                )
-        );
-    }
-
-    @GetMapping("/best-selling/day-month-year")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
-    @Operation(
-            summary = "Get best-selling products by day, month and year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME)
-    )
-    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByDayAndMonthAndYear(
-            @RequestParam int day,
-            @RequestParam int month,
-            @RequestParam int year,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "totalQuantity") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByDayAndMonthAndYear(day, month, year, pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        productsPage.getContent(),
-                        productsPage.getTotalElements(),
-                        productsPage.getNumber(),
-                        productsPage.getSize()
-                )
-        );
-    }
-
-    @GetMapping("/best-selling/branch")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
-    @Operation(
-            summary = "Get best-selling products by branch",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME)
-    )
-    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByBranch(
-            @RequestParam UUID branchId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "totalQuantity") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByBranch(branchId, pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        productsPage.getContent(),
-                        productsPage.getTotalElements(),
-                        productsPage.getNumber(),
-                        productsPage.getSize()
-                )
-        );
-    }
-
-    @GetMapping("/best-selling/branch-year")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
-    @Operation(
-            summary = "Get best-selling products by branch and year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME)
-    )
-    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByBranchAndYear(
-            @RequestParam UUID branchId,
-            @RequestParam int year,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "productSoldCount") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByBranchAndYear(branchId, year, pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        productsPage.getContent(),
-                        productsPage.getTotalElements(),
-                        productsPage.getNumber(),
-                        productsPage.getSize()
-                )
-        );
-    }
-
-    @GetMapping("/best-selling/branch-month-year")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
-    @Operation(
-            summary = "Get best-selling products by branch, month and year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME)
-    )
-    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByBranchAndMonthAndYear(
-            @RequestParam UUID branchId,
-            @RequestParam int month,
-            @RequestParam int year,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "totalQuantity") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByBranchAndMonthAndYear(branchId, month, year, pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        productsPage.getContent(),
-                        productsPage.getTotalElements(),
-                        productsPage.getNumber(),
-                        productsPage.getSize()
-                )
-        );
-    }
-
-    @GetMapping("/best-selling/branch-day-month-year")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
-    @Operation(
-            summary = "Get best-selling products by branch, day, month and year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME)
-    )
-    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByBranchAndDayAndMonthAndYear(
-            @RequestParam UUID branchId,
-            @RequestParam int day,
-            @RequestParam int month,
-            @RequestParam int year,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "totalQuantity") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByBranchAndDayAndMonthAndYear(branchId, day, month, year, pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        productsPage.getContent(),
-                        productsPage.getTotalElements(),
-                        productsPage.getNumber(),
-                        productsPage.getSize()
-                )
-        );
     }
 }

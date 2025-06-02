@@ -43,4 +43,7 @@ public class Notification extends AbstractBaseEntity {
             )
     )
     private User receiver;
+
+    @Column(name = "is_read", nullable = false)
+    private boolean isRead;
 }

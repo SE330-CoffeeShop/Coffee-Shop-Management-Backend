@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.employee.EmployeeCre
 import com.se330.coffee_shop_management_backend.dto.request.employee.EmployeeUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.employee.EmployeeResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Employee;
 import com.se330.coffee_shop_management_backend.service.employeeservices.IEmployeeService;
@@ -45,12 +46,12 @@ public class EmployeeController {
                             description = "Successfully retrieved employee",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = EmployeeResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid ID format",
+                            responseCode = "404",
+                            description = "Employee not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -63,22 +64,22 @@ public class EmployeeController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Employee not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<EmployeeResponseDTO> findByIdEmployee(@PathVariable UUID id) {
-        return ResponseEntity.ok(EmployeeResponseDTO.convert(employeeService.findByIdEmployee(id)));
+    public ResponseEntity<SingleResponse<EmployeeResponseDTO>> findByIdEmployee(@PathVariable UUID id) {
+        EmployeeResponseDTO employee = EmployeeResponseDTO.convert(employeeService.findByIdEmployee(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Employee retrieved successfully",
+                        employee
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Get all employees with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -104,7 +105,6 @@ public class EmployeeController {
     public ResponseEntity<PageResponse<EmployeeResponseDTO>> findAllEmployees(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
@@ -114,16 +114,71 @@ public class EmployeeController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Employees retrieved successfully",
                         EmployeeResponseDTO.convert(employeePages.getContent()),
-                        employeePages.getTotalElements(),
-                        employeePages.getNumber(),
-                        employeePages.getSize()
+                        new PageResponse.PagingResponse(
+                                employeePages.getNumber(),
+                                employeePages.getSize(),
+                                employeePages.getTotalElements(),
+                                employeePages.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/branch/{branchId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @Operation(
+            summary = "Get all employees for a branch with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved employee list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<EmployeeResponseDTO>> findAllEmployeesByBranchId(
+            @PathVariable UUID branchId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Employee> employeePages = employeeService.findAllEmployeesByBranchId(branchId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch employees retrieved successfully",
+                        EmployeeResponseDTO.convert(employeePages.getContent()),
+                        new PageResponse.PagingResponse(
+                                employeePages.getNumber(),
+                                employeePages.getSize(),
+                                employeePages.getTotalElements(),
+                                employeePages.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Create new employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -133,7 +188,7 @@ public class EmployeeController {
                             description = "Employee created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = EmployeeResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -151,23 +206,22 @@ public class EmployeeController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "Employee already exists",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<EmployeeResponseDTO> createEmployee(@RequestBody EmployeeCreateRequestDTO employeeRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(EmployeeResponseDTO.convert(employeeService.createEmployee(employeeRequestDTO)));
+    public ResponseEntity<SingleResponse<EmployeeResponseDTO>> createEmployee(@RequestBody EmployeeCreateRequestDTO employeeCreateRequestDTO) {
+        EmployeeResponseDTO employee = EmployeeResponseDTO.convert(employeeService.createEmployee(employeeCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Employee created successfully",
+                        employee
+                )
+        );
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Update employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -177,7 +231,7 @@ public class EmployeeController {
                             description = "Employee updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = EmployeeResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -206,11 +260,19 @@ public class EmployeeController {
                     )
             }
     )
-    public ResponseEntity<EmployeeResponseDTO> updateEmployee(@RequestBody EmployeeUpdateRequestDTO employeeRequestDTO) {
-        return ResponseEntity.ok(EmployeeResponseDTO.convert(employeeService.updateEmployee(employeeRequestDTO)));
+    public ResponseEntity<SingleResponse<EmployeeResponseDTO>> updateEmployee(@RequestBody EmployeeUpdateRequestDTO employeeUpdateRequestDTO) {
+        EmployeeResponseDTO employee = EmployeeResponseDTO.convert(employeeService.updateEmployee(employeeUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Employee updated successfully",
+                        employee
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Delete employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -220,16 +282,16 @@ public class EmployeeController {
                             description = "Employee deleted successfully"
                     ),
                     @ApiResponse(
-                            responseCode = "404",
-                            description = "Employee not found",
+                            responseCode = "401",
+                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
+                            responseCode = "404",
+                            description = "Employee not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)

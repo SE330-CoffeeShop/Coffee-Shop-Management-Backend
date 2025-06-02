@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.salary.SalaryCreateR
 import com.se330.coffee_shop_management_backend.dto.request.salary.SalaryUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.salary.SalaryResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Salary;
 import com.se330.coffee_shop_management_backend.service.salaryservices.ISalaryService;
@@ -12,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -28,12 +28,16 @@ import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.cre
 
 @RestController
 @RequestMapping("/salary")
-@RequiredArgsConstructor
 public class SalaryController {
 
     private final ISalaryService salaryService;
 
+    public SalaryController(ISalaryService salaryService) {
+        this.salaryService = salaryService;
+    }
+
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Get salary detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -43,7 +47,7 @@ public class SalaryController {
                             description = "Successfully retrieved salary",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = SalaryResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -55,14 +59,6 @@ public class SalaryController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Salary not found",
                             content = @Content(
@@ -72,12 +68,19 @@ public class SalaryController {
                     )
             }
     )
-    public ResponseEntity<SalaryResponseDTO> findById(@PathVariable UUID id) {
-        return ResponseEntity.ok(SalaryResponseDTO.convert(salaryService.findById(id)));
+    public ResponseEntity<SingleResponse<SalaryResponseDTO>> findByIdSalary(@PathVariable UUID id) {
+        SalaryResponseDTO salary = SalaryResponseDTO.convert(salaryService.findById(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Salary retrieved successfully",
+                        salary
+                )
+        );
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Get all salaries with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -89,40 +92,36 @@ public class SalaryController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<PageResponse<SalaryResponseDTO>> findAll(
+    public ResponseEntity<PageResponse<SalaryResponseDTO>> findAllSalaries(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Salary> salaryPages = salaryService.findAll(pageable);
+        Page<Salary> salaryPage = salaryService.findAll(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        SalaryResponseDTO.convert(salaryPages.getContent()),
-                        salaryPages.getTotalElements(),
-                        salaryPages.getNumber(),
-                        salaryPages.getSize()
+                        HttpStatus.OK.value(),
+                        "Salaries retrieved successfully",
+                        SalaryResponseDTO.convert(salaryPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                salaryPage.getNumber(),
+                                salaryPage.getSize(),
+                                salaryPage.getTotalElements(),
+                                salaryPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Create new salary",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -132,7 +131,7 @@ public class SalaryController {
                             description = "Salary created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = SalaryResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -142,23 +141,22 @@ public class SalaryController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<SalaryResponseDTO> create(@RequestBody SalaryCreateRequestDTO salaryCreateRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(SalaryResponseDTO.convert(salaryService.create(salaryCreateRequestDTO)));
+    public ResponseEntity<SingleResponse<SalaryResponseDTO>> createSalary(@RequestBody SalaryCreateRequestDTO salaryCreateRequestDTO) {
+        SalaryResponseDTO salary = SalaryResponseDTO.convert(salaryService.create(salaryCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Salary created successfully",
+                        salary
+                )
+        );
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Update salary",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -168,20 +166,12 @@ public class SalaryController {
                             description = "Salary updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = SalaryResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -197,12 +187,19 @@ public class SalaryController {
                     )
             }
     )
-    public ResponseEntity<SalaryResponseDTO> update(@RequestBody SalaryUpdateRequestDTO salaryUpdateRequestDTO) {
-        return ResponseEntity.ok(SalaryResponseDTO.convert(salaryService.update(salaryUpdateRequestDTO)));
+    public ResponseEntity<SingleResponse<SalaryResponseDTO>> updateSalary(@RequestBody SalaryUpdateRequestDTO salaryUpdateRequestDTO) {
+        SalaryResponseDTO salary = SalaryResponseDTO.convert(salaryService.update(salaryUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Salary updated successfully",
+                        salary
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Delete salary",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -212,14 +209,6 @@ public class SalaryController {
                             description = "Salary deleted successfully"
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Salary not found",
                             content = @Content(
@@ -229,89 +218,8 @@ public class SalaryController {
                     )
             }
     )
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteSalary(@PathVariable UUID id) {
         salaryService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/update-branch-salaries")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
-    @Operation(
-            summary = "Update salaries for all employees in a branch for a specific month/year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Salaries updated successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Branch not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
-    public ResponseEntity<Void> updateSalariesForBranch(
-            @RequestParam UUID branchId,
-            @RequestParam int month,
-            @RequestParam int year) {
-
-        salaryService.updateSalaryForAllEmployeesInBranchInMonthAndYear(branchId, month, year);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/update-all-salaries")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
-    @Operation(
-            summary = "Update salaries for all employees across all branches for a specific month/year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Salaries updated successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
-    public ResponseEntity<Void> updateAllSalaries(
-            @RequestParam int month,
-            @RequestParam int year) {
-
-        salaryService.updateSalaryForAllEmployeesInMonthAndYear(month, year);
         return ResponseEntity.noContent().build();
     }
 }

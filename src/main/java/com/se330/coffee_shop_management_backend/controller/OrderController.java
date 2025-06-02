@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateReq
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.order.OrderResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Order;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
@@ -36,6 +37,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get order detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -45,7 +47,7 @@ public class OrderController {
                             description = "Successfully retrieved order",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = OrderResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -74,11 +76,19 @@ public class OrderController {
                     )
             }
     )
-    public ResponseEntity<OrderResponseDTO> findByIdOrder(@PathVariable UUID id) {
-        return ResponseEntity.ok(OrderResponseDTO.convert(orderService.findByIdOrder(id)));
+    public ResponseEntity<SingleResponse<OrderResponseDTO>> findByIdOrder(@PathVariable UUID id) {
+        OrderResponseDTO order = OrderResponseDTO.convert(orderService.findByIdOrder(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Order retrieved successfully",
+                        order
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all orders with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -104,26 +114,30 @@ public class OrderController {
     public ResponseEntity<PageResponse<OrderResponseDTO>> findAllOrders(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Order> orderPages = orderService.findAllOrders(pageable);
+        Page<Order> orderPage = orderService.findAllOrders(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        OrderResponseDTO.convert(orderPages.getContent()),
-                        orderPages.getTotalElements(),
-                        orderPages.getNumber(),
-                        orderPages.getSize()
+                        HttpStatus.OK.value(),
+                        "Orders retrieved successfully",
+                        OrderResponseDTO.convert(orderPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                orderPage.getNumber(),
+                                orderPage.getSize(),
+                                orderPage.getTotalElements(),
+                                orderPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new order",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -133,7 +147,7 @@ public class OrderController {
                             description = "Order created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = OrderResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -154,15 +168,19 @@ public class OrderController {
                     )
             }
     )
-    public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody OrderCreateRequestDTO orderCreateRequestDTO) {
+    public ResponseEntity<SingleResponse<OrderResponseDTO>> createOrder(@RequestBody OrderCreateRequestDTO orderCreateRequestDTO) {
+        OrderResponseDTO order = OrderResponseDTO.convert(orderService.createOrder(orderCreateRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                OrderResponseDTO.convert(
-                        orderService.createOrder(orderCreateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Order created successfully",
+                        order
                 )
         );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update order",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -172,7 +190,7 @@ public class OrderController {
                             description = "Order updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = OrderResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -201,15 +219,19 @@ public class OrderController {
                     )
             }
     )
-    public ResponseEntity<OrderResponseDTO> updateOrder(@RequestBody OrderUpdateRequestDTO orderUpdateRequestDTO) {
+    public ResponseEntity<SingleResponse<OrderResponseDTO>> updateOrder(@RequestBody OrderUpdateRequestDTO orderUpdateRequestDTO) {
+        OrderResponseDTO order = OrderResponseDTO.convert(orderService.updateOrder(orderUpdateRequestDTO));
         return ResponseEntity.ok(
-                OrderResponseDTO.convert(
-                        orderService.updateOrder(orderUpdateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Order updated successfully",
+                        order
                 )
         );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete order",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -239,58 +261,5 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable UUID id) {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/customer/{customerId}")
-    @Operation(
-            summary = "Get all orders for a specific customer with pagination",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successfully retrieved customer's order list",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PageResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid customer ID format",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
-    public ResponseEntity<PageResponse<OrderResponseDTO>> findAllOrderByCustomerId(
-            @PathVariable UUID customerId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Order> orderPages = orderService.findAllOrderByCustomerId(customerId, pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        OrderResponseDTO.convert(orderPages.getContent()),
-                        orderPages.getTotalElements(),
-                        orderPages.getNumber(),
-                        orderPages.getSize()
-                )
-        );
     }
 }

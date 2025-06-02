@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.catalog.CatalogCreat
 import com.se330.coffee_shop_management_backend.dto.request.catalog.CatalogUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.catalog.CatalogResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Catalog;
 import com.se330.coffee_shop_management_backend.service.catalogservice.ICatalogService;
@@ -43,7 +44,7 @@ public class CatalogController {
                             description = "Successfully retrieved catalog",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = CatalogResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -56,8 +57,15 @@ public class CatalogController {
                     )
             }
     )
-    public ResponseEntity<CatalogResponseDTO> findByIdCatalog(@PathVariable Integer id) {
-        return ResponseEntity.ok(CatalogResponseDTO.convert(catalogService.findByIdCatalog(id)));
+    public ResponseEntity<SingleResponse<CatalogResponseDTO>> findByIdCatalog(@PathVariable Integer id) {
+        CatalogResponseDTO catalog = CatalogResponseDTO.convert(catalogService.findByIdCatalog(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Catalog retrieved successfully",
+                        catalog
+                )
+        );
     }
 
     @GetMapping("/all")
@@ -87,10 +95,15 @@ public class CatalogController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Catalogs retrieved successfully",
                         CatalogResponseDTO.convert(catalogPages.getContent()),
-                        catalogPages.getTotalElements(),
-                        catalogPages.getNumber(),
-                        catalogPages.getSize()
+                        new PageResponse.PagingResponse(
+                                catalogPages.getNumber(),
+                                catalogPages.getSize(),
+                                catalogPages.getTotalElements(),
+                                catalogPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -131,10 +144,15 @@ public class CatalogController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Child catalogs retrieved successfully",
                         CatalogResponseDTO.convert(catalogPages.getContent()),
-                        catalogPages.getTotalElements(),
-                        catalogPages.getNumber(),
-                        catalogPages.getSize()
+                        new PageResponse.PagingResponse(
+                                catalogPages.getNumber(),
+                                catalogPages.getSize(),
+                                catalogPages.getTotalElements(),
+                                catalogPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -150,7 +168,7 @@ public class CatalogController {
                             description = "Catalog created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = CatalogResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -179,9 +197,14 @@ public class CatalogController {
                     )
             }
     )
-    public ResponseEntity<CatalogResponseDTO> createCatalog(@RequestBody CatalogCreateRequestDTO catalogCreateRequestDTO) {
+    public ResponseEntity<SingleResponse<CatalogResponseDTO>> createCatalog(@RequestBody CatalogCreateRequestDTO catalogCreateRequestDTO) {
+        CatalogResponseDTO catalog = CatalogResponseDTO.convert(catalogService.createCatalog(catalogCreateRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(CatalogResponseDTO.convert(catalogService.createCatalog(catalogCreateRequestDTO)));
+                .body(new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Catalog created successfully",
+                        catalog
+                ));
     }
 
     @PatchMapping("/")
@@ -195,7 +218,7 @@ public class CatalogController {
                             description = "Catalog updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = CatalogResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -224,8 +247,15 @@ public class CatalogController {
                     )
             }
     )
-    public ResponseEntity<CatalogResponseDTO> updateCatalog(@RequestBody CatalogUpdateRequestDTO catalogUpdateRequestDTO) {
-        return ResponseEntity.ok(CatalogResponseDTO.convert(catalogService.updateCatalog(catalogUpdateRequestDTO)));
+    public ResponseEntity<SingleResponse<CatalogResponseDTO>> updateCatalog(@RequestBody CatalogUpdateRequestDTO catalogUpdateRequestDTO) {
+        CatalogResponseDTO catalog = CatalogResponseDTO.convert(catalogService.updateCatalog(catalogUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Catalog updated successfully",
+                        catalog
+                )
+        );
     }
 
     @DeleteMapping("/{id}")

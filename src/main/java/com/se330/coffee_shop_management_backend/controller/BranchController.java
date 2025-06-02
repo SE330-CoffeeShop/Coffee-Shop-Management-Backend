@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.branch.BranchCreateR
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.branch.BranchIdWithRevenueResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.branch.BranchResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Branch;
@@ -47,7 +48,7 @@ public class BranchController {
                             description = "Successfully retrieved branch",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BranchResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -76,8 +77,15 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<BranchResponseDTO> findByIdBranch(@PathVariable UUID id) {
-        return ResponseEntity.ok(BranchResponseDTO.convert(branchService.findByIdBranch(id)));
+    public ResponseEntity<SingleResponse<BranchResponseDTO>> findByIdBranch(@PathVariable UUID id) {
+        BranchResponseDTO branch = BranchResponseDTO.convert(branchService.findByIdBranch(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch retrieved successfully",
+                        branch
+                )
+        );
     }
 
     @GetMapping("/all")
@@ -116,10 +124,15 @@ public class BranchController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branches retrieved successfully",
                         BranchResponseDTO.convert(branchPages.getContent()),
-                        branchPages.getTotalElements(),
-                        branchPages.getNumber(),
-                        branchPages.getSize()
+                        new PageResponse.PagingResponse(
+                                branchPages.getNumber(),
+                                branchPages.getSize(),
+                                branchPages.getTotalElements(),
+                                branchPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -135,7 +148,7 @@ public class BranchController {
                             description = "Branch created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BranchResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -164,8 +177,15 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<BranchResponseDTO> createBranch(@RequestBody BranchCreateRequestDTO branchRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(BranchResponseDTO.convert(branchService.createBranch(branchRequestDTO)));
+    public ResponseEntity<SingleResponse<BranchResponseDTO>> createBranch(@RequestBody BranchCreateRequestDTO branchRequestDTO) {
+        BranchResponseDTO branch = BranchResponseDTO.convert(branchService.createBranch(branchRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Branch created successfully",
+                        branch
+                )
+        );
     }
 
     @PatchMapping("/")
@@ -179,7 +199,7 @@ public class BranchController {
                             description = "Branch updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BranchResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -208,8 +228,15 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<BranchResponseDTO> updateBranch(@RequestBody BranchUpdateRequestDTO branchRequestDTO) {
-        return ResponseEntity.ok(BranchResponseDTO.convert(branchService.updateBranch(branchRequestDTO)));
+    public ResponseEntity<SingleResponse<BranchResponseDTO>> updateBranch(@RequestBody BranchUpdateRequestDTO branchRequestDTO) {
+        BranchResponseDTO branch = BranchResponseDTO.convert(branchService.updateBranch(branchRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch updated successfully",
+                        branch
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -255,7 +282,7 @@ public class BranchController {
                             description = "Successfully retrieved branch revenue",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BigDecimal.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -276,12 +303,18 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<BigDecimal> getBranchRevenueByYear(
+    public ResponseEntity<SingleResponse<BigDecimal>> getBranchRevenueByYear(
             @RequestParam UUID branchId,
             @RequestParam int year
     ) {
         BigDecimal revenue = branchService.getTotalOrderCostByBranchAndYear(branchId, year);
-        return ResponseEntity.ok(revenue);
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch revenue retrieved successfully",
+                        revenue
+                )
+        );
     }
 
     @GetMapping("/revenue/month-year")
@@ -295,7 +328,7 @@ public class BranchController {
                             description = "Successfully retrieved branch revenue",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BigDecimal.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -316,13 +349,19 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<BigDecimal> getBranchRevenueByMonthAndYear(
+    public ResponseEntity<SingleResponse<BigDecimal>> getBranchRevenueByMonthAndYear(
             @RequestParam UUID branchId,
             @RequestParam int month,
             @RequestParam int year
     ) {
         BigDecimal revenue = branchService.getTotalOrderCostByBranchAndMonthAndYear(branchId, month, year);
-        return ResponseEntity.ok(revenue);
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch revenue retrieved successfully",
+                        revenue
+                )
+        );
     }
 
     @GetMapping("/revenue/day-month-year")
@@ -336,7 +375,7 @@ public class BranchController {
                             description = "Successfully retrieved branch revenue",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = BigDecimal.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -357,48 +396,24 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<BigDecimal> getBranchRevenueByDayMonthAndYear(
+    public ResponseEntity<SingleResponse<BigDecimal>> getBranchRevenueByDayMonthAndYear(
             @RequestParam UUID branchId,
             @RequestParam int day,
             @RequestParam int month,
             @RequestParam int year
     ) {
         BigDecimal revenue = branchService.getTotalOrderCostByBranchAndDayAndMonthAndYear(branchId, day, month, year);
-        return ResponseEntity.ok(revenue);
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch revenue retrieved successfully",
+                        revenue
+                )
+        );
     }
 
     @GetMapping("/all-with-revenue/year")
     @PreAuthorize("hasAuthority('ADMIN')")
-    @Operation(
-            summary = "Get all branches with revenue by year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successfully retrieved branches with revenue",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PageResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied - Requires ADMIN role",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
     public ResponseEntity<PageResponse<BranchIdWithRevenueResponseDTO>> findAllBranchesWithRevenueByYear(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
@@ -412,46 +427,21 @@ public class BranchController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branches with revenue retrieved successfully",
                         branchPages.getContent(),
-                        branchPages.getTotalElements(),
-                        branchPages.getNumber(),
-                        branchPages.getSize()
+                        new PageResponse.PagingResponse(
+                                branchPages.getNumber(),
+                                branchPages.getSize(),
+                                branchPages.getTotalElements(),
+                                branchPages.getTotalPages()
+                        )
                 )
         );
     }
 
     @GetMapping("/all-with-revenue/month-year")
     @PreAuthorize("hasAuthority('ADMIN')")
-    @Operation(
-            summary = "Get all branches with revenue by month and year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successfully retrieved branches with revenue",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PageResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied - Requires ADMIN role",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
     public ResponseEntity<PageResponse<BranchIdWithRevenueResponseDTO>> findAllBranchesWithRevenueByMonthYear(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
@@ -466,46 +456,21 @@ public class BranchController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branches with revenue retrieved successfully",
                         branchPages.getContent(),
-                        branchPages.getTotalElements(),
-                        branchPages.getNumber(),
-                        branchPages.getSize()
+                        new PageResponse.PagingResponse(
+                                branchPages.getNumber(),
+                                branchPages.getSize(),
+                                branchPages.getTotalElements(),
+                                branchPages.getTotalPages()
+                        )
                 )
         );
     }
 
     @GetMapping("/all-with-revenue/day-month-year")
     @PreAuthorize("hasAuthority('ADMIN')")
-    @Operation(
-            summary = "Get all branches with revenue by day, month, and year",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successfully retrieved branches with revenue",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PageResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "403",
-                            description = "Access denied - Requires ADMIN role",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
     public ResponseEntity<PageResponse<BranchIdWithRevenueResponseDTO>> findAllBranchesWithRevenueByDayMonthYear(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
@@ -521,10 +486,15 @@ public class BranchController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branches with revenue retrieved successfully",
                         branchPages.getContent(),
-                        branchPages.getTotalElements(),
-                        branchPages.getNumber(),
-                        branchPages.getSize()
+                        new PageResponse.PagingResponse(
+                                branchPages.getNumber(),
+                                branchPages.getSize(),
+                                branchPages.getTotalElements(),
+                                branchPages.getTotalPages()
+                        )
                 )
         );
     }

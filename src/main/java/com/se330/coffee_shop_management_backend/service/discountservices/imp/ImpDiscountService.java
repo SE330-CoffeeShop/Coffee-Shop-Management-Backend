@@ -119,7 +119,8 @@ public class ImpDiscountService implements IDiscountService {
                     Constants.NotificationTypeEnum.DISCOUNT.name(),
                     "New Discount Available: " + discountCreateRequestDTO.getDiscountName() + " at " + existingBranch.getBranchName(),
                     UUID.randomUUID(),
-                    UUID.randomUUID()
+                    UUID.randomUUID(),
+                        false
                 )
         );
 

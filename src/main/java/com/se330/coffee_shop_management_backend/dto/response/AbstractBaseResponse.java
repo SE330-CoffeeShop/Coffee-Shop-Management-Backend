@@ -8,6 +8,10 @@ import lombok.experimental.SuperBuilder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuperBuilder
 public abstract class AbstractBaseResponse {
+
+    protected int statusCode;
+    protected String message;
+
     protected AbstractBaseResponse() {
     }
 }

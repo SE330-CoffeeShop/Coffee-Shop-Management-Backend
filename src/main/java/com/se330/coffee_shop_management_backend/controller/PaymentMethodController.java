@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.paymentmethod.Paymen
 import com.se330.coffee_shop_management_backend.dto.request.paymentmethod.PaymentMethodUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.paymentmethod.PaymentMethodResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.PaymentMethods;
 import com.se330.coffee_shop_management_backend.service.paymentmethodservices.IPaymentMethodService;
@@ -26,7 +27,7 @@ import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_S
 import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.createPageable;
 
 @RestController
-@RequestMapping("/payment-methods")
+@RequestMapping("/payment-method")
 public class PaymentMethodController {
 
     private final IPaymentMethodService paymentMethodService;
@@ -36,6 +37,7 @@ public class PaymentMethodController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get payment method detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -45,20 +47,12 @@ public class PaymentMethodController {
                             description = "Successfully retrieved payment method",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PaymentMethodResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid ID format",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -74,12 +68,19 @@ public class PaymentMethodController {
                     )
             }
     )
-    public ResponseEntity<PaymentMethodResponseDTO> findByIdPaymentMethod(@PathVariable UUID id) {
-        PaymentMethods paymentMethod = paymentMethodService.findByIdPaymentMethod(id);
-        return ResponseEntity.ok(PaymentMethodResponseDTO.convert(paymentMethod));
+    public ResponseEntity<SingleResponse<PaymentMethodResponseDTO>> findByIdPaymentMethod(@PathVariable UUID id) {
+        PaymentMethodResponseDTO paymentMethod = PaymentMethodResponseDTO.convert(paymentMethodService.findByIdPaymentMethod(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Payment method retrieved successfully",
+                        paymentMethod
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all payment methods with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -90,14 +91,6 @@ public class PaymentMethodController {
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
                             )
                     )
             }
@@ -110,20 +103,25 @@ public class PaymentMethodController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<PaymentMethods> paymentMethodsPage = paymentMethodService.findAllPaymentMethods(pageable);
+        Page<PaymentMethods> paymentMethodPage = paymentMethodService.findAllPaymentMethods(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        PaymentMethodResponseDTO.convert(paymentMethodsPage.getContent()),
-                        paymentMethodsPage.getTotalElements(),
-                        paymentMethodsPage.getNumber(),
-                        paymentMethodsPage.getSize()
+                        HttpStatus.OK.value(),
+                        "Payment methods retrieved successfully",
+                        PaymentMethodResponseDTO.convert(paymentMethodPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                paymentMethodPage.getNumber(),
+                                paymentMethodPage.getSize(),
+                                paymentMethodPage.getTotalElements(),
+                                paymentMethodPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new payment method",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -133,7 +131,7 @@ public class PaymentMethodController {
                             description = "Payment method created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PaymentMethodResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -143,24 +141,22 @@ public class PaymentMethodController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<PaymentMethodResponseDTO> createPaymentMethod(@RequestBody PaymentMethodCreateRequestDTO paymentMethodCreateRequestDTO) {
-        PaymentMethods createdPaymentMethod = paymentMethodService.createPaymentMethod(paymentMethodCreateRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(PaymentMethodResponseDTO.convert(createdPaymentMethod));
+    public ResponseEntity<SingleResponse<PaymentMethodResponseDTO>> createPaymentMethod(@RequestBody PaymentMethodCreateRequestDTO paymentMethodCreateRequestDTO) {
+        PaymentMethodResponseDTO paymentMethod = PaymentMethodResponseDTO.convert(paymentMethodService.createPaymentMethod(paymentMethodCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Payment method created successfully",
+                        paymentMethod
+                )
+        );
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update payment method",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -170,20 +166,12 @@ public class PaymentMethodController {
                             description = "Payment method updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PaymentMethodResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -199,13 +187,19 @@ public class PaymentMethodController {
                     )
             }
     )
-    public ResponseEntity<PaymentMethodResponseDTO> updatePaymentMethod(@RequestBody PaymentMethodUpdateRequestDTO paymentMethodUpdateRequestDTO) {
-        PaymentMethods updatedPaymentMethod = paymentMethodService.updatePaymentMethod(paymentMethodUpdateRequestDTO);
-        return ResponseEntity.ok(PaymentMethodResponseDTO.convert(updatedPaymentMethod));
+    public ResponseEntity<SingleResponse<PaymentMethodResponseDTO>> updatePaymentMethod(@RequestBody PaymentMethodUpdateRequestDTO paymentMethodUpdateRequestDTO) {
+        PaymentMethodResponseDTO paymentMethod = PaymentMethodResponseDTO.convert(paymentMethodService.updatePaymentMethod(paymentMethodUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Payment method updated successfully",
+                        paymentMethod
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete payment method",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -217,14 +211,6 @@ public class PaymentMethodController {
                     @ApiResponse(
                             responseCode = "404",
                             description = "Payment method not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)

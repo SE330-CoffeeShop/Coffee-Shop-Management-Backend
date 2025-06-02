@@ -82,6 +82,7 @@ public class ImpNotificationService implements INotificationService {
                         .notificationType(Constants.NotificationTypeEnum.valueOf(notificationCreateRequestDTO.getNotificationType()))
                         .receiver(receiver)
                         .sender(sender)
+                        .isRead(notificationCreateRequestDTO.isRead())
                         .build()
         );
     }
@@ -118,6 +119,7 @@ public class ImpNotificationService implements INotificationService {
 
         existingNotification.setNotificationContent(notificationUpdateRequestDTO.getNotificationContent());
         existingNotification.setNotificationType(Constants.NotificationTypeEnum.valueOf(notificationUpdateRequestDTO.getNotificationType()));
+        existingNotification.setRead(notificationUpdateRequestDTO.isRead());
 
         return notificationRepository.save(existingNotification);
     }

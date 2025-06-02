@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.discount.UsedDiscoun
 import com.se330.coffee_shop_management_backend.dto.request.discount.UsedDiscountUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.discount.UsedDiscountResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.UsedDiscount;
 import com.se330.coffee_shop_management_backend.service.useddiscount.IUsedDiscountService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,7 +27,7 @@ import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_S
 import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.createPageable;
 
 @RestController
-@RequestMapping("/used-discounts")
+@RequestMapping("/used-discount")
 public class UsedDiscountController {
 
     private final IUsedDiscountService usedDiscountService;
@@ -35,8 +37,9 @@ public class UsedDiscountController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
-            summary = "Get used discount item",
+            summary = "Get used discount detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
@@ -44,7 +47,7 @@ public class UsedDiscountController {
                             description = "Successfully retrieved used discount",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UsedDiscountResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -56,14 +59,6 @@ public class UsedDiscountController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Used discount not found",
                             content = @Content(
@@ -73,55 +68,60 @@ public class UsedDiscountController {
                     )
             }
     )
-    public ResponseEntity<UsedDiscountResponseDTO> findByIdUsedDiscount(@PathVariable UUID id) {
-        return ResponseEntity.ok(UsedDiscountResponseDTO.convert(usedDiscountService.findByIdUsedDiscount(id)));
+    public ResponseEntity<SingleResponse<UsedDiscountResponseDTO>> findById(@PathVariable UUID id) {
+        UsedDiscountResponseDTO usedDiscount = UsedDiscountResponseDTO.convert(usedDiscountService.findByIdUsedDiscount(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Used discount retrieved successfully",
+                        usedDiscount
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all used discounts with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved used discounts list",
+                            description = "Successfully retrieved used discount list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<PageResponse<UsedDiscountResponseDTO>> findAllUsedDiscounts(
+    public ResponseEntity<PageResponse<UsedDiscountResponseDTO>> findAll(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<UsedDiscount> usedDiscountPages = usedDiscountService.findAllUsedDiscounts(pageable);
+        Page<UsedDiscount> usedDiscountPage = usedDiscountService.findAllUsedDiscounts(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        UsedDiscountResponseDTO.convert(usedDiscountPages.getContent()),
-                        usedDiscountPages.getTotalElements(),
-                        usedDiscountPages.getNumber(),
-                        usedDiscountPages.getSize()
+                        HttpStatus.OK.value(),
+                        "Used discounts retrieved successfully",
+                        UsedDiscountResponseDTO.convert(usedDiscountPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                usedDiscountPage.getNumber(),
+                                usedDiscountPage.getSize(),
+                                usedDiscountPage.getTotalElements(),
+                                usedDiscountPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new used discount",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +131,7 @@ public class UsedDiscountController {
                             description = "Used discount created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UsedDiscountResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -141,26 +141,22 @@ public class UsedDiscountController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<UsedDiscountResponseDTO> createUsedDiscount(@RequestBody UsedDiscountCreateRequestDTO requestDTO) {
+    public ResponseEntity<SingleResponse<UsedDiscountResponseDTO>> create(@RequestBody UsedDiscountCreateRequestDTO dto) {
+        UsedDiscountResponseDTO usedDiscount = UsedDiscountResponseDTO.convert(usedDiscountService.createUsedDiscount(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                UsedDiscountResponseDTO.convert(
-                        usedDiscountService.createUsedDiscount(requestDTO)
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Used discount created successfully",
+                        usedDiscount
                 )
         );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update used discount",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -170,7 +166,7 @@ public class UsedDiscountController {
                             description = "Used discount updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = UsedDiscountResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -182,14 +178,6 @@ public class UsedDiscountController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Used discount not found",
                             content = @Content(
@@ -199,15 +187,19 @@ public class UsedDiscountController {
                     )
             }
     )
-    public ResponseEntity<UsedDiscountResponseDTO> updateUsedDiscount(@RequestBody UsedDiscountUpdateRequestDTO requestDTO) {
+    public ResponseEntity<SingleResponse<UsedDiscountResponseDTO>> update(@RequestBody UsedDiscountUpdateRequestDTO dto) {
+        UsedDiscountResponseDTO usedDiscount = UsedDiscountResponseDTO.convert(usedDiscountService.updateUsedDiscount(dto));
         return ResponseEntity.ok(
-                UsedDiscountResponseDTO.convert(
-                        usedDiscountService.updateUsedDiscount(requestDTO)
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Used discount updated successfully",
+                        usedDiscount
                 )
         );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete used discount",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -217,14 +209,6 @@ public class UsedDiscountController {
                             description = "Used discount deleted successfully"
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Used discount not found",
                             content = @Content(
@@ -234,7 +218,7 @@ public class UsedDiscountController {
                     )
             }
     )
-    public ResponseEntity<Void> deleteUsedDiscount(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         usedDiscountService.deleteUsedDiscount(id);
         return ResponseEntity.noContent().build();
     }

@@ -45,6 +45,11 @@ public class ImpEmployeeService implements IEmployeeService {
     }
 
     @Override
+    public Page<Employee> findAllEmployeesByBranchId(UUID branchId, Pageable pageable) {
+        return employeeRepository.findAllByBranch_Id(branchId, pageable);
+    }
+
+    @Override
     public Employee createEmployee(EmployeeCreateRequestDTO employeeCreateRequestDTO) {
         Branch branch = branchRepository.findById(employeeCreateRequestDTO.getBranchId())
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + employeeCreateRequestDTO.getBranchId()));

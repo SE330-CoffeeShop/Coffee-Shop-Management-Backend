@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.checkin.CheckinCreat
 import com.se330.coffee_shop_management_backend.dto.request.checkin.CheckinUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.checkin.CheckinResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Checkin;
 import com.se330.coffee_shop_management_backend.service.checkinservices.ICheckinService;
@@ -43,7 +44,7 @@ public class CheckinController {
                             description = "Successfully retrieved checkin",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = CheckinResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -72,8 +73,15 @@ public class CheckinController {
                     )
             }
     )
-    public ResponseEntity<CheckinResponseDTO> findById(@PathVariable UUID id) {
-        return ResponseEntity.ok(CheckinResponseDTO.convert(checkinService.findById(id)));
+    public ResponseEntity<SingleResponse<CheckinResponseDTO>> findByIdCheckin(@PathVariable UUID id) {
+        CheckinResponseDTO checkin = CheckinResponseDTO.convert(checkinService.findById(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkin retrieved successfully",
+                        checkin
+                )
+        );
     }
 
     @GetMapping("/all")
@@ -113,10 +121,15 @@ public class CheckinController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
                         CheckinResponseDTO.convert(checkinPages.getContent()),
-                        checkinPages.getTotalElements(),
-                        checkinPages.getNumber(),
-                        checkinPages.getSize()
+                        new PageResponse.PagingResponse(
+                                checkinPages.getNumber(),
+                                checkinPages.getSize(),
+                                checkinPages.getTotalElements(),
+                                checkinPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -153,8 +166,15 @@ public class CheckinController {
                     )
             }
     )
-    public ResponseEntity<CheckinResponseDTO> create(@RequestBody CheckinCreateRequestDTO checkinCreateRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(CheckinResponseDTO.convert(checkinService.create(checkinCreateRequestDTO)));
+    public ResponseEntity<SingleResponse<CheckinResponseDTO>> create(@RequestBody CheckinCreateRequestDTO checkinCreateRequestDTO) {
+        CheckinResponseDTO checkin = CheckinResponseDTO.convert(checkinService.create(checkinCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Checkin created successfully",
+                        checkin
+                )
+        );
     }
 
     @PatchMapping("/")
@@ -197,8 +217,14 @@ public class CheckinController {
                     )
             }
     )
-    public ResponseEntity<CheckinResponseDTO> update(@RequestBody CheckinUpdateRequestDTO checkinUpdateRequestDTO) {
-        return ResponseEntity.ok(CheckinResponseDTO.convert(checkinService.update(checkinUpdateRequestDTO)));
+    public ResponseEntity<SingleResponse<CheckinResponseDTO>> update(@RequestBody CheckinUpdateRequestDTO checkinUpdateRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Checkin created successfully",
+                        CheckinResponseDTO.convert(checkinService.update(checkinUpdateRequestDTO))
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -273,10 +299,15 @@ public class CheckinController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
                         CheckinResponseDTO.convert(checkinPages.getContent()),
-                        checkinPages.getTotalElements(),
-                        checkinPages.getNumber(),
-                        checkinPages.getSize()
+                        new PageResponse.PagingResponse(
+                                checkinPages.getNumber(),
+                                checkinPages.getSize(),
+                                checkinPages.getTotalElements(),
+                                checkinPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -320,10 +351,15 @@ public class CheckinController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
                         CheckinResponseDTO.convert(checkinPages.getContent()),
-                        checkinPages.getTotalElements(),
-                        checkinPages.getNumber(),
-                        checkinPages.getSize()
+                        new PageResponse.PagingResponse(
+                                checkinPages.getNumber(),
+                                checkinPages.getSize(),
+                                checkinPages.getTotalElements(),
+                                checkinPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -368,10 +404,15 @@ public class CheckinController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
                         CheckinResponseDTO.convert(checkinPages.getContent()),
-                        checkinPages.getTotalElements(),
-                        checkinPages.getNumber(),
-                        checkinPages.getSize()
+                        new PageResponse.PagingResponse(
+                                checkinPages.getNumber(),
+                                checkinPages.getSize(),
+                                checkinPages.getTotalElements(),
+                                checkinPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -415,10 +456,15 @@ public class CheckinController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
                         CheckinResponseDTO.convert(checkinPages.getContent()),
-                        checkinPages.getTotalElements(),
-                        checkinPages.getNumber(),
-                        checkinPages.getSize()
+                        new PageResponse.PagingResponse(
+                                checkinPages.getNumber(),
+                                checkinPages.getSize(),
+                                checkinPages.getTotalElements(),
+                                checkinPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -462,10 +508,15 @@ public class CheckinController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
                         CheckinResponseDTO.convert(checkinPages.getContent()),
-                        checkinPages.getTotalElements(),
-                        checkinPages.getNumber(),
-                        checkinPages.getSize()
+                        new PageResponse.PagingResponse(
+                                checkinPages.getNumber(),
+                                checkinPages.getSize(),
+                                checkinPages.getTotalElements(),
+                                checkinPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -510,10 +561,15 @@ public class CheckinController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
                         CheckinResponseDTO.convert(checkinPages.getContent()),
-                        checkinPages.getTotalElements(),
-                        checkinPages.getNumber(),
-                        checkinPages.getSize()
+                        new PageResponse.PagingResponse(
+                                checkinPages.getNumber(),
+                                checkinPages.getSize(),
+                                checkinPages.getTotalElements(),
+                                checkinPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -557,10 +613,15 @@ public class CheckinController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
                         CheckinResponseDTO.convert(checkinPages.getContent()),
-                        checkinPages.getTotalElements(),
-                        checkinPages.getNumber(),
-                        checkinPages.getSize()
+                        new PageResponse.PagingResponse(
+                                checkinPages.getNumber(),
+                                checkinPages.getSize(),
+                                checkinPages.getTotalElements(),
+                                checkinPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -604,10 +665,15 @@ public class CheckinController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
                         CheckinResponseDTO.convert(checkinPages.getContent()),
-                        checkinPages.getTotalElements(),
-                        checkinPages.getNumber(),
-                        checkinPages.getSize()
+                        new PageResponse.PagingResponse(
+                                checkinPages.getNumber(),
+                                checkinPages.getSize(),
+                                checkinPages.getTotalElements(),
+                                checkinPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -652,10 +718,15 @@ public class CheckinController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
                         CheckinResponseDTO.convert(checkinPages.getContent()),
-                        checkinPages.getTotalElements(),
-                        checkinPages.getNumber(),
-                        checkinPages.getSize()
+                        new PageResponse.PagingResponse(
+                                checkinPages.getNumber(),
+                                checkinPages.getSize(),
+                                checkinPages.getTotalElements(),
+                                checkinPages.getTotalPages()
+                        )
                 )
         );
     }
