@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.supplier.SupplierCre
 import com.se330.coffee_shop_management_backend.dto.request.supplier.SupplierUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.supplier.SupplierResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Supplier;
 import com.se330.coffee_shop_management_backend.service.supplierservices.ISupplierService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,7 +27,7 @@ import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_S
 import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.createPageable;
 
 @RestController
-@RequestMapping("/suppliers")
+@RequestMapping("/supplier")
 public class SupplierController {
 
     private final ISupplierService supplierService;
@@ -35,6 +37,7 @@ public class SupplierController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get supplier detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -44,7 +47,7 @@ public class SupplierController {
                             description = "Successfully retrieved supplier",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = SupplierResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -56,14 +59,6 @@ public class SupplierController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Supplier not found",
                             content = @Content(
@@ -73,11 +68,19 @@ public class SupplierController {
                     )
             }
     )
-    public ResponseEntity<SupplierResponseDTO> findByIdSupplier(@PathVariable UUID id) {
-        return ResponseEntity.ok(SupplierResponseDTO.convert(supplierService.findByIdSupplier(id)));
+    public ResponseEntity<SingleResponse<SupplierResponseDTO>> findByIdSupplier(@PathVariable UUID id) {
+        SupplierResponseDTO supplier = SupplierResponseDTO.convert(supplierService.findByIdSupplier(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Supplier retrieved successfully",
+                        supplier
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all suppliers with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -89,39 +92,36 @@ public class SupplierController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
     public ResponseEntity<PageResponse<SupplierResponseDTO>> findAllSuppliers(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Supplier> supplierPages = supplierService.findAllSuppliers(pageable);
+        Page<Supplier> supplierPage = supplierService.findAllSuppliers(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        SupplierResponseDTO.convert(supplierPages.getContent()),
-                        supplierPages.getTotalElements(),
-                        supplierPages.getNumber(),
-                        supplierPages.getSize()
+                        HttpStatus.OK.value(),
+                        "Suppliers retrieved successfully",
+                        SupplierResponseDTO.convert(supplierPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                supplierPage.getNumber(),
+                                supplierPage.getSize(),
+                                supplierPage.getTotalElements(),
+                                supplierPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new supplier",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +131,7 @@ public class SupplierController {
                             description = "Supplier created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = SupplierResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -141,26 +141,22 @@ public class SupplierController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<SupplierResponseDTO> createSupplier(@RequestBody SupplierCreateRequestDTO supplierCreateRequestDTO) {
+    public ResponseEntity<SingleResponse<SupplierResponseDTO>> createSupplier(@RequestBody SupplierCreateRequestDTO supplierCreateRequestDTO) {
+        SupplierResponseDTO supplier = SupplierResponseDTO.convert(supplierService.createSupplier(supplierCreateRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                SupplierResponseDTO.convert(
-                        supplierService.createSupplier(supplierCreateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Supplier created successfully",
+                        supplier
                 )
         );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update supplier",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -170,20 +166,12 @@ public class SupplierController {
                             description = "Supplier updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = SupplierResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -199,15 +187,19 @@ public class SupplierController {
                     )
             }
     )
-    public ResponseEntity<SupplierResponseDTO> updateSupplier(@RequestBody SupplierUpdateRequestDTO supplierUpdateRequestDTO) {
+    public ResponseEntity<SingleResponse<SupplierResponseDTO>> updateSupplier(@RequestBody SupplierUpdateRequestDTO supplierUpdateRequestDTO) {
+        SupplierResponseDTO supplier = SupplierResponseDTO.convert(supplierService.updateSupplier(supplierUpdateRequestDTO));
         return ResponseEntity.ok(
-                SupplierResponseDTO.convert(
-                        supplierService.updateSupplier(supplierUpdateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Supplier updated successfully",
+                        supplier
                 )
         );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete supplier",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -215,14 +207,6 @@ public class SupplierController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Supplier deleted successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     ),
                     @ApiResponse(
                             responseCode = "404",

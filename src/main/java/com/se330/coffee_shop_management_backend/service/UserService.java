@@ -194,7 +194,7 @@ public class UserService {
         log.info("Registering user with email: {}", request.getEmail());
 
         User user = createUser(request);
-        user.setRoles(List.of(roleService.findByName(Constants.RoleEnum.USER)));
+        user.setRoles(List.of(roleService.findByName(Constants.RoleEnum.CUSTOMER)));
         userRepository.save(user);
 
         emailVerificationEventPublisher(user);

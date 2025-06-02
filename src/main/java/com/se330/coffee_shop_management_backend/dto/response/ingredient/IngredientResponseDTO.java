@@ -47,6 +47,7 @@ public class IngredientResponseDTO extends AbstractBaseResponse {
     private String ingredientDescription;
     private BigDecimal ingredientPrice;
     private String ingredientType;
+    private long shelfLifeDays;
     private List<String> transferDetailIds;
     private List<String> inventoryIds;
     private List<String> recipeIds;
@@ -62,6 +63,7 @@ public class IngredientResponseDTO extends AbstractBaseResponse {
                 .ingredientDescription(ingredient.getIngredientDescription())
                 .ingredientPrice(ingredient.getIngredientPrice())
                 .ingredientType(ingredient.getIngredientType())
+                .shelfLifeDays(ingredient.getShelfLifeDays())
                 .transferDetailIds(ingredient.getTransferDetails() != null ? ingredient.getTransferDetails().stream()
                         .map(entity -> entity.getId().toString())
                         .toList() : List.of())

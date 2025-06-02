@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.ingredient.Ingredien
 import com.se330.coffee_shop_management_backend.dto.request.ingredient.IngredientUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.ingredient.IngredientResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Ingredient;
 import com.se330.coffee_shop_management_backend.service.ingredientservices.IIngredientService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -44,7 +46,7 @@ public class IngredientController {
                             description = "Successfully retrieved ingredient",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = Ingredient.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -73,8 +75,15 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<IngredientResponseDTO> findByIdIngredient(@PathVariable UUID id) {
-        return ResponseEntity.ok(IngredientResponseDTO.convert(ingredientService.findByIdIngredient(id)));
+    public ResponseEntity<SingleResponse<IngredientResponseDTO>> findByIdIngredient(@PathVariable UUID id) {
+        IngredientResponseDTO ingredient = IngredientResponseDTO.convert(ingredientService.findByIdIngredient(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Ingredient retrieved successfully",
+                        ingredient
+                )
+        );
     }
 
     @GetMapping("/all")
@@ -103,25 +112,30 @@ public class IngredientController {
     public ResponseEntity<PageResponse<IngredientResponseDTO>> findAllIngredients(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Ingredient> ingredientPage = ingredientService.findAllIngredients(pageable);
+        Page<Ingredient> ingredientPages = ingredientService.findAllIngredients(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        IngredientResponseDTO.convert(ingredientPage.getContent()),
-                        ingredientPage.getTotalElements(),
-                        ingredientPage.getNumber(),
-                        ingredientPage.getSize()
+                        HttpStatus.OK.value(),
+                        "Ingredients retrieved successfully",
+                        IngredientResponseDTO.convert(ingredientPages.getContent()),
+                        new PageResponse.PagingResponse(
+                                ingredientPages.getNumber(),
+                                ingredientPages.getSize(),
+                                ingredientPages.getTotalElements(),
+                                ingredientPages.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Create new ingredient",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +145,7 @@ public class IngredientController {
                             description = "Ingredient created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = Ingredient.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -152,12 +166,19 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<IngredientResponseDTO> createIngredient(@RequestBody IngredientCreateRequestDTO ingredientCreateRequestDTO) {
-        Ingredient createdIngredient = ingredientService.createIngredient(ingredientCreateRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(IngredientResponseDTO.convert(createdIngredient));
+    public ResponseEntity<SingleResponse<IngredientResponseDTO>> createIngredient(@RequestBody IngredientCreateRequestDTO ingredientCreateRequestDTO) {
+        IngredientResponseDTO ingredient = IngredientResponseDTO.convert(ingredientService.createIngredient(ingredientCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Ingredient created successfully",
+                        ingredient
+                )
+        );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Update ingredient",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -167,7 +188,7 @@ public class IngredientController {
                             description = "Ingredient updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = Ingredient.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -196,12 +217,19 @@ public class IngredientController {
                     )
             }
     )
-    public ResponseEntity<IngredientResponseDTO> updateIngredient(@RequestBody IngredientUpdateRequestDTO ingredientUpdateRequestDTO) {
-        Ingredient updatedIngredient = ingredientService.updateIngredient(ingredientUpdateRequestDTO);
-        return ResponseEntity.ok(IngredientResponseDTO.convert(updatedIngredient));
+    public ResponseEntity<SingleResponse<IngredientResponseDTO>> updateIngredient(@RequestBody IngredientUpdateRequestDTO ingredientUpdateRequestDTO) {
+        IngredientResponseDTO ingredient = IngredientResponseDTO.convert(ingredientService.updateIngredient(ingredientUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Ingredient updated successfully",
+                        ingredient
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Delete ingredient",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

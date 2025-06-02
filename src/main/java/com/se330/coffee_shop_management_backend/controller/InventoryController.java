@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.inventory.InventoryC
 import com.se330.coffee_shop_management_backend.dto.request.inventory.InventoryUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.inventory.InventoryResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Inventory;
 import com.se330.coffee_shop_management_backend.service.inventoryservices.IInventoryService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +37,7 @@ public class InventoryController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get inventory detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -44,7 +47,7 @@ public class InventoryController {
                             description = "Successfully retrieved inventory",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InventoryResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -73,11 +76,19 @@ public class InventoryController {
                     )
             }
     )
-    public ResponseEntity<InventoryResponseDTO> findByIdInventory(@PathVariable UUID id) {
-        return ResponseEntity.ok(InventoryResponseDTO.convert(inventoryService.findByIdInventory(id)));
+    public ResponseEntity<SingleResponse<InventoryResponseDTO>> findByIdInventory(@PathVariable UUID id) {
+        InventoryResponseDTO inventory = InventoryResponseDTO.convert(inventoryService.findByIdInventory(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Inventory retrieved successfully",
+                        inventory
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all inventories with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -113,15 +124,21 @@ public class InventoryController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Inventories retrieved successfully",
                         InventoryResponseDTO.convert(inventoryPage.getContent()),
-                        inventoryPage.getTotalElements(),
-                        inventoryPage.getNumber(),
-                        inventoryPage.getSize()
+                        new PageResponse.PagingResponse(
+                                inventoryPage.getNumber(),
+                                inventoryPage.getSize(),
+                                inventoryPage.getTotalElements(),
+                                inventoryPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new inventory",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +148,7 @@ public class InventoryController {
                             description = "Inventory created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InventoryResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -152,12 +169,19 @@ public class InventoryController {
                     )
             }
     )
-    public ResponseEntity<InventoryResponseDTO> createInventory(@RequestBody InventoryCreateRequestDTO inventoryCreateRequestDTO) {
-        Inventory createdInventory = inventoryService.createInventory(inventoryCreateRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(InventoryResponseDTO.convert(createdInventory));
+    public ResponseEntity<SingleResponse<InventoryResponseDTO>> createInventory(@RequestBody InventoryCreateRequestDTO inventoryCreateRequestDTO) {
+        InventoryResponseDTO inventory = InventoryResponseDTO.convert(inventoryService.createInventory(inventoryCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Inventory created successfully",
+                        inventory
+                )
+        );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update inventory",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -167,7 +191,7 @@ public class InventoryController {
                             description = "Inventory updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InventoryResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -196,12 +220,19 @@ public class InventoryController {
                     )
             }
     )
-    public ResponseEntity<InventoryResponseDTO> updateInventory(@RequestBody InventoryUpdateRequestDTO inventoryUpdateRequestDTO) {
-        Inventory updatedInventory = inventoryService.updateInventory(inventoryUpdateRequestDTO);
-        return ResponseEntity.ok(InventoryResponseDTO.convert(updatedInventory));
+    public ResponseEntity<SingleResponse<InventoryResponseDTO>> updateInventory(@RequestBody InventoryUpdateRequestDTO inventoryUpdateRequestDTO) {
+        InventoryResponseDTO inventory = InventoryResponseDTO.convert(inventoryService.updateInventory(inventoryUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Inventory updated successfully",
+                        inventory
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete inventory",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -231,5 +262,64 @@ public class InventoryController {
     public ResponseEntity<Void> deleteInventory(@PathVariable UUID id) {
         inventoryService.deleteInventory(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/branch/{branchId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all inventories by branch ID with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch's inventory list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid branch ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<InventoryResponseDTO>> findAllInventoriesByBranchId(
+            @PathVariable UUID branchId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "vi") String lan,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Inventory> inventoryPage = inventoryService.findAllInventoriesByBrachId(branchId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch inventories retrieved successfully",
+                        InventoryResponseDTO.convert(inventoryPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                inventoryPage.getNumber(),
+                                inventoryPage.getSize(),
+                                inventoryPage.getTotalElements(),
+                                inventoryPage.getTotalPages()
+                        )
+                )
+        );
     }
 }

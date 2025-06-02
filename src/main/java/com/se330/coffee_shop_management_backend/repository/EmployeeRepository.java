@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface EmployeeRepository extends JpaRepository<Employee, UUID>, JpaSpecificationExecutor<Employee> {
     @Override
     Page<Employee> findAll(Pageable pageable);
+
+    Page<Employee> findAllByBranch_Id(UUID branchId, Pageable pageable);
 }

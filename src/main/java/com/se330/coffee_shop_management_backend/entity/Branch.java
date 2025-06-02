@@ -29,6 +29,16 @@ public class Branch extends AbstractBaseEntity {
     @Column(name = "branch_email", nullable = false)
     private String branchEmail;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
+            name = "manager_id",
+            foreignKey = @ForeignKey(
+                    name = "fk_branch_manager",
+                    foreignKeyDefinition = "FOREIGN KEY (manager_id) REFERENCES employees (employee_id) ON DELETE SET NULL"
+            )
+    )
+    private Employee manager;
+
     // One branch has many employees
     @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default

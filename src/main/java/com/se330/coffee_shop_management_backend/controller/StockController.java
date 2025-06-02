@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.stock.StockCreateReq
 import com.se330.coffee_shop_management_backend.dto.request.stock.StockUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.stock.StockResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Stock;
 import com.se330.coffee_shop_management_backend.service.stockservices.IStockService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +37,7 @@ public class StockController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get stock detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -44,7 +47,7 @@ public class StockController {
                             description = "Successfully retrieved stock",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = StockResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -56,14 +59,6 @@ public class StockController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Stock not found",
                             content = @Content(
@@ -73,11 +68,19 @@ public class StockController {
                     )
             }
     )
-    public ResponseEntity<StockResponseDTO> findByIdStock(@PathVariable UUID id) {
-        return ResponseEntity.ok(StockResponseDTO.convert(stockService.findByIdStock(id)));
+    public ResponseEntity<SingleResponse<StockResponseDTO>> findByIdStock(@PathVariable UUID id) {
+        StockResponseDTO stock = StockResponseDTO.convert(stockService.findByIdStock(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Stock retrieved successfully",
+                        stock
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all stocks with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -89,21 +92,12 @@ public class StockController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
     public ResponseEntity<PageResponse<StockResponseDTO>> findAllStocks(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
@@ -113,15 +107,21 @@ public class StockController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Stocks retrieved successfully",
                         StockResponseDTO.convert(stockPage.getContent()),
-                        stockPage.getTotalElements(),
-                        stockPage.getNumber(),
-                        stockPage.getSize()
+                        new PageResponse.PagingResponse(
+                                stockPage.getNumber(),
+                                stockPage.getSize(),
+                                stockPage.getTotalElements(),
+                                stockPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new stock",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +131,7 @@ public class StockController {
                             description = "Stock created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = StockResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -141,26 +141,22 @@ public class StockController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<StockResponseDTO> createStock(@RequestBody StockCreateRequestDTO stockCreateRequestDTO) {
+    public ResponseEntity<SingleResponse<StockResponseDTO>> createStock(@RequestBody StockCreateRequestDTO stockCreateRequestDTO) {
+        StockResponseDTO stock = StockResponseDTO.convert(stockService.createStock(stockCreateRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                StockResponseDTO.convert(
-                        stockService.createStock(stockCreateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Stock created successfully",
+                        stock
                 )
         );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update stock",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -170,20 +166,12 @@ public class StockController {
                             description = "Stock updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = StockResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -199,15 +187,19 @@ public class StockController {
                     )
             }
     )
-    public ResponseEntity<StockResponseDTO> updateStock(@RequestBody StockUpdateRequestDTO stockUpdateRequestDTO) {
+    public ResponseEntity<SingleResponse<StockResponseDTO>> updateStock(@RequestBody StockUpdateRequestDTO stockUpdateRequestDTO) {
+        StockResponseDTO stock = StockResponseDTO.convert(stockService.updateStock(stockUpdateRequestDTO));
         return ResponseEntity.ok(
-                StockResponseDTO.convert(
-                        stockService.updateStock(stockUpdateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Stock updated successfully",
+                        stock
                 )
         );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete stock",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -215,14 +207,6 @@ public class StockController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Stock deleted successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     ),
                     @ApiResponse(
                             responseCode = "404",

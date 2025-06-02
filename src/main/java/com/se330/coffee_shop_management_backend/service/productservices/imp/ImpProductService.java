@@ -2,18 +2,21 @@ package com.se330.coffee_shop_management_backend.service.productservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.response.product.BestSellingProductResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.entity.product.ProductCategory;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductCategoryRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -100,5 +103,61 @@ public class ImpProductService implements IProductService {
         }
 
         productRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<BestSellingProductResponseDTO> findAllBestSellingProducts(Pageable pageable) {
+        Page<Object[]> productData = productRepository.findAllBestSellingProducts(pageable);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
+        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+    }
+
+    @Override
+    public Page<BestSellingProductResponseDTO> findBestSellingProductsByYear(int year, Pageable pageable) {
+        Page<Object[]> productData = productRepository.findBestSellingProductsByYear(year, pageable);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
+        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+    }
+
+    @Override
+    public Page<BestSellingProductResponseDTO> findBestSellingProductsByMonthAndYear(int month, int year, Pageable pageable) {
+        Page<Object[]> productData = productRepository.findBestSellingProductsByMonthAndYear(month, year, pageable);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
+        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+    }
+
+    @Override
+    public Page<BestSellingProductResponseDTO> findBestSellingProductsByDayAndMonthAndYear(int day, int month, int year, Pageable pageable) {
+        Page<Object[]> productData = productRepository.findBestSellingProductsByDayAndMonthAndYear(day, month, year, pageable);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
+        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+    }
+
+    @Override
+    public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranch(UUID branchId, Pageable pageable) {
+        Page<Object[]> productData = productRepository.findBestSellingProductsByBranch(branchId, pageable);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
+        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+    }
+
+    @Override
+    public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndYear(UUID branchId, int year, Pageable pageable) {
+        Page<Object[]> productData = productRepository.findBestSellingProductsByBranchAndYear(branchId, year, pageable);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
+        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+    }
+
+    @Override
+    public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndMonthAndYear(UUID branchId, int month, int year, Pageable pageable) {
+        Page<Object[]> productData = productRepository.findBestSellingProductsByBranchAndMonthAndYear(branchId, month, year, pageable);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
+        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+    }
+
+    @Override
+    public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndDayAndMonthAndYear(UUID branchId, int day, int month, int year, Pageable pageable) {
+        Page<Object[]> productData = productRepository.findBestSellingProductsByBranchAndDayAndMonthAndYear(branchId, day, month, year, pageable);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
+        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
     }
 }

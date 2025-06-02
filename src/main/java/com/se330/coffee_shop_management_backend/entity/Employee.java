@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -27,6 +26,9 @@ public class Employee extends AbstractBaseEntity {
 
     @Column(name = "employee_hire_date", nullable = false)
     private LocalDateTime employeeHireDate;
+
+    @OneToOne(mappedBy = "manager")
+    private Branch managedBranch;
 
     // Many employees can belong to one branch
     @ManyToOne(fetch = FetchType.EAGER)
@@ -51,10 +53,15 @@ public class Employee extends AbstractBaseEntity {
     )
     private User user;
 
-    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Order order;
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<Order> orders = new ArrayList<>();
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<Shift> shifts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<Salary> salaries = new ArrayList<>();
 }

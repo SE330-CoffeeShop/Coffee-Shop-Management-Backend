@@ -31,9 +31,5 @@ public class Supplier extends AbstractBaseEntity {
 
     @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
-    private List<Stock> stocks = new ArrayList<>();
-
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @Builder.Default
     private List<Invoice> invoices = new ArrayList<>();
 }

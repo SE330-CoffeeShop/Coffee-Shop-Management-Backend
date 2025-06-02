@@ -7,11 +7,14 @@ import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.repository.NotificationRepository;
 import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -62,18 +65,24 @@ public class ImpNotificationService implements INotificationService {
 
     @Override
     public Notification createNotification(NotificationCreateRequestDTO notificationCreateRequestDTO) {
-        User sender = userRepository.findById(UUID.fromString(notificationCreateRequestDTO.getSenderId()))
-                .orElseThrow(() -> new RuntimeException("Sender not found"));
 
-        User receiver = userRepository.findById(UUID.fromString(notificationCreateRequestDTO.getReceiverId()))
+        User sender = null;
+
+        if (!Objects.equals(notificationCreateRequestDTO.getNotificationType(), Constants.NotificationTypeEnum.SYSTEM.getValue())) {
+            sender = userRepository.findById(notificationCreateRequestDTO.getSenderId())
+                    .orElseThrow(() -> new RuntimeException("Sender not found"));
+        }
+
+        User receiver = userRepository.findById(notificationCreateRequestDTO.getReceiverId())
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
 
         return notificationRepository.save(
                 Notification.builder()
                         .notificationContent(notificationCreateRequestDTO.getNotificationContent())
-                        .notificationType(notificationCreateRequestDTO.getNotificationType())
+                        .notificationType(Constants.NotificationTypeEnum.valueOf(notificationCreateRequestDTO.getNotificationType()))
                         .receiver(receiver)
                         .sender(sender)
+                        .isRead(notificationCreateRequestDTO.isRead())
                         .build()
         );
     }
@@ -81,10 +90,15 @@ public class ImpNotificationService implements INotificationService {
     @Transactional
     @Override
     public Notification updateNotification(NotificationUpdateRequestDTO notificationUpdateRequestDTO) {
-        User sender = userRepository.findById(UUID.fromString(notificationUpdateRequestDTO.getSenderId()))
-                .orElseThrow(() -> new RuntimeException("Sender not found"));
 
-        User receiver = userRepository.findById(UUID.fromString(notificationUpdateRequestDTO.getReceiverId()))
+        User sender = null;
+
+        if (!Objects.equals(notificationUpdateRequestDTO.getNotificationType(), Constants.NotificationTypeEnum.SYSTEM.getValue())) {
+            sender = userRepository.findById(notificationUpdateRequestDTO.getSenderId())
+                    .orElseThrow(() -> new RuntimeException("Sender not found"));
+        }
+
+        User receiver = userRepository.findById(notificationUpdateRequestDTO.getReceiverId())
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
 
         Notification existingNotification = notificationRepository.findById(notificationUpdateRequestDTO.getNotificationId())
@@ -93,7 +107,8 @@ public class ImpNotificationService implements INotificationService {
         if (existingNotification.getSender() != null) {
             existingNotification.getSender().getSentNotifications().remove(existingNotification);
             existingNotification.setSender(sender);
-            sender.getSentNotifications().add(existingNotification);
+            if (sender != null)
+                sender.getSentNotifications().add(existingNotification);
         }
 
         if (existingNotification.getReceiver() != null) {
@@ -103,9 +118,25 @@ public class ImpNotificationService implements INotificationService {
         }
 
         existingNotification.setNotificationContent(notificationUpdateRequestDTO.getNotificationContent());
-        existingNotification.setNotificationType(notificationUpdateRequestDTO.getNotificationType());
+        existingNotification.setNotificationType(Constants.NotificationTypeEnum.valueOf(notificationUpdateRequestDTO.getNotificationType()));
+        existingNotification.setRead(notificationUpdateRequestDTO.isRead());
 
         return notificationRepository.save(existingNotification);
+    }
+
+    @Override
+    public void sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO) {
+        List<User> users = userRepository.findAll();
+        User sender = userRepository.findById(notificationCreateRequestDTO.getSenderId()).orElse(null);
+        for (User user : users) {
+            Notification notification = Notification.builder()
+                    .notificationContent(notificationCreateRequestDTO.getNotificationContent())
+                    .notificationType(Constants.NotificationTypeEnum.valueOf(notificationCreateRequestDTO.getNotificationType()))
+                    .receiver(user)
+                    .sender(sender)
+                    .build();
+            notificationRepository.save(notification);
+        }
     }
 
     @Transactional

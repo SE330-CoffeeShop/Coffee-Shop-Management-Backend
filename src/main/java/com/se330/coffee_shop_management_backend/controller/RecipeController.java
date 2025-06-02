@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.recipe.RecipeCreateR
 import com.se330.coffee_shop_management_backend.dto.request.recipe.RecipeUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.recipe.RecipeResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Recipe;
 import com.se330.coffee_shop_management_backend.service.recipeservices.IRecipeService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,7 +27,7 @@ import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_S
 import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.createPageable;
 
 @RestController
-@RequestMapping("/recipes")
+@RequestMapping("/recipe")
 public class RecipeController {
 
     private final IRecipeService recipeService;
@@ -35,6 +37,7 @@ public class RecipeController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get recipe detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -44,7 +47,7 @@ public class RecipeController {
                             description = "Successfully retrieved recipe",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = RecipeResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -56,14 +59,6 @@ public class RecipeController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Recipe not found",
                             content = @Content(
@@ -73,11 +68,19 @@ public class RecipeController {
                     )
             }
     )
-    public ResponseEntity<RecipeResponseDTO> findByIdRecipe(@PathVariable UUID id) {
-        return ResponseEntity.ok(RecipeResponseDTO.convert(recipeService.findByIdRecipe(id)));
+    public ResponseEntity<SingleResponse<RecipeResponseDTO>> findByIdRecipe(@PathVariable UUID id) {
+        RecipeResponseDTO recipe = RecipeResponseDTO.convert(recipeService.findByIdRecipe(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Recipe retrieved successfully",
+                        recipe
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all recipes with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -89,39 +92,36 @@ public class RecipeController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
     public ResponseEntity<PageResponse<RecipeResponseDTO>> findAllRecipes(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Recipe> recipePages = recipeService.findAllRecipes(pageable);
+        Page<Recipe> recipePage = recipeService.findAllRecipes(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        RecipeResponseDTO.convert(recipePages.getContent()),
-                        recipePages.getTotalElements(),
-                        recipePages.getNumber(),
-                        recipePages.getSize()
+                        HttpStatus.OK.value(),
+                        "Recipes retrieved successfully",
+                        RecipeResponseDTO.convert(recipePage.getContent()),
+                        new PageResponse.PagingResponse(
+                                recipePage.getNumber(),
+                                recipePage.getSize(),
+                                recipePage.getTotalElements(),
+                                recipePage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new recipe",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +131,7 @@ public class RecipeController {
                             description = "Recipe created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = RecipeResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -141,22 +141,22 @@ public class RecipeController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<RecipeResponseDTO> createRecipe(@RequestBody RecipeCreateRequestDTO recipeCreateRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(RecipeResponseDTO.convert(recipeService.createRecipe(recipeCreateRequestDTO)));
+    public ResponseEntity<SingleResponse<RecipeResponseDTO>> createRecipe(@RequestBody RecipeCreateRequestDTO recipeCreateRequestDTO) {
+        RecipeResponseDTO recipe = RecipeResponseDTO.convert(recipeService.createRecipe(recipeCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Recipe created successfully",
+                        recipe
+                )
+        );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update recipe",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -166,20 +166,12 @@ public class RecipeController {
                             description = "Recipe updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = RecipeResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -195,11 +187,19 @@ public class RecipeController {
                     )
             }
     )
-    public ResponseEntity<RecipeResponseDTO> updateRecipe(@RequestBody RecipeUpdateRequestDTO recipeUpdateRequestDTO) {
-        return ResponseEntity.ok(RecipeResponseDTO.convert(recipeService.updateRecipe(recipeUpdateRequestDTO)));
+    public ResponseEntity<SingleResponse<RecipeResponseDTO>> updateRecipe(@RequestBody RecipeUpdateRequestDTO recipeUpdateRequestDTO) {
+        RecipeResponseDTO recipe = RecipeResponseDTO.convert(recipeService.updateRecipe(recipeUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Recipe updated successfully",
+                        recipe
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete recipe",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -207,14 +207,6 @@ public class RecipeController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Recipe deleted successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     ),
                     @ApiResponse(
                             responseCode = "404",

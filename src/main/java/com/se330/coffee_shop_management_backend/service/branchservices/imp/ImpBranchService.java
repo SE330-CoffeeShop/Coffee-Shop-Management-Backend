@@ -2,23 +2,39 @@ package com.se330.coffee_shop_management_backend.service.branchservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.response.branch.BranchIdWithRevenueResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Branch;
+import com.se330.coffee_shop_management_backend.entity.Employee;
+import com.se330.coffee_shop_management_backend.entity.Role;
 import com.se330.coffee_shop_management_backend.repository.BranchRepository;
+import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
+import com.se330.coffee_shop_management_backend.service.RoleService;
 import com.se330.coffee_shop_management_backend.service.branchservices.IBranchService;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class ImpBranchService implements IBranchService {
 
     private final BranchRepository branchRepository;
+    private final EmployeeRepository employeeRepository;
+    private final RoleService roleService;
 
-    public ImpBranchService(BranchRepository branchRepository) {
+    public ImpBranchService(
+            BranchRepository branchRepository,
+            EmployeeRepository employeeRepository,
+            RoleService roleService
+    ) {
         this.branchRepository = branchRepository;
+        this.employeeRepository = employeeRepository;
+        this.roleService = roleService;
     }
 
     @Override
@@ -48,6 +64,30 @@ public class ImpBranchService implements IBranchService {
         Branch existingBranch = branchRepository.findById(branchUpdateRequestDTO.getBranchId())
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchUpdateRequestDTO.getBranchId()));
 
+        if (branchUpdateRequestDTO.getManagerId() != null) {
+            Employee branchManager = employeeRepository.findById(branchUpdateRequestDTO.getManagerId())
+                    .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + branchUpdateRequestDTO.getManagerId()));
+
+            // Remove existing manager from the branch if it was previously set
+            if (existingBranch.getManager() != null) {
+                Employee currentManager = existingBranch.getManager();
+                currentManager.setManagedBranch(null);
+
+                // Remove MANAGER role from the current manager's user roles
+                List<Role> currentUserRoles = currentManager.getUser().getRoles();
+                currentUserRoles.removeIf(role -> role.getName().equals(Constants.RoleEnum.MANAGER));
+                currentManager.getUser().setRoles(currentUserRoles);
+            }
+
+            existingBranch.setManager(branchManager);
+            branchManager.setManagedBranch(existingBranch);
+
+            // then add MANAGER role to user related to new employee
+            List<Role> userRoles = branchManager.getUser().getRoles();
+            userRoles.add(roleService.findByName(Constants.RoleEnum.MANAGER));
+            branchManager.getUser().setRoles(userRoles);
+        }
+
         existingBranch.setBranchName(branchUpdateRequestDTO.getBranchName());
         existingBranch.setBranchAddress(branchUpdateRequestDTO.getBranchAddress());
         existingBranch.setBranchPhone(branchUpdateRequestDTO.getBranchPhone());
@@ -58,9 +98,104 @@ public class ImpBranchService implements IBranchService {
 
     @Override
     public void deleteBranch(UUID id) {
-        branchRepository.findById(id)
+        Branch existingBranch = branchRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + id));
 
+        // Remove existing manager from the branch if it was previously set
+        if (existingBranch.getManager() != null) {
+            Employee currentManager = existingBranch.getManager();
+            currentManager.setManagedBranch(null);
+
+            // Remove MANAGER role from the current manager's user roles
+            List<Role> currentUserRoles = currentManager.getUser().getRoles();
+            currentUserRoles.removeIf(role -> role.getName().equals(Constants.RoleEnum.MANAGER));
+            currentManager.getUser().setRoles(currentUserRoles);
+        }
+
         branchRepository.deleteById(id);
+    }
+
+    @Override
+    public BigDecimal getTotalOrderCostByBranchAndYear(UUID branchId, int year) {
+        Branch branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
+
+        return branchRepository.calculateTotalOrderCostByBranchAndYear(branchId, year)
+                .orElse(BigDecimal.ZERO);
+    }
+
+    @Override
+    public BigDecimal getTotalOrderCostByBranchAndMonthAndYear(UUID branchId, int month, int year) {
+        Branch branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
+
+        return branchRepository.calculateTotalOrderCostByBranchAndMonthAndYear(branchId, month, year)
+                .orElse(BigDecimal.ZERO);
+    }
+
+    @Override
+    public BigDecimal getTotalOrderCostByBranchAndDayAndMonthAndYear(UUID branchId, int day, int month, int year) {
+        Branch branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
+
+        return branchRepository.calculateTotalOrderCostByBranchAndDayAndMonthAndYear(branchId, day, month, year)
+                .orElse(BigDecimal.ZERO);
+    }
+
+    @Override
+    public Page<BranchIdWithRevenueResponseDTO> findAllBranchesWithRevenueWithYear(Pageable pageable, int year) {
+        Page<Branch> branches = branchRepository.findAll(pageable);
+
+        return branches.map(branch -> {
+            BranchIdWithRevenueResponseDTO dto = new BranchIdWithRevenueResponseDTO();
+            dto.setId(branch.getId().toString());
+            dto.setCreatedAt(branch.getCreatedAt());
+            dto.setUpdatedAt(branch.getUpdatedAt());
+
+            // Calculate revenue for this branch
+            BigDecimal revenue = branchRepository.calculateTotalOrderCostByBranchAndYear(branch.getId(), year)
+                    .orElse(BigDecimal.ZERO);
+            dto.setBranchRevenue(revenue);
+
+            return dto;
+        });
+    }
+
+    @Override
+    public Page<BranchIdWithRevenueResponseDTO> findAllBranchesWithRevenueWithMonthYear(Pageable pageable, int month, int year) {
+        Page<Branch> branches = branchRepository.findAll(pageable);
+
+        return branches.map(branch -> {
+            BranchIdWithRevenueResponseDTO dto = new BranchIdWithRevenueResponseDTO();
+            dto.setId(branch.getId().toString());
+            dto.setCreatedAt(branch.getCreatedAt());
+            dto.setUpdatedAt(branch.getUpdatedAt());
+
+            // Calculate revenue for this branch
+            BigDecimal revenue = branchRepository.calculateTotalOrderCostByBranchAndMonthAndYear(branch.getId(), month, year)
+                    .orElse(BigDecimal.ZERO);
+            dto.setBranchRevenue(revenue);
+
+            return dto;
+        });
+    }
+
+    @Override
+    public Page<BranchIdWithRevenueResponseDTO> findAllBranchesWithRevenueWithDayMonthYear(Pageable pageable, int day, int month, int year) {
+        Page<Branch> branches = branchRepository.findAll(pageable);
+
+        return branches.map(branch -> {
+            BranchIdWithRevenueResponseDTO dto = new BranchIdWithRevenueResponseDTO();
+            dto.setId(branch.getId().toString());
+            dto.setCreatedAt(branch.getCreatedAt());
+            dto.setUpdatedAt(branch.getUpdatedAt());
+
+            // Calculate revenue for this branch
+            BigDecimal revenue = branchRepository.calculateTotalOrderCostByBranchAndDayAndMonthAndYear(branch.getId(), day, month, year)
+                    .orElse(BigDecimal.ZERO);
+            dto.setBranchRevenue(revenue);
+
+            return dto;
+        });
     }
 }

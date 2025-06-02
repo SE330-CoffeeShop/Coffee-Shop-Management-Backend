@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.service.transfer.imp;
 
+import com.se330.coffee_shop_management_backend.dto.request.inventory.InventoryCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.transfer.TransferDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.transfer.TransferDetailUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Ingredient;
@@ -8,6 +9,7 @@ import com.se330.coffee_shop_management_backend.entity.TransferDetail;
 import com.se330.coffee_shop_management_backend.repository.IngredientRepository;
 import com.se330.coffee_shop_management_backend.repository.TransferDetailRepository;
 import com.se330.coffee_shop_management_backend.repository.TransferRepository;
+import com.se330.coffee_shop_management_backend.service.inventoryservices.IInventoryService;
 import com.se330.coffee_shop_management_backend.service.transfer.ITransferDetailService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -23,15 +26,18 @@ public class ImpTransferDetailService implements ITransferDetailService {
     private final TransferRepository transferRepository;
     private final TransferDetailRepository transferDetailRepository;
     private final IngredientRepository ingredientRepository;
+    private final IInventoryService inventoryService;
 
     public ImpTransferDetailService(
             TransferRepository transferRepository,
             TransferDetailRepository transferDetailRepository,
-            IngredientRepository ingredientRepository
+            IngredientRepository ingredientRepository,
+            IInventoryService inventoryService
     ) {
         this.transferRepository = transferRepository;
         this.transferDetailRepository = transferDetailRepository;
         this.ingredientRepository = ingredientRepository;
+        this.inventoryService = inventoryService;
     }
 
     @Override
@@ -45,12 +51,20 @@ public class ImpTransferDetailService implements ITransferDetailService {
     }
 
     @Override
+    @Transactional
     public TransferDetail createTransferDetail(TransferDetailCreateRequestDTO transferDetailCreateRequestDTO) {
         Transfer existingTransfer = transferRepository.findById(transferDetailCreateRequestDTO.getTransferId())
                 .orElseThrow(() -> new EntityNotFoundException("Transfer not found with ID: " + transferDetailCreateRequestDTO.getTransferId()));
 
         Ingredient existingIngredient = ingredientRepository.findById(transferDetailCreateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new EntityNotFoundException("Ingredient not found with ID: " + transferDetailCreateRequestDTO.getIngredientId()));
+
+        inventoryService.createInventory( new InventoryCreateRequestDTO(
+                transferDetailCreateRequestDTO.getTransferDetailQuantity(),
+                LocalDateTime.now().plusDays(existingIngredient.getShelfLifeDays()),
+                transferDetailCreateRequestDTO.getBranchId(),
+                transferDetailCreateRequestDTO.getIngredientId()
+        ));
 
         return transferDetailRepository.save(
                 TransferDetail.builder()

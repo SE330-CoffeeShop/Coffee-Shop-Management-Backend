@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.shift.ShiftCreateReq
 import com.se330.coffee_shop_management_backend.dto.request.shift.ShiftUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.shift.ShiftResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Shift;
 import com.se330.coffee_shop_management_backend.service.shiftservices.IShiftService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +37,7 @@ public class ShiftController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get shift detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -44,7 +47,7 @@ public class ShiftController {
                             description = "Successfully retrieved shift",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ShiftResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -56,14 +59,6 @@ public class ShiftController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Shift not found",
                             content = @Content(
@@ -73,11 +68,19 @@ public class ShiftController {
                     )
             }
     )
-    public ResponseEntity<ShiftResponseDTO> findByIdShift(@PathVariable UUID id) {
-        return ResponseEntity.ok(ShiftResponseDTO.convert(shiftService.findByIdShift(id)));
+    public ResponseEntity<SingleResponse<ShiftResponseDTO>> findByIdShift(@PathVariable UUID id) {
+        ShiftResponseDTO shift = ShiftResponseDTO.convert(shiftService.findByIdShift(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Shift retrieved successfully",
+                        shift
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all shifts with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -89,39 +92,36 @@ public class ShiftController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
     public ResponseEntity<PageResponse<ShiftResponseDTO>> findAllShifts(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Shift> shiftPages = shiftService.findAllShifts(pageable);
+        Page<Shift> shiftPage = shiftService.findAllShifts(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        ShiftResponseDTO.convert(shiftPages.getContent()),
-                        shiftPages.getTotalElements(),
-                        shiftPages.getNumber(),
-                        shiftPages.getSize()
+                        HttpStatus.OK.value(),
+                        "Shifts retrieved successfully",
+                        ShiftResponseDTO.convert(shiftPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                shiftPage.getNumber(),
+                                shiftPage.getSize(),
+                                shiftPage.getTotalElements(),
+                                shiftPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new shift",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +131,7 @@ public class ShiftController {
                             description = "Shift created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ShiftResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -141,22 +141,22 @@ public class ShiftController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<ShiftResponseDTO> createShift(@RequestBody ShiftCreateRequestDTO shiftRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(ShiftResponseDTO.convert(shiftService.createShift(shiftRequestDTO)));
+    public ResponseEntity<SingleResponse<ShiftResponseDTO>> createShift(@RequestBody ShiftCreateRequestDTO shiftCreateRequestDTO) {
+        ShiftResponseDTO shift = ShiftResponseDTO.convert(shiftService.createShift(shiftCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Shift created successfully",
+                        shift
+                )
+        );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update shift",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -166,20 +166,12 @@ public class ShiftController {
                             description = "Shift updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ShiftResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -195,11 +187,19 @@ public class ShiftController {
                     )
             }
     )
-    public ResponseEntity<ShiftResponseDTO> updateShift(@RequestBody ShiftUpdateRequestDTO shiftRequestDTO) {
-        return ResponseEntity.ok(ShiftResponseDTO.convert(shiftService.updateShift(shiftRequestDTO)));
+    public ResponseEntity<SingleResponse<ShiftResponseDTO>> updateShift(@RequestBody ShiftUpdateRequestDTO shiftUpdateRequestDTO) {
+        ShiftResponseDTO shift = ShiftResponseDTO.convert(shiftService.updateShift(shiftUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Shift updated successfully",
+                        shift
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete shift",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -207,14 +207,6 @@ public class ShiftController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Shift deleted successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     ),
                     @ApiResponse(
                             responseCode = "404",

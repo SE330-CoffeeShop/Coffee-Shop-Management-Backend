@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.entity;
 
+import com.se330.coffee_shop_management_backend.util.Constants;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,9 +19,9 @@ import java.util.Date;
 })
 public class Notification extends AbstractBaseEntity {
     @Column(name = "notification_type", nullable = false)
-    private int notificationType;
+    private Constants.NotificationTypeEnum notificationType;
 
-    @Column(name = "notification_content", nullable = false)
+    @Column(name = "notification_content")
     private String notificationContent;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -42,4 +43,7 @@ public class Notification extends AbstractBaseEntity {
             )
     )
     private User receiver;
+
+    @Column(name = "is_read", nullable = false)
+    private boolean isRead;
 }

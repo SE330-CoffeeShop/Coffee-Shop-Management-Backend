@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.invoice.InvoiceCreat
 import com.se330.coffee_shop_management_backend.dto.request.invoice.InvoiceUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.invoice.InvoiceResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Invoice;
 import com.se330.coffee_shop_management_backend.service.invoiceservices.IInvoiceService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +37,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get invoice detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -44,7 +47,7 @@ public class InvoiceController {
                             description = "Successfully retrieved invoice",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InvoiceResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -73,11 +76,19 @@ public class InvoiceController {
                     )
             }
     )
-    public ResponseEntity<InvoiceResponseDTO> findByIdInvoice(@PathVariable UUID id) {
-        return ResponseEntity.ok(InvoiceResponseDTO.convert(invoiceService.findByIdInvoice(id)));
+    public ResponseEntity<SingleResponse<InvoiceResponseDTO>> findByIdInvoice(@PathVariable UUID id) {
+        InvoiceResponseDTO invoice = InvoiceResponseDTO.convert(invoiceService.findByIdInvoice(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Invoice retrieved successfully",
+                        invoice
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all invoices with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -113,15 +124,21 @@ public class InvoiceController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Invoices retrieved successfully",
                         InvoiceResponseDTO.convert(invoicePage.getContent()),
-                        invoicePage.getTotalElements(),
-                        invoicePage.getNumber(),
-                        invoicePage.getSize()
+                        new PageResponse.PagingResponse(
+                                invoicePage.getNumber(),
+                                invoicePage.getSize(),
+                                invoicePage.getTotalElements(),
+                                invoicePage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new invoice",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +148,7 @@ public class InvoiceController {
                             description = "Invoice created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InvoiceResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -152,12 +169,19 @@ public class InvoiceController {
                     )
             }
     )
-    public ResponseEntity<InvoiceResponseDTO> createInvoice(@RequestBody InvoiceCreateRequestDTO invoiceCreateRequestDTO) {
-        Invoice createdInvoice = invoiceService.createInvoice(invoiceCreateRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(InvoiceResponseDTO.convert(createdInvoice));
+    public ResponseEntity<SingleResponse<InvoiceResponseDTO>> createInvoice(@RequestBody InvoiceCreateRequestDTO invoiceCreateRequestDTO) {
+        InvoiceResponseDTO invoice = InvoiceResponseDTO.convert(invoiceService.createInvoice(invoiceCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Invoice created successfully",
+                        invoice
+                )
+        );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update invoice",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -167,7 +191,7 @@ public class InvoiceController {
                             description = "Invoice updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InvoiceResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -196,12 +220,19 @@ public class InvoiceController {
                     )
             }
     )
-    public ResponseEntity<InvoiceResponseDTO> updateInvoice(@RequestBody InvoiceUpdateRequestDTO invoiceUpdateRequestDTO) {
-        Invoice updatedInvoice = invoiceService.updateInvoice(invoiceUpdateRequestDTO);
-        return ResponseEntity.ok(InvoiceResponseDTO.convert(updatedInvoice));
+    public ResponseEntity<SingleResponse<InvoiceResponseDTO>> updateInvoice(@RequestBody InvoiceUpdateRequestDTO invoiceUpdateRequestDTO) {
+        InvoiceResponseDTO invoice = InvoiceResponseDTO.convert(invoiceService.updateInvoice(invoiceUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Invoice updated successfully",
+                        invoice
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete invoice",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

@@ -49,7 +49,6 @@ public class ProductVariant extends AbstractBaseEntity {
     @JoinColumn(name = "fk_product-variant_product")
     private Product product;
 
-    // Add to ProductVariant.java
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private List<OrderDetail> orderDetails = new ArrayList<>();

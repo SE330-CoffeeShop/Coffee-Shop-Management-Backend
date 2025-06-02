@@ -52,7 +52,9 @@ public class EmployeeResponseDTO extends AbstractBaseResponse {
     private String branchId;
     private String userId;
     private String userFullName;
+    private String managedBranchId;
     private List<String> shiftIds;
+    private List<String> orderIds;
 
     public static EmployeeResponseDTO convert(Employee employee) {
         return EmployeeResponseDTO.builder()
@@ -62,11 +64,15 @@ public class EmployeeResponseDTO extends AbstractBaseResponse {
                 .employeePosition(employee.getEmployeePosition())
                 .employeeDepartment(employee.getEmployeeDepartment())
                 .employeeHireDate(employee.getEmployeeHireDate())
+                .managedBranchId(employee.getManagedBranch() != null ? employee.getManagedBranch().getId().toString() : null)
                 .branchId(employee.getBranch() != null ? employee.getBranch().getId().toString() : null)
                 .userId(employee.getUser() != null ? employee.getUser().getId().toString() : null)
                 .userFullName(employee.getUser() != null ? employee.getUser().getFullName() : null)
                 .shiftIds(employee.getShifts() != null ? employee.getShifts().stream()
                         .map(shift -> shift.getId().toString())
+                        .collect(Collectors.toList()) : Collections.emptyList())
+                .orderIds(employee.getOrders() != null ? employee.getOrders().stream()
+                        .map(order -> order.getId().toString())
                         .collect(Collectors.toList()) : Collections.emptyList())
                 .build();
     }

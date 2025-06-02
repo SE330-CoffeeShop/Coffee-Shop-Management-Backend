@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface IProductCategoryService {
     ProductCategory findByIdProductCategory(UUID id);
     Page<ProductCategory> findAllProductCategories(Pageable pageable);
+    Page<ProductCategory> findAllProductCategoriesByCatalogId(Integer catalogId, Pageable pageable);
     ProductCategory createProductCategory(ProdutCategoryCreateRequestDTO productCategoryRequestDTO);
     ProductCategory updateProductCategory(ProductCategoryUpdateRequestDTO productCategoryRequestDTO);
     void deleteProductCategory(UUID id);

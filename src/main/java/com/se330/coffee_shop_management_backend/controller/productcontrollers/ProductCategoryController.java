@@ -1,9 +1,10 @@
 package com.se330.coffee_shop_management_backend.controller.productcontrollers;
 
-import com.se330.coffee_shop_management_backend.dto.request.product.ProductCategoryUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.product.ProdutCategoryCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductCategoryUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.product.ProductCategoryResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.product.ProductCategory;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductCategoryService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,7 +27,7 @@ import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_S
 import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.createPageable;
 
 @RestController
-@RequestMapping("/product/category")
+@RequestMapping("/product-category")
 public class ProductCategoryController {
 
     private final IProductCategoryService productCategoryService;
@@ -35,29 +37,22 @@ public class ProductCategoryController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get product category detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Success operation",
+                            description = "Successfully retrieved product category",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductCategoryResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Bad request",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Full authentication is required to access this resource",
+                            description = "Invalid ID format",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -65,15 +60,7 @@ public class ProductCategoryController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Not Found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "422",
-                            description = "Validation Failed",
+                            description = "Product category not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -81,157 +68,157 @@ public class ProductCategoryController {
                     )
             }
     )
-    public ResponseEntity<ProductCategoryResponseDTO> findByIdProductCategory(@PathVariable UUID id) {
-        return ResponseEntity.ok(ProductCategoryResponseDTO.convert(productCategoryService.findByIdProductCategory(id)));
+    public ResponseEntity<SingleResponse<ProductCategoryResponseDTO>> findById(@PathVariable UUID id) {
+        ProductCategoryResponseDTO category = ProductCategoryResponseDTO.convert(productCategoryService.findByIdProductCategory(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Product category retrieved successfully",
+                        category
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all product categories with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved category list",
+                            description = "Successfully retrieved product category list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PageResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class))
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
                     )
             }
     )
-    public ResponseEntity<PageResponse<ProductCategoryResponseDTO>> findAllProductCategories(
+    public ResponseEntity<PageResponse<ProductCategoryResponseDTO>> findAll(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-
         Page<ProductCategory> categoryPage = productCategoryService.findAllProductCategories(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Product categories retrieved successfully",
                         ProductCategoryResponseDTO.convert(categoryPage.getContent()),
-                        categoryPage.getTotalElements(),
-                        categoryPage.getNumber(),
-                        categoryPage.getSize()
+                        new PageResponse.PagingResponse(
+                                categoryPage.getNumber(),
+                                categoryPage.getSize(),
+                                categoryPage.getTotalElements(),
+                                categoryPage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new product category",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "201",
-                            description = "Category created successfully",
+                            description = "Product category created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductCategoryResponseDTO.class))
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "409",
-                            description = "Category already exists",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class))
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
                     )
             }
     )
-    public ResponseEntity<ProductCategoryResponseDTO> createProductCategory(@RequestBody ProdutCategoryCreateRequestDTO productCategoryRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(ProductCategoryResponseDTO.convert(productCategoryService.createProductCategory(productCategoryRequestDTO)));
+    public ResponseEntity<SingleResponse<ProductCategoryResponseDTO>> create(@RequestBody ProdutCategoryCreateRequestDTO dto) {
+        ProductCategoryResponseDTO category = ProductCategoryResponseDTO.convert(productCategoryService.createProductCategory(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Product category created successfully",
+                        category
+                )
+        );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update product category",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Category updated successfully",
+                            description = "Product category updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ProductCategoryResponseDTO.class))
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class))
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Category not found",
+                            description = "Product category not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class))
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class))
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
                     )
             }
     )
-    public ResponseEntity<ProductCategoryResponseDTO> updateProductCategory(@RequestBody ProductCategoryUpdateRequestDTO productCategoryRequestDTO) {
-        return ResponseEntity.ok(ProductCategoryResponseDTO.convert(productCategoryService.updateProductCategory(productCategoryRequestDTO)));
+    public ResponseEntity<SingleResponse<ProductCategoryResponseDTO>> update(@RequestBody ProductCategoryUpdateRequestDTO dto) {
+        ProductCategoryResponseDTO category = ProductCategoryResponseDTO.convert(productCategoryService.updateProductCategory(dto));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Product category updated successfully",
+                        category
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete product category",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "204",
-                            description = "Category deleted successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class))
+                            description = "Product category deleted successfully"
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Category not found",
+                            description = "Product category not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class))
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
                     )
             }
     )
-    public ResponseEntity<Void> deleteCategory(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         productCategoryService.deleteProductCategory(id);
         return ResponseEntity.noContent().build();
     }

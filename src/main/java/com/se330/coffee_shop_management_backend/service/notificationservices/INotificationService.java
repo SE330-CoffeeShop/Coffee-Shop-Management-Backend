@@ -16,5 +16,6 @@ public interface INotificationService {
     Page<Notification> findAllReceivedNotificationsByUserId(Pageable pageable, UUID userId);
     Notification createNotification(NotificationCreateRequestDTO notificationCreateRequestDTO);
     Notification updateNotification(NotificationUpdateRequestDTO notificationUpdateRequestDTO);
+    void sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO);
     void deleteNotification(UUID id);
 }
