@@ -37,7 +37,7 @@ public class TransferController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Get transfer detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -80,7 +80,7 @@ public class TransferController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Get all transfers with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -121,7 +121,7 @@ public class TransferController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Create new transfer",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -156,7 +156,7 @@ public class TransferController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Update transfer",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -199,7 +199,7 @@ public class TransferController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Delete transfer",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

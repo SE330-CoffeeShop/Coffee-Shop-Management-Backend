@@ -240,6 +240,7 @@ public class BranchController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Delete branch",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

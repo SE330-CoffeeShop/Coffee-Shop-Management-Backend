@@ -37,7 +37,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Get order detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -88,7 +88,7 @@ public class OrderController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all orders with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -137,7 +137,7 @@ public class OrderController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new order",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -180,7 +180,7 @@ public class OrderController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Update order",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -231,7 +231,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete order",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -261,5 +261,63 @@ public class OrderController {
     public ResponseEntity<Void> deleteOrder(@PathVariable UUID id) {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/customer/{customerId}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE', 'MANAGER')")
+    @Operation(
+            summary = "Get all orders by customer ID with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved customer orders",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<OrderResponseDTO>> findAllOrdersByCustomerId(
+            @PathVariable UUID customerId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Order> orderPage = orderService.findAllOrderByCustomerId(customerId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Customer orders retrieved successfully",
+                        OrderResponseDTO.convert(orderPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                orderPage.getNumber(),
+                                orderPage.getSize(),
+                                orderPage.getTotalElements(),
+                                orderPage.getTotalPages()
+                        )
+                )
+        );
     }
 }

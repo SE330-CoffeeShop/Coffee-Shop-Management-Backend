@@ -192,7 +192,7 @@ public class DiscountController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Create new discount",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -243,7 +243,7 @@ public class DiscountController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Update discount",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -294,7 +294,7 @@ public class DiscountController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Delete discount",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

@@ -37,7 +37,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Get invoice detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -88,7 +88,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Get all invoices with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -138,7 +138,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Create new invoice",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -181,7 +181,7 @@ public class InvoiceController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Update invoice",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -232,7 +232,7 @@ public class InvoiceController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Delete invoice",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
