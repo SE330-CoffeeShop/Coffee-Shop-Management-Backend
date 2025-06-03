@@ -37,6 +37,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get employee detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -178,7 +179,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Create new employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -221,7 +222,7 @@ public class EmployeeController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Update employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -272,7 +273,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Delete employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

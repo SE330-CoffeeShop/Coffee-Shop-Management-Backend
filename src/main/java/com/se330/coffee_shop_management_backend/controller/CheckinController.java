@@ -35,6 +35,7 @@ public class CheckinController {
     private final ICheckinService checkinService;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE', 'ADMIN')")
     @Operation(
             summary = "Get checkin detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -85,7 +86,7 @@ public class CheckinController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE', 'ADMIN')")
     @Operation(
             summary = "Get all checkins with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -135,7 +136,7 @@ public class CheckinController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Create new checkin",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

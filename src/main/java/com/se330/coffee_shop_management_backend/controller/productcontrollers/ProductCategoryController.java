@@ -37,7 +37,6 @@ public class ProductCategoryController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get product category detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -80,7 +79,6 @@ public class ProductCategoryController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all product categories with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -121,7 +119,7 @@ public class ProductCategoryController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Create new product category",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -156,7 +154,7 @@ public class ProductCategoryController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Update product category",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -199,7 +197,7 @@ public class ProductCategoryController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Delete product category",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

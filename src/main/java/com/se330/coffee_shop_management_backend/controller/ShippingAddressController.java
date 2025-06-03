@@ -121,7 +121,6 @@ public class ShippingAddressController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE', 'MANAGER')")
     @Operation(
             summary = "Create new shipping address",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -156,7 +155,6 @@ public class ShippingAddressController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE', 'MANAGER')")
     @Operation(
             summary = "Update shipping address",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

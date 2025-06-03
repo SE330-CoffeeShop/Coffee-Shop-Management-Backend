@@ -121,7 +121,6 @@ public class NotificationController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE','MANAGER')")
     @Operation(
             summary = "Create new notification",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -156,7 +155,6 @@ public class NotificationController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE','MANAGER')")
     @Operation(
             summary = "Update notification",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -199,7 +197,6 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('EMPLOYEE','MANAGER')")
     @Operation(
             summary = "Delete notification",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

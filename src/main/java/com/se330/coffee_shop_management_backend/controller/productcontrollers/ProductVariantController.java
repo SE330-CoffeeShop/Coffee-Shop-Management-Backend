@@ -37,7 +37,6 @@ public class ProductVariantController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get product variant detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -80,7 +79,6 @@ public class ProductVariantController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all product variants with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -121,7 +119,7 @@ public class ProductVariantController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Create new product variant",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -156,7 +154,7 @@ public class ProductVariantController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Update product variant",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -199,7 +197,7 @@ public class ProductVariantController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Delete product variant",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

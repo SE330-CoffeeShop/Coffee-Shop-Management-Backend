@@ -37,7 +37,7 @@ public class OrderDetailController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Get order detail by id",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -80,7 +80,7 @@ public class OrderDetailController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all order details with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -121,7 +121,7 @@ public class OrderDetailController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new order detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -156,7 +156,7 @@ public class OrderDetailController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Update order detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

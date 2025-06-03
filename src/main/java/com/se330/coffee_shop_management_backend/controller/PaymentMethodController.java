@@ -37,7 +37,6 @@ public class PaymentMethodController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get payment method detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -121,7 +120,6 @@ public class PaymentMethodController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new payment method",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -156,7 +154,6 @@ public class PaymentMethodController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update payment method",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -199,7 +196,6 @@ public class PaymentMethodController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete payment method",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
