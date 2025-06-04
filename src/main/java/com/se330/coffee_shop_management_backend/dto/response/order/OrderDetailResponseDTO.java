@@ -45,7 +45,6 @@ public class OrderDetailResponseDTO {
     private BigDecimal orderDetailUnitPrice;
     private String productVariantId;
     private String orderId;
-    private List<String> usedDiscountId;
 
     public static OrderDetailResponseDTO convert(OrderDetail orderDetail) {
         return OrderDetailResponseDTO.builder()
@@ -58,9 +57,6 @@ public class OrderDetailResponseDTO {
                         orderDetail.getProductVariant().getId().toString() : null)
                 .orderId(orderDetail.getOrder() != null ?
                         orderDetail.getOrder().getId().toString() : null)
-                .usedDiscountId(orderDetail.getUsedDiscounts() != null ? orderDetail.getUsedDiscounts().stream()
-                        .map(discount -> discount.getId().toString())
-                        .collect(Collectors.toList()) : List.of())
                 .build();
     }
 

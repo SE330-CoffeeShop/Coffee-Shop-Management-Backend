@@ -45,10 +45,6 @@ public class BranchResponseDTO {
     private String branchPhone;
     private String branchEmail;
     private String managerId;
-    private List<String> employeeIds;
-    private List<String> transferIds;
-    private List<String> inventoryIds;
-    private List<String> discountIds;
 
     public static BranchResponseDTO convert(Branch branch) {
         return BranchResponseDTO.builder()
@@ -60,18 +56,6 @@ public class BranchResponseDTO {
                 .branchPhone(branch.getBranchPhone())
                 .branchEmail(branch.getBranchEmail())
                 .managerId(branch.getManager() != null ? branch.getManager().getId().toString() : null)
-                .employeeIds(branch.getEmployees() != null ? branch.getEmployees().stream()
-                        .map(employee -> employee.getId().toString())
-                        .collect(Collectors.toList()) : Collections.emptyList())
-                .transferIds(branch.getTransfers() != null ? branch.getTransfers().stream()
-                        .map(transfer -> transfer.getId().toString())
-                        .collect(Collectors.toList()) : Collections.emptyList())
-                .inventoryIds(branch.getInventories() != null ? branch.getInventories().stream()
-                        .map(inventory -> inventory.getId().toString())
-                        .collect(Collectors.toList()) : Collections.emptyList())
-                .discountIds(branch.getDiscounts() != null ? branch.getDiscounts().stream()
-                        .map(discount -> discount.getId().toString())
-                        .collect(Collectors.toList()) : Collections.emptyList())
                 .build();
     }
 

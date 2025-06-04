@@ -20,7 +20,6 @@ public class PaymentMethodResponseDTO {
     private String methodDetails;
     private boolean methodIsDefault;
     private String userId;
-    private List<String> orderIds;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -31,9 +30,6 @@ public class PaymentMethodResponseDTO {
                 .methodDetails(paymentMethod.getMethodDetails())
                 .methodIsDefault(paymentMethod.isMethodIsDefault())
                 .userId(paymentMethod.getUser() != null ? paymentMethod.getUser().getId().toString() : null)
-                .orderIds(paymentMethod.getOrders() != null ? paymentMethod.getOrders().stream()
-                        .map(order -> order.getId().toString())
-                        .collect(Collectors.toList()) : null)
                 .createdAt(paymentMethod.getCreatedAt())
                 .updatedAt(paymentMethod.getUpdatedAt())
                 .build();

@@ -49,14 +49,8 @@ public class OrderResponseDTO {
     private String paymentMethodId;
     private String userId;
     private String shippingAddressId;
-    private List<String> orderDetailIds;
 
     public static OrderResponseDTO convert(Order order) {
-        List<String> detailIds = order.getOrderDetails() != null ?
-                order.getOrderDetails().stream()
-                        .map(detail -> detail.getId().toString())
-                        .collect(Collectors.toList()) :
-                Collections.emptyList();
 
         return OrderResponseDTO.builder()
                 .id(order.getId().toString())
@@ -69,7 +63,6 @@ public class OrderResponseDTO {
                 .paymentMethodId(order.getPaymentMethod() != null ? order.getPaymentMethod().getId().toString() : null)
                 .userId(order.getUser() != null ? order.getUser().getId().toString() : null)
                 .shippingAddressId(order.getShippingAddress() != null ? order.getShippingAddress().getId().toString() : null)
-                .orderDetailIds(detailIds)
                 .build();
     }
 

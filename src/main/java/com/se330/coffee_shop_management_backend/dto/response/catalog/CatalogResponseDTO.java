@@ -1,10 +1,8 @@
 package com.se330.coffee_shop_management_backend.dto.response.catalog;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.Catalog;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -45,29 +43,8 @@ public class CatalogResponseDTO {
     private String name;
     private String description;
     private Integer parentCatalogId;
-    private List<Integer> childCatalogIds;
-    private List<String> categoryIds;
 
     public static CatalogResponseDTO convert(Catalog catalog) {
-        List<Integer> childIds;
-        List<String> catIds;
-
-        if (catalog.getChildCatalogs() == null || catalog.getChildCatalogs().isEmpty()) {
-            childIds = Collections.emptyList();
-        } else {
-            childIds = catalog.getChildCatalogs().stream()
-                    .map(Catalog::getId)
-                    .collect(Collectors.toList());
-        }
-
-        if (catalog.getCategories() == null || catalog.getCategories().isEmpty()) {
-            catIds = Collections.emptyList();
-        } else {
-            catIds = catalog.getCategories().stream()
-                    .map(category -> category.getId().toString())
-                    .collect(Collectors.toList());
-        }
-
         return CatalogResponseDTO.builder()
                 .id(catalog.getId())
                 .createdAt(catalog.getCreatedAt())
@@ -75,8 +52,6 @@ public class CatalogResponseDTO {
                 .name(catalog.getName())
                 .description(catalog.getDescription())
                 .parentCatalogId(catalog.getParentCatalog() != null ? catalog.getParentCatalog().getId() : null)
-                .childCatalogIds(childIds)
-                .categoryIds(catIds)
                 .build();
     }
 

@@ -41,9 +41,6 @@ public class WarehouseResponseDTO {
     private String warehousePhone;
     private String warehouseEmail;
     private String warehouseAddress;
-    private List<String> invoices;
-    private List<String> stocks;
-    private List<String> transfers;
 
     public static WarehouseResponseDTO convert(Warehouse warehouse) {
         return WarehouseResponseDTO.builder()
@@ -54,15 +51,6 @@ public class WarehouseResponseDTO {
                 .warehousePhone(warehouse.getWarehousePhone())
                 .warehouseEmail(warehouse.getWarehouseEmail())
                 .warehouseAddress(warehouse.getWarehouseAddress())
-                .invoices(warehouse.getInvoices() != null ? warehouse.getInvoices().stream()
-                        .map(entity -> entity.getId().toString())
-                        .toList() : List.of())
-                .stocks(warehouse.getStocks() != null ? warehouse.getStocks().stream()
-                        .map(entity -> entity.getId().toString())
-                        .toList() : List.of())
-                .transfers(warehouse.getTransfers() != null ? warehouse.getTransfers().stream()
-                        .map(entity -> entity.getId().toString())
-                        .toList() : List.of())
                 .build();
     }
 
