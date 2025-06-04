@@ -37,12 +37,4 @@ public class LoginRequest {
         example = "P@sswd123."
     )
     private String password;
-
-    @Schema(
-        name = "rememberMe",
-        description = "Remember option for refresh token",
-        type = "Boolean",
-        example = "true"
-    )
-    private Boolean rememberMe;
 }

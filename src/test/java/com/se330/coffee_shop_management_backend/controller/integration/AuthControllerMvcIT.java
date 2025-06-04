@@ -95,7 +95,7 @@ class AuthControllerMvcIT {
         @DisplayName("Should return 200 OK with token response")
         void given_whenLogin_thenAssertBody() throws Exception {
             // Given
-            when(authService.login(request.getEmail(), request.getPassword(), request.getRememberMe()))
+            when(authService.login(request.getEmail(), request.getPassword(), false))
                 .thenReturn(tokenResponse);
             // When
             RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/auth/login")
@@ -115,7 +115,7 @@ class AuthControllerMvcIT {
         @DisplayName("Should return AuthenticationCredentialsNotFoundException")
         void given_whenLogin_thenShouldThrowAuthenticationCredentialsNotFoundException() throws Exception {
             // Given
-            when(authService.login(request.getEmail(), request.getPassword(), request.getRememberMe()))
+            when(authService.login(request.getEmail(), request.getPassword(), false))
                 .thenThrow(Instancio.create(AuthenticationCredentialsNotFoundException.class));
             // When
             RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/auth/login")
