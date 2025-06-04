@@ -129,7 +129,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/branch/{branchId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all employees for a branch with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -179,7 +179,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Create new employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

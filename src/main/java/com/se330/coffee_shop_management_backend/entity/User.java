@@ -39,33 +39,15 @@ public class User extends AbstractBaseEntity {
     @Column(name = "avatar", columnDefinition = "text")
     private String avatar;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
-    @JoinTable(name = "user_roles",
-        joinColumns = @JoinColumn(
-            name = "user_id",
-            foreignKey = @ForeignKey(
-                name = "fk_user_roles_user_id",
-                foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE"
-            ),
-            nullable = false
-        ),
-        inverseJoinColumns = @JoinColumn(
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(
             name = "role_id",
             foreignKey = @ForeignKey(
-                name = "fk_user_roles_role_id",
-                foreignKeyDefinition = "FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE"
-            ),
-            nullable = false
-        ),
-        uniqueConstraints = {
-            @UniqueConstraint(
-                columnNames = {"user_id", "role_id"},
-                name = "uk_user_roles_user_id_role_id"
+                    name = "fk_users_role_id",
+                    foreignKeyDefinition = "FOREIGN KEY (role_id) REFERENCES roles (id)"
             )
-        }
     )
-    @Builder.Default
-    private List<Role> roles = new ArrayList<>();
+    private Role role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private EmailVerificationToken emailVerificationToken;

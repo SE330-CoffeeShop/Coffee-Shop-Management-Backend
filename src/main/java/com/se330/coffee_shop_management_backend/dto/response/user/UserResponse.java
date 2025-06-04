@@ -45,13 +45,7 @@ public class UserResponse {
     )
     private String lastName;
 
-    @Schema(
-        name = "roles",
-        description = "role of the user",
-        type = "List",
-        example = "[\"USER\"]"
-    )
-    private List<String> roles;
+    private String role;
 
     @Schema(
         name = "emailVerifiedAt",
@@ -102,7 +96,7 @@ public class UserResponse {
             .email(user.getEmail())
             .name(user.getName())
             .lastName(user.getLastName())
-            .roles(user.getRoles().stream().map(role -> role.getName().name()).toList())
+            .role(String.valueOf(user.getRole().getName()))
             .emailVerifiedAt(user.getEmailVerifiedAt())
             .blockedAt(user.getBlockedAt())
             .createdAt(user.getCreatedAt())

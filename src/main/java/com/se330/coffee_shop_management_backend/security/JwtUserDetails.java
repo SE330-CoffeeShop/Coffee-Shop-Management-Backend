@@ -46,9 +46,7 @@ public final class JwtUserDetails implements UserDetails {
      * @return JwtUserDetails
      */
     public static JwtUserDetails create(final User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-            .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-            .collect(Collectors.toList());
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(String.valueOf(user.getRole())));
 
         return new JwtUserDetails(user.getId().toString(), user.getEmail(), user.getPassword(), authorities);
     }

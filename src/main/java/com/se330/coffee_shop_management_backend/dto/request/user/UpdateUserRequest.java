@@ -39,16 +39,7 @@ public class UpdateUserRequest extends AbstractBaseUpdateUserRequest {
     )
     private String passwordConfirm;
 
-    @MinListSize(min = 1, message = "{min_list_size}")
-    @Schema(
-        name = "roles",
-        description = "Roles of the user",
-        type = "List<String>",
-        requiredMode = Schema.RequiredMode.NOT_REQUIRED,
-        allowableValues = {"ADMIN", "USER"},
-        example = "[\"USER\"]"
-    )
-    private List<@ValueOfEnum(enumClass = Constants.RoleEnum.class) String> roles;
+    private Constants.RoleEnum role;
 
     @Schema(
         name = "isEmailVerified",

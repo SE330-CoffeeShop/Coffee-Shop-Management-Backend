@@ -27,18 +27,6 @@ public class TokenResponse {
     )
     private String refreshToken;
 
-    @Schema(
-        name = "userId",
-        description = "User ID",
-        type = "String",
-        example = "91b2999d-d327-4dc8-9956-2fadc0dc8778"
-    )
-    private String userId;
-
-    @Schema(
-        name = "roles",
-        description = "Roles of the user",
-        type = "String",
-        example = "[\"USER\", \"ADMIN\"]")
-    private List<String> roles;
+    private String id;
+    private String role;
 }
