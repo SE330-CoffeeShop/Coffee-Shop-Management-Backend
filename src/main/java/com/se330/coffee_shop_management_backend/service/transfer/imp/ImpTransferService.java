@@ -83,7 +83,7 @@ public class ImpTransferService implements ITransferService {
                 if (stock.getIngredient().getId().equals(transferDetailCreateRequestDTO.getIngredientId())) {
                     int stockQuantityNew = stock.getStockQuantity() - transferDetailCreateRequestDTO.getTransferDetailQuantity();
                     if (stockQuantityNew < 0) {
-                        throw new IllegalArgumentException("Insufficient stock for ingredient: " + stock.getIngredient().getIngredientName());
+                        throw new IllegalArgumentException("Cannot get stock for ingredient: " + stock.getIngredient().getIngredientName() + " with quantity: " + transferDetailCreateRequestDTO.getTransferDetailQuantity() + "current stock: " + stock.getStockQuantity());
                     }
                     stock.setStockQuantity(stockQuantityNew);
                     stockRepository.save(stock);

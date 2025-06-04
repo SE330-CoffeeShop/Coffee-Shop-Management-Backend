@@ -5,13 +5,8 @@ import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountUpd
 import com.se330.coffee_shop_management_backend.dto.request.discount.UsedDiscountCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
-import com.se330.coffee_shop_management_backend.entity.Branch;
-import com.se330.coffee_shop_management_backend.entity.Discount;
-import com.se330.coffee_shop_management_backend.entity.OrderDetail;
-import com.se330.coffee_shop_management_backend.repository.BranchRepository;
-import com.se330.coffee_shop_management_backend.repository.DiscountRepository;
-import com.se330.coffee_shop_management_backend.repository.OrderDetailRepository;
-import com.se330.coffee_shop_management_backend.repository.UsedDiscountRepository;
+import com.se330.coffee_shop_management_backend.entity.*;
+import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
@@ -38,6 +33,8 @@ public class ImpDiscountService implements IDiscountService {
     private final UsedDiscountRepository usedDiscountRepository;
     private final IUsedDiscountService usedDiscountService;
     private final INotificationService notificationService;
+    private final CartRepository cartRepository;
+    private final CartDetailRepository cartDetailRepository;
 
     public ImpDiscountService(
             DiscountRepository discountRepository,
@@ -46,7 +43,9 @@ public class ImpDiscountService implements IDiscountService {
             OrderDetailRepository orderDetailRepository,
             UsedDiscountRepository usedDiscountRepository,
             IUsedDiscountService usedDiscountService,
-            INotificationService notificationService
+            INotificationService notificationService,
+            CartRepository cartRepository,
+            CartDetailRepository cartDetailRepository
     ) {
         this.discountRepository = discountRepository;
         this.branchRepository = branchRepository;
@@ -55,6 +54,8 @@ public class ImpDiscountService implements IDiscountService {
         this.usedDiscountRepository = usedDiscountRepository;
         this.usedDiscountService = usedDiscountService;
         this.notificationService = notificationService;
+        this.cartRepository = cartRepository;
+        this.cartDetailRepository = cartDetailRepository;
     }
 
     @Override
@@ -259,5 +260,74 @@ public class ImpDiscountService implements IDiscountService {
         orderDetail.setOrderDetailDiscountCost(discountCost);
         orderDetail.setOrderDetailUnitPriceAfterDiscount(newUnitPrice);
         orderDetailRepository.save(orderDetail);
+    }
+
+    @Override
+    @Transactional
+    public Cart applyDiscountToCart(UUID cartId) {
+        Cart existingCart = cartRepository.findById(cartId).orElseThrow(
+                () -> new EntityNotFoundException("Cart not found with id: " + cartId)
+        );
+
+        // Calculate the total cart value before discounts
+        BigDecimal totalCartValue = existingCart.getCartTotalCost();
+
+        BigDecimal totalDiscountAmount = BigDecimal.ZERO;
+
+        // Apply discounts to each cart detail
+        for (CartDetail cartDetail : existingCart.getCartDetails()) {
+            BigDecimal lowestUnitPrice = cartDetail.getCartDetailUnitPrice();
+
+            // Find the most valuable discount for this product variant
+            for (Discount discount : cartDetail.getProductVariant().getDiscounts()) {
+                // Skip inactive discounts or if minimum order value not met
+                if (!discount.isDiscountIsActive() ||
+                        totalCartValue.compareTo(discount.getDiscountMinOrderValue()) < 0) {
+                    continue;
+                }
+
+                BigDecimal discountedPrice = cartDetail.getCartDetailUnitPrice();
+
+                // Apply discount based on type
+                if (discount.getDiscountType().name().equals(Constants.DiscountTypeEnum.PERCENTAGE.name())) {
+                    BigDecimal discountMultiplier = BigDecimal.valueOf(100)
+                            .subtract(discount.getDiscountValue())
+                            .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+                    discountedPrice = discountedPrice.multiply(discountMultiplier);
+                } else {
+                    discountedPrice = discountedPrice.subtract(discount.getDiscountValue());
+                    if (discountedPrice.compareTo(BigDecimal.ZERO) < 0) {
+                        discountedPrice = BigDecimal.ZERO;
+                    }
+                }
+
+                // Keep track of the best discount
+                if (discountedPrice.compareTo(lowestUnitPrice) < 0) {
+                    lowestUnitPrice = discountedPrice;
+                }
+            }
+
+            // Calculate discount amount
+            BigDecimal originalCost = cartDetail.getCartDetailUnitPrice().multiply(BigDecimal.valueOf(cartDetail.getCartDetailQuantity()));
+            BigDecimal discountedCost = lowestUnitPrice.multiply(BigDecimal.valueOf(cartDetail.getCartDetailQuantity()));
+            BigDecimal discountAmount = originalCost.subtract(discountedCost);
+
+            // Update cart detail with discount information
+            cartDetail.setCartDetailUnitPriceAfterDiscount(lowestUnitPrice);
+            cartDetail.setCartDetailDiscountCost(discountAmount);
+
+            // Add to total discount
+            totalDiscountAmount = totalDiscountAmount.add(discountAmount);
+        }
+
+        // Update cart totals
+        BigDecimal totalAfterDiscount = totalCartValue.subtract(totalDiscountAmount);
+        existingCart.setCartTotalCost(totalCartValue);
+        existingCart.setCartDiscountCost(totalDiscountAmount);
+        existingCart.setCartTotalCostAfterDiscount(totalAfterDiscount);
+
+        // Save updated cart
+        return cartRepository.save(existingCart);
     }
 }

@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCre
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
+import com.se330.coffee_shop_management_backend.repository.InventoryRepository;
 import com.se330.coffee_shop_management_backend.repository.OrderDetailRepository;
 import com.se330.coffee_shop_management_backend.repository.OrderRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
@@ -14,7 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class ImpOrderDetailService implements IOrderDetailService {
@@ -22,15 +24,18 @@ public class ImpOrderDetailService implements IOrderDetailService {
     private final OrderDetailRepository orderDetailRepository;
     private final ProductVariantRepository productVariantRepository;
     private final OrderRepository orderRepository;
+    private final InventoryRepository inventoryRepository;
 
     public ImpOrderDetailService(
             OrderDetailRepository orderDetailRepository,
             ProductVariantRepository productVariantRepository,
-            OrderRepository orderRepository
+            OrderRepository orderRepository,
+            InventoryRepository inventoryRepository
     ) {
         this.orderDetailRepository = orderDetailRepository;
         this.productVariantRepository = productVariantRepository;
         this.orderRepository = orderRepository;
+        this.inventoryRepository = inventoryRepository;
     }
 
     @Override
@@ -52,21 +57,83 @@ public class ImpOrderDetailService implements IOrderDetailService {
         Order existingOrder = orderRepository.findById(orderDetailCreateRequestDTO.getOrderId())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderDetailCreateRequestDTO.getOrderId()));
 
-        Branch branchOfInventory = existingOrder.getEmployee().getBranch();
+        Branch branch = existingOrder.getEmployee().getBranch();
+        UUID branchId = branch.getId();
 
-        // before creating a new OrderDetail, make sure the ingredient in the inventory of the branch is enough
-        int quantity = orderDetailCreateRequestDTO.getOrderDetailQuantity();
+        // Calculate required ingredients for this order detail
+        Map<UUID, Integer> requiredIngredients = new HashMap<>();
         for (Recipe recipe : existingProductVariant.getRecipes()) {
-            Ingredient requiredIngredient = recipe.getIngredient();
-
+            UUID ingredientId = recipe.getIngredient().getId();
+            int quantity = recipe.getRecipeQuantity() * orderDetailCreateRequestDTO.getOrderDetailQuantity();
+            requiredIngredients.put(ingredientId, quantity);
         }
 
-        // then subtract the quantity of the ingredient in the inventory of the branch
+        // Get branch inventories sorted by expiry date
+        List<Inventory> branchInventories = inventoryRepository.findAllByBranch_IdSortedByExpiredDay(branchId);
 
+        if (branchInventories.isEmpty()) {
+            throw new IllegalArgumentException("Branch has no inventory");
+        }
+
+        // Check if there's enough inventory
+        Map<UUID, Integer> availableQuantities = new HashMap<>();
+        for (Inventory inventory : branchInventories) {
+            UUID ingredientId = inventory.getIngredient().getId();
+            availableQuantities.put(ingredientId,
+                    availableQuantities.getOrDefault(ingredientId, 0) + inventory.getInventoryQuantity());
+        }
+
+        // Verify we have enough of each required ingredient
+        for (Map.Entry<UUID, Integer> entry : requiredIngredients.entrySet()) {
+            UUID ingredientId = entry.getKey();
+            int requiredQty = entry.getValue();
+
+            if (!availableQuantities.containsKey(ingredientId) || availableQuantities.get(ingredientId) < requiredQty) {
+                throw new IllegalArgumentException("Not enough inventory for ingredient with id: " + ingredientId);
+            }
+        }
+
+        // Create a deep copy of requiredIngredients to track remaining quantities
+        Map<UUID, Integer> remainingQuantities = new HashMap<>(requiredIngredients);
+
+        // Deduct from inventory (earliest expiry first)
+        List<Inventory> updatedInventories = new ArrayList<>();
+        for (Inventory inventory : branchInventories) {
+            UUID ingredientId = inventory.getIngredient().getId();
+
+            if (remainingQuantities.containsKey(ingredientId) && remainingQuantities.get(ingredientId) > 0) {
+                int requiredQty = remainingQuantities.get(ingredientId);
+                int availableQty = inventory.getInventoryQuantity();
+
+                if (availableQty >= requiredQty) {
+                    // We have enough in this inventory item
+                    inventory.setInventoryQuantity(availableQty - requiredQty);
+                    remainingQuantities.put(ingredientId, 0);
+                } else {
+                    // Use all available and continue with next inventory
+                    inventory.setInventoryQuantity(0);
+                    remainingQuantities.put(ingredientId, requiredQty - availableQty);
+                }
+                updatedInventories.add(inventory);
+            }
+        }
+
+        // Verify all requirements were met
+        boolean allSatisfied = remainingQuantities.values().stream().allMatch(qty -> qty == 0);
+        if (!allSatisfied) {
+            throw new IllegalArgumentException("Not enough inventory for required ingredients");
+        }
+
+        // Save the updated inventories
+        inventoryRepository.saveAll(updatedInventories);
+
+        // Create and return the order detail
         return orderDetailRepository.save(
                 OrderDetail.builder()
                         .orderDetailQuantity(orderDetailCreateRequestDTO.getOrderDetailQuantity())
                         .orderDetailUnitPrice(orderDetailCreateRequestDTO.getOrderDetailUnitPrice())
+                        .orderDetailDiscountCost(BigDecimal.ZERO)
+                        .orderDetailUnitPriceAfterDiscount(orderDetailCreateRequestDTO.getOrderDetailUnitPrice())
                         .productVariant(existingProductVariant)
                         .order(existingOrder)
                         .build()

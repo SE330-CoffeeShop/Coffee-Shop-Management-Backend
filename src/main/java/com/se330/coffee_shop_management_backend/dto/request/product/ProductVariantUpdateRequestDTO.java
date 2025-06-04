@@ -14,7 +14,6 @@ public class ProductVariantUpdateRequestDTO {
     private String variantSlug;
     private int variantSort;
     private Long variantPrice;
-    private int variantStock;
     private Boolean variantIsPublished;
     private Boolean variantIsDeleted;
     private UUID product;

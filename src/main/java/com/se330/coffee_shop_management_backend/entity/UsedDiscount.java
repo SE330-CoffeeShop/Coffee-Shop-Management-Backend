@@ -37,4 +37,14 @@ public class UsedDiscount extends AbstractBaseEntity {
 
     @Column(name = "times_use", nullable = false)
     private int timesUse;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "cart_detail_id",
+            foreignKey = @ForeignKey(
+                    name = "fk_used_discount_cart_detail",
+                    foreignKeyDefinition = "FOREIGN KEY (cart_detail_id) REFERENCES cart_details (cart_detail_id) ON DELETE CASCADE"
+            )
+    )
+    private CartDetail cartDetail;
 }

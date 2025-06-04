@@ -2,6 +2,7 @@ package com.se330.coffee_shop_management_backend.service.discountservices;
 
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.entity.Cart;
 import com.se330.coffee_shop_management_backend.entity.Discount;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,5 @@ public interface IDiscountService {
     void deleteDiscount(UUID id);
     boolean isDiscountValid(UUID discountId, UUID productVariantId, UUID userId, UUID employeeId);
     void applyMostValuableDiscountOfOrderDetail(UUID orderDetailId, BigDecimal orderTotalValue);
+    Cart applyDiscountToCart(UUID cartId);
 }

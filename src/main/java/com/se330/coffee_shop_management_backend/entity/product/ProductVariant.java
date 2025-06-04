@@ -1,9 +1,6 @@
 package com.se330.coffee_shop_management_backend.entity.product;
 
-import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
-import com.se330.coffee_shop_management_backend.entity.Discount;
-import com.se330.coffee_shop_management_backend.entity.OrderDetail;
-import com.se330.coffee_shop_management_backend.entity.Recipe;
+import com.se330.coffee_shop_management_backend.entity.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,9 +33,6 @@ public class ProductVariant extends AbstractBaseEntity {
     @Column(name = "variant_price", nullable = false)
     private Long variantPrice = 0L;
 
-    @Column(name = "variant_stock", nullable = false)
-    private int variantStock = 0;
-
     @Column(name = "variant_is_published", nullable = false)
     private Boolean variantIsPublished = false;
 
@@ -65,4 +59,8 @@ public class ProductVariant extends AbstractBaseEntity {
     )
     @Builder.Default
     private List<Discount> discounts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<CartDetail> cartDetails = new ArrayList<>();
 }

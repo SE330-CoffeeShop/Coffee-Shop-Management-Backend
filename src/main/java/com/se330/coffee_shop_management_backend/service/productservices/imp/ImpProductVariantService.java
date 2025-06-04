@@ -52,7 +52,6 @@ public class ImpProductVariantService implements IProductVariantService {
                         .product(product)
                         .variantSlug("")
                         .variantSort(0)
-                        .variantStock(0)
                         .variantIsPublished(false)
                         .variantIsDeleted(false)
                         .build()
@@ -80,7 +79,6 @@ public class ImpProductVariantService implements IProductVariantService {
         existingVariant.setVariantSlug(productVariantUpdateRequestDTO.getVariantSlug());
         existingVariant.setVariantSort(productVariantUpdateRequestDTO.getVariantSort());
         existingVariant.setVariantPrice(productVariantUpdateRequestDTO.getVariantPrice());
-        existingVariant.setVariantStock(productVariantUpdateRequestDTO.getVariantStock());
         existingVariant.setVariantIsPublished(productVariantUpdateRequestDTO.getVariantIsPublished());
         existingVariant.setVariantIsDeleted(productVariantUpdateRequestDTO.getVariantIsDeleted());
 
