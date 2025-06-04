@@ -16,7 +16,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @SuperBuilder
-public class CustomerResponseDTO extends AbstractBaseResponse {
+public class CustomerResponseDTO {
     @Schema(
             name = "id",
             description = "UUID",

@@ -1,6 +1,5 @@
 package com.se330.coffee_shop_management_backend.dto.response.user;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -13,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @SuperBuilder
-public class UserResponse extends AbstractBaseResponse {
+public class UserResponse {
     @Schema(
         name = "id",
         description = "UUID",

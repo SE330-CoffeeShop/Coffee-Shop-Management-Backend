@@ -1,22 +1,19 @@
 package com.se330.coffee_shop_management_backend.dto.response.recipe;
 
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.Recipe;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class RecipeResponseDTO extends AbstractBaseResponse {
+public class RecipeResponseDTO  {
     @Schema(
             name = "id",
             description = "UUID",

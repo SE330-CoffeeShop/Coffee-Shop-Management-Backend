@@ -1,10 +1,8 @@
 package com.se330.coffee_shop_management_backend.dto.response.invoice;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.Invoice;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -12,11 +10,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class InvoiceResponseDTO extends AbstractBaseResponse {
+public class InvoiceResponseDTO {
     @Schema(
             name = "id",
             description = "UUID",

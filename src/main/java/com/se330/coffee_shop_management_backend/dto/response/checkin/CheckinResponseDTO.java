@@ -11,11 +11,10 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class CheckinResponseDTO extends AbstractBaseResponse {
+public class CheckinResponseDTO {
 
     @Schema(
             name = "id",

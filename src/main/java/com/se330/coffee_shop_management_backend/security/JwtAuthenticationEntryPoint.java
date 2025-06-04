@@ -54,6 +54,10 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         ResponseEntity<ErrorResponse> responseEntity = new AppExceptionHandler(messageSourceService)
             .handleBadCredentialsException(new BadCredentialsException(message));
+        ErrorResponse errorResponse = responseEntity.getBody();
+        if (errorResponse != null) {
+            errorResponse.setStatusCode(HttpServletResponse.SC_UNAUTHORIZED);
+        }
         response.getWriter().write(objectMapper.writeValueAsString(responseEntity.getBody()));
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

@@ -1,10 +1,8 @@
 package com.se330.coffee_shop_management_backend.dto.response.salary;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.Salary;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -12,11 +10,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class SalaryResponseDTO extends AbstractBaseResponse {
+public class SalaryResponseDTO {
 
     @Schema(
             name = "id",

@@ -1,10 +1,8 @@
 package com.se330.coffee_shop_management_backend.dto.response.product;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.product.ProductCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -13,11 +11,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class ProductCategoryResponseDTO extends AbstractBaseResponse {
+public class ProductCategoryResponseDTO {
 
     @Schema(
             name = "id",

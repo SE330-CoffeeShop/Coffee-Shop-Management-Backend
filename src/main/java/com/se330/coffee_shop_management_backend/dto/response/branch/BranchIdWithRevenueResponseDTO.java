@@ -10,11 +10,10 @@ import lombok.experimental.SuperBuilder;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class BranchIdWithRevenueResponseDTO extends AbstractBaseResponse {
+public class BranchIdWithRevenueResponseDTO {
 
     @Schema(
             name = "id",
