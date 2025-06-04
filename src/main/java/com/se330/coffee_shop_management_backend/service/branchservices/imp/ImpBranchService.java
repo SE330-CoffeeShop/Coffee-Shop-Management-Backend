@@ -74,18 +74,15 @@ public class ImpBranchService implements IBranchService {
                 currentManager.setManagedBranch(null);
 
                 // Remove MANAGER role from the current manager's user roles
-                List<Role> currentUserRoles = currentManager.getUser().getRoles();
-                currentUserRoles.removeIf(role -> role.getName().equals(Constants.RoleEnum.MANAGER));
-                currentManager.getUser().setRoles(currentUserRoles);
+                // set back to an employee role if the user is not a manager anymore
+                currentManager.getUser().setRole(roleService.findByName(Constants.RoleEnum.EMPLOYEE));
             }
 
             existingBranch.setManager(branchManager);
             branchManager.setManagedBranch(existingBranch);
 
             // then add MANAGER role to user related to new employee
-            List<Role> userRoles = branchManager.getUser().getRoles();
-            userRoles.add(roleService.findByName(Constants.RoleEnum.MANAGER));
-            branchManager.getUser().setRoles(userRoles);
+            branchManager.getUser().setRole(roleService.findByName(Constants.RoleEnum.MANAGER));
         }
 
         existingBranch.setBranchName(branchUpdateRequestDTO.getBranchName());
@@ -105,12 +102,9 @@ public class ImpBranchService implements IBranchService {
         if (existingBranch.getManager() != null) {
             Employee currentManager = existingBranch.getManager();
             currentManager.setManagedBranch(null);
-
-            // Remove MANAGER role from the current manager's user roles
-            List<Role> currentUserRoles = currentManager.getUser().getRoles();
-            currentUserRoles.removeIf(role -> role.getName().equals(Constants.RoleEnum.MANAGER));
-            currentManager.getUser().setRoles(currentUserRoles);
         }
+
+        // if the branch is removed, all the employees related to this branch will be removed as well
 
         branchRepository.deleteById(id);
     }

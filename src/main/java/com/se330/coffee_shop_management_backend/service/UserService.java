@@ -194,7 +194,7 @@ public class UserService {
         log.info("Registering user with email: {}", request.getEmail());
 
         User user = createUser(request);
-        user.setRoles(List.of(roleService.findByName(Constants.RoleEnum.CUSTOMER)));
+        user.setRole(roleService.findByName(Constants.RoleEnum.CUSTOMER));
         userRepository.save(user);
 
         emailVerificationEventPublisher(user);
@@ -214,8 +214,7 @@ public class UserService {
         log.info("Creating user with email: {}", request.getEmail());
 
         User user = createUser(request);
-        request.getRoles().forEach(role -> user.getRoles()
-            .add(roleService.findByName(Constants.RoleEnum.get(role))));
+        user.setRole(roleService.findByName(request.getRole()));
 
         if (request.getIsEmailVerified() != null && request.getIsEmailVerified()) {
             user.setEmailVerifiedAt(LocalDateTime.now());
@@ -249,10 +248,8 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
-        if (request.getRoles() != null) {
-            user.setRoles(request.getRoles().stream()
-                .map(role -> roleService.findByName(Constants.RoleEnum.get(role)))
-                .collect(Collectors.toList()));
+        if (request.getRole() != null) {
+            user.setRole(roleService.findByName(request.getRole()));
         }
 
         if (request.getIsEmailVerified() != null) {

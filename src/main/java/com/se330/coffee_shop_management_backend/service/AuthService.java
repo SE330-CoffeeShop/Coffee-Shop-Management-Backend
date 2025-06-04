@@ -175,13 +175,13 @@ public class AuthService {
         log.info("Token generated for user: {}", id);
 
         User user = userService.findById(id);
-        List<String> roles = UserResponse.convert(user).getRoles();
+        String role = user.getRole().getName().toString();
 
         return TokenResponse.builder()
             .accessToken(token)
             .refreshToken(refreshToken)
-            .userId(String.valueOf(id))
-            .roles(roles)
+            .id(String.valueOf(id))
+            .role(role)
             .build();
     }
 }

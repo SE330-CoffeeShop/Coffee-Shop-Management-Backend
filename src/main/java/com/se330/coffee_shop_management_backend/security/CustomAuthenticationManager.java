@@ -48,9 +48,7 @@ public class CustomAuthenticationManager implements AuthenticationManager {
             }
         }
 
-        List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
-            .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-            .toList();
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(String.valueOf(user.getRole().getName())));
         UserDetails userDetails = userService.loadUserByEmail(authentication.getName());
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails,
             user.getPassword(), authorities);

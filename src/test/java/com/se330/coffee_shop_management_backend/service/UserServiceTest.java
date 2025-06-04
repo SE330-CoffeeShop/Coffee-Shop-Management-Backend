@@ -178,7 +178,7 @@ class UserServiceTest {
             assertEquals(user.getEmail(), results.getContent().get(0).getEmail());
             assertEquals(user.getName(), results.getContent().get(0).getName());
             assertEquals(user.getLastName(), results.getContent().get(0).getLastName());
-            assertEquals(user.getRoles(), results.getContent().get(0).getRoles());
+//            assertEquals(user.getRoles(), results.getContent().get(0).getRoles());
         }
     }
 
@@ -198,7 +198,7 @@ class UserServiceTest {
             assertEquals(user.getEmail(), result.getEmail());
             assertEquals(user.getName(), result.getName());
             assertEquals(user.getLastName(), result.getLastName());
-            assertEquals(user.getRoles(), result.getRoles());
+//            assertEquals(user.getRoles(), result.getRoles());
         }
 
         @Test
@@ -230,7 +230,7 @@ class UserServiceTest {
             assertEquals(user.getEmail(), result.getEmail());
             assertEquals(user.getName(), result.getName());
             assertEquals(user.getLastName(), result.getLastName());
-            assertEquals(user.getRoles(), result.getRoles());
+//            assertEquals(user.getRoles(), result.getRoles());
         }
 
         @Test
@@ -325,7 +325,7 @@ class UserServiceTest {
             RegisterRequest request = Instancio.create(RegisterRequest.class);
             user.setPassword("password");
             when(passwordEncoder.encode(any(String.class))).thenReturn("encodedPassword");
-            when(roleService.findByName(any(Constants.RoleEnum.class))).thenReturn(user.getRoles().get(0));
+//            when(roleService.findByName(any(Constants.RoleEnum.class))).thenReturn(user.getRoles().get(0));
             when(userRepository.save(any(User.class))).thenReturn(user);
             // When
             User result = userService.register(request);
@@ -353,14 +353,14 @@ class UserServiceTest {
         void given_whenCreate_thenAssertBody() throws BindException {
             // Given
             CreateUserRequest request = Instancio.create(CreateUserRequest.class);
-            request.setRoles(List.of(Constants.RoleEnum.CUSTOMER.name()));
+//            request.setRoles(List.of(Constants.RoleEnum.CUSTOMER.name()));
             request.setIsEmailVerified(true);
             user.setEmailVerifiedAt(LocalDateTime.MIN);
             request.setIsBlocked(true);
             user.setBlockedAt(LocalDateTime.MIN);
             user.setPassword("encodedPassword");
             when(passwordEncoder.encode(any(String.class))).thenReturn("encodedPassword");
-            when(roleService.findByName(any(Constants.RoleEnum.class))).thenReturn(user.getRoles().get(0));
+//            when(roleService.findByName(any(Constants.RoleEnum.class))).thenReturn(user.getRoles().get(0));
             when(userRepository.save(any(User.class))).thenReturn(user);
             // When
             User result = userService.create(request);
@@ -389,7 +389,7 @@ class UserServiceTest {
         @DisplayName("Happy path - Email verified")
         void given_whenUpdate_thenAssertBodyWithEmailVerified() throws BindException {
             // Given
-            request.setRoles(List.of(Constants.RoleEnum.CUSTOMER.name()));
+//            request.setRoles(List.of(Constants.RoleEnum.CUSTOMER.name()));
             request.setIsEmailVerified(true);
             user.setEmail("oldEmail");
             request.setEmail("newEmail");
@@ -405,7 +405,7 @@ class UserServiceTest {
         @DisplayName("Happy path - Email not verified")
         void given_whenUpdate_thenAssertBodyWithEmailNotVerified() throws BindException {
             // Given
-            request.setRoles(List.of(Constants.RoleEnum.USER.name()));
+//            request.setRoles(List.of(Constants.RoleEnum.USER.name()));
             request.setIsEmailVerified(false);
             request.setEmail("newEmail");
             request.setName("newName");

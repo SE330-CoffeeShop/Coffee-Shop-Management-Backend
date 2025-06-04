@@ -208,11 +208,6 @@ public class DummyDataService implements CommandLineRunner {
      * @throws BindException Bind exception
      */
     private void createUsers() throws BindException {
-        List<String> roleList = new ArrayList<>();
-        roleList.add(Constants.RoleEnum.ADMIN.getValue());
-        roleList.add(Constants.RoleEnum.CUSTOMER.getValue());
-        roleList.add(Constants.RoleEnum.MANAGER.getValue());
-        roleList.add(Constants.RoleEnum.EMPLOYEE.getValue());
         String defaultPassword = "P@sswd123.";
 
         userService.create(CreateUserRequest.builder()
@@ -220,7 +215,7 @@ public class DummyDataService implements CommandLineRunner {
             .password(defaultPassword)
             .name("John")
             .lastName("DOE")
-            .roles(roleList)
+            .role(Constants.RoleEnum.ADMIN)
             .isEmailVerified(true)
             .isBlocked(false)
             .build());
@@ -230,7 +225,7 @@ public class DummyDataService implements CommandLineRunner {
             .password(defaultPassword)
             .name("Jane")
             .lastName("DOE")
-            .roles(List.of(roleList.get(1)))
+            .role(Constants.RoleEnum.CUSTOMER)
             .isEmailVerified(true)
             .isBlocked(false)
             .build());
@@ -240,7 +235,7 @@ public class DummyDataService implements CommandLineRunner {
             .password(defaultPassword)
             .name("Mike")
             .lastName("SMITH")
-            .roles(List.of(roleList.get(1), roleList.get(2))) // CUSTOMER and MANAGER roles
+                .role(Constants.RoleEnum.MANAGER)
             .isEmailVerified(true)
             .isBlocked(false)
             .build());
@@ -250,7 +245,7 @@ public class DummyDataService implements CommandLineRunner {
             .password(defaultPassword)
             .name("Emily")
             .lastName("JOHNSON")
-            .roles(List.of(roleList.get(1), roleList.get(3))) // CUSTOMER and EMPLOYEE roles
+                .role(Constants.RoleEnum.EMPLOYEE)
             .isEmailVerified(true)
             .isBlocked(false)
             .build());
@@ -643,9 +638,7 @@ public class DummyDataService implements CommandLineRunner {
         List<User> users = userRepository.findAll();
         List<User> availableUsers = users.stream()
                 .filter(user -> user.getEmployee() == null)
-                .filter(user -> user.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals(Constants.RoleEnum.EMPLOYEE) ||
-                                role.getName().equals(Constants.RoleEnum.MANAGER)))
+                .filter(user -> user.getRole().getName() == Constants.RoleEnum.EMPLOYEE || user.getRole().getName() == Constants.RoleEnum.MANAGER)
                 .toList();
 
         if (availableUsers.isEmpty()) {
@@ -822,8 +815,7 @@ public class DummyDataService implements CommandLineRunner {
 
         // Create system notifications (sender is admin user)
         User adminUser = users.stream()
-                .filter(user -> user.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals(Constants.RoleEnum.ADMIN)))
+                .filter(user -> user.getRole().getName() == Constants.RoleEnum.ADMIN)
                 .findFirst()
                 .orElse(users.get(0));
 
@@ -860,9 +852,7 @@ public class DummyDataService implements CommandLineRunner {
 
         // Create a few user-to-user notifications for employees/managers
         List<User> staffUsers = users.stream()
-                .filter(user -> user.getRoles().stream()
-                        .anyMatch(role -> role.getName().equals(Constants.RoleEnum.EMPLOYEE) ||
-                                role.getName().equals(Constants.RoleEnum.MANAGER)))
+                .filter(user -> user.getRole().getName() == Constants.RoleEnum.EMPLOYEE || user.getRole().getName() == Constants.RoleEnum.MANAGER)
                 .toList();
 
         if (staffUsers.size() >= 2) {
