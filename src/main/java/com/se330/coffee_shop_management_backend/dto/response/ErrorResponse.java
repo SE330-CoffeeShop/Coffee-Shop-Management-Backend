@@ -9,6 +9,15 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 public class ErrorResponse extends AbstractBaseResponse {
+
+    @Schema(
+        name = "statusCode",
+        description = "HTTP status code",
+        type = "Integer",
+        example = "400"
+    )
+    private int statusCode;
+
     @Schema(
         name = "message",
         description = "Response messages field",

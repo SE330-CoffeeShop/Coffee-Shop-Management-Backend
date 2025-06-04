@@ -14,11 +14,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class CommentResponseDTO extends AbstractBaseResponse {
+public class CommentResponseDTO {
 
     @Schema(
             name = "id",
