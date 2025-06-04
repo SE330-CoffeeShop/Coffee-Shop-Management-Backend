@@ -1,22 +1,23 @@
 package com.se330.coffee_shop_management_backend.dto.response.auth;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
+
 @Getter
 @Setter
 @SuperBuilder
-public class TokenResponse extends AbstractBaseResponse {
+public class TokenResponse {
     @Schema(
         name = "token",
         description = "Token",
         type = "String",
         example = "eyJhbGciOiJIUzUxMiJ9..."
     )
-    private String token;
+    private String accessToken;
 
     @Schema(
         name = "refreshToken",
@@ -27,9 +28,17 @@ public class TokenResponse extends AbstractBaseResponse {
     private String refreshToken;
 
     @Schema(
-        name = "expiresIn",
-        description = "Expires In",
-        type = "TokenExpiresInResponse"
+        name = "userId",
+        description = "User ID",
+        type = "String",
+        example = "91b2999d-d327-4dc8-9956-2fadc0dc8778"
     )
-    private TokenExpiresInResponse expiresIn;
+    private String userId;
+
+    @Schema(
+        name = "roles",
+        description = "Roles of the user",
+        type = "String",
+        example = "[\"USER\", \"ADMIN\"]")
+    private List<String> roles;
 }

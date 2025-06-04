@@ -2,6 +2,7 @@ package com.se330.coffee_shop_management_backend.service;
 
 import com.se330.coffee_shop_management_backend.dto.response.auth.TokenExpiresInResponse;
 import com.se330.coffee_shop_management_backend.dto.response.auth.TokenResponse;
+import com.se330.coffee_shop_management_backend.dto.response.user.UserResponse;
 import com.se330.coffee_shop_management_backend.entity.JwtToken;
 import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.exception.NotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.TOKEN_HEADER;
@@ -172,15 +174,14 @@ public class AuthService {
             .build());
         log.info("Token generated for user: {}", id);
 
+        User user = userService.findById(id);
+        List<String> roles = UserResponse.convert(user).getRoles();
+
         return TokenResponse.builder()
-            .token(token)
+            .accessToken(token)
             .refreshToken(refreshToken)
-            .expiresIn(
-                TokenExpiresInResponse.builder()
-                    .token(jwtTokenProvider.getTokenExpiresIn())
-                    .refreshToken(jwtTokenProvider.getRefreshTokenExpiresIn())
-                    .build()
-            )
+            .userId(String.valueOf(id))
+            .roles(roles)
             .build();
     }
 }
