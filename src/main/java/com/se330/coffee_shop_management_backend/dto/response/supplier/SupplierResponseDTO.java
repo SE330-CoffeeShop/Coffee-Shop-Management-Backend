@@ -41,7 +41,6 @@ public class SupplierResponseDTO {
     private String supplierPhone;
     private String supplierEmail;
     private String supplierAddress;
-    private List<String> invoiceIds;
 
     public static SupplierResponseDTO convert(Supplier supplier) {
         return SupplierResponseDTO.builder()
@@ -52,8 +51,6 @@ public class SupplierResponseDTO {
                 .supplierPhone(supplier.getSupplierPhone())
                 .supplierEmail(supplier.getSupplierEmail())
                 .supplierAddress(supplier.getSupplierAddress())
-                .invoiceIds(supplier.getInvoices() != null ? supplier.getInvoices().stream()
-                        .map(invoice -> invoice.getId().toString()).toList() : List.of())
                 .build();
     }
 

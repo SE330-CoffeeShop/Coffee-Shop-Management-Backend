@@ -43,7 +43,6 @@ public class TransferResponseDTO{
     private BigDecimal transferTotalCost;
     private String branchId;
     private String warehouseId;
-    private List<String> transferDetailIds;
 
     public static TransferResponseDTO convert(Transfer transfer) {
         return TransferResponseDTO.builder()
@@ -55,9 +54,6 @@ public class TransferResponseDTO{
                 .transferTotalCost(transfer.getTransferTotalCost())
                 .branchId(transfer.getBranch().getId().toString())
                 .warehouseId(transfer.getWarehouse().getId().toString())
-                .transferDetailIds(transfer.getTransferDetails().stream()
-                        .map(detail -> detail.getId().toString())
-                        .toList())
                 .build();
     }
 

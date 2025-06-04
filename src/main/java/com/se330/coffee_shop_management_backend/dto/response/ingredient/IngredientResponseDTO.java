@@ -45,11 +45,6 @@ public class IngredientResponseDTO {
     private BigDecimal ingredientPrice;
     private String ingredientType;
     private long shelfLifeDays;
-    private List<String> transferDetailIds;
-    private List<String> inventoryIds;
-    private List<String> recipeIds;
-    private List<String> invoiceDetailIds;
-    private List<String> stockIds;
 
     public static IngredientResponseDTO convert(Ingredient ingredient) {
         return IngredientResponseDTO.builder()
@@ -61,21 +56,6 @@ public class IngredientResponseDTO {
                 .ingredientPrice(ingredient.getIngredientPrice())
                 .ingredientType(ingredient.getIngredientType())
                 .shelfLifeDays(ingredient.getShelfLifeDays())
-                .transferDetailIds(ingredient.getTransferDetails() != null ? ingredient.getTransferDetails().stream()
-                        .map(entity -> entity.getId().toString())
-                        .toList() : List.of())
-                .inventoryIds(ingredient.getInventories() != null ? ingredient.getInventories().stream()
-                        .map(inventory -> inventory.getId().toString())
-                        .collect(Collectors.toList()) : List.of())
-                .recipeIds(ingredient.getRecipes() != null ? ingredient.getRecipes().stream()
-                        .map(recipe -> recipe.getId().toString())
-                        .collect(Collectors.toList()) : List.of())
-                .invoiceDetailIds(ingredient.getInvoiceDetails() != null ? ingredient.getInvoiceDetails().stream()
-                        .map(invoiceDetail -> invoiceDetail.getId().toString())
-                        .collect(Collectors.toList()) : List.of())
-                .stockIds(ingredient.getStocks() != null ? ingredient.getStocks().stream()
-                        .map(stock -> stock.getId().toString())
-                        .collect(Collectors.toList()) : List.of())
                 .build();
     }
 

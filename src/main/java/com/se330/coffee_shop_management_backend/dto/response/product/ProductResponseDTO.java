@@ -50,24 +50,9 @@ public class ProductResponseDTO {
     private BigDecimal productRatingsAverage;
     private Boolean productIsPublished;
     private Boolean productIsDeleted;
-
-    private List<String> productVariants;
     private String productCategoryId;
-    private List<String> commentIds;
 
     public static ProductResponseDTO convert(Product product) {
-
-        List<String> productVariantIds;
-
-        List<ProductVariant> tmpList = product.getProductVariants();
-        if (tmpList == null || tmpList.isEmpty()) {
-            productVariantIds = Collections.emptyList();
-        } else {
-            productVariantIds = product.getProductVariants().stream()
-                    .map(entity -> entity.getId().toString())
-                    .collect(Collectors.toList());
-        }
-
         return ProductResponseDTO.builder()
                 .id(product.getId().toString())
                 .createdAt(product.getCreatedAt())
@@ -80,11 +65,7 @@ public class ProductResponseDTO {
                 .productRatingsAverage(product.getProductRatingsAverage())
                 .productIsPublished(product.getProductIsPublished())
                 .productIsDeleted(product.getProductIsDeleted())
-                .productVariants(productVariantIds)
                 .productCategoryId(product.getProductCategory().getId().toString())
-                .commentIds(product.getComments().stream()
-                        .map(entity -> entity.getCommentId() + "") // Cast int to String
-                        .collect(Collectors.toList()))
                 .build();
     }
 

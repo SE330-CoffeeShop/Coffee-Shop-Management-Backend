@@ -44,27 +44,13 @@ public class ProductCategoryResponseDTO {
     private String categoryDescription;
     private Integer catalogId;
 
-    private List<String> products;
-
     public static ProductCategoryResponseDTO convert(ProductCategory productCategory) {
-
-        List<String> productIds;
-
-        if (productCategory.getProducts() == null ||  productCategory.getProducts().isEmpty()) {
-            productIds = Collections.emptyList();
-        } else {
-            productIds = productCategory.getProducts().stream()
-                    .map(entity -> entity.getId().toString())
-                    .collect(Collectors.toList());
-        }
-
         return ProductCategoryResponseDTO.builder()
                 .id(productCategory.getId().toString())
                 .createdAt(productCategory.getCreatedAt())
                 .updatedAt(productCategory.getUpdatedAt())
                 .categoryName(productCategory.getCategoryName())
                 .categoryDescription(productCategory.getCategoryDescription())
-                .products(productIds)
                 .catalogId(productCategory.getCatalog() != null ? productCategory.getCatalog().getId() : null)
                 .build();
     }
