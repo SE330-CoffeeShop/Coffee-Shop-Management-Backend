@@ -2,8 +2,7 @@ package com.se330.coffee_shop_management_backend.service.orderservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailUpdateRequestDTO;
-import com.se330.coffee_shop_management_backend.entity.Order;
-import com.se330.coffee_shop_management_backend.entity.OrderDetail;
+import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.OrderDetailRepository;
 import com.se330.coffee_shop_management_backend.repository.OrderRepository;
@@ -45,12 +44,24 @@ public class ImpOrderDetailService implements IOrderDetailService {
     }
 
     @Override
+    @Transactional
     public OrderDetail createOrderDetail(OrderDetailCreateRequestDTO orderDetailCreateRequestDTO) {
         ProductVariant existingProductVariant = productVariantRepository.findById(orderDetailCreateRequestDTO.getProductVariantId())
                 .orElseThrow(() -> new EntityNotFoundException("Product variant not found with id: " + orderDetailCreateRequestDTO.getProductVariantId()));
 
         Order existingOrder = orderRepository.findById(orderDetailCreateRequestDTO.getOrderId())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderDetailCreateRequestDTO.getOrderId()));
+
+        Branch branchOfInventory = existingOrder.getEmployee().getBranch();
+
+        // before creating a new OrderDetail, make sure the ingredient in the inventory of the branch is enough
+        int quantity = orderDetailCreateRequestDTO.getOrderDetailQuantity();
+        for (Recipe recipe : existingProductVariant.getRecipes()) {
+            Ingredient requiredIngredient = recipe.getIngredient();
+
+        }
+
+        // then subtract the quantity of the ingredient in the inventory of the branch
 
         return orderDetailRepository.save(
                 OrderDetail.builder()

@@ -75,7 +75,7 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         lenient().when(jwtTokenProvider.getTokenExpiresIn()).thenReturn(1L);
-        lenient().when(jwtTokenProvider.generateJwt(anyString())).thenReturn(tokenResponse.getToken());
+        lenient().when(jwtTokenProvider.generateJwt(anyString())).thenReturn(tokenResponse.getAccessToken());
         lenient().when(jwtTokenProvider.generateRefresh(anyString())).thenReturn(tokenResponse.getRefreshToken());
     }
 
@@ -104,7 +104,7 @@ class AuthServiceTest {
             TokenResponse response = authService.login(user.getEmail(), password, true);
             // Then
             assertNotNull(response);
-            assertEquals(tokenResponse.getToken(), response.getToken());
+            assertEquals(tokenResponse.getAccessToken(), response.getAccessToken());
             assertEquals(tokenResponse.getRefreshToken(), response.getRefreshToken());
         }
 
@@ -117,7 +117,7 @@ class AuthServiceTest {
             TokenResponse response = authService.login(user.getEmail(), password, true);
             // Then
             assertNotNull(response);
-            assertEquals(tokenResponse.getToken(), response.getToken());
+            assertEquals(tokenResponse.getAccessToken(), response.getAccessToken());
             assertEquals(tokenResponse.getRefreshToken(), response.getRefreshToken());
         }
 
@@ -166,7 +166,7 @@ class AuthServiceTest {
             TokenResponse response = authService.refreshFromBearerString(token);
             // Then
             assertNotNull(response);
-            assertEquals("newToken", response.getToken());
+            assertEquals("newToken", response.getAccessToken());
             assertEquals("newRefresh", response.getRefreshToken());
         }
 
@@ -203,7 +203,7 @@ class AuthServiceTest {
             TokenResponse response = authService.refreshFromBearerString(bearerToken);
             // Then
             assertNotNull(response);
-            assertEquals("newToken", response.getToken());
+            assertEquals("newToken", response.getAccessToken());
             assertEquals("newRefresh", response.getRefreshToken());
         }
     }

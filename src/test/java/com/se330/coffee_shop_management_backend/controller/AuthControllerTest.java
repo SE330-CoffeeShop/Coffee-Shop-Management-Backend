@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.auth.LoginRequest;
 import com.se330.coffee_shop_management_backend.dto.request.auth.PasswordRequest;
 import com.se330.coffee_shop_management_backend.dto.request.auth.RegisterRequest;
 import com.se330.coffee_shop_management_backend.dto.request.auth.ResetPasswordRequest;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SuccessResponse;
 import com.se330.coffee_shop_management_backend.dto.response.auth.PasswordResetResponse;
 import com.se330.coffee_shop_management_backend.dto.response.auth.TokenResponse;
@@ -62,7 +63,7 @@ class AuthControllerTest {
         when(authService.login(loginRequest.getEmail(), loginRequest.getPassword(), false))
             .thenReturn(tokenResponse);
         // When
-        ResponseEntity<TokenResponse> response = authController.login(loginRequest);
+        ResponseEntity<SingleResponse<TokenResponse>> response = authController.login(loginRequest);
         // Then
         assertNotNull(response);
         assertNotNull(response.getBody());
@@ -79,7 +80,7 @@ class AuthControllerTest {
         when(userService.register(loginRequest)).thenReturn(user);
         when(messageSourceService.get(message)).thenReturn(message);
         // When
-        ResponseEntity<SuccessResponse> response = authController.register(loginRequest);
+        ResponseEntity<SingleResponse<SuccessResponse>> response = authController.register(loginRequest);
         // Then
         assertNotNull(response);
         assertNotNull(response.getBody());
@@ -96,7 +97,7 @@ class AuthControllerTest {
         doNothing().when(userService).verifyEmail(token);
         when(messageSourceService.get(message)).thenReturn(message);
         // When
-        ResponseEntity<SuccessResponse> response = authController.emailVerification(token);
+        ResponseEntity<SingleResponse<SuccessResponse>> response = authController.emailVerification(token);
         // Then
         assertNotNull(response);
         assertNotNull(response.getBody());
@@ -111,7 +112,7 @@ class AuthControllerTest {
         String refreshToken = "refreshToken";
         when(authService.refreshFromBearerString("refreshToken")).thenReturn(tokenResponse);
         // When
-        ResponseEntity<TokenResponse> response = authController.refresh(refreshToken);
+        ResponseEntity<SingleResponse<TokenResponse>> response = authController.refresh(refreshToken);
         // Then
         assertNotNull(response);
         assertNotNull(response.getBody());
@@ -128,7 +129,7 @@ class AuthControllerTest {
         doNothing().when(authService).resetPassword(request.getEmail());
         when(messageSourceService.get("password_reset_link_sent")).thenReturn(message);
         // When
-        ResponseEntity<SuccessResponse> response = authController.resetPassword(request);
+        ResponseEntity<SingleResponse<SuccessResponse>> response = authController.resetPassword(request);
         // Then
         assertNotNull(response);
         assertNotNull(response.getBody());
@@ -144,13 +145,13 @@ class AuthControllerTest {
         PasswordResetToken passwordResetToken = Instancio.create(PasswordResetToken.class);
         when(passwordResetTokenService.findByToken(token)).thenReturn(passwordResetToken);
         // When
-        ResponseEntity<PasswordResetResponse> response = authController.resetPassword(token);
+        ResponseEntity<SingleResponse<PasswordResetResponse>> response = authController.resetPassword(token);
         // Then
         assertNotNull(response);
         assertNotNull(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(passwordResetToken.getToken(), response.getBody().getToken());
-        assertEquals(passwordResetToken.getUser().getEmail(), response.getBody().getUser().getEmail());
+        assertEquals(passwordResetToken.getToken(), response.getBody().getData().getToken());
+        assertEquals(passwordResetToken.getUser().getEmail(), response.getBody().getData().getUser().getEmail());
     }
 
     @Test
@@ -163,7 +164,7 @@ class AuthControllerTest {
         when(messageSourceService.get("password_reset_success_successfully")).thenReturn(message);
         doNothing().when(userService).resetPassword(token, request);
         // When
-        ResponseEntity<SuccessResponse> response = authController.resetPassword(token, request);
+        ResponseEntity<SingleResponse<SuccessResponse>> response = authController.resetPassword(token, request);
         // Then
         assertNotNull(response);
         assertNotNull(response.getBody());
@@ -179,7 +180,7 @@ class AuthControllerTest {
         doNothing().when(authService).logout(user);
         when(messageSourceService.get("logout_successfully")).thenReturn("successfully");
         // When
-        ResponseEntity<SuccessResponse> response = authController.logout();
+        ResponseEntity<SingleResponse<SuccessResponse>> response = authController.logout();
         // Then
         assertNotNull(response);
         assertNotNull(response.getBody());
