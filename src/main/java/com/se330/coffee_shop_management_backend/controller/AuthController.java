@@ -83,7 +83,7 @@ public class AuthController extends AbstractBaseController {
         @Parameter(description = "Request body to login", required = true)
         @RequestBody @Validated final LoginRequest request
     ) {
-        return ResponseEntity.ok(authService.login(request.getEmail(), request.getPassword(), request.getRememberMe()));
+        return ResponseEntity.ok(authService.login(request.getEmail(), request.getPassword(), false));
     }
 
     @PostMapping("/register")

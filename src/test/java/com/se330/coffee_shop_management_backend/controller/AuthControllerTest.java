@@ -59,7 +59,7 @@ class AuthControllerTest {
     @DisplayName("Test for login")
     void given_whenLogin_thenAssertBody() {
         // Given
-        when(authService.login(loginRequest.getEmail(), loginRequest.getPassword(), loginRequest.getRememberMe()))
+        when(authService.login(loginRequest.getEmail(), loginRequest.getPassword(), false))
             .thenReturn(tokenResponse);
         // When
         ResponseEntity<TokenResponse> response = authController.login(loginRequest);

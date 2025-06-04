@@ -47,7 +47,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         } else if (notfound != null) {
             message = notfound;
         } else {
-            message = e.getMessage();
+            message = "Unauthorized";
         }
 
         log.error("Could not set user authentication in security context. Error: {}", message);
