@@ -45,7 +45,6 @@ public class ProductVariantResponseDTO{
     private String variantSlug;
     private int variantSort;
     private Long variantPrice;
-    private int variantStock;
     private Boolean variantIsPublished;
     private Boolean variantIsDeleted;
 
@@ -61,7 +60,6 @@ public class ProductVariantResponseDTO{
                 .variantSlug(productVariant.getVariantSlug())
                 .variantSort(productVariant.getVariantSort())
                 .variantPrice(productVariant.getVariantPrice())
-                .variantStock(productVariant.getVariantStock())
                 .variantIsPublished(productVariant.getVariantIsPublished())
                 .variantIsDeleted(productVariant.getVariantIsDeleted())
                 .productId(productVariant.getProduct().getId().toString())

@@ -4,8 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -17,5 +15,5 @@ public class OrderCreateRequestDTO {
     private UUID userId;
     private UUID shippingAddressId;
     private UUID paymentMethodId;
-    private List<OrderDetailCreateRequestDTO> orderDetails;
+    private UUID cartId;
 }

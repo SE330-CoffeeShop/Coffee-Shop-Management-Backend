@@ -42,6 +42,8 @@ public class OrderResponseDTO {
     private LocalDateTime updatedAt;
 
     private BigDecimal orderTotalCost;
+    private BigDecimal orderDiscountCost;
+    private BigDecimal orderTotalCostAfterDiscount;
     private String orderStatus;
     private String orderTrackingNumber;
 
@@ -57,6 +59,8 @@ public class OrderResponseDTO {
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
                 .orderTotalCost(order.getOrderTotalCost())
+                .orderDiscountCost(order.getOrderDiscountCost())
+                .orderTotalCostAfterDiscount(order.getOrderTotalCostAfterDiscount())
                 .orderStatus(order.getOrderStatus().toString())
                 .orderTrackingNumber(order.getOrderTrackingNumber())
                 .employeeId(order.getEmployee() != null ? order.getEmployee().getId().toString() : null)

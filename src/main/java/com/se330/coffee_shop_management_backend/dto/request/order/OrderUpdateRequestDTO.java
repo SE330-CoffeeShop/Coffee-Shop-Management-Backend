@@ -3,7 +3,6 @@ package com.se330.coffee_shop_management_backend.dto.request.order;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -15,5 +14,5 @@ public class OrderUpdateRequestDTO {
     private UUID userId;
     private UUID shippingAddressId;
     private UUID paymentMethodId;
-    private List<OrderDetailCreateRequestDTO> orderDetails;
+    private UUID cartId;
 }

@@ -1098,7 +1098,6 @@ public class DummyDataService implements CommandLineRunner {
                         .variantSlug(product.getProductSlug() + "-small")
                         .variantSort(1)
                         .variantPrice(product.getProductPrice().longValue() * 100) // Convert to cents
-                        .variantStock(50 + (int)(Math.random() * 50))
                         .variantIsPublished(true)
                         .variantIsDeleted(false)
                         .product(product)
@@ -1113,7 +1112,6 @@ public class DummyDataService implements CommandLineRunner {
                         .variantSlug(product.getProductSlug() + "-medium")
                         .variantSort(2)
                         .variantPrice((product.getProductPrice().longValue() + 1) * 100) // Medium costs $1 more
-                        .variantStock(80 + (int)(Math.random() * 50))
                         .variantIsPublished(true)
                         .variantIsDeleted(false)
                         .product(product)
@@ -1128,7 +1126,6 @@ public class DummyDataService implements CommandLineRunner {
                         .variantSlug(product.getProductSlug() + "-large")
                         .variantSort(3)
                         .variantPrice((product.getProductPrice().longValue() + 2) * 100) // Large costs $2 more
-                        .variantStock(40 + (int)(Math.random() * 30))
                         .variantIsPublished(true)
                         .variantIsDeleted(false)
                         .product(product)
@@ -1144,7 +1141,6 @@ public class DummyDataService implements CommandLineRunner {
                             .variantSlug(product.getProductSlug() + "-extra-shot")
                             .variantSort(4)
                             .variantPrice((product.getProductPrice().longValue() + 1) * 100) // Extra shot costs $1 more
-                            .variantStock(30 + (int)(Math.random() * 20))
                             .variantIsPublished(true)
                             .variantIsDeleted(false)
                             .product(product)
@@ -1160,7 +1156,6 @@ public class DummyDataService implements CommandLineRunner {
                         .variantSlug(product.getProductSlug() + "-standard")
                         .variantSort(1)
                         .variantPrice(product.getProductPrice().longValue() * 100) // Convert to cents
-                        .variantStock(30 + (int)(Math.random() * 70))
                         .variantIsPublished(true)
                         .variantIsDeleted(false)
                         .product(product)

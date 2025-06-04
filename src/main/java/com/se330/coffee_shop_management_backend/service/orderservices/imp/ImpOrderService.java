@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.service.orderservices.imp;
 
+import com.se330.coffee_shop_management_backend.dto.request.cart.CartDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -29,6 +32,7 @@ public class ImpOrderService implements IOrderService {
     private final ShippingAddressesRepository shippingAddressesRepository;
     private final IOrderDetailService orderDetailService;
     private final IDiscountService discountService;
+    private final CartRepository cartRepository;
 
     public ImpOrderService(
             OrderRepository orderRepository,
@@ -37,7 +41,8 @@ public class ImpOrderService implements IOrderService {
             UserRepository userRepository,
             ShippingAddressesRepository shippingAddressesRepository,
             IOrderDetailService orderDetailService,
-            IDiscountService discountService
+            IDiscountService discountService,
+            CartRepository cartRepository
     ) {
         this.orderRepository = orderRepository;
         this.employeeRepository = employeeRepository;
@@ -46,6 +51,7 @@ public class ImpOrderService implements IOrderService {
         this.shippingAddressesRepository = shippingAddressesRepository;
         this.orderDetailService = orderDetailService;
         this.discountService = discountService;
+        this.cartRepository = cartRepository;
     }
 
     @Override
@@ -97,6 +103,9 @@ public class ImpOrderService implements IOrderService {
 
         PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(orderCreateRequestDTO.getPaymentMethodId())
                 .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + orderCreateRequestDTO.getPaymentMethodId()));
+        
+        Cart existingCart = cartRepository.findById(orderCreateRequestDTO.getCartId())
+                .orElseThrow(() -> new EntityNotFoundException("Cart not found with id:" + orderCreateRequestDTO.getCartId()));
 
         // create order first
         Order newOrder = orderRepository.save(
@@ -108,11 +117,23 @@ public class ImpOrderService implements IOrderService {
                     .user(existingUser)
                     .shippingAddress(existingShippingAddress)
                     .orderTotalCost(BigDecimal.ZERO)
+                    .orderDiscountCost(BigDecimal.ZERO)
+                    .orderTotalCostAfterDiscount(BigDecimal.ZERO)
                     .build()
         );
 
+        List<OrderDetailCreateRequestDTO> orderDetailDtos = new ArrayList<>();
+        for (CartDetail cartDetailCreateRequestDTO : existingCart.getCartDetails()) {
+            OrderDetailCreateRequestDTO orderDetailCreateRequestDTO = new OrderDetailCreateRequestDTO();
+            orderDetailCreateRequestDTO.setOrderDetailQuantity(cartDetailCreateRequestDTO.getCartDetailQuantity());
+            orderDetailCreateRequestDTO.setOrderDetailUnitPrice(cartDetailCreateRequestDTO.getCartDetailUnitPrice());
+            orderDetailCreateRequestDTO.setProductVariantId(cartDetailCreateRequestDTO.getProductVariant().getId());
+            orderDetailCreateRequestDTO.setOrderId(newOrder.getId());
+            orderDetailDtos.add(orderDetailCreateRequestDTO);
+        }
+
         // now then add order details
-        for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderCreateRequestDTO.getOrderDetails()) {
+        for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderDetailDtos) {
             orderDetailCreateRequestDTO.setOrderId(newOrder.getId());
             orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
         }
@@ -199,7 +220,7 @@ public class ImpOrderService implements IOrderService {
                 .shippingAddressId(orderUpdateRequestDTO.getShippingAddressId())
                 .paymentMethodId(orderUpdateRequestDTO.getPaymentMethodId())
                 .orderStatus(orderUpdateRequestDTO.getOrderStatus())
-                .orderDetails(orderUpdateRequestDTO.getOrderDetails())
+                .cartId(orderUpdateRequestDTO.getCartId())
                 .build());
     }
 
