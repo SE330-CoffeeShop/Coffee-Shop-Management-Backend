@@ -1,6 +1,5 @@
 package com.se330.coffee_shop_management_backend.service;
 
-import com.cloudinary.utils.ObjectUtils;
 import com.se330.coffee_shop_management_backend.dto.request.user.CreateUserRequest;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
@@ -11,14 +10,13 @@ import com.se330.coffee_shop_management_backend.repository.productrepositories.P
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.util.Constants;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindException;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -46,7 +44,6 @@ public class DummyDataService implements CommandLineRunner {
     private final InvoiceDetailRepository invoiceDetailRepository;
     private final SupplierRepository supplierRepository;
     private final NotificationRepository notificationRepository;
-    private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final ShippingAddressesRepository shippingAddressesRepository;
     private final PaymentMethodsRepository paymentMethodsRepository;
@@ -57,119 +54,176 @@ public class DummyDataService implements CommandLineRunner {
     private final StockRepository stockRepository;
     private final TransferRepository transferRepository;
     private final TransferDetailRepository transferDetailRepository;
-    private final CloudinaryService cloudinaryService;
-    private final ResourceLoader resourceLoader;
+
+    // Avatar URLs
+    @Value("${AVATAR_URL_1}")
+    private String avatarUrl1;
+    @Value("${AVATAR_URL_2}")
+    private String avatarUrl2;
+    @Value("${AVATAR_URL_3}")
+    private String avatarUrl3;
+    @Value("${AVATAR_URL_4}")
+    private String avatarUrl4;
+
+    // Drink/Product image URLs
+    @Value("${DRINK_IMAGE_URL_1}")
+    private String drinkImageUrl1;
+    @Value("${DRINK_IMAGE_URL_2}")
+    private String drinkImageUrl2;
+    @Value("${DRINK_IMAGE_URL_3}")
+    private String drinkImageUrl3;
+    @Value("${DRINK_IMAGE_URL_4}")
+    private String drinkImageUrl4;
+    @Value("${DRINK_IMAGE_URL_5}")
+    private String drinkImageUrl5;
+    @Value("${DRINK_IMAGE_URL_6}")
+    private String drinkImageUrl6;
+    @Value("${DRINK_IMAGE_URL_7}")
+    private String drinkImageUrl7;
+    @Value("${DRINK_IMAGE_URL_8}")
+    private String drinkImageUrl8;
+    @Value("${DRINK_IMAGE_URL_9}")
+    private String drinkImageUrl9;
+    @Value("${DRINK_IMAGE_URL_10}")
+    private String drinkImageUrl10;
+    @Value("${DRINK_IMAGE_URL_11}")
+    private String drinkImageUrl11;
+    @Value("${DRINK_IMAGE_URL_12}")
+    private String drinkImageUrl12;
+    @Value("${DRINK_IMAGE_URL_13}")
+    private String drinkImageUrl13;
+    @Value("${DRINK_IMAGE_URL_14}")
+    private String drinkImageUrl14;
+    @Value("${DRINK_IMAGE_URL_15}")
+    private String drinkImageUrl15;
+
+    // Initialize lists after all properties have been set
+    @PostConstruct
+    private void initializeLists() {
+        dummyProductImageUrl = List.of(
+                drinkImageUrl1, drinkImageUrl2, drinkImageUrl3, drinkImageUrl4, drinkImageUrl5,
+                drinkImageUrl6, drinkImageUrl7, drinkImageUrl8, drinkImageUrl9, drinkImageUrl10,
+                drinkImageUrl11, drinkImageUrl12, drinkImageUrl13, drinkImageUrl14, drinkImageUrl15
+        );
+
+        dummyAvatarUrl = List.of(
+                avatarUrl1, avatarUrl2, avatarUrl3, avatarUrl4
+        );
+    }
+
+    List<String> dummyProductImageUrl = List.of();
+    List<String> dummyAvatarUrl = List.of();
 
     @Override
     public void run(String... args) throws Exception {
 
-        if (roleService.count() == 0) {
-            log.info("Creating roles...");
-            createRoles();
-            log.info("Roles created.");
-        }
+//        if (roleService.count() == 0) {
+//            log.info("Creating roles...");
+//            createRoles();
+//            log.info("Roles created.");
+//        }
+//
+//        if (userService.count() == 0) {
+//            log.info("Creating users...");
+//            createUsers();
+//            log.info("Users created.");
+//        }
 
-        if (userService.count() == 0) {
-            log.info("Creating users...");
-            createUsers();
-            log.info("Users created.");
-        }
+//        if (branchRepository.count() == 0) {
+//            log.info("Creating branches...");
+//            createBranches();
+//            log.info("Branches created.");
+//        }
+//
+//        if (warehouseRepository.count() == 0) {
+//            log.info("Creating warehouses...");
+//            createWarehouses();
+//            log.info("Warehouses created.");
+//        }
+//
+//        if (ingredientRepository.count() == 0) {
+//            log.info("Creating ingredients...");
+//            createIngredients();
+//            log.info("Ingredients created.");
+//        }
+//
+//        if (productCategoryRepository.count() == 0) {
+//            log.info("Creating product categories...");
+//            createProductCategories();
+//            log.info("Product categories created.");
+//        }
+//
+//        if (productRepository.count() == 0) {
+//            log.info("Creating products and variants...");
+//            createProducts();
+//            log.info("Products and variants created.");
+//        }
 
-        if (branchRepository.count() == 0) {
-            log.info("Creating branches...");
-            createBranches();
-            log.info("Branches created.");
-        }
-
-        if (warehouseRepository.count() == 0) {
-            log.info("Creating warehouses...");
-            createWarehouses();
-            log.info("Warehouses created.");
-        }
-
-        if (ingredientRepository.count() == 0) {
-            log.info("Creating ingredients...");
-            createIngredients();
-            log.info("Ingredients created.");
-        }
-
-        if (productCategoryRepository.count() == 0) {
-            log.info("Creating product categories...");
-            createProductCategories();
-            log.info("Product categories created.");
-        }
-
-        if (productRepository.count() == 0) {
-            log.info("Creating products and variants...");
-            createProducts();
-            log.info("Products and variants created.");
-        }
-
-        if (employeeRepository.count() == 0) {
-            log.info("Creating employees...");
-            createEmployees();
-            log.info("Employees created.");
-        }
-
-        if (supplierRepository.count() == 0) {
-            log.info("Creating suppliers...");
-            createSuppliers();
-            log.info("Suppliers created.");
-        }
-
-        if (inventoryRepository.count() == 0) {
-            log.info("Creating inventory...");
-            createInventories();
-            log.info("Inventory created.");
-        }
-
-        if (shiftRepository.count() == 0) {
-            log.info("Creating shifts...");
-            createShifts();
-            log.info("Shifts created.");
-        }
-
-        if (shippingAddressesRepository.count() == 0) {
-            log.info("Creating shipping addresses...");
-            createShippingAddresses();
-            log.info("Shipping addresses created.");
-        }
-
-        if (paymentMethodsRepository.count() == 0) {
-            log.info("Creating payment methods...");
-            createPaymentMethods();
-            log.info("Payment methods created.");
-        }
-
-        if (recipeRepository.count() == 0) {
-            log.info("Creating recipes...");
-            createRecipes();
-            log.info("Recipes created.");
-        }
-
-        if (stockRepository.count() == 0) {
-            log.info("Creating stocks...");
-            createStocks();
-            log.info("Stocks created.");
-        }
-
-        if (invoiceRepository.count() == 0) {
-            log.info("Creating invoices...");
-            createInvoicesAndDetails();
-            log.info("Invoices created.");
-        }
-
-        if (invoiceDetailRepository.count() == 0) {
-            log.info("Creating invoice details...");
-            createInvoiceDetails();
-            log.info("Invoice details created.");
-        }
-
-        if (transferRepository.count() == 0) {
-            log.info("Creating transfers and transfer details...");
-            createTransfers();
-            log.info("Transfers and transfer details created.");
-        }
+//        if (employeeRepository.count() == 0) {
+//            log.info("Creating employees...");
+//            createEmployees();
+//            log.info("Employees created.");
+//        }
+//
+//        if (supplierRepository.count() == 0) {
+//            log.info("Creating suppliers...");
+//            createSuppliers();
+//            log.info("Suppliers created.");
+//        }
+//
+//        if (inventoryRepository.count() == 0) {
+//            log.info("Creating inventory...");
+//            createInventories();
+//            log.info("Inventory created.");
+//        }
+//
+//        if (shiftRepository.count() == 0) {
+//            log.info("Creating shifts...");
+//            createShifts();
+//            log.info("Shifts created.");
+//        }
+//
+//        if (shippingAddressesRepository.count() == 0) {
+//            log.info("Creating shipping addresses...");
+//            createShippingAddresses();
+//            log.info("Shipping addresses created.");
+//        }
+//
+//        if (paymentMethodsRepository.count() == 0) {
+//            log.info("Creating payment methods...");
+//            createPaymentMethods();
+//            log.info("Payment methods created.");
+//        }
+//
+//        if (recipeRepository.count() == 0) {
+//            log.info("Creating recipes...");
+//            createRecipes();
+//            log.info("Recipes created.");
+//        }
+//
+//        if (stockRepository.count() == 0) {
+//            log.info("Creating stocks...");
+//            createStocks();
+//            log.info("Stocks created.");
+//        }
+//
+//        if (invoiceRepository.count() == 0) {
+//            log.info("Creating invoices...");
+//            createInvoicesAndDetails();
+//            log.info("Invoices created.");
+//        }
+//
+//        if (invoiceDetailRepository.count() == 0) {
+//            log.info("Creating invoice details...");
+//            createInvoiceDetails();
+//            log.info("Invoice details created.");
+//        }
+//
+//        if (transferRepository.count() == 0) {
+//            log.info("Creating transfers and transfer details...");
+//            createTransfers();
+//            log.info("Transfers and transfer details created.");
+//        }
 //
 //        if (orderRepository.count() == 0) {
 //            log.info("Creating orders...");
@@ -177,17 +231,17 @@ public class DummyDataService implements CommandLineRunner {
 //            log.info("Orders created.");
 //        }
 
-        if (discountRepository.count() == 0) {
-            log.info("Creating discounts...");
-            createDiscounts();
-            log.info("Discounts created.");
-        }
-
-        if (notificationRepository.count() == 0) {
-            log.info("Creating notifications...");
-            createNotifications();
-            log.info("Notifications created.");
-        }
+//        if (discountRepository.count() == 0) {
+//            log.info("Creating discounts...");
+//            createDiscounts();
+//            log.info("Discounts created.");
+//        }
+//
+//        if (notificationRepository.count() == 0) {
+//            log.info("Creating notifications...");
+//            createNotifications();
+//            log.info("Notifications created.");
+//        }
 
 //        if (commentRepository.count() == 0) {
 //            log.info("Creating comments...");
@@ -217,7 +271,7 @@ public class DummyDataService implements CommandLineRunner {
     private void createUsers() throws BindException {
         String defaultPassword = "P@sswd123.";
 
-        userService.create(CreateUserRequest.builder()
+        User user1 = userService.create(CreateUserRequest.builder()
             .email("admin@example.com")
             .password(defaultPassword)
             .name("John")
@@ -227,7 +281,9 @@ public class DummyDataService implements CommandLineRunner {
             .isBlocked(false)
             .build());
 
-        userService.create(CreateUserRequest.builder()
+        user1.setAvatar(dummyAvatarUrl.get(0));
+
+        User user2 =userService.create(CreateUserRequest.builder()
             .email("user@example.com")
             .password(defaultPassword)
             .name("Jane")
@@ -237,7 +293,9 @@ public class DummyDataService implements CommandLineRunner {
             .isBlocked(false)
             .build());
 
-        userService.create(CreateUserRequest.builder()
+        user2.setAvatar(dummyAvatarUrl.get(1));
+
+        User user3 =userService.create(CreateUserRequest.builder()
             .email("manager@example.com")
             .password(defaultPassword)
             .name("Mike")
@@ -247,7 +305,9 @@ public class DummyDataService implements CommandLineRunner {
             .isBlocked(false)
             .build());
 
-        userService.create(CreateUserRequest.builder()
+        user3.setAvatar(dummyAvatarUrl.get(2));
+
+        User user4 =userService.create(CreateUserRequest.builder()
             .email("employee@example.com")
             .password(defaultPassword)
             .name("Emily")
@@ -256,6 +316,11 @@ public class DummyDataService implements CommandLineRunner {
             .isEmailVerified(true)
             .isBlocked(false)
             .build());
+
+        user4.setAvatar(dummyAvatarUrl.get(3));
+
+        // Save users
+        userRepository.saveAll(List.of(user1, user2, user3, user4));
     }
 
     private void createBranches() {

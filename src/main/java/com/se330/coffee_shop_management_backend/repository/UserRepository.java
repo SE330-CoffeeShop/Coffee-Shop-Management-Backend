@@ -1,10 +1,12 @@
 package com.se330.coffee_shop_management_backend.repository;
 
 import com.se330.coffee_shop_management_backend.entity.User;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     Optional<User> findByEmail(String email);
 
     boolean existsByEmailAndIdNot(String email, UUID id);
+
+    List<User> findAllByRoleName(Constants.RoleEnum roleName);
 }
