@@ -5,6 +5,7 @@ import com.se330.coffee_shop_management_backend.dto.response.DetailedErrorRespon
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SuccessResponse;
 import com.se330.coffee_shop_management_backend.dto.response.user.UserResponse;
+import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.service.MessageSourceService;
 import com.se330.coffee_shop_management_backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,14 +17,14 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
 
@@ -31,6 +32,7 @@ import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_S
 @RequiredArgsConstructor
 @RequestMapping("/account")
 @Tag(name = "002. Account", description = "Account API")
+@Slf4j
 public class AccountController extends AbstractBaseController {
     private final UserService userService;
 
@@ -142,5 +144,85 @@ public class AccountController extends AbstractBaseController {
         return ResponseEntity.ok(SuccessResponse.builder()
             .message(messageSourceService.get("verification_email_sent"))
             .build());
+    }
+
+    @PostMapping("/avatar")
+    @Operation(
+            summary = "Upload user avatar image",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Avatar uploaded successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Map.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request or empty file",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty or not provided");
+        }
+
+        try {
+            User currentUser = userService.getUser();
+            String imageUrl = userService.uploadUserAvatar(currentUser.getId(), file);
+            return ResponseEntity.ok(Map.of(
+                    "status", 200,
+                    "message", "Avatar uploaded successfully",
+                    "url", imageUrl
+            ));
+        } catch (Exception e) {
+            log.error("Failed to upload avatar: {}", e.getMessage());
+            return ResponseEntity.status(500).body("Error uploading avatar: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/avatar")
+    @Operation(
+            summary = "Delete user avatar image",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Avatar deleted successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = Map.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<?> deleteAvatar() {
+        try {
+            User currentUser = userService.getUser();
+            String defaultAvatarUrl = userService.deleteUserAvatar(currentUser.getId());
+            return ResponseEntity.ok(Map.of(
+                    "status", 200,
+                    "message", "Avatar deleted successfully",
+                    "url", defaultAvatarUrl
+            ));
+        } catch (Exception e) {
+            log.error("Failed to delete avatar: {}", e.getMessage());
+            return ResponseEntity.status(500).body("Error deleting avatar: " + e.getMessage());
+        }
     }
 }

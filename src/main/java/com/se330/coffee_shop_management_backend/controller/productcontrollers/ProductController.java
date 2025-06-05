@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -30,6 +34,7 @@ import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.cre
 @RequestMapping("/product")
 public class ProductController {
 
+    private static final Logger log = LoggerFactory.getLogger(ProductController.class);
     private final IProductService productService;
 
     public ProductController(IProductService productService) {
@@ -219,5 +224,98 @@ public class ProductController {
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/image/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @Operation(
+            summary = "Upload product image",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Image uploaded successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input or empty file",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Product not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<?> uploadProductImage(
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file
+    ) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+        try {
+            String imageUrl = productService.uploadProductImage(id, file);
+            return ResponseEntity.ok(
+                    new SingleResponse<>(
+                            HttpStatus.OK.value(),
+                            "Product image uploaded successfully",
+                            Map.of("url", imageUrl)
+                    )
+            );
+        } catch (Exception e) {
+            log.info("Error uploading product image: {}", e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading product image");
+    }
+
+    @DeleteMapping("/image/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @Operation(
+            summary = "Delete product image",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Image deleted successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Product not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<?> deleteProductImage(@PathVariable UUID id) {
+        try {
+            String defaultImageUrl = productService.deleteProductImage(id);
+            return ResponseEntity.ok(
+                    new SingleResponse<>(
+                            HttpStatus.OK.value(),
+                            "Product image deleted successfully",
+                            Map.of("url", defaultImageUrl)
+                    )
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting product image");
+        }
     }
 }
