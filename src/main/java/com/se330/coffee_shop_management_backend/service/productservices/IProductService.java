@@ -6,6 +6,7 @@ import com.se330.coffee_shop_management_backend.dto.response.product.BestSelling
 import com.se330.coffee_shop_management_backend.entity.product.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -23,4 +24,7 @@ public interface IProductService {
     Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndYear(UUID branchId, int year, Pageable pageable);
     Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndMonthAndYear(UUID branchId, int month, int year, Pageable pageable);
     Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndDayAndMonthAndYear(UUID branchId, int day, int month, int year, Pageable pageable);
+
+    String uploadProductImage(UUID productId, MultipartFile file) throws Exception;
+    String deleteProductImage(UUID productId) throws Exception;
 }

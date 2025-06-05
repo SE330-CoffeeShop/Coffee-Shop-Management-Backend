@@ -7,7 +7,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -71,6 +70,8 @@ public class UserResponse {
     )
     private LocalDateTime createdAt;
 
+    private String avatar;
+
     @Schema(
         name = "updatedAt",
         type = "LocalDateTime",
@@ -79,11 +80,6 @@ public class UserResponse {
     )
     private LocalDateTime updatedAt;
 
-    private List<String> notificationSentIds;
-    private List<String> notificationReceivedIds;
-    private List<String> orderIds;
-    private List<String> paymentMethodIds;
-    private List<String> shippingAddressIds;
 
     /**
      * Convert User to UserResponse
@@ -101,26 +97,7 @@ public class UserResponse {
             .blockedAt(user.getBlockedAt())
             .createdAt(user.getCreatedAt())
             .updatedAt(user.getUpdatedAt())
-            .notificationSentIds(user.getSentNotifications() != null ?
-                    user.getSentNotifications().stream()
-                            .map(notification -> notification.getId().toString())
-                            .toList() : null)
-            .notificationReceivedIds(user.getReceivedNotifications() != null ?
-                    user.getReceivedNotifications().stream()
-                            .map(notification -> notification.getId().toString())
-                            .toList() : null)
-            .shippingAddressIds(user.getShippingAddresses() != null ?
-                    user.getShippingAddresses().stream()
-                            .map(shippingAddress -> shippingAddress.getId().toString())
-                            .toList() : null)
-            .orderIds(user.getOrders() != null?
-                user.getOrders().stream()
-                        .map(order -> order.getId().toString())
-                        .toList() : null)
-            .paymentMethodIds(user.getPaymentMethods() != null ?
-                user.getPaymentMethods().stream()
-                        .map(paymentMethod -> paymentMethod.getId().toString())
-                        .toList() : null)
+            .avatar(user.getAvatar())
             .build();
     }
 }

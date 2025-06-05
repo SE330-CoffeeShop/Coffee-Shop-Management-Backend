@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.service;
 
+import com.cloudinary.utils.ObjectUtils;
 import com.se330.coffee_shop_management_backend.dto.request.user.CreateUserRequest;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
@@ -13,8 +14,11 @@ import com.se330.coffee_shop_management_backend.util.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -53,9 +57,12 @@ public class DummyDataService implements CommandLineRunner {
     private final StockRepository stockRepository;
     private final TransferRepository transferRepository;
     private final TransferDetailRepository transferDetailRepository;
+    private final CloudinaryService cloudinaryService;
+    private final ResourceLoader resourceLoader;
 
     @Override
     public void run(String... args) throws Exception {
+
         if (roleService.count() == 0) {
             log.info("Creating roles...");
             createRoles();
@@ -245,7 +252,7 @@ public class DummyDataService implements CommandLineRunner {
             .password(defaultPassword)
             .name("Emily")
             .lastName("JOHNSON")
-                .role(Constants.RoleEnum.EMPLOYEE)
+            .role(Constants.RoleEnum.EMPLOYEE)
             .isEmailVerified(true)
             .isBlocked(false)
             .build());

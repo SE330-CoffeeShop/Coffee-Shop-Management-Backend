@@ -1,9 +1,7 @@
 package com.se330.coffee_shop_management_backend.dto.request.user;
 
 import com.se330.coffee_shop_management_backend.dto.annotation.FieldMatch;
-import com.se330.coffee_shop_management_backend.dto.annotation.MinListSize;
 import com.se330.coffee_shop_management_backend.dto.annotation.Password;
-import com.se330.coffee_shop_management_backend.dto.annotation.ValueOfEnum;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -11,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Getter
 @Setter

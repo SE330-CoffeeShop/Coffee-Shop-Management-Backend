@@ -119,3 +119,8 @@ logging:
   logback:
     rollingpolicy:
       file-name-pattern: ./var/logs/app.%d{yyyy-MM-dd}.%i.log
+
+cloudinary:
+    cloud-name: ${CLOUD_NAME}
+    api-key: ${CLOUDINARY_API_KEY}
+    api-secret: ${CLOUDINARY_API_SECRET}

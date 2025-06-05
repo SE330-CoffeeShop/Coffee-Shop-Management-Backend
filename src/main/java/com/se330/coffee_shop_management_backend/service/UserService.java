@@ -36,9 +36,12 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -60,6 +63,8 @@ public class UserService {
     private final ApplicationEventPublisher eventPublisher;
 
     private final MessageSourceService messageSourceService;
+
+    private final CloudinaryService cloudinaryService;
 
     /**
      * Get authentication.
@@ -383,22 +388,22 @@ public class UserService {
     private User createUser(AbstractBaseCreateUserRequest request) throws BindException {
         BindingResult bindingResult = new BeanPropertyBindingResult(request, "request");
         userRepository.findByEmail(request.getEmail())
-            .ifPresent(user -> {
-                log.error("User with email: {} already exists", request.getEmail());
-                bindingResult.addError(new FieldError(bindingResult.getObjectName(), "email",
-                    messageSourceService.get("unique_email")));
-            });
+                .ifPresent(user -> {
+                    log.error("User with email: {} already exists", request.getEmail());
+                    bindingResult.addError(new FieldError(bindingResult.getObjectName(), "email",
+                            messageSourceService.get("unique_email")));
+                });
 
         if (bindingResult.hasErrors()) {
             throw new BindException(bindingResult);
         }
-
         return User.builder()
-            .email(request.getEmail())
-            .password(passwordEncoder.encode(request.getPassword()))
-            .name(request.getName())
-            .lastName(request.getLastName())
-            .build();
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .name(request.getName())
+                .lastName(request.getLastName())
+                .avatar(cloudinaryService.getAvatarDefault())
+                .build();
     }
 
     /**
@@ -411,9 +416,9 @@ public class UserService {
     private User updateUser(User user, AbstractBaseUpdateUserRequest request) throws BindException {
         BindingResult bindingResult = new BeanPropertyBindingResult(request, "request");
         if (!user.getEmail().equals(request.getEmail()) &&
-            userRepository.existsByEmailAndIdNot(request.getEmail(), user.getId())) {
+                userRepository.existsByEmailAndIdNot(request.getEmail(), user.getId())) {
             bindingResult.addError(new FieldError(bindingResult.getObjectName(), "email",
-                messageSourceService.get("already_exists")));
+                    messageSourceService.get("already_exists")));
         }
 
         boolean isRequiredEmailVerification = false;
@@ -462,5 +467,88 @@ public class UserService {
     private void passwordResetEventPublisher(User user) {
         user.setPasswordResetToken(passwordResetTokenService.create(user));
         eventPublisher.publishEvent(new UserPasswordResetSendEvent(this, user));
+    }
+
+    /**
+     * Upload user avatar image.
+     *
+     * @param userId UUID of the user
+     * @param file MultipartFile image to upload
+     * @return String URL of the uploaded image
+     * @throws Exception if there's an error during upload
+     */
+    public String uploadUserAvatar(UUID userId, MultipartFile file) throws Exception {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
+                        new String[]{messageSourceService.get("user")})));
+
+        // Check if the file is empty
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File must not be empty");
+        }
+
+        // Check if the current avatar is the default image
+        if (existingUser.getAvatar().equals(cloudinaryService.getAvatarDefault())) {
+            // Upload the new image
+            Map uploadResult = cloudinaryService.uploadFile(file, "avatars");
+            String imageUrl = uploadResult.get("secure_url").toString();
+            // Update the user's avatar URL
+            existingUser.setAvatar(imageUrl);
+            userRepository.save(existingUser);
+
+            return imageUrl;
+        } else {
+            // Delete the old image from Cloudinary
+            try {
+                cloudinaryService.deleteFile(existingUser.getAvatar());
+            } catch (IOException e) {
+                log.error("Failed to delete old user avatar: {}", e.getMessage());
+                // Continue with upload even if delete fails
+            }
+
+            // Upload the new image
+            Map uploadResult = cloudinaryService.uploadFile(file, "avatars");
+            String imageUrl = uploadResult.get("secure_url").toString();
+
+            // Update the user's avatar URL
+            existingUser.setAvatar(imageUrl);
+            userRepository.save(existingUser);
+
+            return imageUrl;
+        }
+    }
+
+    /**
+     * Delete the user avatar and set back to default.
+     *
+     * @param userId UUID of the user
+     * @return String URL of the default avatar
+     * @throws Exception if there's an error during deletion
+     */
+    public String deleteUserAvatar(UUID userId) throws Exception {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
+                        new String[]{messageSourceService.get("user")})));
+
+        String defaultAvatarUrl = cloudinaryService.getAvatarDefault();
+
+        // If the current avatar is already the default, no need to do anything
+        if (existingUser.getAvatar().equals(defaultAvatarUrl)) {
+            return defaultAvatarUrl;
+        }
+
+        // Delete the current avatar from Cloudinary
+        try {
+            cloudinaryService.deleteFile(existingUser.getAvatar());
+        } catch (IOException e) {
+            log.error("Failed to delete user avatar: {}", e.getMessage());
+            // Continue even if delete fails
+        }
+
+        // Set the user's avatar back to the default
+        existingUser.setAvatar(defaultAvatarUrl);
+        userRepository.save(existingUser);
+
+        return defaultAvatarUrl;
     }
 }

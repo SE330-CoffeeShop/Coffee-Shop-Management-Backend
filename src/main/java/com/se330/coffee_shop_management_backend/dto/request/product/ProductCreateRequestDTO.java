@@ -10,7 +10,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ProductCreateRequestDTO {
     private String productName;
-    private String productThumb;
     private String productDescription;
     private BigDecimal productPrice;
     private UUID productCategory;
