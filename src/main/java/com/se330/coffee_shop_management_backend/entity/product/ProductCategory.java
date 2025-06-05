@@ -23,7 +23,7 @@ public class ProductCategory extends AbstractBaseEntity {
     @Column(name = "category_name", nullable = false)
     private String categoryName = "";
 
-    @Column(name = "category_description", nullable = false)
+    @Column(name = "category_description", nullable = false, length = 1000)
     private String categoryDescription = "";
 
     @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

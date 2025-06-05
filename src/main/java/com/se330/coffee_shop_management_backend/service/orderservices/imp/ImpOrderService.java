@@ -155,6 +155,12 @@ public class ImpOrderService implements IOrderService {
         newOrder.setOrderDiscountCost(discountCost);
         newOrder.setOrderTotalCostAfterDiscount(totalCost);
 
+        // now delete the cart since we have created the order
+        if (existingCart.getUser() != null) {
+            existingCart.getUser().getCarts().remove(existingCart);
+        }
+        cartRepository.delete(existingCart);
+
         // save order again to update total cost and payment method
         return orderRepository.save(newOrder);
     }
