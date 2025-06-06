@@ -104,8 +104,7 @@ public class Comment {
                 // Select random comment from appropriate category
                 String content = relevantComments.get(random.nextInt(relevantComments.size()));
 
-                int ratingValue = random.nextInt(3) + 3;
-                java.math.BigDecimal rating = java.math.BigDecimal.valueOf(ratingValue);
+                BigDecimal rating = BigDecimal.valueOf(random.nextInt(100)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
                 // Create comment
                 com.se330.coffee_shop_management_backend.entity.Comment comment =

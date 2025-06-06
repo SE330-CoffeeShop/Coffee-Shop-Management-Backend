@@ -66,27 +66,25 @@ public final class Constants {
         /**
          * Thông báo liên quan đến quản lý đơn hàng.
          * Ví dụ:
-         * - Đơn hàng mới được tạo
-         * - Cập nhật trạng thái đơn hàng
-         * - Đơn hàng hoàn thành hoặc bị hủy
+         * - Tạo đơn hàng thành công (online), đã thanh toán thành công
+         * - Tạo đơn hàng không thành công:
+         *     - Thanh toán thất bại (không đủ tiền)
+         *     - Không đủ nguyên liệu để làm đơn hàng
+         *     - Đơn hàng không hợp lệ
+         * - Đơn hàng được nhận (online)
+         * - Đơn hàng bị hủy
+         * - Đơn hàng giao thành công
+         * - Mua hàng tại quầy thành công
          */
         ORDER("ORDER"),
 
         /**
-         * Thông báo liên quan đến quy trình thanh toán.
-         * Ví dụ:
-         * - Thanh toán thành công
-         * - Giao dịch thất bại
-         * - Hoàn tiền
-         */
-        PAYMENT("PAYMENT"),
-
-        /**
          * Thông báo về các chương trình khuyến mãi và giảm giá.
          * Ví dụ:
-         * - Khuyến mãi mới
+         * - Thêm khuyến mãi mới
+         * - Xóa khuyến mãi
+         * - Cập nhật khuyến mãi
          * - Khuyến mãi sắp hết hạn
-         * - Mã giảm giá mới
          */
         DISCOUNT("DISCOUNT"),
 
@@ -103,37 +101,56 @@ public final class Constants {
          * Thông báo liên quan đến quản lý kho.
          * Ví dụ:
          * - Cảnh báo hàng sắp hết
-         * - Nhắc nhở đặt hàng
-         * - Thông báo hàng mới về
+         * - Cảnh báo hàng sắp hết hạn
          */
         INVENTORY("INVENTORY"),
 
         /**
          * Thông báo liên quan đến quản lý nhân sự.
          * Ví dụ:
-         * - Phân công ca làm việc
-         * - Giao nhiệm vụ
-         * - Đánh giá hiệu suất
+         * - Nhận thông báo chào mừng đến chi nhánh
+         * - Phân công ca làm mới
+         * - Checkin thành công
+         * - Thông báo lương về
          */
         EMPLOYEE("EMPLOYEE"),
 
         /**
          * Thông báo trực tiếp từ quản lý đến nhân viên.
-         * Lưu ý: Chỉ quản lý mới có thể gửi những thông báo này đến nhân viên.
          * Ví dụ:
-         * - Nhắc nhở
-         * - Thông báo
-         * - Hướng dẫn
+         * - Gửi thông báo cho nhân viên thành công
+         * - Nhân viên nhận thông báo từ manager
          */
-        MANAGER("MANAGER");
+        MANAGER("MANAGER"),
+
+        /**
+         * Thông báo liên quan đến hóa đơn nhập kho.
+         * Ví dụ:
+         * - Nhập nguyên liệu vào nhà kho thành công
+         * - Nhập nguyên liệu vào nhà kho thất bại
+         * - Cập nhật phiếu nhập kho
+         * - Hủy phiếu nhập kho
+         */
+        INVOICE("INVOICE"),
+
+        /**
+         * Thông báo liên quan đến chuyển kho.
+         * Ví dụ:
+         * - Xuất nguyên liệu cho chi nhánh thành công
+         * - Xuất nguyên liệu cho chi nhánh thất bại:
+         *     - Nhà kho không đủ nguyên liệu
+         * - Cập nhật phiếu nhập xuất
+         * - Hủy phiếu nhập xuất
+         */
+        TRANSFER("TRANSFER");
 
         private final String value;
 
         public static NotificationTypeEnum get(final String name) {
             return Stream.of(NotificationTypeEnum.values())
-                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid notification type name: %s", name)));
+                    .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid notification type name: %s", name)));
         }
     }
 

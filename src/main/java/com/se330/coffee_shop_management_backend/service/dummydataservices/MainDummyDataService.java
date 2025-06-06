@@ -18,7 +18,7 @@ public class MainDummyDataService implements CommandLineRunner {
     private final WarehouseAndSupplier warehouseAndSupplier;
     private final StockAndInventory stockAndInventory;
     private final Comment comment;
-    private final Discount discount;
+    private final Discounts discount;
 
     @Override
     public void run(String... args) throws Exception {
