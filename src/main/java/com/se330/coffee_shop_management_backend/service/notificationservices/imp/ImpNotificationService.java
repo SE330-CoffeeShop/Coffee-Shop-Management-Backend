@@ -79,7 +79,7 @@ public class ImpNotificationService implements INotificationService {
         return notificationRepository.save(
                 Notification.builder()
                         .notificationContent(notificationCreateRequestDTO.getNotificationContent())
-                        .notificationType(Constants.NotificationTypeEnum.valueOf(notificationCreateRequestDTO.getNotificationType()))
+                        .notificationType(notificationCreateRequestDTO.getNotificationType())
                         .receiver(receiver)
                         .sender(sender)
                         .isRead(notificationCreateRequestDTO.isRead())
@@ -93,7 +93,7 @@ public class ImpNotificationService implements INotificationService {
 
         User sender = null;
 
-        if (!Objects.equals(notificationUpdateRequestDTO.getNotificationType(), Constants.NotificationTypeEnum.SYSTEM.getValue())) {
+        if (notificationUpdateRequestDTO.getSenderId() != null) {
             sender = userRepository.findById(notificationUpdateRequestDTO.getSenderId())
                     .orElseThrow(() -> new RuntimeException("Sender not found"));
         }
@@ -118,7 +118,7 @@ public class ImpNotificationService implements INotificationService {
         }
 
         existingNotification.setNotificationContent(notificationUpdateRequestDTO.getNotificationContent());
-        existingNotification.setNotificationType(Constants.NotificationTypeEnum.valueOf(notificationUpdateRequestDTO.getNotificationType()));
+        existingNotification.setNotificationType(notificationUpdateRequestDTO.getNotificationType());
         existingNotification.setRead(notificationUpdateRequestDTO.isRead());
 
         return notificationRepository.save(existingNotification);
@@ -127,11 +127,15 @@ public class ImpNotificationService implements INotificationService {
     @Override
     public void sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO) {
         List<User> users = userRepository.findAll();
-        User sender = userRepository.findById(notificationCreateRequestDTO.getSenderId()).orElse(null);
+        User sender = null;
+        if (notificationCreateRequestDTO.getSenderId() != null) {
+            sender = userRepository.findById(notificationCreateRequestDTO.getSenderId())
+                    .orElseThrow(() -> new RuntimeException("Sender not found"));
+        }
         for (User user : users) {
             Notification notification = Notification.builder()
                     .notificationContent(notificationCreateRequestDTO.getNotificationContent())
-                    .notificationType(Constants.NotificationTypeEnum.valueOf(notificationCreateRequestDTO.getNotificationType()))
+                    .notificationType(notificationCreateRequestDTO.getNotificationType())
                     .receiver(user)
                     .sender(sender)
                     .build();

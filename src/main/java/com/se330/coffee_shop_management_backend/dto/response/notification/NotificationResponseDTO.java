@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.dto.response.notification;
 
 import com.se330.coffee_shop_management_backend.entity.Notification;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,7 +40,7 @@ public class NotificationResponseDTO {
     )
     private LocalDateTime updatedAt;
 
-    private String notificationType;
+    private Constants.NotificationTypeEnum notificationType;
     private String notificationContent;
     private String senderId;
     private String receiverId;
@@ -50,7 +51,7 @@ public class NotificationResponseDTO {
                 .id(notification.getId().toString())
                 .createdAt(notification.getCreatedAt())
                 .updatedAt(notification.getUpdatedAt())
-                .notificationType(notification.getNotificationType().toString())
+                .notificationType(notification.getNotificationType())
                 .notificationContent(notification.getNotificationContent())
                 .senderId(notification.getSender() != null ? notification.getSender().getId().toString() : null)
                 .receiverId(notification.getReceiver() != null ? notification.getReceiver().getId().toString() : null)

@@ -325,4 +325,61 @@ public class DiscountController {
         discountService.deleteDiscount(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/product-variant/{productVariantId}")
+    @Operation(
+            summary = "Get all discounts for a product variant with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved discount list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Product variant not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<DiscountResponseDTO>> findAllDiscountsByProductVariantId(
+            @PathVariable UUID productVariantId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Discount> discountPages = discountService.findAllDiscountsByProductVariantId(pageable, productVariantId);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Product variant discounts retrieved successfully",
+                        DiscountResponseDTO.convert(discountPages.getContent()),
+                        new PageResponse.PagingResponse(
+                                discountPages.getNumber(),
+                                discountPages.getSize(),
+                                discountPages.getTotalElements(),
+                                discountPages.getTotalPages()
+                        )
+                )
+        );
+    }
 }

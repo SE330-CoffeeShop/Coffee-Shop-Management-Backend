@@ -37,6 +37,7 @@ public class Notification extends AbstractBaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "user_receiver_id",
+            nullable = false,
             foreignKey = @ForeignKey(
                     name = "fk_notification_receiver",
                     foreignKeyDefinition = "FOREIGN KEY (user_receiver_id) REFERENCES users (id) ON DELETE CASCADE"

@@ -63,18 +63,94 @@ public final class Constants {
     @Getter
     @AllArgsConstructor
     public enum NotificationTypeEnum {
+        /**
+         * Thông báo liên quan đến quản lý đơn hàng.
+         * Ví dụ:
+         * - Tạo đơn hàng thành công (online), đã thanh toán thành công
+         * - Tạo đơn hàng không thành công:
+         *     - Thanh toán thất bại (không đủ tiền)
+         *     - Không đủ nguyên liệu để làm đơn hàng
+         *     - Đơn hàng không hợp lệ
+         * - Đơn hàng được nhận (online)
+         * - Đơn hàng bị hủy
+         * - Đơn hàng giao thành công
+         * - Mua hàng tại quầy thành công
+         */
         ORDER("ORDER"),
-        PAYMENT("PAYMENT"),
+
+        /**
+         * Thông báo về các chương trình khuyến mãi và giảm giá.
+         * Ví dụ:
+         * - Thêm khuyến mãi mới
+         * - Xóa khuyến mãi
+         * - Cập nhật khuyến mãi
+         * - Khuyến mãi sắp hết hạn
+         */
         DISCOUNT("DISCOUNT"),
-        SYSTEM("SYSTEM");
+
+        /**
+         * Thông báo hệ thống ảnh hưởng đến tất cả người dùng.
+         * Ví dụ:
+         * - Thông báo bảo trì
+         * - Cập nhật phiên bản
+         * - Thay đổi chính sách
+         */
+        SYSTEM("SYSTEM"),
+
+        /**
+         * Thông báo liên quan đến quản lý kho.
+         * Ví dụ:
+         * - Cảnh báo hàng sắp hết
+         * - Cảnh báo hàng sắp hết hạn
+         */
+        INVENTORY("INVENTORY"),
+
+        /**
+         * Thông báo liên quan đến quản lý nhân sự.
+         * Ví dụ:
+         * - Nhận thông báo chào mừng đến chi nhánh
+         * - Phân công ca làm mới
+         * - Checkin thành công
+         * - Thông báo lương về
+         */
+        EMPLOYEE("EMPLOYEE"),
+
+        /**
+         * Thông báo trực tiếp từ quản lý đến nhân viên.
+         * Ví dụ:
+         * - Gửi thông báo cho nhân viên thành công
+         * - Nhân viên nhận thông báo từ manager
+         */
+        MANAGER("MANAGER"),
+
+        /**
+         * Thông báo liên quan đến hóa đơn nhập kho.
+         * Ví dụ:
+         * - Nhập nguyên liệu vào nhà kho thành công
+         * - Nhập nguyên liệu vào nhà kho thất bại
+         * - Cập nhật phiếu nhập kho
+         * - Hủy phiếu nhập kho
+         */
+        INVOICE("INVOICE"),
+
+        /**
+         * Thông báo liên quan đến chuyển kho.
+         * Ví dụ:
+         * - Xuất nguyên liệu cho chi nhánh thành công
+         * - Xuất nguyên liệu cho chi nhánh thất bại:
+         *     - Nhà kho không đủ nguyên liệu
+         * - Cập nhật phiếu nhập xuất
+         * - Hủy phiếu nhập xuất
+         */
+        TRANSFER("TRANSFER");
 
         private final String value;
 
         public static NotificationTypeEnum get(final String name) {
             return Stream.of(NotificationTypeEnum.values())
-                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid notification type name: %s", name)));
+                    .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid notification type name: %s", name)));
         }
     }
 

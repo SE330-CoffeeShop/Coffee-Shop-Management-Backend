@@ -1,17 +1,21 @@
 package com.se330.coffee_shop_management_backend.service.orderservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.cart.CartDetailCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
+import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
 import com.se330.coffee_shop_management_backend.util.Constants;
+import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import com.se330.coffee_shop_management_backend.util.CreateTrackingNumber;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,7 @@ public class ImpOrderService implements IOrderService {
     private final IOrderDetailService orderDetailService;
     private final IDiscountService discountService;
     private final CartRepository cartRepository;
+    private final INotificationService notificationService;
 
     public ImpOrderService(
             OrderRepository orderRepository,
@@ -42,7 +47,8 @@ public class ImpOrderService implements IOrderService {
             ShippingAddressesRepository shippingAddressesRepository,
             IOrderDetailService orderDetailService,
             IDiscountService discountService,
-            CartRepository cartRepository
+            CartRepository cartRepository,
+            INotificationService notificationService
     ) {
         this.orderRepository = orderRepository;
         this.employeeRepository = employeeRepository;
@@ -52,6 +58,7 @@ public class ImpOrderService implements IOrderService {
         this.orderDetailService = orderDetailService;
         this.discountService = discountService;
         this.cartRepository = cartRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -98,8 +105,11 @@ public class ImpOrderService implements IOrderService {
         User existingUser = userRepository.findById(orderCreateRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderCreateRequestDTO.getUserId()));
 
-        ShippingAddresses existingShippingAddress = shippingAddressesRepository.findById(orderCreateRequestDTO.getShippingAddressId())
-                .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with id:" + orderCreateRequestDTO.getShippingAddressId()));
+        ShippingAddresses existingShippingAddress = null;
+        if (orderCreateRequestDTO.getShippingAddressId() != null) {
+            existingShippingAddress = shippingAddressesRepository.findById(orderCreateRequestDTO.getShippingAddressId())
+                    .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with id:" + orderCreateRequestDTO.getShippingAddressId()));
+        }
 
         PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(orderCreateRequestDTO.getPaymentMethodId())
                 .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + orderCreateRequestDTO.getPaymentMethodId()));
@@ -111,7 +121,7 @@ public class ImpOrderService implements IOrderService {
         Order newOrder = orderRepository.save(
             Order.builder()
                     .employee(existingEmployee)
-                    .orderStatus(Constants.OrderStatusEnum.get(orderCreateRequestDTO.getOrderStatus()))
+                    .orderStatus(orderCreateRequestDTO.getOrderStatus())
                     .orderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"))
                     .paymentMethod(existingPaymentMethod)
                     .user(existingUser)
@@ -162,72 +172,91 @@ public class ImpOrderService implements IOrderService {
         cartRepository.delete(existingCart);
 
         // save order again to update total cost and payment method
-        return orderRepository.save(newOrder);
+        orderRepository.save(newOrder);
+
+        // now create notification
+        if (existingShippingAddress != null) {
+            notificationService.createNotification(
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .notificationContent(CreateNotiContentHelper.createOrderSuccessContentCustomer(newOrder.getId()))
+                            .senderId(null)
+                            .receiverId(newOrder.getUser().getId())
+                            .isRead(false)
+                            .build());
+        } else {
+            notificationService.createNotification(
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .notificationContent(CreateNotiContentHelper.createInStorePurchaseContent(newOrder.getId()))
+                            .senderId(null)
+                            .receiverId(newOrder.getUser().getId())
+                            .isRead(false)
+                            .build());
+        }
+
+        return newOrder;
     }
 
     @Override
     public Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO) {
-//        Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
-//                .orElseThrow(() -> new EntityNotFoundException("Order not found with id:" + orderUpdateRequestDTO.getOrderId()));
-//
-//        PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(existingOrder.getPaymentMethod().getId())
-//                .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + existingOrder.getPaymentMethod().getId()));
-//
-//        User existingUser = userRepository.findById(orderUpdateRequestDTO.getUserId())
-//                .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderUpdateRequestDTO.getUserId()));
-//
-//        ShippingAddresses existingShippingAddress = shippingAddressesRepository.findById(orderUpdateRequestDTO.getShippingAddressId())
-//                .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with id:" + orderUpdateRequestDTO.getShippingAddressId()));
-//
-//        existingOrder.setPaymentMethod(existingPaymentMethod);
-//        existingOrder.setUser(existingUser);
-//        existingOrder.setShippingAddress(existingShippingAddress);
-//        existingOrder.setOrderStatus(Constants.OrderStatusEnum.get(orderUpdateRequestDTO.getOrderStatus()));
-//        existingOrder.setOrderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"));
-//
-//        List<OrderDetail> orderDetailOlds = existingOrder.getOrderDetails();
-//
-//        for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderUpdateRequestDTO.getOrderDetails()) {
-//            for (OrderDetail oldOrderDetail : orderDetailOlds) {
-//                if (
-//                        oldOrderDetail.getOrderDetailQuantity() == orderDetailCreateRequestDTO.getOrderDetailQuantity() &&
-//                                Objects.equals(oldOrderDetail.getOrderDetailUnitPrice(), orderDetailCreateRequestDTO.getOrderDetailUnitPrice()) &&
-//                        oldOrderDetail.getProductVariant().getId() == orderDetailCreateRequestDTO.getProductVariantId()
-//                ) {
-//                    // which means this order detail have no change
-//                    continue;
-//                }
-//
-//                // remove old, create new
-//                orderDetailService.deleteOrderDetail(oldOrderDetail.getId());
-//                orderDetailCreateRequestDTO.setOrderId(existingOrder.getId());
-//                orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
-//            }
-//        }
-//
-//        // update total cost
-//        BigDecimal totalCost = updateTotalCost(existingOrder);
-//
-//        // then apply discount
-//        for (OrderDetail orderDetail : existingOrder.getOrderDetails()) {
-//            discountService.applyMostValuableDiscountOfOrderDetail(orderDetail.getId(), totalCost);
-//        }
-//
-//        totalCost = updateTotalCost(existingOrder);
-//
-//        existingOrder.setOrderTotalCost(totalCost);
-//
-//        return orderRepository.save(existingOrder);
+        Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id:" + orderUpdateRequestDTO.getOrderId()));
 
-        deleteOrder(orderUpdateRequestDTO.getOrderId());
-        return createOrder(OrderCreateRequestDTO.builder()
-                .employeeId(orderUpdateRequestDTO.getEmployeeId())
-                .userId(orderUpdateRequestDTO.getUserId())
-                .shippingAddressId(orderUpdateRequestDTO.getShippingAddressId())
-                .paymentMethodId(orderUpdateRequestDTO.getPaymentMethodId())
-                .orderStatus(orderUpdateRequestDTO.getOrderStatus())
-                .cartId(orderUpdateRequestDTO.getCartId())
-                .build());
+        PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(existingOrder.getPaymentMethod().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + existingOrder.getPaymentMethod().getId()));
+
+        User existingUser = userRepository.findById(orderUpdateRequestDTO.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderUpdateRequestDTO.getUserId()));
+
+        ShippingAddresses existingShippingAddress = shippingAddressesRepository.findById(orderUpdateRequestDTO.getShippingAddressId())
+                .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with id:" + orderUpdateRequestDTO.getShippingAddressId()));
+        
+        if (existingOrder.getEmployee() == null) {
+            if (orderUpdateRequestDTO.getEmployeeId() != null) {
+                Employee existingEmployee = employeeRepository.findById(orderUpdateRequestDTO.getEmployeeId())
+                        .orElseThrow(() -> new EntityNotFoundException("Employee not found with id:" + orderUpdateRequestDTO.getEmployeeId()));
+                
+                existingOrder.setEmployee(existingEmployee);
+                existingOrder.setOrderStatus(Constants.OrderStatusEnum.PROCESSING);
+                
+                notificationService.createNotification(NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .receiverId(existingEmployee.getUser().getId())
+                                .notificationContent(CreateNotiContentHelper.createOrderReceivedContent(existingOrder.getId()))
+                                .senderId(null)
+                                .isRead(false)
+                        .build());
+            }
+        }
+
+        if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.COMPLETED && existingOrder.getOrderStatus() != Constants.OrderStatusEnum.COMPLETED) {
+            notificationService.createNotification(NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .receiverId(existingUser.getId())
+                            .notificationContent(CreateNotiContentHelper.createOrderCompletedContent(existingOrder.getId()))
+                            .senderId(null)
+                            .isRead(false)
+                    .build());
+        }
+
+        if (existingOrder.getOrderStatus() != Constants.OrderStatusEnum.CANCELLED && orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.CANCELLED) {
+            notificationService.createNotification(NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .receiverId(existingUser.getId())
+                            .notificationContent(CreateNotiContentHelper.createOrderCancelledContent(existingOrder.getId()))
+                            .senderId(null)
+                            .isRead(false)
+                    .build());
+        }
+
+        existingOrder.setPaymentMethod(existingPaymentMethod);
+        existingOrder.setUser(existingUser);
+        existingOrder.setShippingAddress(existingShippingAddress);
+        existingOrder.setOrderStatus(orderUpdateRequestDTO.getOrderStatus());
+        existingOrder.setOrderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"));
+        
+        return orderRepository.save(existingOrder);
     }
 
     @Override

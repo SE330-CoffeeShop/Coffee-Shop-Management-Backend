@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.dto.request.order;
 
+import com.se330.coffee_shop_management_backend.util.Constants;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -10,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @SuperBuilder
 public class OrderCreateRequestDTO {
-    private String orderStatus;
+    private Constants.OrderStatusEnum orderStatus;
     private UUID employeeId;
     private UUID userId;
     private UUID shippingAddressId;

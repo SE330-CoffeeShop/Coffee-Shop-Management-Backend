@@ -4,7 +4,6 @@ import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountCre
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.UsedDiscountCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
-import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
@@ -12,6 +11,7 @@ import com.se330.coffee_shop_management_backend.service.discountservices.IDiscou
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.useddiscount.IUsedDiscountService;
 import com.se330.coffee_shop_management_backend.util.Constants;
+import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +34,7 @@ public class ImpDiscountService implements IDiscountService {
     private final IUsedDiscountService usedDiscountService;
     private final INotificationService notificationService;
     private final CartRepository cartRepository;
-    private final CartDetailRepository cartDetailRepository;
+
 
     public ImpDiscountService(
             DiscountRepository discountRepository,
@@ -44,8 +44,7 @@ public class ImpDiscountService implements IDiscountService {
             UsedDiscountRepository usedDiscountRepository,
             IUsedDiscountService usedDiscountService,
             INotificationService notificationService,
-            CartRepository cartRepository,
-            CartDetailRepository cartDetailRepository
+            CartRepository cartRepository
     ) {
         this.discountRepository = discountRepository;
         this.branchRepository = branchRepository;
@@ -55,7 +54,6 @@ public class ImpDiscountService implements IDiscountService {
         this.usedDiscountService = usedDiscountService;
         this.notificationService = notificationService;
         this.cartRepository = cartRepository;
-        this.cartDetailRepository = cartDetailRepository;
     }
 
     @Override
@@ -114,23 +112,110 @@ public class ImpDiscountService implements IDiscountService {
 
         );
 
-        // if the discount is active, send a notification to every user
-        notificationService.sendNotificationToAllUsers(
+        // send a discount notification to the branch manager
+        notificationService.createNotification(
                 new NotificationCreateRequestDTO(
-                    Constants.NotificationTypeEnum.DISCOUNT.name(),
-                    "New Discount Available: " + discountCreateRequestDTO.getDiscountName() + " at " + existingBranch.getBranchName(),
-                    UUID.randomUUID(),
-                    UUID.randomUUID(),
+                        Constants.NotificationTypeEnum.DISCOUNT,
+                        CreateNotiContentHelper.createDiscountForManager(returnDiscount.getDiscountName()),
+                        null,
+                        existingBranch.getManager().getId(),
                         false
                 )
         );
+
+        // if the discount is active, send a notification to every user
+        if (returnDiscount.isDiscountIsActive()) {
+            notificationService.sendNotificationToAllUsers(
+                    new NotificationCreateRequestDTO(
+                            Constants.NotificationTypeEnum.DISCOUNT,
+                            CreateNotiContentHelper.createDiscountAddedContent(
+                                    returnDiscount.getDiscountName(),
+                                    returnDiscount.getDiscountValue().toString(),
+                                    returnDiscount.getDiscountStartDate().toString(),
+                                    returnDiscount.getDiscountEndDate().toString(),
+                                    returnDiscount.getBranch().getBranchName()
+                            ),
+                            null,
+                            null,
+                            false
+                    )
+            );
+        }
 
         return returnDiscount;
     }
 
     @Override
     public Discount updateDiscount(DiscountUpdateRequestDTO discountUpdateRequestDTO) {
-        return null;
+        Discount existingDiscount = discountRepository.findById(discountUpdateRequestDTO.getDiscountId())
+                .orElseThrow(() -> new EntityNotFoundException("Discount not found with id: " + discountUpdateRequestDTO.getDiscountId()));
+
+        Branch existingBranch = branchRepository.findById(discountUpdateRequestDTO.getBranchId())
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + discountUpdateRequestDTO.getBranchId()));
+
+        existingDiscount.setDiscountName(discountUpdateRequestDTO.getDiscountName());
+        existingDiscount.setDiscountDescription(discountUpdateRequestDTO.getDiscountDescription());
+        existingDiscount.setDiscountType(Constants.DiscountTypeEnum.valueOf(discountUpdateRequestDTO.getDiscountType()));
+        existingDiscount.setDiscountValue(discountUpdateRequestDTO.getDiscountValue());
+        existingDiscount.setDiscountCode(discountUpdateRequestDTO.getDiscountCode());
+        existingDiscount.setDiscountStartDate(discountUpdateRequestDTO.getDiscountStartDate());
+        existingDiscount.setDiscountEndDate(discountUpdateRequestDTO.getDiscountEndDate());
+        existingDiscount.setDiscountMaxUsers(discountUpdateRequestDTO.getDiscountMaxUsers());
+        existingDiscount.setDiscountMaxPerUser(discountUpdateRequestDTO.getDiscountMaxPerUser());
+        existingDiscount.setDiscountMinOrderValue(discountUpdateRequestDTO.getDiscountMinOrderValue());
+        existingDiscount.setBranch(existingBranch);
+        existingDiscount.setProductVariants(!discountUpdateRequestDTO.getProductVariantIds().isEmpty() ?
+                discountUpdateRequestDTO.getProductVariantIds().stream()
+                        .map(id -> {
+                            return productVariantRepository.findById(id)
+                                    .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id));
+                        }).toList() : List.of());
+
+        if (existingDiscount.isDiscountIsActive() != discountUpdateRequestDTO.isDiscountIsActive()) {
+            if (discountUpdateRequestDTO.isDiscountIsActive()) {
+                notificationService.sendNotificationToAllUsers(
+                        new NotificationCreateRequestDTO(
+                                Constants.NotificationTypeEnum.DISCOUNT,
+                                CreateNotiContentHelper.createDiscountAddedContent(
+                                        existingDiscount.getDiscountName(),
+                                        existingDiscount.getDiscountValue().toString(),
+                                        existingDiscount.getDiscountStartDate().toString(),
+                                        existingDiscount.getDiscountEndDate().toString(),
+                                        existingDiscount.getBranch().getBranchName()
+                                ),
+                                null,
+                                null,
+                                false
+                        )
+                );
+            } else {
+                notificationService.sendNotificationToAllUsers(
+                        new NotificationCreateRequestDTO(
+                                Constants.NotificationTypeEnum.DISCOUNT,
+                                CreateNotiContentHelper.createDiscountDeletedContent(existingDiscount.getDiscountName(), existingDiscount.getBranch().getBranchName()),
+                                null,
+                                null,
+                                false
+                        )
+                );
+            }
+        }
+        existingDiscount.setDiscountIsActive(discountUpdateRequestDTO.isDiscountIsActive());
+
+        Discount updatedDiscount = discountRepository.save(existingDiscount);
+
+        // send a notification to the branch manager about the discount update
+        notificationService.createNotification(
+                new NotificationCreateRequestDTO(
+                        Constants.NotificationTypeEnum.DISCOUNT,
+                        CreateNotiContentHelper.updateDiscountForManager(updatedDiscount.getDiscountName()),
+                        null,
+                        existingBranch.getManager().getId(),
+                        false
+                )
+        );
+
+        return updatedDiscount;
     }
 
     @Override
