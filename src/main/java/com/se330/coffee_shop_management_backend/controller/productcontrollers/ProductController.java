@@ -5,6 +5,7 @@ import com.se330.coffee_shop_management_backend.dto.request.product.ProductUpdat
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
+import com.se330.coffee_shop_management_backend.dto.response.product.BestSellingProductResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.product.ProductResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductService;
@@ -317,5 +318,373 @@ public class ProductController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting product image");
         }
+    }
+
+    @GetMapping("/best-selling")
+    @Operation(
+            summary = "Get all best selling products with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved best selling products",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findAllBestSellingProducts(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "totalSold") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BestSellingProductResponseDTO> productsPage = productService.findAllBestSellingProducts(pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Best selling products retrieved successfully",
+                        productsPage.getContent(),
+                        new PageResponse.PagingResponse(
+                                productsPage.getNumber(),
+                                productsPage.getSize(),
+                                productsPage.getTotalElements(),
+                                productsPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/best-selling/year/{year}")
+    @Operation(
+            summary = "Get best selling products by year with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved best selling products for specified year",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByYear(
+            @PathVariable int year,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "totalSold") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByYear(year, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Best selling products for year " + year + " retrieved successfully",
+                        productsPage.getContent(),
+                        new PageResponse.PagingResponse(
+                                productsPage.getNumber(),
+                                productsPage.getSize(),
+                                productsPage.getTotalElements(),
+                                productsPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/best-selling/year/{year}/month/{month}")
+    @Operation(
+            summary = "Get best selling products by month and year with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved best selling products for specified month and year",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByMonthAndYear(
+            @PathVariable int month,
+            @PathVariable int year,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "totalSold") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByMonthAndYear(month, year, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Best selling products for month " + month + " year " + year + " retrieved successfully",
+                        productsPage.getContent(),
+                        new PageResponse.PagingResponse(
+                                productsPage.getNumber(),
+                                productsPage.getSize(),
+                                productsPage.getTotalElements(),
+                                productsPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/best-selling/year/{year}/month/{month}/day/{day}")
+    @Operation(
+            summary = "Get best selling products by day, month and year with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved best selling products for specified day, month and year",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByDayAndMonthAndYear(
+            @PathVariable int day,
+            @PathVariable int month,
+            @PathVariable int year,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "totalSold") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByDayAndMonthAndYear(day, month, year, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Best selling products for day " + day + " month " + month + " year " + year + " retrieved successfully",
+                        productsPage.getContent(),
+                        new PageResponse.PagingResponse(
+                                productsPage.getNumber(),
+                                productsPage.getSize(),
+                                productsPage.getTotalElements(),
+                                productsPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/best-selling/branch/{branchId}")
+    @Operation(
+            summary = "Get best selling products by branch with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved best selling products for specified branch",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByBranch(
+            @PathVariable UUID branchId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "totalSold") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByBranch(branchId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Best selling products for branch retrieved successfully",
+                        productsPage.getContent(),
+                        new PageResponse.PagingResponse(
+                                productsPage.getNumber(),
+                                productsPage.getSize(),
+                                productsPage.getTotalElements(),
+                                productsPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/best-selling/branch/{branchId}/year/{year}")
+    @Operation(
+            summary = "Get best selling products by branch and year with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved best selling products for specified branch and year",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByBranchAndYear(
+            @PathVariable UUID branchId,
+            @PathVariable int year,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "totalSold") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByBranchAndYear(branchId, year, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Best selling products for branch and year " + year + " retrieved successfully",
+                        productsPage.getContent(),
+                        new PageResponse.PagingResponse(
+                                productsPage.getNumber(),
+                                productsPage.getSize(),
+                                productsPage.getTotalElements(),
+                                productsPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/best-selling/branch/{branchId}/year/{year}/month/{month}")
+    @Operation(
+            summary = "Get best selling products by branch, month and year with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved best selling products for specified branch, month and year",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByBranchAndMonthAndYear(
+            @PathVariable UUID branchId,
+            @PathVariable int month,
+            @PathVariable int year,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "totalSold") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByBranchAndMonthAndYear(branchId, month, year, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Best selling products for branch, month " + month + " and year " + year + " retrieved successfully",
+                        productsPage.getContent(),
+                        new PageResponse.PagingResponse(
+                                productsPage.getNumber(),
+                                productsPage.getSize(),
+                                productsPage.getTotalElements(),
+                                productsPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/best-selling/branch/{branchId}/year/{year}/month/{month}/day/{day}")
+    @Operation(
+            summary = "Get best selling products by branch, day, month and year with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved best selling products for specified branch, day, month and year",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<BestSellingProductResponseDTO>> findBestSellingProductsByBranchAndDayAndMonthAndYear(
+            @PathVariable UUID branchId,
+            @PathVariable int day,
+            @PathVariable int month,
+            @PathVariable int year,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "totalSold") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<BestSellingProductResponseDTO> productsPage = productService.findBestSellingProductsByBranchAndDayAndMonthAndYear(branchId, day, month, year, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Best selling products for branch, day " + day + ", month " + month + " and year " + year + " retrieved successfully",
+                        productsPage.getContent(),
+                        new PageResponse.PagingResponse(
+                                productsPage.getNumber(),
+                                productsPage.getSize(),
+                                productsPage.getTotalElements(),
+                                productsPage.getTotalPages()
+                        )
+                )
+        );
     }
 }

@@ -731,4 +731,154 @@ public class CheckinController {
                 )
         );
     }
+
+    @GetMapping("/checkins/shift/{shiftId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all checkins for a specific shift",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved checkin list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid shift ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<CheckinResponseDTO>> findAllCheckinsByShiftId(
+            @PathVariable UUID shiftId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Checkin> checkinPage = checkinService.findAllByShiftId(shiftId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
+                        CheckinResponseDTO.convert(checkinPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                checkinPage.getNumber(),
+                                checkinPage.getSize(),
+                                checkinPage.getTotalElements(),
+                                checkinPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/checkins/employee/{employeeId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all checkins for a specific employee",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved checkin list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid employee ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<CheckinResponseDTO>> findAllCheckinsByEmployeeId(
+            @PathVariable UUID employeeId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Checkin> checkinPage = checkinService.findAllByEmployeeId(employeeId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
+                        CheckinResponseDTO.convert(checkinPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                checkinPage.getNumber(),
+                                checkinPage.getSize(),
+                                checkinPage.getTotalElements(),
+                                checkinPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/checkins/branch/{branchId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @Operation(
+            summary = "Get all checkins for a specific branch",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved checkin list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid branch ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<CheckinResponseDTO>> findAllCheckinsByBranchId(
+            @PathVariable UUID branchId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Checkin> checkinPage = checkinService.findAllByBranchId(branchId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Checkins retrieved successfully",
+                        CheckinResponseDTO.convert(checkinPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                checkinPage.getNumber(),
+                                checkinPage.getSize(),
+                                checkinPage.getTotalElements(),
+                                checkinPage.getTotalPages()
+                        )
+                )
+        );
+    }
 }

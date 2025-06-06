@@ -219,4 +219,151 @@ public class NotificationController {
         notificationService.deleteNotification(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/user/{userId}")
+    @Operation(
+            summary = "Get all notifications for a user with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved notification list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllNotificationsByUserId(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Notification> notificationPage = notificationService.findAllNotificationsByUserId(userId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "User notifications retrieved successfully",
+                        NotificationResponseDTO.convert(notificationPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/sent/user/{userId}")
+    @Operation(
+            summary = "Get all sent notifications by a user with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved notification list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllSentNotificationsByUserId(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Notification> notificationPage = notificationService.findAllSentNotificationsByUserId(pageable, userId);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Sent notifications retrieved successfully",
+                        NotificationResponseDTO.convert(notificationPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/received/user/{userId}")
+    @Operation(
+            summary = "Get all received notifications by a user with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved notification list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllReceivedNotificationsByUserId(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Notification> notificationPage = notificationService.findAllReceivedNotificationsByUserId(pageable, userId);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Received notifications retrieved successfully",
+                        NotificationResponseDTO.convert(notificationPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
+                )
+        );
+    }
 }

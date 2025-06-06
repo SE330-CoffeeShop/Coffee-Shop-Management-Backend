@@ -21,6 +21,8 @@ public class StockAndInventory {
     private final BranchRepository branchRepository;
 
     public void create() {
+        createStock();
+        createInventory();
     }
 
     private void createStock() {

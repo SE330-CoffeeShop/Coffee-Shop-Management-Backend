@@ -63,10 +63,69 @@ public final class Constants {
     @Getter
     @AllArgsConstructor
     public enum NotificationTypeEnum {
+        /**
+         * Thông báo liên quan đến quản lý đơn hàng.
+         * Ví dụ:
+         * - Đơn hàng mới được tạo
+         * - Cập nhật trạng thái đơn hàng
+         * - Đơn hàng hoàn thành hoặc bị hủy
+         */
         ORDER("ORDER"),
+
+        /**
+         * Thông báo liên quan đến quy trình thanh toán.
+         * Ví dụ:
+         * - Thanh toán thành công
+         * - Giao dịch thất bại
+         * - Hoàn tiền
+         */
         PAYMENT("PAYMENT"),
+
+        /**
+         * Thông báo về các chương trình khuyến mãi và giảm giá.
+         * Ví dụ:
+         * - Khuyến mãi mới
+         * - Khuyến mãi sắp hết hạn
+         * - Mã giảm giá mới
+         */
         DISCOUNT("DISCOUNT"),
-        SYSTEM("SYSTEM");
+
+        /**
+         * Thông báo hệ thống ảnh hưởng đến tất cả người dùng.
+         * Ví dụ:
+         * - Thông báo bảo trì
+         * - Cập nhật phiên bản
+         * - Thay đổi chính sách
+         */
+        SYSTEM("SYSTEM"),
+
+        /**
+         * Thông báo liên quan đến quản lý kho.
+         * Ví dụ:
+         * - Cảnh báo hàng sắp hết
+         * - Nhắc nhở đặt hàng
+         * - Thông báo hàng mới về
+         */
+        INVENTORY("INVENTORY"),
+
+        /**
+         * Thông báo liên quan đến quản lý nhân sự.
+         * Ví dụ:
+         * - Phân công ca làm việc
+         * - Giao nhiệm vụ
+         * - Đánh giá hiệu suất
+         */
+        EMPLOYEE("EMPLOYEE"),
+
+        /**
+         * Thông báo trực tiếp từ quản lý đến nhân viên.
+         * Lưu ý: Chỉ quản lý mới có thể gửi những thông báo này đến nhân viên.
+         * Ví dụ:
+         * - Nhắc nhở
+         * - Thông báo
+         * - Hướng dẫn
+         */
+        MANAGER("MANAGER");
 
         private final String value;
 

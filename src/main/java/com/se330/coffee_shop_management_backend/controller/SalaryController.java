@@ -222,4 +222,40 @@ public class SalaryController {
         salaryService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/update-all/month/{month}/year/{year}")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @Operation(
+            summary = "Update salaries for all employees in a specific month and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Salaries updated successfully"
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid month or year",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<Void> updateSalaryForAllEmployeesInMonthAndYear(
+            @PathVariable int month,
+            @PathVariable int year
+    ) {
+        if (month < 1 || month > 12) {
+            throw new IllegalArgumentException("Month must be between 1 and 12");
+        }
+
+        if (year < 1900 || year > 2100) {
+            throw new IllegalArgumentException("Year must be between 1900 and 2100");
+        }
+
+        salaryService.updateSalaryForAllEmployeesInMonthAndYear(month, year);
+        return ResponseEntity.ok().build();
+    }
 }
