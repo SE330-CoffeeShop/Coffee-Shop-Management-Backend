@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.service.notificationservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationForManyCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Notification;
 import com.se330.coffee_shop_management_backend.entity.User;
@@ -8,11 +9,13 @@ import com.se330.coffee_shop_management_backend.repository.NotificationRepositor
 import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.util.Constants;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -68,7 +71,7 @@ public class ImpNotificationService implements INotificationService {
 
         User sender = null;
 
-        if (!Objects.equals(notificationCreateRequestDTO.getNotificationType(), Constants.NotificationTypeEnum.SYSTEM.getValue())) {
+        if (notificationCreateRequestDTO.getSenderId() != null) {
             sender = userRepository.findById(notificationCreateRequestDTO.getSenderId())
                     .orElseThrow(() -> new RuntimeException("Sender not found"));
         }
@@ -76,7 +79,7 @@ public class ImpNotificationService implements INotificationService {
         User receiver = userRepository.findById(notificationCreateRequestDTO.getReceiverId())
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
 
-        return notificationRepository.save(
+        Notification newNoti = notificationRepository.save(
                 Notification.builder()
                         .notificationContent(notificationCreateRequestDTO.getNotificationContent())
                         .notificationType(notificationCreateRequestDTO.getNotificationType())
@@ -85,6 +88,10 @@ public class ImpNotificationService implements INotificationService {
                         .isRead(notificationCreateRequestDTO.isRead())
                         .build()
         );
+
+        // TODO: Add push notification to receiver and sender
+
+        return newNoti;
     }
 
     @Transactional
@@ -125,7 +132,35 @@ public class ImpNotificationService implements INotificationService {
     }
 
     @Override
-    public void sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO) {
+    public Page<Notification> sendNotificationToMany(NotificationForManyCreateRequestDTO notificationForManyCreateRequestDTO) {
+        List<Notification> returnedNotifications = new ArrayList<>();
+
+        List<User> users = userRepository.findAllById(notificationForManyCreateRequestDTO.getReceiverId());
+        User sender = null;
+        if (notificationForManyCreateRequestDTO.getSenderId() != null) {
+            sender = userRepository.findById(notificationForManyCreateRequestDTO.getSenderId())
+                    .orElseThrow(() -> new RuntimeException("Sender not found"));
+        }
+        for (User user : users) {
+            Notification notification = Notification.builder()
+                    .notificationContent(notificationForManyCreateRequestDTO.getNotificationContent())
+                    .notificationType(notificationForManyCreateRequestDTO.getNotificationType())
+                    .receiver(user)
+                    .sender(sender)
+                    .build();
+            returnedNotifications.add(notificationRepository.save(notification));
+
+            // TODO: Add push notification to receivers
+        }
+
+        // TODO: Add push notification to sender if applicable
+        return new PageImpl<>(returnedNotifications);
+    }
+
+    @Override
+    public Page<Notification> sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO) {
+        List<Notification> returnedNotifications = new ArrayList<>();
+
         List<User> users = userRepository.findAll();
         User sender = null;
         if (notificationCreateRequestDTO.getSenderId() != null) {
@@ -139,8 +174,13 @@ public class ImpNotificationService implements INotificationService {
                     .receiver(user)
                     .sender(sender)
                     .build();
-            notificationRepository.save(notification);
+            returnedNotifications.add(notificationRepository.save(notification));
+            // TODO: Add push notification to receivers
         }
+
+        // TODO: Add push notification to sender if applicable
+
+        return new PageImpl<>(returnedNotifications);
     }
 
     @Transactional

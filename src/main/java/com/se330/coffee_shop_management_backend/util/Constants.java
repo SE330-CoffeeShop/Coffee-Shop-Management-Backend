@@ -142,7 +142,39 @@ public final class Constants {
          * - Cập nhật phiếu nhập xuất
          * - Hủy phiếu nhập xuất
          */
-        TRANSFER("TRANSFER");
+        TRANSFER("TRANSFER"),
+
+        /**
+         * Thông báo liên quan đến chi nhánh.
+         */
+        BRANCH("BRANCH"),
+
+        /**
+         * Thông báo liên quan đến nhà cung cấp.
+         * Ví dụ:
+         * - Thêm thông tin nhà cung cấp
+         * - Cập nhật thông tin nhà cung cấp
+         * - Xóa thông tin nhà cung cấp
+         */
+        SUPPLIER("SUPPLIER"),
+
+        /**
+         * Thông báo liên quan đến các loại sản phẩm.
+         * Ví dụ:
+         * - Thêm product mới
+         * - Cập nhật thông tin product
+         * - Xóa thông tin product
+         */
+        PRODUCT("PRODUCT"),
+
+        /**
+         * Thông báo liên quan đến nhà kho.
+         * Ví dụ:
+         * - Thêm nhà kho mới
+         * - Cập nhật thông tin nhà kho
+         * - Xóa thông tin nhà kho
+         */
+        WAREHOUSE("WAREHOUSE");
 
         private final String value;
 

@@ -104,20 +104,121 @@ public class CreateNotiContentHelper {
     }
 
     // EMPLOYEE notification content methods
+    public static String createWelcomeBranchContentManager(String employeeName) {
+        return String.format("Bạn đã tiếp nhận thành công nhân viên mới %s!", employeeName);
+    }
+
     public static String createWelcomeBranchContent(String branchName) {
         return String.format("Chào mừng bạn đến với chi nhánh %s! Chúc bạn có những trải nghiệm tuyệt vời.", branchName);
     }
 
-    public static String createNewShiftAssignmentContent(String shift, String date) {
-        return String.format("Bạn đã được phân công ca làm việc %s vào ngày %s.", shift, date);
+    public static String createNewShiftAssignmentContentManager(String employeeName, String month, String year) {
+        return String.format("Bạn đã phân công ca làm việc mới trong tháng %s/%s cho nhân viên %s.", month, year, employeeName);
+    }
+
+    public static String createNewShiftAssignmentContent(String month, String year) {
+        return String.format("Bạn đã được phân công ca làm việc mới trong tháng %s/%s.", month, year);
+    }
+
+    public static String createCheckinSuccessContent(String employeeName, String time) {
+        return String.format("%s đã checkin thành công vào lúc %s.", employeeName, time);
     }
 
     public static String createCheckinSuccessContent(String time) {
         return String.format("Bạn đã checkin thành công vào lúc %s. Chúc bạn có một ngày làm việc hiệu quả!", time);
     }
 
-    public static String createSalaryNotificationContent(String month, String amount) {
-        return String.format("Lương tháng %s của bạn đã được chuyển với tổng số tiền %s.", month, amount);
+    // SALARY notification content methods for salary creation
+    public static String createSalaryCreatedContentForEmployee(String month, String year, String amount) {
+        return String.format("Lương tháng %s/%s của bạn đã được tính với tổng số tiền %s.", month, year, amount);
+    }
+
+    public static String createSalaryCreatedContentForManager(String employeeName, String month, String year, String amount) {
+        return String.format("Bạn đã tính lương tháng %s/%s cho nhân viên %s với tổng số tiền %s thành công.", month, year, employeeName, amount);
+    }
+
+    public static String createSalaryCreatedContentForManagerAll(String month, String year) {
+        return String.format("Bạn đã tính lương tháng %s/%s cho tất cả nhân viên thành công.", month, year);
+    }
+
+    // SALARY notification content methods for salary updates
+    public static String createSalaryUpdatedContentForEmployee(String month, String year, String amount) {
+        return String.format("Lương tháng %s/%s của bạn đã được cập nhật với tổng số tiền mới %s.", month, year, amount);
+    }
+
+    public static String createSalaryUpdatedContentForManager(String employeeName, String month, String year, String amount) {
+        return String.format("Bạn đã cập nhật lương tháng %s/%s cho nhân viên %s với tổng số tiền mới %s thành công.", month, year, employeeName, amount);
+    }
+
+    // SALARY notification content methods for salary deletion
+    public static String createSalaryDeletedContentForEmployee(String month, String year) {
+        return String.format("Thông tin lương tháng %s/%s của bạn đã bị hủy.", month, year);
+    }
+
+    public static String createSalaryDeletedContentForManager(String employeeName, String month, String year) {
+        return String.format("Bạn đã hủy thông tin lương tháng %s/%s của nhân viên %s thành công.", month, year, employeeName);
+    }
+
+    // EMPLOYEE notification content methods for employee info updates
+    public static String createEmployeeInfoUpdatedContent() {
+        return "Thông tin của bạn đã được cập nhật trên hệ thống.";
+    }
+
+    public static String createEmployeeInfoUpdatedContentForManager(String employeeName) {
+        return String.format("Bạn đã cập nhật thông tin nhân viên %s thành công.", employeeName);
+    }
+
+    // EMPLOYEE notification content methods for shift updates
+    public static String createShiftUpdatedContent(String month, String year) {
+        return String.format("Ca làm việc trong tháng %s/%s của bạn đã được cập nhật. Vui lòng kiểm tra lịch làm việc mới.", month, year);
+    }
+
+    public static String createShiftUpdatedContentForManager(String employeeName) {
+        return String.format("Bạn đã cập nhật ca làm việc cho nhân viên %s thành công.", employeeName);
+    }
+
+    // EMPLOYEE notification content methods for shift deletion
+    public static String createShiftDeletedContent(String month, String year) {
+        return String.format("Ca làm việc trong tháng %s/%s của bạn đã bị xóa. Vui lòng kiểm tra lịch làm việc mới.", month, year);
+    }
+
+    public static String createShiftDeletedContentForManager(String employeeName) {
+        return String.format("Bạn đã xóa ca làm việc của nhân viên %s thành công.", employeeName);
+    }
+
+    // EMPLOYEE notification content methods for checkin updates
+    public static String createCheckinUpdatedContent(String time) {
+        return String.format("Thông tin check-in của bạn đã được cập nhật thành công vào lúc %s.", time);
+    }
+
+    public static String createCheckinUpdatedContentForManager(String employeeName, String time) {
+        return String.format("Bạn đã cập nhật thông tin check-in của nhân viên %s vào lúc %s thành công.", employeeName, time);
+    }
+
+    public static String createCheckinDeletedContent(String time) {
+        return String.format("Thông tin check-in của bạn đã được xóa vào lúc %s.", time);
+    }
+
+    public static String createCheckinDeletedContentForManager(String employeeName, String time) {
+        return String.format("Bạn đã xóa thông tin check-in của nhân viên %s vào lúc %s thành công.", employeeName, time);
+    }
+
+    // BRANCH notification content methods for branch creation
+    public static String createBranchAddedContent(String branchName, String address) {
+        return String.format("🎉 Khai trương chi nhánh mới! BCoffee vui mừng thông báo chi nhánh %s tại địa chỉ %s đã chính thức đi vào hoạt động. Hãy ghé thăm chúng tôi!",
+                branchName, address);
+    }
+
+    // BRANCH notification content methods for branch deletion
+    public static String createBranchDeletedContent(String branchName, String lastDay) {
+        return String.format("Thông báo: Chi nhánh %s sẽ ngưng hoạt động từ ngày %s. BCoffee xin chân thành cảm ơn quý khách đã ủng hộ trong thời gian qua.",
+                branchName, lastDay);
+    }
+
+    // BRANCH notification content methods for branch update
+    public static String createBranchUpdatedContent(String branchName) {
+        return String.format("Thông báo: Thông tin chi nhánh %s đã được cập nhật. Vui lòng kiểm tra thông tin mới nhất của chi nhánh trên ứng dụng hoặc website của BCoffee.",
+                branchName);
     }
 
     // MANAGER notification content methods
@@ -184,5 +285,78 @@ public class CreateNotiContentHelper {
 
     public static String createTransferCancelledContent(UUID transferId) {
         return String.format("Phiếu xuất kho #%s đã bị hủy.", transferId.toString().substring(0, 8));
+    }
+
+    // SUPPLIER notification content methods
+    public static String createSupplierAddedContentManager(String supplierName) {
+        return String.format("Đã thêm nhà cung cấp mới '%s' vào hệ thống quản lý.", supplierName);
+    }
+
+    public static String createSupplierUpdatedContentManager(String supplierName) {
+        return String.format("Thông tin nhà cung cấp '%s' đã được cập nhật thành công.", supplierName);
+    }
+
+    public static String createSupplierDeletedContentManager(String supplierName) {
+        return String.format("Đã xóa thông tin nhà cung cấp '%s' khỏi hệ thống.", supplierName);
+    }
+
+    // PRODUCT notification content methods
+    public static String createProductAddedContentManager(String productName) {
+        return String.format("Sản phẩm mới '%s' đã được thêm vào hệ thống.", productName);
+    }
+
+    public static String createProductAddedContentAll(String productName) {
+        return String.format("🆕 BCoffee vừa ra mắt sản phẩm mới: '%s'. Hãy thử ngay hôm nay!", productName);
+    }
+
+    public static String createProductUpdatedContentManager(String productName) {
+        return String.format("Thông tin sản phẩm '%s' đã được cập nhật thành công.", productName);
+    }
+
+    public static String createProductUpdatedContentAll(String productName) {
+        return String.format("Thông tin sản phẩm '%s' vừa được cập nhật. Kiểm tra ngay để biết thêm chi tiết!", productName);
+    }
+
+    public static String createProductDeletedContentManager(String productName) {
+        return String.format("Sản phẩm '%s' đã được xóa khỏi hệ thống.", productName);
+    }
+
+    public static String createProductDeletedContentAll(String productName) {
+        return String.format("Thông báo: Sản phẩm '%s' đã ngưng kinh doanh. Cảm ơn quý khách đã ủng hộ!", productName);
+    }
+
+    // WAREHOUSE notification content methods
+    public static String createWarehouseAddedContentManager(String warehouseName) {
+        return String.format("Đã thêm nhà kho mới '%s' vào hệ thống quản lý.", warehouseName);
+    }
+
+    public static String createWarehouseUpdatedContentManager(String warehouseName) {
+        return String.format("Thông tin nhà kho '%s' đã được cập nhật thành công.", warehouseName);
+    }
+
+    public static String createWarehouseDeletedContentManager(String warehouseName) {
+        return String.format("Đã xóa thông tin nhà kho '%s' khỏi hệ thống.", warehouseName);
+    }
+
+    // Updated INVOICE notification content methods
+    public static String createInvoiceFailedInsufficientStockContent(UUID invoiceId, String itemName) {
+        return String.format("Cập nhật phiếu nhập kho #%s thất bại. Hàng tồn của nguyên liệu '%s' trong kho không đáp ứng.",
+                invoiceId.toString().substring(0, 8), itemName);
+    }
+
+    public static String createInvoiceCancelFailedContent(UUID invoiceId, String reason) {
+        return String.format("Hủy phiếu nhập kho #%s thất bại. Lý do: %s",
+                invoiceId.toString().substring(0, 8), reason);
+    }
+
+    // Updated TRANSFER notification content methods
+    public static String createTransferBranchSuccessContent(UUID transferId, String branchName) {
+        return String.format("Xuất nguyên liệu cho chi nhánh %s thành công với mã phiếu #%s.",
+                branchName, transferId.toString().substring(0, 8));
+    }
+
+    public static String createTransferBranchFailedContent(UUID transferId, String branchName, String reason) {
+        return String.format("Xuất nguyên liệu cho chi nhánh %s thất bại với mã phiếu #%s. Lý do: %s",
+                branchName, transferId.toString().substring(0, 8), reason);
     }
 }

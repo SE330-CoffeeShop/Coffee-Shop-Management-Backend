@@ -25,4 +25,11 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
             @Param("month") int month,
             @Param("year") int year
     );
+
+    @Query("SELECT s FROM Salary s WHERE s.employee.id = :employeeId AND s.month = :month AND s.year = :year")
+    Salary findByEmployeeIdAndMonthAndYear(
+            @Param("employeeId") UUID employeeId,
+            @Param("month") int month,
+            @Param("year") int year
+    );
 }

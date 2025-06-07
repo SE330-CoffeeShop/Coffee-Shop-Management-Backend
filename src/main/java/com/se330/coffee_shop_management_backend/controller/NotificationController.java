@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.controller;
 
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationForManyCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
@@ -37,7 +38,6 @@ public class NotificationController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER','EMPLOYEE','MANAGER')")
     @Operation(
             summary = "Get notification detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -80,7 +80,7 @@ public class NotificationController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER','EMPLOYEE','MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Get all notifications with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -121,6 +121,7 @@ public class NotificationController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Create new notification",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -155,6 +156,7 @@ public class NotificationController {
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Update notification",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -197,6 +199,7 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     @Operation(
             summary = "Delete notification",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -356,6 +359,92 @@ public class NotificationController {
                 new PageResponse<>(
                         HttpStatus.OK.value(),
                         "Received notifications retrieved successfully",
+                        NotificationResponseDTO.convert(notificationPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @PostMapping("/send-to-many")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @Operation(
+            summary = "Send notification to multiple users",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Notifications sent successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<NotificationResponseDTO>> sendNotificationToMany(
+            @RequestBody NotificationForManyCreateRequestDTO notificationForManyCreateRequestDTO) {
+        Page<Notification> notificationPage = notificationService.sendNotificationToMany(notificationForManyCreateRequestDTO);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Notifications sent to multiple users successfully",
+                        NotificationResponseDTO.convert(notificationPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @PostMapping("/send-to-all")
+    @PreAuthorize("hasAuthority('MANAGER')")
+    @Operation(
+            summary = "Send notification to all users",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Notifications sent successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<NotificationResponseDTO>> sendNotificationToAllUsers(
+            @RequestBody NotificationCreateRequestDTO notificationCreateRequestDTO) {
+        Page<Notification> notificationPage = notificationService.sendNotificationToAllUsers(notificationCreateRequestDTO);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Notifications sent to all users successfully",
                         NotificationResponseDTO.convert(notificationPage.getContent()),
                         new PageResponse.PagingResponse(
                                 notificationPage.getNumber(),

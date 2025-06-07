@@ -2,6 +2,7 @@ package com.se330.coffee_shop_management_backend.service.branchservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.branch.BranchUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.branch.BranchIdWithRevenueResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Branch;
 import com.se330.coffee_shop_management_backend.entity.Employee;
@@ -10,13 +11,17 @@ import com.se330.coffee_shop_management_backend.repository.BranchRepository;
 import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.service.RoleService;
 import com.se330.coffee_shop_management_backend.service.branchservices.IBranchService;
+import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.util.Constants;
+import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,15 +31,18 @@ public class ImpBranchService implements IBranchService {
     private final BranchRepository branchRepository;
     private final EmployeeRepository employeeRepository;
     private final RoleService roleService;
+    private final INotificationService notificationService;
 
     public ImpBranchService(
             BranchRepository branchRepository,
             EmployeeRepository employeeRepository,
-            RoleService roleService
+            RoleService roleService,
+            INotificationService notificationService
     ) {
         this.branchRepository = branchRepository;
         this.employeeRepository = employeeRepository;
         this.roleService = roleService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -48,8 +56,9 @@ public class ImpBranchService implements IBranchService {
     }
 
     @Override
+    @Transactional
     public Branch createBranch(BranchCreateRequestDTO branchCreateRequestDTO) {
-        return branchRepository.save(
+        Branch newBranch = branchRepository.save(
                 Branch.builder()
                         .branchName(branchCreateRequestDTO.getBranchName())
                         .branchAddress(branchCreateRequestDTO.getBranchAddress())
@@ -57,9 +66,25 @@ public class ImpBranchService implements IBranchService {
                         .branchEmail(branchCreateRequestDTO.getBranchEmail())
                         .build()
         );
+
+        notificationService.sendNotificationToAllUsers(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.BRANCH)
+                        .notificationContent(CreateNotiContentHelper.createBranchAddedContent(
+                                newBranch.getBranchName(),
+                                newBranch.getBranchAddress()
+                        ))
+                        .senderId(null)
+                        .receiverId(null)
+                        .isRead(false)
+                        .build()
+        );
+
+        return newBranch;
     }
 
     @Override
+    @Transactional
     public Branch updateBranch(BranchUpdateRequestDTO branchUpdateRequestDTO) {
         Branch existingBranch = branchRepository.findById(branchUpdateRequestDTO.getBranchId())
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchUpdateRequestDTO.getBranchId()));
@@ -94,6 +119,7 @@ public class ImpBranchService implements IBranchService {
     }
 
     @Override
+    @Transactional
     public void deleteBranch(UUID id) {
         Branch existingBranch = branchRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + id));
@@ -107,6 +133,19 @@ public class ImpBranchService implements IBranchService {
         // if the branch is removed, all the employees related to this branch will be removed as well
 
         branchRepository.deleteById(id);
+
+        notificationService.sendNotificationToAllUsers(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.BRANCH)
+                        .notificationContent(CreateNotiContentHelper.createBranchDeletedContent(
+                                existingBranch.getBranchName(),
+                                LocalDateTime.now().toString()
+                        ))
+                        .senderId(null)
+                        .receiverId(null)
+                        .isRead(false)
+                        .build()
+        );
     }
 
     @Override

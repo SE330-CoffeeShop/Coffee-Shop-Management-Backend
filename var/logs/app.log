@@ -2279,3 +2279,969 @@ Caused by: java.net.ConnectException: Connection refused: connect
 2025-06-07 02:24:52.830 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-06-07 02:24:53.278 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2025-06-07 02:24:53.283 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-06-07 17:39:18.085 [restartedMain] INFO  c.s.c.MainApplication - Starting MainApplication using Java 17.0.9 with PID 9824 (C:\Users\Admin\Downloads\drive-download-20230518T144224Z-001\OneDrive\MayTinh\Coffee-Shop-Management-Backend\target\classes started by Admin in C:\Users\Admin\Downloads\drive-download-20230518T144224Z-001\OneDrive\MayTinh\Coffee-Shop-Management-Backend)
+2025-06-07 17:39:18.090 [restartedMain] INFO  c.s.c.MainApplication - No active profile set, falling back to 1 default profile: "default"
+2025-06-07 17:39:18.181 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-06-07 17:39:18.182 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-06-07 17:39:21.000 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-07 17:39:21.003 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-07 17:39:21.256 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.JwtTokenRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2025-06-07 17:39:21.397 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 383 ms. Found 34 JPA repository interfaces.
+2025-06-07 17:39:21.421 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-07 17:39:21.423 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-06-07 17:39:21.469 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.BranchRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.470 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CartDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.471 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CartRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.471 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CatalogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.471 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CheckinRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.472 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CommentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.472 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.DiscountRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.473 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.EmailVerificationTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.475 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.EmployeeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.477 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.IngredientRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.478 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.InventoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.478 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.InvoiceDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.478 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.InvoiceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.480 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.NotificationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.482 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.OrderDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.483 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.484 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.PasswordResetTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.484 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.PaymentMethodsRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.484 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.productrepositories.ProductCategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.486 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.486 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.487 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.RecipeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.489 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.RoleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.490 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.SalaryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.490 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.SettingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.490 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.ShiftRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.492 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.ShippingAddressesRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.492 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.StockRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.492 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.SupplierRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.493 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.TransferDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.493 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.TransferRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.494 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.UsedDiscountRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.494 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.495 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.WarehouseRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:39:21.526 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 86 ms. Found 1 Redis repository interface.
+2025-06-07 17:39:22.720 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-06-07 17:39:22.734 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-06-07 17:39:22.734 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-06-07 17:39:22.806 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-06-07 17:39:22.807 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4582 ms
+2025-06-07 17:39:23.250 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-06-07 17:39:23.587 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@6324fee1
+2025-06-07 17:39:23.590 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-06-07 17:39:23.861 [restartedMain] INFO  liquibase.database - Set default schema name to public
+2025-06-07 17:39:23.987 [restartedMain] WARN  liquibase.configuration - 
+
+Liquibase detected the following invalid LIQUIBASE_* environment variables:
+
+- LIQUIBASE_ENABLED
+
+Find the list of valid environment variables at https://docs.liquibase.com/environment-variables
+
+2025-06-07 17:39:24.144 [restartedMain] INFO  liquibase.lockservice - Successfully acquired change log lock
+2025-06-07 17:39:24.765 [restartedMain] INFO  liquibase.changelog - Reading from public.databasechangelog
+2025-06-07 17:39:24.810 [restartedMain] INFO  liquibase.changelog - Reading from public.databasechangelog
+2025-06-07 17:39:24.817 [restartedMain] INFO  liquibase.util - UPDATE SUMMARY
+2025-06-07 17:39:24.817 [restartedMain] INFO  liquibase.util - Run:                          0
+2025-06-07 17:39:24.817 [restartedMain] INFO  liquibase.util - Previously run:               1
+2025-06-07 17:39:24.817 [restartedMain] INFO  liquibase.util - Filtered out:                 0
+2025-06-07 17:39:24.817 [restartedMain] INFO  liquibase.util - -------------------------------
+2025-06-07 17:39:24.817 [restartedMain] INFO  liquibase.util - Total change sets:            1
+
+2025-06-07 17:39:24.818 [restartedMain] INFO  liquibase.util - Update summary generated
+2025-06-07 17:39:24.828 [restartedMain] INFO  liquibase.lockservice - Successfully released change log lock
+2025-06-07 17:39:24.841 [restartedMain] INFO  liquibase.lockservice - Successfully released change log lock
+2025-06-07 17:39:24.844 [restartedMain] INFO  liquibase.command - Command execution complete
+2025-06-07 17:39:24.995 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-07 17:39:25.114 [restartedMain] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-06-07 17:39:25.173 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-06-07 17:39:25.567 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-07 17:39:25.650 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-06-07 17:39:28.132 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-07 17:39:28.166 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.166 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "branches" does not exist, skipping
+2025-06-07 17:39:28.168 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.168 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "cart_details" does not exist, skipping
+2025-06-07 17:39:28.170 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.171 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "cart_details" does not exist, skipping
+2025-06-07 17:39:28.173 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.173 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "carts" does not exist, skipping
+2025-06-07 17:39:28.174 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.174 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "carts" does not exist, skipping
+2025-06-07 17:39:28.176 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.176 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "catalogs" does not exist, skipping
+2025-06-07 17:39:28.178 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.178 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "checkins" does not exist, skipping
+2025-06-07 17:39:28.180 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.180 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "comments" does not exist, skipping
+2025-06-07 17:39:28.181 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.181 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "discounts" does not exist, skipping
+2025-06-07 17:39:28.183 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.183 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "email_verification_tokens" does not exist, skipping
+2025-06-07 17:39:28.185 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.185 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "employees" does not exist, skipping
+2025-06-07 17:39:28.186 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.187 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "employees" does not exist, skipping
+2025-06-07 17:39:28.188 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.188 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "inventories" does not exist, skipping
+2025-06-07 17:39:28.189 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.190 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "inventories" does not exist, skipping
+2025-06-07 17:39:28.192 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.192 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "invoice_details" does not exist, skipping
+2025-06-07 17:39:28.194 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.194 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "invoice_details" does not exist, skipping
+2025-06-07 17:39:28.197 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.197 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "invoices" does not exist, skipping
+2025-06-07 17:39:28.199 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.199 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "invoices" does not exist, skipping
+2025-06-07 17:39:28.200 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.201 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "notifications" does not exist, skipping
+2025-06-07 17:39:28.202 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.202 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "notifications" does not exist, skipping
+2025-06-07 17:39:28.204 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.204 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "order_details" does not exist, skipping
+2025-06-07 17:39:28.205 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.205 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "order_details" does not exist, skipping
+2025-06-07 17:39:28.206 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.206 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "orders" does not exist, skipping
+2025-06-07 17:39:28.208 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.208 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "orders" does not exist, skipping
+2025-06-07 17:39:28.210 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.210 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "orders" does not exist, skipping
+2025-06-07 17:39:28.211 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.211 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "orders" does not exist, skipping
+2025-06-07 17:39:28.212 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.212 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "password_reset_tokens" does not exist, skipping
+2025-06-07 17:39:28.213 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.214 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "payment_methods" does not exist, skipping
+2025-06-07 17:39:28.215 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.215 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "product_categories" does not exist, skipping
+2025-06-07 17:39:28.216 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.217 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "product_variant_discounts" does not exist, skipping
+2025-06-07 17:39:28.218 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.218 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "product_variant_discounts" does not exist, skipping
+2025-06-07 17:39:28.220 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.220 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "product_variants" does not exist, skipping
+2025-06-07 17:39:28.221 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.221 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "products" does not exist, skipping
+2025-06-07 17:39:28.222 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.222 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "recipes" does not exist, skipping
+2025-06-07 17:39:28.223 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.224 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "recipes" does not exist, skipping
+2025-06-07 17:39:28.225 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.226 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "salaries" does not exist, skipping
+2025-06-07 17:39:28.228 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.228 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "shifts" does not exist, skipping
+2025-06-07 17:39:28.230 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.230 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "shipping_addresses" does not exist, skipping
+2025-06-07 17:39:28.231 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.231 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "stocks" does not exist, skipping
+2025-06-07 17:39:28.233 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.233 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "stocks" does not exist, skipping
+2025-06-07 17:39:28.235 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.235 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "transfer_details" does not exist, skipping
+2025-06-07 17:39:28.236 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.236 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "transfer_details" does not exist, skipping
+2025-06-07 17:39:28.237 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.237 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "transfers" does not exist, skipping
+2025-06-07 17:39:28.239 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.240 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "transfers" does not exist, skipping
+2025-06-07 17:39:28.242 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.242 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "used_discounts" does not exist, skipping
+2025-06-07 17:39:28.244 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.244 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "used_discounts" does not exist, skipping
+2025-06-07 17:39:28.246 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.247 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "used_discounts" does not exist, skipping
+2025-06-07 17:39:28.248 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.249 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "users" does not exist, skipping
+2025-06-07 17:39:28.251 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.252 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "branches" does not exist, skipping
+2025-06-07 17:39:28.253 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.253 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "cart_details" does not exist, skipping
+2025-06-07 17:39:28.256 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.256 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "carts" does not exist, skipping
+2025-06-07 17:39:28.258 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.258 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "catalogs" does not exist, skipping
+2025-06-07 17:39:28.261 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.261 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "checkins" does not exist, skipping
+2025-06-07 17:39:28.262 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.263 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "comments" does not exist, skipping
+2025-06-07 17:39:28.265 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.265 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "discounts" does not exist, skipping
+2025-06-07 17:39:28.268 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.268 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "email_verification_tokens" does not exist, skipping
+2025-06-07 17:39:28.271 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.271 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "employees" does not exist, skipping
+2025-06-07 17:39:28.273 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.273 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "ingredients" does not exist, skipping
+2025-06-07 17:39:28.274 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.275 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "inventories" does not exist, skipping
+2025-06-07 17:39:28.277 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.277 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "invoice_details" does not exist, skipping
+2025-06-07 17:39:28.279 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.279 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "invoices" does not exist, skipping
+2025-06-07 17:39:28.282 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.282 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "notifications" does not exist, skipping
+2025-06-07 17:39:28.284 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.284 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "order_details" does not exist, skipping
+2025-06-07 17:39:28.286 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.286 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "orders" does not exist, skipping
+2025-06-07 17:39:28.288 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.288 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "password_reset_tokens" does not exist, skipping
+2025-06-07 17:39:28.290 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.290 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "payment_methods" does not exist, skipping
+2025-06-07 17:39:28.292 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.292 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "product_categories" does not exist, skipping
+2025-06-07 17:39:28.294 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.294 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "product_variant_discounts" does not exist, skipping
+2025-06-07 17:39:28.295 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.295 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "product_variants" does not exist, skipping
+2025-06-07 17:39:28.296 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.296 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "products" does not exist, skipping
+2025-06-07 17:39:28.297 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.297 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "recipes" does not exist, skipping
+2025-06-07 17:39:28.299 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.299 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "roles" does not exist, skipping
+2025-06-07 17:39:28.301 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.301 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "salaries" does not exist, skipping
+2025-06-07 17:39:28.302 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.303 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "settings" does not exist, skipping
+2025-06-07 17:39:28.304 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.304 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "shifts" does not exist, skipping
+2025-06-07 17:39:28.305 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.305 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "shipping_addresses" does not exist, skipping
+2025-06-07 17:39:28.306 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.306 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "stocks" does not exist, skipping
+2025-06-07 17:39:28.307 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.308 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "suppliers" does not exist, skipping
+2025-06-07 17:39:28.309 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.309 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "transfer_details" does not exist, skipping
+2025-06-07 17:39:28.311 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.312 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "transfers" does not exist, skipping
+2025-06-07 17:39:28.313 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.313 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "used_discounts" does not exist, skipping
+2025-06-07 17:39:28.315 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.315 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "users" does not exist, skipping
+2025-06-07 17:39:28.317 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:39:28.317 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "warehouses" does not exist, skipping
+2025-06-07 17:39:29.261 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-07 17:39:29.897 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-07 17:39:31.116 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2025-06-07 17:39:33.816 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+2025-06-07 17:39:35.077 [restartedMain] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@44569ad3, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@a8395d4, org.springframework.security.web.context.SecurityContextHolderFilter@c293def, org.springframework.security.web.header.HeaderWriterFilter@29c6d293, org.springframework.web.filter.CorsFilter@269acc0a, org.springframework.security.web.authentication.logout.LogoutFilter@64e479e6, com.se330.coffee_shop_management_backend.security.JwtAuthenticationFilter@67781cf0, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3981b1c5, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7e22a31, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1c1e86f8, org.springframework.security.web.session.SessionManagementFilter@4dca5a7f, org.springframework.security.web.access.ExceptionTranslationFilter@29efd2dd, org.springframework.security.web.access.intercept.AuthorizationFilter@13854257]
+2025-06-07 17:39:36.334 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path ''
+2025-06-07 17:39:36.337 [restartedMain] INFO  c.s.c.MainApplication - Started MainApplication in 19.188 seconds (process running for 21.207)
+2025-06-07 17:39:36.345 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Start creating dummy data...
+2025-06-07 17:39:36.345 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating user basic info...
+2025-06-07 17:39:36.435 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng quản trị viên (1 ADMIN)...
+2025-06-07 17:39:36.437 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: admin@example.com
+2025-06-07 17:39:36.681 [restartedMain] INFO  c.s.c.service.UserService - User created with email: admin@example.com, e6605fb4-808f-465f-8ab0-052b0e037e15
+2025-06-07 17:39:36.808 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng khách hàng (10 CUSTOMER)...
+2025-06-07 17:39:36.809 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer1@example.com
+2025-06-07 17:39:36.934 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer1@example.com, a32c1be2-9cae-4437-81e5-ea624f1427a5
+2025-06-07 17:39:37.012 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer2@example.com
+2025-06-07 17:39:37.195 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer2@example.com, 1405309a-2925-49bf-a47e-4ca0b6df686b
+2025-06-07 17:39:37.271 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer3@example.com
+2025-06-07 17:39:37.418 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer3@example.com, bdee1b57-a6b5-4498-b4f6-7e05c0c89d05
+2025-06-07 17:39:37.496 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer4@example.com
+2025-06-07 17:39:37.696 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer4@example.com, 09d3015a-0bf5-41ef-8cec-14dc9187cba9
+2025-06-07 17:39:37.787 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer5@example.com
+2025-06-07 17:39:37.928 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer5@example.com, fb7ca35c-d6e9-4b2b-9a64-3fd181f77c91
+2025-06-07 17:39:37.998 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer6@example.com
+2025-06-07 17:39:38.136 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer6@example.com, 175f0d3d-955a-4626-8642-0abf70b78bf9
+2025-06-07 17:39:38.201 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer7@example.com
+2025-06-07 17:39:38.371 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer7@example.com, d7f7a5dc-4577-4511-bb56-d3677f6989d9
+2025-06-07 17:39:38.443 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer8@example.com
+2025-06-07 17:39:38.599 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer8@example.com, d0350194-dc7e-4656-9fea-6f68a59ca66a
+2025-06-07 17:39:38.673 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer9@example.com
+2025-06-07 17:39:38.817 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer9@example.com, ba7227cc-85b6-4813-9f8c-0af782d73c29
+2025-06-07 17:39:38.876 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer10@example.com
+2025-06-07 17:39:39.007 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer10@example.com, b6cfb821-7b4c-4909-9374-5cc50c34e80e
+2025-06-07 17:39:39.036 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng quản lý (5 MANAGER)...
+2025-06-07 17:39:39.037 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager1@example.com
+2025-06-07 17:39:39.168 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager1@example.com, d764d7c8-65ed-4d0e-abc2-e86ec4873709
+2025-06-07 17:39:39.200 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager2@example.com
+2025-06-07 17:39:39.393 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager2@example.com, c9ffedf3-b74a-4665-9499-f9b3e667b62a
+2025-06-07 17:39:39.446 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager3@example.com
+2025-06-07 17:39:39.586 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager3@example.com, e452bc40-1e71-4d64-b282-1ba9af12fa7e
+2025-06-07 17:39:39.615 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager4@example.com
+2025-06-07 17:39:39.753 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager4@example.com, 96a0aecb-7521-43c3-8bec-593acebed667
+2025-06-07 17:39:39.799 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager5@example.com
+2025-06-07 17:39:39.953 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager5@example.com, 9a8ea002-b0ac-4d46-a004-eb8a497c1909
+2025-06-07 17:39:39.980 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng nhân viên (30 EMPLOYEE)...
+2025-06-07 17:39:39.981 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee1@example.com
+2025-06-07 17:39:40.116 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee1@example.com, 4e2c9871-fdda-40dc-afd8-8f034f15a714
+2025-06-07 17:39:40.140 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee2@example.com
+2025-06-07 17:39:40.270 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee2@example.com, cb23f65a-c760-4746-99ce-f1f7987e7534
+2025-06-07 17:39:40.304 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee3@example.com
+2025-06-07 17:39:40.466 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee3@example.com, 43cc7a6f-8b69-46cc-ac00-9df825894c8f
+2025-06-07 17:39:40.517 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee4@example.com
+2025-06-07 17:39:40.692 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee4@example.com, f0cedfb5-8daf-493d-85e2-078188434518
+2025-06-07 17:39:40.721 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee5@example.com
+2025-06-07 17:39:40.856 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee5@example.com, 86178bb9-2b7b-4536-92f2-2cc90e9561c6
+2025-06-07 17:39:40.885 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee6@example.com
+2025-06-07 17:39:41.022 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee6@example.com, 84e9633a-e3b1-45dc-92ba-f2e5c5c66440
+2025-06-07 17:39:41.054 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee7@example.com
+2025-06-07 17:39:41.179 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee7@example.com, 0184fd33-b797-457b-8cd9-4d777707a89c
+2025-06-07 17:39:41.211 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee8@example.com
+2025-06-07 17:39:41.329 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee8@example.com, 30b7ede7-1a23-4756-9a08-fce0cea7033f
+2025-06-07 17:39:41.356 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee9@example.com
+2025-06-07 17:39:41.470 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee9@example.com, 0a2164bc-9055-4e4f-826b-8c83ce377263
+2025-06-07 17:39:41.500 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee10@example.com
+2025-06-07 17:39:41.642 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee10@example.com, 3c9e6cdc-7c57-470f-a986-cfb75641eb5a
+2025-06-07 17:39:41.686 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee11@example.com
+2025-06-07 17:39:41.851 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee11@example.com, 4c778e9a-42d2-4df5-a72a-5d5c3f76c095
+2025-06-07 17:39:41.878 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee12@example.com
+2025-06-07 17:39:42.006 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee12@example.com, 04c8366e-3d8b-430d-ad3f-e20a6c9b9af4
+2025-06-07 17:39:42.039 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee13@example.com
+2025-06-07 17:39:42.165 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee13@example.com, bddda089-b355-4f59-adb4-392463e98bee
+2025-06-07 17:39:42.192 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee14@example.com
+2025-06-07 17:39:42.312 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee14@example.com, f0a1e5e1-4e69-472e-a919-d40ae1317431
+2025-06-07 17:39:42.348 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee15@example.com
+2025-06-07 17:39:42.475 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee15@example.com, fe550cee-39d3-4e11-85f3-dc0a1d9a0d65
+2025-06-07 17:39:42.501 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee16@example.com
+2025-06-07 17:39:42.620 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee16@example.com, e0141119-bfe6-4d93-87a5-1674d426b35e
+2025-06-07 17:39:42.650 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee17@example.com
+2025-06-07 17:39:42.776 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee17@example.com, 951b10b4-a31d-43b1-997a-5b1624fcaec4
+2025-06-07 17:39:42.832 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee18@example.com
+2025-06-07 17:39:42.968 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee18@example.com, d701e2d8-2394-4224-967f-d7ba0623151f
+2025-06-07 17:39:42.994 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee19@example.com
+2025-06-07 17:39:43.134 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee19@example.com, 0458c7d7-7034-42b8-8b61-b988e2c792b9
+2025-06-07 17:39:43.163 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee20@example.com
+2025-06-07 17:39:43.296 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee20@example.com, 7a227bb6-bb67-4a02-9e49-74d438a880e3
+2025-06-07 17:39:43.324 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee21@example.com
+2025-06-07 17:39:43.459 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee21@example.com, 1889a4be-5ba1-4583-bfe3-7d45ff352a51
+2025-06-07 17:39:43.482 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee22@example.com
+2025-06-07 17:39:43.614 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee22@example.com, caaf5ae5-64cf-438f-ab23-bf9c9b843817
+2025-06-07 17:39:43.641 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee23@example.com
+2025-06-07 17:39:43.768 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee23@example.com, e2779cf5-518a-4a59-88ff-51c139eff431
+2025-06-07 17:39:43.792 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee24@example.com
+2025-06-07 17:39:43.910 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee24@example.com, cd812d6a-19d6-4c46-b2e2-a8d230bee960
+2025-06-07 17:39:43.939 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee25@example.com
+2025-06-07 17:39:44.060 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee25@example.com, 117f92c6-822e-4124-9f1e-2bd10ade26d0
+2025-06-07 17:39:44.086 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee26@example.com
+2025-06-07 17:39:44.208 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee26@example.com, d97e612f-4726-46c7-9bfb-18cf8a0a4ed1
+2025-06-07 17:39:44.237 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee27@example.com
+2025-06-07 17:39:44.359 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee27@example.com, 344fe747-b90f-4d51-8576-278f33305687
+2025-06-07 17:39:44.389 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee28@example.com
+2025-06-07 17:39:44.534 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee28@example.com, a06c6b83-b7e2-4096-a1bc-23994f28c02a
+2025-06-07 17:39:44.560 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee29@example.com
+2025-06-07 17:39:44.692 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee29@example.com, 6037c303-092a-47a8-9394-84e05df02ffb
+2025-06-07 17:39:44.723 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee30@example.com
+2025-06-07 17:39:44.857 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee30@example.com, 6f876202-bed3-4648-b053-9ed3b726d32b
+2025-06-07 17:39:44.884 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Creating shipping addresses...
+2025-06-07 17:39:45.226 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Created 10 shipping addresses
+2025-06-07 17:39:45.226 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Creating payment methods...
+2025-06-07 17:39:45.474 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Created 31 payment methods
+2025-06-07 17:39:45.474 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:39:45.474 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating parent product..
+2025-06-07 17:39:45.504 [restartedMain] INFO  c.s.c.s.d.domain.ParentProduct - Creating products...
+2025-06-07 17:39:45.618 [restartedMain] INFO  c.s.c.s.d.domain.ParentProduct - Created 33 products
+2025-06-07 17:39:45.618 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:39:45.618 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating variant and ingredient...
+2025-06-07 17:39:45.618 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Creating product variants...
+2025-06-07 17:39:45.846 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Created 63 product variants for 21 products
+2025-06-07 17:39:45.846 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Creating ingredients...
+2025-06-07 17:39:45.898 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Created 30 ingredients
+2025-06-07 17:39:45.898 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Creating recipes...
+2025-06-07 17:39:47.357 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Created 234 recipes
+2025-06-07 17:39:47.357 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:39:47.357 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating branch and employee...
+2025-06-07 17:39:47.357 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Creating branches...
+2025-06-07 17:39:47.370 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Created 5 branches
+2025-06-07 17:39:47.370 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Creating employees...
+2025-06-07 17:39:48.178 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Created 35 employees
+2025-06-07 17:39:48.178 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Updating branch managers...
+2025-06-07 17:39:50.926 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Updated managers for 5 branches
+2025-06-07 17:39:50.926 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:39:50.926 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating warehouse and supplier...
+2025-06-07 17:39:50.926 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Creating warehouses...
+2025-06-07 17:39:50.939 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Created 4 warehouses
+2025-06-07 17:39:50.939 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Creating suppliers...
+2025-06-07 17:39:50.961 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Created 10 suppliers
+2025-06-07 17:39:50.961 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:39:50.961 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating stock and inventory...
+2025-06-07 17:39:50.962 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Creating stock records...
+2025-06-07 17:39:51.798 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Created 76 stock records
+2025-06-07 17:39:51.798 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Creating inventory records...
+2025-06-07 17:39:53.490 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Created 116 inventory records
+2025-06-07 17:39:53.490 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:39:53.490 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating comments...
+2025-06-07 17:39:53.490 [restartedMain] INFO  c.s.c.s.d.domain.Comment - Creating dummy comments...
+2025-06-07 17:39:57.991 [restartedMain] INFO  c.s.c.s.d.domain.Comment - Created 363 comments for 33 products
+2025-06-07 17:39:57.991 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:39:57.991 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating discounts...
+2025-06-07 17:39:57.991 [restartedMain] INFO  c.s.c.s.d.domain.Discounts - Creating discount dummy data...
+2025-06-07 17:40:04.975 [restartedMain] INFO  c.s.c.s.d.domain.Discounts - Associated discounts with product variants
+2025-06-07 17:40:04.975 [restartedMain] INFO  c.s.c.s.d.domain.Discounts - Created 10 discounts
+2025-06-07 17:40:04.975 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:40:04.975 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - All dummy data creation completed successfully.
+2025-06-07 17:40:05.720 [RMI TCP Connection(4)-192.168.2.64] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-07 17:40:05.720 [RMI TCP Connection(4)-192.168.2.64] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-06-07 17:40:05.723 [RMI TCP Connection(4)-192.168.2.64] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2025-06-07 17:40:05.743 [RMI TCP Connection(1)-192.168.2.64] WARN  o.s.b.a.mail.MailHealthIndicator - Mail health check failed
+org.eclipse.angus.mail.util.MailConnectException: Couldn't connect to host, port: localhost, 1025; timeout -1
+	at org.eclipse.angus.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:2243)
+	at org.eclipse.angus.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:729)
+	at jakarta.mail.Service.connect(Service.java:345)
+	at org.springframework.mail.javamail.JavaMailSenderImpl.connectTransport(JavaMailSenderImpl.java:480)
+	at org.springframework.mail.javamail.JavaMailSenderImpl.testConnection(JavaMailSenderImpl.java:360)
+	at org.springframework.boot.actuate.mail.MailHealthIndicator.doHealthCheck(MailHealthIndicator.java:52)
+	at org.springframework.boot.actuate.health.AbstractHealthIndicator.health(AbstractHealthIndicator.java:82)
+	at org.springframework.boot.actuate.health.HealthIndicator.getHealth(HealthIndicator.java:37)
+	at org.springframework.boot.actuate.health.HealthEndpoint.getHealth(HealthEndpoint.java:82)
+	at org.springframework.boot.actuate.health.HealthEndpoint.getHealth(HealthEndpoint.java:41)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getLoggedHealth(HealthEndpointSupport.java:172)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getContribution(HealthEndpointSupport.java:145)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getAggregateContribution(HealthEndpointSupport.java:156)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getContribution(HealthEndpointSupport.java:141)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getHealth(HealthEndpointSupport.java:110)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getHealth(HealthEndpointSupport.java:81)
+	at org.springframework.boot.actuate.health.HealthEndpoint.health(HealthEndpoint.java:76)
+	at org.springframework.boot.actuate.health.HealthEndpoint.health(HealthEndpoint.java:66)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:281)
+	at org.springframework.boot.actuate.endpoint.invoke.reflect.ReflectiveOperationInvoker.invoke(ReflectiveOperationInvoker.java:74)
+	at org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation.invoke(AbstractDiscoveredOperation.java:60)
+	at org.springframework.boot.actuate.endpoint.jmx.EndpointMBean.invoke(EndpointMBean.java:124)
+	at org.springframework.boot.actuate.endpoint.jmx.EndpointMBean.invoke(EndpointMBean.java:97)
+	at java.management/com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:814)
+	at java.management/com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:802)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.doOperation(RMIConnectionImpl.java:1472)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl$PrivilegedOperation.run(RMIConnectionImpl.java:1310)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.doPrivilegedOperation(RMIConnectionImpl.java:1405)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.invoke(RMIConnectionImpl.java:829)
+	at java.base/jdk.internal.reflect.GeneratedMethodAccessor110.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.base/sun.nio.ch.Net.connect0(Native Method)
+	at java.base/sun.nio.ch.Net.connect(Net.java:579)
+	at java.base/sun.nio.ch.Net.connect(Net.java:568)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:593)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:633)
+	at java.base/java.net.Socket.connect(Socket.java:583)
+	at org.eclipse.angus.mail.util.SocketFetcher.createSocket(SocketFetcher.java:360)
+	at org.eclipse.angus.mail.util.SocketFetcher.getSocket(SocketFetcher.java:235)
+	at org.eclipse.angus.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:2193)
+	... 48 common frames omitted
+2025-06-07 17:40:19.255 [http-nio-8081-exec-1] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:19.334 [http-nio-8081-exec-2] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:19.353 [http-nio-8081-exec-4] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:19.424 [http-nio-8081-exec-6] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:19.446 [http-nio-8081-exec-5] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:19.473 [http-nio-8081-exec-7] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:19.499 [http-nio-8081-exec-9] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:19.510 [http-nio-8081-exec-8] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:19.942 [http-nio-8081-exec-3] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:25.840 [http-nio-8081-exec-10] INFO  o.s.api.AbstractOpenApiResource - Init duration for springdoc-openapi is: 4360 ms
+2025-06-07 17:40:25.893 [http-nio-8081-exec-10] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:44.210 [http-nio-8081-exec-1] INFO  c.s.c.service.AuthService - Login request received: manager@example.com
+2025-06-07 17:40:44.224 [http-nio-8081-exec-1] ERROR c.s.c.service.AuthService - User not found with email: manager@example.com
+2025-06-07 17:40:44.227 [http-nio-8081-exec-1] ERROR c.s.c.exception.AppExceptionHandler - org.springframework.security.authentication.AuthenticationCredentialsNotFoundException: Bad credentials
+2025-06-07 17:40:44.231 [http-nio-8081-exec-1] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.authentication.AuthenticationCredentialsNotFoundException: Bad credentials]
+2025-06-07 17:40:44.232 [http-nio-8081-exec-1] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:40:52.020 [http-nio-8081-exec-2] INFO  c.s.c.service.AuthService - Login request received: admin@example.com
+2025-06-07 17:40:53.094 [http-nio-8081-exec-2] INFO  c.s.c.service.AuthService - Token generated for user: e6605fb4-808f-465f-8ab0-052b0e037e15
+2025-06-07 17:40:53.150 [http-nio-8081-exec-2] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:41:18.909 [http-nio-8081-exec-4] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:41:29.846 [http-nio-8081-exec-9] ERROR c.s.c.exception.AppExceptionHandler - org.springframework.security.access.AccessDeniedException: Access Denied
+2025-06-07 17:41:29.849 [http-nio-8081-exec-9] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.security.access.AccessDeniedException: Access Denied]
+2025-06-07 17:41:29.850 [http-nio-8081-exec-9] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:42:17.102 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-06-07 17:42:17.514 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-06-07 17:42:17.518 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-06-07 17:43:36.640 [restartedMain] INFO  c.s.c.MainApplication - Starting MainApplication using Java 17.0.9 with PID 2712 (C:\Users\Admin\Downloads\drive-download-20230518T144224Z-001\OneDrive\MayTinh\Coffee-Shop-Management-Backend\target\classes started by Admin in C:\Users\Admin\Downloads\drive-download-20230518T144224Z-001\OneDrive\MayTinh\Coffee-Shop-Management-Backend)
+2025-06-07 17:43:36.645 [restartedMain] INFO  c.s.c.MainApplication - No active profile set, falling back to 1 default profile: "default"
+2025-06-07 17:43:36.734 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-06-07 17:43:36.735 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-06-07 17:43:38.849 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-07 17:43:38.851 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-07 17:43:39.052 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.JwtTokenRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2025-06-07 17:43:39.217 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 358 ms. Found 34 JPA repository interfaces.
+2025-06-07 17:43:39.237 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-07 17:43:39.239 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-06-07 17:43:39.284 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.BranchRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.285 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CartDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.285 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CartRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.287 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CatalogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.287 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CheckinRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.287 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CommentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.288 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.DiscountRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.290 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.EmailVerificationTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.290 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.EmployeeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.291 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.IngredientRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.291 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.InventoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.292 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.InvoiceDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.292 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.InvoiceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.293 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.NotificationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.294 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.OrderDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.295 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.295 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.PasswordResetTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.296 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.PaymentMethodsRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.296 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.productrepositories.ProductCategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.297 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.298 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.298 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.RecipeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.300 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.RoleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.301 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.SalaryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.301 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.SettingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.302 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.ShiftRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.302 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.ShippingAddressesRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.303 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.StockRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.303 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.SupplierRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.304 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.TransferDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.304 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.TransferRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.305 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.UsedDiscountRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.305 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.305 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.WarehouseRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-07 17:43:39.341 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 91 ms. Found 1 Redis repository interface.
+2025-06-07 17:43:40.524 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-06-07 17:43:40.536 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-06-07 17:43:40.537 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-06-07 17:43:40.609 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-06-07 17:43:40.610 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3838 ms
+2025-06-07 17:43:41.030 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-06-07 17:43:41.171 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@507c3a19
+2025-06-07 17:43:41.175 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-06-07 17:43:41.381 [restartedMain] INFO  liquibase.database - Set default schema name to public
+2025-06-07 17:43:41.504 [restartedMain] WARN  liquibase.configuration - 
+
+Liquibase detected the following invalid LIQUIBASE_* environment variables:
+
+- LIQUIBASE_ENABLED
+
+Find the list of valid environment variables at https://docs.liquibase.com/environment-variables
+
+2025-06-07 17:43:41.637 [restartedMain] INFO  liquibase.lockservice - Successfully acquired change log lock
+2025-06-07 17:43:42.188 [restartedMain] INFO  liquibase.changelog - Reading from public.databasechangelog
+2025-06-07 17:43:42.231 [restartedMain] INFO  liquibase.changelog - Reading from public.databasechangelog
+2025-06-07 17:43:42.237 [restartedMain] INFO  liquibase.util - UPDATE SUMMARY
+2025-06-07 17:43:42.238 [restartedMain] INFO  liquibase.util - Run:                          0
+2025-06-07 17:43:42.238 [restartedMain] INFO  liquibase.util - Previously run:               1
+2025-06-07 17:43:42.238 [restartedMain] INFO  liquibase.util - Filtered out:                 0
+2025-06-07 17:43:42.238 [restartedMain] INFO  liquibase.util - -------------------------------
+2025-06-07 17:43:42.238 [restartedMain] INFO  liquibase.util - Total change sets:            1
+
+2025-06-07 17:43:42.239 [restartedMain] INFO  liquibase.util - Update summary generated
+2025-06-07 17:43:42.250 [restartedMain] INFO  liquibase.lockservice - Successfully released change log lock
+2025-06-07 17:43:42.264 [restartedMain] INFO  liquibase.lockservice - Successfully released change log lock
+2025-06-07 17:43:42.266 [restartedMain] INFO  liquibase.command - Command execution complete
+2025-06-07 17:43:42.447 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-07 17:43:42.540 [restartedMain] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-06-07 17:43:42.602 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-06-07 17:43:42.902 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-07 17:43:42.964 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-06-07 17:43:45.019 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-07 17:43:45.076 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.076 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "branches" does not exist, skipping
+2025-06-07 17:43:45.079 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.079 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "cart_details" does not exist, skipping
+2025-06-07 17:43:45.081 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.081 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "cart_details" does not exist, skipping
+2025-06-07 17:43:45.084 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.084 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "carts" does not exist, skipping
+2025-06-07 17:43:45.088 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.088 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "carts" does not exist, skipping
+2025-06-07 17:43:45.091 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.091 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "catalogs" does not exist, skipping
+2025-06-07 17:43:45.099 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.099 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "checkins" does not exist, skipping
+2025-06-07 17:43:45.101 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.102 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "comments" does not exist, skipping
+2025-06-07 17:43:45.104 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.104 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "discounts" does not exist, skipping
+2025-06-07 17:43:45.107 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.107 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "email_verification_tokens" does not exist, skipping
+2025-06-07 17:43:45.110 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.110 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "employees" does not exist, skipping
+2025-06-07 17:43:45.112 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.112 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "employees" does not exist, skipping
+2025-06-07 17:43:45.114 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.114 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "inventories" does not exist, skipping
+2025-06-07 17:43:45.117 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.117 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "inventories" does not exist, skipping
+2025-06-07 17:43:45.119 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.119 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "invoice_details" does not exist, skipping
+2025-06-07 17:43:45.120 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.121 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "invoice_details" does not exist, skipping
+2025-06-07 17:43:45.123 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.123 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "invoices" does not exist, skipping
+2025-06-07 17:43:45.125 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.125 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "invoices" does not exist, skipping
+2025-06-07 17:43:45.127 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.127 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "notifications" does not exist, skipping
+2025-06-07 17:43:45.129 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.129 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "notifications" does not exist, skipping
+2025-06-07 17:43:45.131 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.131 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "order_details" does not exist, skipping
+2025-06-07 17:43:45.132 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.133 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "order_details" does not exist, skipping
+2025-06-07 17:43:45.135 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.135 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "orders" does not exist, skipping
+2025-06-07 17:43:45.138 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.138 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "orders" does not exist, skipping
+2025-06-07 17:43:45.139 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.139 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "orders" does not exist, skipping
+2025-06-07 17:43:45.140 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.141 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "orders" does not exist, skipping
+2025-06-07 17:43:45.143 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.143 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "password_reset_tokens" does not exist, skipping
+2025-06-07 17:43:45.145 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.145 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "payment_methods" does not exist, skipping
+2025-06-07 17:43:45.146 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.146 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "product_categories" does not exist, skipping
+2025-06-07 17:43:45.147 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.148 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "product_variant_discounts" does not exist, skipping
+2025-06-07 17:43:45.150 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.150 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "product_variant_discounts" does not exist, skipping
+2025-06-07 17:43:45.152 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.152 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "product_variants" does not exist, skipping
+2025-06-07 17:43:45.154 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.154 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "products" does not exist, skipping
+2025-06-07 17:43:45.156 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.156 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "recipes" does not exist, skipping
+2025-06-07 17:43:45.157 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.158 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "recipes" does not exist, skipping
+2025-06-07 17:43:45.160 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.160 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "salaries" does not exist, skipping
+2025-06-07 17:43:45.161 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.161 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "shifts" does not exist, skipping
+2025-06-07 17:43:45.163 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.163 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "shipping_addresses" does not exist, skipping
+2025-06-07 17:43:45.165 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.165 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "stocks" does not exist, skipping
+2025-06-07 17:43:45.166 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.166 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "stocks" does not exist, skipping
+2025-06-07 17:43:45.167 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.168 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "transfer_details" does not exist, skipping
+2025-06-07 17:43:45.169 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.169 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "transfer_details" does not exist, skipping
+2025-06-07 17:43:45.170 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.170 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "transfers" does not exist, skipping
+2025-06-07 17:43:45.171 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.171 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "transfers" does not exist, skipping
+2025-06-07 17:43:45.173 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.174 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "used_discounts" does not exist, skipping
+2025-06-07 17:43:45.175 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.175 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "used_discounts" does not exist, skipping
+2025-06-07 17:43:45.176 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.177 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "used_discounts" does not exist, skipping
+2025-06-07 17:43:45.178 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.178 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - relation "users" does not exist, skipping
+2025-06-07 17:43:45.180 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.180 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "branches" does not exist, skipping
+2025-06-07 17:43:45.181 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.181 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "cart_details" does not exist, skipping
+2025-06-07 17:43:45.182 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.182 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "carts" does not exist, skipping
+2025-06-07 17:43:45.184 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.184 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "catalogs" does not exist, skipping
+2025-06-07 17:43:45.185 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.185 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "checkins" does not exist, skipping
+2025-06-07 17:43:45.186 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.186 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "comments" does not exist, skipping
+2025-06-07 17:43:45.187 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.187 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "discounts" does not exist, skipping
+2025-06-07 17:43:45.189 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.189 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "email_verification_tokens" does not exist, skipping
+2025-06-07 17:43:45.190 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.191 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "employees" does not exist, skipping
+2025-06-07 17:43:45.192 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.193 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "ingredients" does not exist, skipping
+2025-06-07 17:43:45.194 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.194 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "inventories" does not exist, skipping
+2025-06-07 17:43:45.196 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.196 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "invoice_details" does not exist, skipping
+2025-06-07 17:43:45.198 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.198 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "invoices" does not exist, skipping
+2025-06-07 17:43:45.200 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.200 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "notifications" does not exist, skipping
+2025-06-07 17:43:45.201 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.201 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "order_details" does not exist, skipping
+2025-06-07 17:43:45.202 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.203 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "orders" does not exist, skipping
+2025-06-07 17:43:45.204 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.204 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "password_reset_tokens" does not exist, skipping
+2025-06-07 17:43:45.205 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.205 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "payment_methods" does not exist, skipping
+2025-06-07 17:43:45.206 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.206 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "product_categories" does not exist, skipping
+2025-06-07 17:43:45.208 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.208 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "product_variant_discounts" does not exist, skipping
+2025-06-07 17:43:45.210 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.210 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "product_variants" does not exist, skipping
+2025-06-07 17:43:45.211 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.211 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "products" does not exist, skipping
+2025-06-07 17:43:45.213 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.214 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "recipes" does not exist, skipping
+2025-06-07 17:43:45.215 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.215 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "roles" does not exist, skipping
+2025-06-07 17:43:45.217 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.217 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "salaries" does not exist, skipping
+2025-06-07 17:43:45.219 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.219 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "settings" does not exist, skipping
+2025-06-07 17:43:45.220 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.220 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "shifts" does not exist, skipping
+2025-06-07 17:43:45.221 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.222 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "shipping_addresses" does not exist, skipping
+2025-06-07 17:43:45.223 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.223 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "stocks" does not exist, skipping
+2025-06-07 17:43:45.225 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.225 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "suppliers" does not exist, skipping
+2025-06-07 17:43:45.227 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.227 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "transfer_details" does not exist, skipping
+2025-06-07 17:43:45.229 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.229 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "transfers" does not exist, skipping
+2025-06-07 17:43:45.231 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.231 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "used_discounts" does not exist, skipping
+2025-06-07 17:43:45.234 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.234 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "users" does not exist, skipping
+2025-06-07 17:43:45.235 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - SQL Warning Code: 0, SQLState: 00000
+2025-06-07 17:43:45.235 [restartedMain] WARN  o.h.e.jdbc.spi.SqlExceptionHelper - table "warehouses" does not exist, skipping
+2025-06-07 17:43:46.170 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-07 17:43:46.921 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-07 17:43:48.000 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2025-06-07 17:43:52.019 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+2025-06-07 17:43:53.896 [restartedMain] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@67ffc522, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7d39208d, org.springframework.security.web.context.SecurityContextHolderFilter@30e6d33e, org.springframework.security.web.header.HeaderWriterFilter@23245223, org.springframework.web.filter.CorsFilter@75df7a92, org.springframework.security.web.authentication.logout.LogoutFilter@643b8b9a, com.se330.coffee_shop_management_backend.security.JwtAuthenticationFilter@2fc4769e, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@413f346c, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2b1e5203, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@638535b9, org.springframework.security.web.session.SessionManagementFilter@48951af4, org.springframework.security.web.access.ExceptionTranslationFilter@1d307389, org.springframework.security.web.access.intercept.AuthorizationFilter@4b173f4c]
+2025-06-07 17:43:55.077 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path ''
+2025-06-07 17:43:55.081 [restartedMain] INFO  c.s.c.MainApplication - Started MainApplication in 19.292 seconds (process running for 20.705)
+2025-06-07 17:43:55.089 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Start creating dummy data...
+2025-06-07 17:43:55.089 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating user basic info...
+2025-06-07 17:43:55.187 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng quản trị viên (1 ADMIN)...
+2025-06-07 17:43:55.188 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: admin@example.com
+2025-06-07 17:43:56.091 [restartedMain] INFO  c.s.c.service.UserService - User created with email: admin@example.com, 420a15da-1705-4989-bb91-01df4eeb039a
+2025-06-07 17:43:56.317 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng khách hàng (10 CUSTOMER)...
+2025-06-07 17:43:56.318 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer1@example.com
+2025-06-07 17:43:56.517 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer1@example.com, 66b2c30c-1d17-446f-89c5-bb625a9e48fb
+2025-06-07 17:43:56.586 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer2@example.com
+2025-06-07 17:43:56.787 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer2@example.com, abd56dcd-4936-4f37-b6d1-91198ff6ea39
+2025-06-07 17:43:56.850 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer3@example.com
+2025-06-07 17:43:57.016 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer3@example.com, fb7eaa7d-cb02-4c52-93bf-cf2f611690ed
+2025-06-07 17:43:57.085 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer4@example.com
+2025-06-07 17:43:57.253 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer4@example.com, 8d6a40d2-887f-426e-9476-f2b5bb34664a
+2025-06-07 17:43:57.323 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer5@example.com
+2025-06-07 17:43:57.498 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer5@example.com, e2beb016-2635-4136-bfb2-b099049a6590
+2025-06-07 17:43:57.554 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer6@example.com
+2025-06-07 17:43:57.726 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer6@example.com, 55a6a286-168f-4d77-8eed-09db88dc9add
+2025-06-07 17:43:57.783 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer7@example.com
+2025-06-07 17:43:57.945 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer7@example.com, 1521a2a7-53e0-41fa-8fb7-584e20d45178
+2025-06-07 17:43:58.002 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer8@example.com
+2025-06-07 17:43:58.174 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer8@example.com, 1080abd7-1e1e-4fb1-9e5a-1877c94ae247
+2025-06-07 17:43:58.231 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer9@example.com
+2025-06-07 17:43:58.415 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer9@example.com, 32cf6b0f-0d33-4f4e-a808-3dbc0c09061c
+2025-06-07 17:43:58.488 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer10@example.com
+2025-06-07 17:43:58.670 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer10@example.com, 526aae83-8e2d-44ce-8e5c-65a87c2412d6
+2025-06-07 17:43:58.703 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng quản lý (5 MANAGER)...
+2025-06-07 17:43:58.703 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager1@example.com
+2025-06-07 17:43:58.879 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager1@example.com, 08491e06-0b4c-451f-a5db-d47c7c13602a
+2025-06-07 17:43:58.915 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager2@example.com
+2025-06-07 17:43:59.083 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager2@example.com, 5317ffc8-de61-4d1f-beff-d6e32bf5ea3c
+2025-06-07 17:43:59.121 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager3@example.com
+2025-06-07 17:43:59.274 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager3@example.com, 63407ff5-0887-4d8c-b1b6-ee1f24d95df6
+2025-06-07 17:43:59.315 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager4@example.com
+2025-06-07 17:43:59.455 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager4@example.com, 774f734d-3efc-416b-8f06-0d76cc07fc42
+2025-06-07 17:43:59.482 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager5@example.com
+2025-06-07 17:43:59.637 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager5@example.com, b2910457-3558-48de-baf6-47e043cbb3d6
+2025-06-07 17:43:59.668 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng nhân viên (30 EMPLOYEE)...
+2025-06-07 17:43:59.669 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee1@example.com
+2025-06-07 17:43:59.832 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee1@example.com, 5fdb0a72-6378-40d1-9bbb-0002e602640c
+2025-06-07 17:43:59.859 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee2@example.com
+2025-06-07 17:43:59.992 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee2@example.com, c4f20400-c993-4657-ae1b-2538ab440a6d
+2025-06-07 17:44:00.025 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee3@example.com
+2025-06-07 17:44:00.184 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee3@example.com, 190237e7-c1e8-4aa6-95d1-b5c4448f4d2e
+2025-06-07 17:44:00.209 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee4@example.com
+2025-06-07 17:44:00.379 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee4@example.com, 9c2325b5-0919-4fdd-b4fd-9dca8e657423
+2025-06-07 17:44:00.421 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee5@example.com
+2025-06-07 17:44:00.572 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee5@example.com, 1218d754-2066-4464-9775-c0f9fce9f272
+2025-06-07 17:44:00.607 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee6@example.com
+2025-06-07 17:44:00.814 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee6@example.com, 646c6545-1f92-4cc7-9c3d-be7160e7d2bc
+2025-06-07 17:44:00.852 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee7@example.com
+2025-06-07 17:44:01.051 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee7@example.com, 592b9b7d-ca32-4662-ae4a-474516be9cd2
+2025-06-07 17:44:01.088 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee8@example.com
+2025-06-07 17:44:01.270 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee8@example.com, 06c52b98-e856-4950-b546-e2728e08e92f
+2025-06-07 17:44:01.305 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee9@example.com
+2025-06-07 17:44:01.544 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee9@example.com, f84c10a6-1177-44e6-9889-1c29c74ac31d
+2025-06-07 17:44:01.594 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee10@example.com
+2025-06-07 17:44:01.814 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee10@example.com, 13697010-8233-4ba2-836b-ee361ce39304
+2025-06-07 17:44:01.845 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee11@example.com
+2025-06-07 17:44:02.028 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee11@example.com, 0874cb58-49ba-416e-8d7a-ef5e0c88bbd4
+2025-06-07 17:44:02.059 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee12@example.com
+2025-06-07 17:44:02.246 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee12@example.com, c077c1c1-683f-4408-a177-d5130d7a3fc2
+2025-06-07 17:44:02.286 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee13@example.com
+2025-06-07 17:44:02.532 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee13@example.com, 0d721441-c2f7-4cd3-9b3b-9f17de30001f
+2025-06-07 17:44:02.598 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee14@example.com
+2025-06-07 17:44:02.838 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee14@example.com, 1905ab06-050e-41c8-9d94-496dd30f6859
+2025-06-07 17:44:02.872 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee15@example.com
+2025-06-07 17:44:03.067 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee15@example.com, 9a822d2c-9b2b-47bb-a53a-0ec6ae005017
+2025-06-07 17:44:03.101 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee16@example.com
+2025-06-07 17:44:03.284 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee16@example.com, 255a6298-a55f-4b13-bfb5-ac467769f495
+2025-06-07 17:44:03.317 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee17@example.com
+2025-06-07 17:44:03.501 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee17@example.com, d9b7041a-8cd5-4fac-9b49-cf5cee0b57d6
+2025-06-07 17:44:03.544 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee18@example.com
+2025-06-07 17:44:03.761 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee18@example.com, e03581e4-e562-4500-959c-3f2ee6855ee5
+2025-06-07 17:44:03.807 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee19@example.com
+2025-06-07 17:44:04.010 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee19@example.com, 7b059e96-62d8-4349-9dbd-8412afcbd8ea
+2025-06-07 17:44:04.044 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee20@example.com
+2025-06-07 17:44:04.244 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee20@example.com, 05cf6d38-54c5-4dc8-80c0-98d2b37890d2
+2025-06-07 17:44:04.279 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee21@example.com
+2025-06-07 17:44:04.473 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee21@example.com, 015bae4e-b232-45b5-a8f3-543c74382dca
+2025-06-07 17:44:04.510 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee22@example.com
+2025-06-07 17:44:04.715 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee22@example.com, 276e4a78-6227-4f23-923d-8bb240fb7815
+2025-06-07 17:44:04.759 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee23@example.com
+2025-06-07 17:44:04.977 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee23@example.com, e6cbb705-a0eb-48a2-8c4a-dbe54885c5d1
+2025-06-07 17:44:05.017 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee24@example.com
+2025-06-07 17:44:05.203 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee24@example.com, a0474421-d5b3-4d3c-accc-2f4d7b463b67
+2025-06-07 17:44:05.236 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee25@example.com
+2025-06-07 17:44:05.399 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee25@example.com, a236ea89-fead-4be1-bad7-51ab382d0cbd
+2025-06-07 17:44:05.431 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee26@example.com
+2025-06-07 17:44:05.600 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee26@example.com, 7649e217-783f-489a-8226-f0f3a16188ad
+2025-06-07 17:44:05.641 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee27@example.com
+2025-06-07 17:44:05.805 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee27@example.com, dd6f3e9f-75ef-4106-97c9-0440e0865257
+2025-06-07 17:44:05.861 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee28@example.com
+2025-06-07 17:44:06.100 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee28@example.com, cd0625b2-caf5-4352-aba5-33eccdc38ece
+2025-06-07 17:44:06.137 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee29@example.com
+2025-06-07 17:44:06.344 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee29@example.com, d44a7c8d-1320-40e7-bc58-1d31d40a8dbf
+2025-06-07 17:44:06.377 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee30@example.com
+2025-06-07 17:44:06.559 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee30@example.com, b203bf02-bc56-43e2-8c1a-05dfec765274
+2025-06-07 17:44:06.585 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Creating shipping addresses...
+2025-06-07 17:44:06.988 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Created 10 shipping addresses
+2025-06-07 17:44:06.988 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Creating payment methods...
+2025-06-07 17:44:07.412 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Created 31 payment methods
+2025-06-07 17:44:07.412 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:44:07.412 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating parent product..
+2025-06-07 17:44:07.450 [restartedMain] INFO  c.s.c.s.d.domain.ParentProduct - Creating products...
+2025-06-07 17:44:07.634 [restartedMain] INFO  c.s.c.s.d.domain.ParentProduct - Created 33 products
+2025-06-07 17:44:07.634 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:44:07.634 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating variant and ingredient...
+2025-06-07 17:44:07.634 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Creating product variants...
+2025-06-07 17:44:07.958 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Created 63 product variants for 21 products
+2025-06-07 17:44:07.958 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Creating ingredients...
+2025-06-07 17:44:08.044 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Created 30 ingredients
+2025-06-07 17:44:08.044 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Creating recipes...
+2025-06-07 17:44:10.198 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Created 234 recipes
+2025-06-07 17:44:10.198 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:44:10.199 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating branch and employee...
+2025-06-07 17:44:10.199 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Creating branches...
+2025-06-07 17:44:10.216 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Created 5 branches
+2025-06-07 17:44:10.216 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Creating employees...
+2025-06-07 17:44:11.241 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Created 35 employees
+2025-06-07 17:44:11.241 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Updating branch managers...
+2025-06-07 17:44:14.408 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Updated managers for 5 branches
+2025-06-07 17:44:14.408 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:44:14.408 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating warehouse and supplier...
+2025-06-07 17:44:14.408 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Creating warehouses...
+2025-06-07 17:44:14.425 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Created 4 warehouses
+2025-06-07 17:44:14.425 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Creating suppliers...
+2025-06-07 17:44:14.447 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Created 10 suppliers
+2025-06-07 17:44:14.447 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:44:14.447 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating stock and inventory...
+2025-06-07 17:44:14.448 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Creating stock records...
+2025-06-07 17:44:15.286 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Created 83 stock records
+2025-06-07 17:44:15.286 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Creating inventory records...
+2025-06-07 17:44:16.952 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Created 116 inventory records
+2025-06-07 17:44:16.952 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:44:16.952 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating comments...
+2025-06-07 17:44:16.952 [restartedMain] INFO  c.s.c.s.d.domain.Comment - Creating dummy comments...
+2025-06-07 17:44:21.402 [restartedMain] INFO  c.s.c.s.d.domain.Comment - Created 365 comments for 33 products
+2025-06-07 17:44:21.402 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:44:21.402 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating discounts...
+2025-06-07 17:44:21.402 [restartedMain] INFO  c.s.c.s.d.domain.Discounts - Creating discount dummy data...
+2025-06-07 17:44:29.829 [restartedMain] INFO  c.s.c.s.d.domain.Discounts - Associated discounts with product variants
+2025-06-07 17:44:29.829 [restartedMain] INFO  c.s.c.s.d.domain.Discounts - Created 10 discounts
+2025-06-07 17:44:29.829 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-07 17:44:29.829 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - All dummy data creation completed successfully.
+2025-06-07 17:44:30.369 [RMI TCP Connection(1)-192.168.2.64] WARN  o.s.b.a.mail.MailHealthIndicator - Mail health check failed
+org.eclipse.angus.mail.util.MailConnectException: Couldn't connect to host, port: localhost, 1025; timeout -1
+	at org.eclipse.angus.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:2243)
+	at org.eclipse.angus.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:729)
+	at jakarta.mail.Service.connect(Service.java:345)
+	at org.springframework.mail.javamail.JavaMailSenderImpl.connectTransport(JavaMailSenderImpl.java:480)
+	at org.springframework.mail.javamail.JavaMailSenderImpl.testConnection(JavaMailSenderImpl.java:360)
+	at org.springframework.boot.actuate.mail.MailHealthIndicator.doHealthCheck(MailHealthIndicator.java:52)
+	at org.springframework.boot.actuate.health.AbstractHealthIndicator.health(AbstractHealthIndicator.java:82)
+	at org.springframework.boot.actuate.health.HealthIndicator.getHealth(HealthIndicator.java:37)
+	at org.springframework.boot.actuate.health.HealthEndpoint.getHealth(HealthEndpoint.java:82)
+	at org.springframework.boot.actuate.health.HealthEndpoint.getHealth(HealthEndpoint.java:41)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getLoggedHealth(HealthEndpointSupport.java:172)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getContribution(HealthEndpointSupport.java:145)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getAggregateContribution(HealthEndpointSupport.java:156)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getContribution(HealthEndpointSupport.java:141)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getHealth(HealthEndpointSupport.java:110)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getHealth(HealthEndpointSupport.java:81)
+	at org.springframework.boot.actuate.health.HealthEndpoint.health(HealthEndpoint.java:76)
+	at org.springframework.boot.actuate.health.HealthEndpoint.health(HealthEndpoint.java:66)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:281)
+	at org.springframework.boot.actuate.endpoint.invoke.reflect.ReflectiveOperationInvoker.invoke(ReflectiveOperationInvoker.java:74)
+	at org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation.invoke(AbstractDiscoveredOperation.java:60)
+	at org.springframework.boot.actuate.endpoint.jmx.EndpointMBean.invoke(EndpointMBean.java:124)
+	at org.springframework.boot.actuate.endpoint.jmx.EndpointMBean.invoke(EndpointMBean.java:97)
+	at java.management/com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:814)
+	at java.management/com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:802)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.doOperation(RMIConnectionImpl.java:1472)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl$PrivilegedOperation.run(RMIConnectionImpl.java:1310)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.doPrivilegedOperation(RMIConnectionImpl.java:1405)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.invoke(RMIConnectionImpl.java:829)
+	at java.base/jdk.internal.reflect.GeneratedMethodAccessor110.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.base/sun.nio.ch.Net.connect0(Native Method)
+	at java.base/sun.nio.ch.Net.connect(Net.java:579)
+	at java.base/sun.nio.ch.Net.connect(Net.java:568)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:593)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:633)
+	at java.base/java.net.Socket.connect(Socket.java:583)
+	at org.eclipse.angus.mail.util.SocketFetcher.createSocket(SocketFetcher.java:360)
+	at org.eclipse.angus.mail.util.SocketFetcher.getSocket(SocketFetcher.java:235)
+	at org.eclipse.angus.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:2193)
+	... 48 common frames omitted
+2025-06-07 17:44:30.395 [RMI TCP Connection(4)-192.168.2.64] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-07 17:44:30.395 [RMI TCP Connection(4)-192.168.2.64] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-06-07 17:44:30.401 [RMI TCP Connection(4)-192.168.2.64] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 6 ms
+2025-06-07 17:44:33.790 [http-nio-8081-exec-1] INFO  c.s.c.service.AuthService - Login request received: admin@example.com
+2025-06-07 17:44:34.279 [http-nio-8081-exec-1] INFO  c.s.c.service.AuthService - Token generated for user: 420a15da-1705-4989-bb91-01df4eeb039a
+2025-06-07 17:44:34.339 [http-nio-8081-exec-1] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:44:58.679 [http-nio-8081-exec-2] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:45:11.991 [http-nio-8081-exec-3] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-07 17:45:31.557 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-06-07 17:45:32.088 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-06-07 17:45:32.102 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

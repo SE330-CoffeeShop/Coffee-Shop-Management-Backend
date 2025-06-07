@@ -2,11 +2,16 @@ package com.se330.coffee_shop_management_backend.service.checkinservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.checkin.CheckinCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.checkin.CheckinUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Checkin;
 import com.se330.coffee_shop_management_backend.entity.Shift;
+import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.repository.CheckinRepository;
 import com.se330.coffee_shop_management_backend.repository.ShiftRepository;
 import com.se330.coffee_shop_management_backend.service.checkinservices.ICheckinService;
+import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
+import com.se330.coffee_shop_management_backend.util.Constants;
+import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,13 +25,16 @@ public class ImpCheckinService implements ICheckinService {
 
     private final CheckinRepository checkinRepository;
     private final ShiftRepository shiftRepository;
+    private final INotificationService notificationService;
 
     public ImpCheckinService(
             CheckinRepository checkinRepository,
-            ShiftRepository shiftRepository
+            ShiftRepository shiftRepository,
+            INotificationService notificationService
     ) {
         this.checkinRepository = checkinRepository;
         this.shiftRepository = shiftRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -105,12 +113,38 @@ public class ImpCheckinService implements ICheckinService {
         Shift shift = shiftRepository.findById(checkinCreateRequestDTO.getShiftId())
                 .orElseThrow(() -> new EntityNotFoundException("Shift not found with id: " + checkinCreateRequestDTO.getShiftId()));
 
-        Checkin checkin = Checkin.builder()
+        Checkin checkin =  checkinRepository.save(Checkin.builder()
                 .shift(shift)
                 .checkinTime(checkinCreateRequestDTO.getCheckinTime())
-                .build();
+                .build());
 
-        return checkinRepository.save(checkin);
+        User employee = checkin.getShift().getEmployee().getUser();
+        User manager = checkin.getShift().getEmployee().getBranch().getManager().getUser();
+
+        notificationService.createNotification(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)
+                        .notificationContent(CreateNotiContentHelper.createCheckinSuccessContent(
+                                employee.getFullName(),
+                                checkin.getCheckinTime().toString()
+                        ))
+                        .senderId(null)
+                        .receiverId(manager.getId())
+                        .isRead(false)
+                        .build()
+        );
+
+        notificationService.createNotification(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)
+                        .notificationContent(CreateNotiContentHelper.createCheckinSuccessContent(checkin.getCheckinTime().toString()))
+                        .senderId(null)
+                        .receiverId(employee.getId())
+                        .isRead(false)
+                        .build()
+        );
+
+        return checkin;
     }
 
     @Override
@@ -119,17 +153,33 @@ public class ImpCheckinService implements ICheckinService {
         Checkin existingCheckin = checkinRepository.findById(checkinUpdateRequestDTO.getCheckinId())
                 .orElseThrow(() -> new EntityNotFoundException("Checkin not found with id: " + checkinUpdateRequestDTO.getCheckinId()));
 
-        Shift shift = shiftRepository.findById(checkinUpdateRequestDTO.getShiftId())
-                .orElseThrow(() -> new EntityNotFoundException("Shift not found with id: " + checkinUpdateRequestDTO.getShiftId()));
+        User employee = existingCheckin.getShift().getEmployee().getUser();
+        User manager = existingCheckin.getShift().getEmployee().getBranch().getManager().getUser();
 
-        // Remove from old shift if it's changed
-        if (existingCheckin.getShift() != null &&
-                !existingCheckin.getShift().getId().equals(checkinUpdateRequestDTO.getShiftId())) {
-            existingCheckin.getShift().getCheckins().remove(existingCheckin);
-        }
-
-        existingCheckin.setShift(shift);
         existingCheckin.setCheckinTime(checkinUpdateRequestDTO.getCheckinTime());
+
+        notificationService.createNotification(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)
+                        .notificationContent(CreateNotiContentHelper.createCheckinUpdatedContentForManager(
+                                employee.getFullName(),
+                                existingCheckin.getCheckinTime().toString()
+                        ))
+                        .senderId(null)
+                        .receiverId(manager.getId())
+                        .isRead(false)
+                        .build()
+        );
+
+        notificationService.createNotification(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)
+                        .notificationContent(CreateNotiContentHelper.createCheckinUpdatedContent(existingCheckin.getCheckinTime().toString()))
+                        .senderId(null)
+                        .receiverId(employee.getId())
+                        .isRead(false)
+                        .build()
+        );
 
         return checkinRepository.save(existingCheckin);
     }
@@ -140,11 +190,35 @@ public class ImpCheckinService implements ICheckinService {
         Checkin checkin = checkinRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Checkin not found with id: " + id));
 
-        if (checkin.getShift() != null) {
-            checkin.getShift().getCheckins().remove(checkin);
-            checkin.setShift(null);
-        }
+        User employee = checkin.getShift().getEmployee().getUser();
+        User manager = checkin.getShift().getEmployee().getBranch().getManager().getUser();
+
+        checkin.getShift().getCheckins().remove(checkin);
+        checkin.setShift(null);
 
         checkinRepository.delete(checkin);
+
+        notificationService.createNotification(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)
+                        .notificationContent(CreateNotiContentHelper.createCheckinDeletedContentForManager(
+                                checkin.getShift().getEmployee().getUser().getFullName(),
+                                checkin.getCheckinTime().toString()
+                        ))
+                        .senderId(null)
+                        .receiverId(manager.getId())
+                        .isRead(false)
+                        .build()
+        );
+
+        notificationService.createNotification(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)
+                        .notificationContent(CreateNotiContentHelper.createCheckinDeletedContent(checkin.getCheckinTime().toString()))
+                        .senderId(manager.getId())
+                        .receiverId(employee.getId())
+                        .isRead(false)
+                        .build()
+        );
     }
 }

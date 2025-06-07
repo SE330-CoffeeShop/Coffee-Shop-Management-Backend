@@ -86,6 +86,7 @@ public class ImpDiscountService implements IDiscountService {
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + discountCreateRequestDTO.getBranchId()));
 
         // TODO: validate the sender employee is a manager of the branch
+        User manager = existingBranch.getManager().getUser();
 
         Discount returnDiscount = discountRepository.save(
                 Discount.builder()
@@ -104,7 +105,7 @@ public class ImpDiscountService implements IDiscountService {
                         .branch(existingBranch)
                         .productVariants(!discountCreateRequestDTO.getProductVariantIds().isEmpty() ?
                                 discountCreateRequestDTO.getProductVariantIds().stream()
-                                .map(id -> {
+                                        .map(id -> {
                                             return productVariantRepository.findById(id)
                                                     .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id));
                                         }).toList() : List.of())
@@ -114,31 +115,31 @@ public class ImpDiscountService implements IDiscountService {
 
         // send a discount notification to the branch manager
         notificationService.createNotification(
-                new NotificationCreateRequestDTO(
-                        Constants.NotificationTypeEnum.DISCOUNT,
-                        CreateNotiContentHelper.createDiscountForManager(returnDiscount.getDiscountName()),
-                        null,
-                        existingBranch.getManager().getId(),
-                        false
-                )
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.DISCOUNT)
+                        .notificationContent(CreateNotiContentHelper.createDiscountForManager(returnDiscount.getDiscountName()))
+                        .senderId(null)
+                        .receiverId(manager.getId())
+                        .isRead(false)
+                        .build()
         );
 
         // if the discount is active, send a notification to every user
         if (returnDiscount.isDiscountIsActive()) {
             notificationService.sendNotificationToAllUsers(
-                    new NotificationCreateRequestDTO(
-                            Constants.NotificationTypeEnum.DISCOUNT,
-                            CreateNotiContentHelper.createDiscountAddedContent(
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.DISCOUNT)
+                            .notificationContent(CreateNotiContentHelper.createDiscountAddedContent(
                                     returnDiscount.getDiscountName(),
                                     returnDiscount.getDiscountValue().toString(),
                                     returnDiscount.getDiscountStartDate().toString(),
                                     returnDiscount.getDiscountEndDate().toString(),
                                     returnDiscount.getBranch().getBranchName()
-                            ),
-                            null,
-                            null,
-                            false
-                    )
+                            ))
+                            .senderId(null)
+                            .receiverId(null)
+                            .isRead(false)
+                            .build()
             );
         }
 
@@ -146,12 +147,15 @@ public class ImpDiscountService implements IDiscountService {
     }
 
     @Override
+    @Transactional
     public Discount updateDiscount(DiscountUpdateRequestDTO discountUpdateRequestDTO) {
         Discount existingDiscount = discountRepository.findById(discountUpdateRequestDTO.getDiscountId())
                 .orElseThrow(() -> new EntityNotFoundException("Discount not found with id: " + discountUpdateRequestDTO.getDiscountId()));
 
         Branch existingBranch = branchRepository.findById(discountUpdateRequestDTO.getBranchId())
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + discountUpdateRequestDTO.getBranchId()));
+
+        User manager = existingBranch.getManager().getUser();
 
         existingDiscount.setDiscountName(discountUpdateRequestDTO.getDiscountName());
         existingDiscount.setDiscountDescription(discountUpdateRequestDTO.getDiscountDescription());
@@ -174,29 +178,32 @@ public class ImpDiscountService implements IDiscountService {
         if (existingDiscount.isDiscountIsActive() != discountUpdateRequestDTO.isDiscountIsActive()) {
             if (discountUpdateRequestDTO.isDiscountIsActive()) {
                 notificationService.sendNotificationToAllUsers(
-                        new NotificationCreateRequestDTO(
-                                Constants.NotificationTypeEnum.DISCOUNT,
-                                CreateNotiContentHelper.createDiscountAddedContent(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.DISCOUNT)
+                                .notificationContent(CreateNotiContentHelper.createDiscountAddedContent(
                                         existingDiscount.getDiscountName(),
                                         existingDiscount.getDiscountValue().toString(),
                                         existingDiscount.getDiscountStartDate().toString(),
                                         existingDiscount.getDiscountEndDate().toString(),
                                         existingDiscount.getBranch().getBranchName()
-                                ),
-                                null,
-                                null,
-                                false
-                        )
+                                ))
+                                .senderId(null)
+                                .receiverId(null)
+                                .isRead(false)
+                                .build()
                 );
             } else {
                 notificationService.sendNotificationToAllUsers(
-                        new NotificationCreateRequestDTO(
-                                Constants.NotificationTypeEnum.DISCOUNT,
-                                CreateNotiContentHelper.createDiscountDeletedContent(existingDiscount.getDiscountName(), existingDiscount.getBranch().getBranchName()),
-                                null,
-                                null,
-                                false
-                        )
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.DISCOUNT)
+                                .notificationContent(CreateNotiContentHelper.createDiscountDeletedContent(
+                                        existingDiscount.getDiscountName(),
+                                        existingDiscount.getBranch().getBranchName()
+                                ))
+                                .senderId(null)
+                                .receiverId(null)
+                                .isRead(false)
+                                .build()
                 );
             }
         }
@@ -206,13 +213,13 @@ public class ImpDiscountService implements IDiscountService {
 
         // send a notification to the branch manager about the discount update
         notificationService.createNotification(
-                new NotificationCreateRequestDTO(
-                        Constants.NotificationTypeEnum.DISCOUNT,
-                        CreateNotiContentHelper.updateDiscountForManager(updatedDiscount.getDiscountName()),
-                        null,
-                        existingBranch.getManager().getId(),
-                        false
-                )
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.DISCOUNT)
+                        .notificationContent(CreateNotiContentHelper.updateDiscountForManager(updatedDiscount.getDiscountName()))
+                        .senderId(null)
+                        .receiverId(manager.getId())
+                        .isRead(false)
+                        .build()
         );
 
         return updatedDiscount;

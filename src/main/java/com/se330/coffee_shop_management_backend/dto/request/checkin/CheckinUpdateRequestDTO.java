@@ -10,6 +10,5 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CheckinUpdateRequestDTO {
     private UUID checkinId;
-    private UUID shiftId;
     private LocalDateTime checkinTime;
 }
