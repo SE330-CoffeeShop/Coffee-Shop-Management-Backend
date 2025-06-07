@@ -27,7 +27,7 @@ public class Transfer extends AbstractBaseEntity {
     @Column(name = "transfer_total_cost", nullable = false)
     private BigDecimal transferTotalCost;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "branch_id",
             foreignKey = @ForeignKey(
@@ -38,7 +38,7 @@ public class Transfer extends AbstractBaseEntity {
     private Branch branch;
 
     // Many transfers belong to one warehouse
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "warehouse_id",
             foreignKey = @ForeignKey(
@@ -49,7 +49,7 @@ public class Transfer extends AbstractBaseEntity {
     private Warehouse warehouse;
 
     // One transfer has many transfer details
-    @OneToMany(mappedBy = "transfer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "transfer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<TransferDetail> transferDetails = new ArrayList<>();
 }

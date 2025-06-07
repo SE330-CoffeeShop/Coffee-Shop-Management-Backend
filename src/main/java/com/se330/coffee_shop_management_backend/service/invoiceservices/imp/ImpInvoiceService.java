@@ -47,11 +47,13 @@ public class ImpInvoiceService implements IInvoiceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Invoice findByIdInvoice(UUID id) {
         return invoiceRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Invoice> findAllInvoices(Pageable pageable) {
         return invoiceRepository.findAll(pageable);
     }

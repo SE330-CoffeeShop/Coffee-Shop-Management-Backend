@@ -24,7 +24,7 @@ public class Recipe extends AbstractBaseEntity {
     @Column(name = "recipe_is_topping", nullable = false)
     private boolean recipeIsTopping;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "ingredient_id",
             foreignKey = @ForeignKey(
@@ -34,7 +34,7 @@ public class Recipe extends AbstractBaseEntity {
     )
     private Ingredient ingredient;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "var_id",
             foreignKey = @ForeignKey(

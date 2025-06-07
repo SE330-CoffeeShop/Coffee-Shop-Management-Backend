@@ -29,16 +29,19 @@ public class ImpProductVariantService implements IProductVariantService {
         this.productRepository = productRepository;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ProductVariant findByIdProductVariant(UUID id) {
         return productVariantRepository.findById(id).orElse(null);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<ProductVariant> findAllProductVariants(Pageable pageable) {
         return productVariantRepository.findAll(pageable);
     }
 
+    @Transactional
     @Override
     public ProductVariant createProductVariant(ProductVariantCreateRequestDTO productVariantCreateRequestDTO) {
         Product product = productRepository.findById(productVariantCreateRequestDTO.getProduct())

@@ -29,7 +29,7 @@ public class Supplier extends AbstractBaseEntity {
     @Column(name = "supplier_address", nullable = false)
     private String supplierAddress;
 
-    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Invoice> invoices = new ArrayList<>();
 }

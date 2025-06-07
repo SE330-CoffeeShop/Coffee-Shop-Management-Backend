@@ -41,11 +41,13 @@ public class ImpTransferDetailService implements ITransferDetailService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public TransferDetail findByIdTransferDetail(UUID id) {
         return transferDetailRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<TransferDetail> findAllTransferDetails(Pageable pageable) {
         return transferDetailRepository.findAll(pageable);
     }

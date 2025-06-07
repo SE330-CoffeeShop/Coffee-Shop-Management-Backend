@@ -25,7 +25,7 @@ public class Shift extends AbstractBaseEntity {
     @Column(name = "shift_end_time", nullable = false)
     private LocalDateTime shiftEndTime;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "employee_id",
             foreignKey = @ForeignKey(
@@ -44,7 +44,7 @@ public class Shift extends AbstractBaseEntity {
     @Column(name = "shift_salary", nullable = false)
     private BigDecimal shiftSalary;
 
-    @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Checkin> checkins = new ArrayList<>();
 }

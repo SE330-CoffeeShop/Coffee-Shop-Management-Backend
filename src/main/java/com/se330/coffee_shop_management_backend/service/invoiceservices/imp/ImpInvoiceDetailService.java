@@ -35,16 +35,19 @@ public class ImpInvoiceDetailService implements IInvoiceDetailService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public InvoiceDetail findByIdInvoiceDetail(UUID id) {
         return invoiceDetailRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<InvoiceDetail> findAllInvoiceDetails(Pageable pageable) {
         return invoiceDetailRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional
     public InvoiceDetail createInvoiceDetail(InvoiceDetailCreateRequestDTO invoiceDetailCreateRequestDTO) {
         Invoice existingInvoice = invoiceRepository.findById(invoiceDetailCreateRequestDTO.getInvoiceId())
                 .orElseThrow(() -> new EntityNotFoundException("Invoice not found with ID: " + invoiceDetailCreateRequestDTO.getInvoiceId()));

@@ -12,7 +12,6 @@ import com.se330.coffee_shop_management_backend.service.salaryservices.ISalarySe
 import com.se330.coffee_shop_management_backend.util.Constants;
 import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.catalina.Manager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,11 +41,13 @@ public class ImpSalaryService implements ISalaryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Salary findById(UUID id) {
         return salaryRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Salary> findAll(Pageable pageable) {
         return salaryRepository.findAll(pageable);
     }

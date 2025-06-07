@@ -26,7 +26,7 @@ public class ProductCategory extends AbstractBaseEntity {
     @Column(name = "category_description", nullable = false, length = 1000)
     private String categoryDescription = "";
 
-    @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "productCategory", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Product> products = new ArrayList<>();
 

@@ -54,14 +54,14 @@ public class Product extends AbstractBaseEntity {
     @Column(name = "product_is_deleted", nullable = false)
     private Boolean productIsDeleted = false;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ProductVariant> productVariants = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "fk_product_product-category")
     private ProductCategory productCategory;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 }

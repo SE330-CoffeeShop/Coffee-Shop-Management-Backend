@@ -50,11 +50,13 @@ public class ImpProductService implements IProductService {
         this.notificationService = notificationService;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Product findByIdProduct(UUID id) {
         return productRepository.findById(id).orElse(null);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<Product> findAllProducts(Pageable pageable) {
         return productRepository.findAll(pageable);
@@ -158,6 +160,7 @@ public class ImpProductService implements IProductService {
 
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findAllBestSellingProducts(Pageable pageable) {
         Page<Object[]> productData = productRepository.findAllBestSellingProducts(pageable);
@@ -165,6 +168,7 @@ public class ImpProductService implements IProductService {
         return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByYear(int year, Pageable pageable) {
         Page<Object[]> productData = productRepository.findBestSellingProductsByYear(year, pageable);
@@ -172,6 +176,7 @@ public class ImpProductService implements IProductService {
         return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByMonthAndYear(int month, int year, Pageable pageable) {
         Page<Object[]> productData = productRepository.findBestSellingProductsByMonthAndYear(month, year, pageable);
@@ -179,6 +184,7 @@ public class ImpProductService implements IProductService {
         return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByDayAndMonthAndYear(int day, int month, int year, Pageable pageable) {
         Page<Object[]> productData = productRepository.findBestSellingProductsByDayAndMonthAndYear(day, month, year, pageable);
@@ -186,6 +192,7 @@ public class ImpProductService implements IProductService {
         return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranch(UUID branchId, Pageable pageable) {
         Page<Object[]> productData = productRepository.findBestSellingProductsByBranch(branchId, pageable);
@@ -193,6 +200,7 @@ public class ImpProductService implements IProductService {
         return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndYear(UUID branchId, int year, Pageable pageable) {
         Page<Object[]> productData = productRepository.findBestSellingProductsByBranchAndYear(branchId, year, pageable);
@@ -200,6 +208,7 @@ public class ImpProductService implements IProductService {
         return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndMonthAndYear(UUID branchId, int month, int year, Pageable pageable) {
         Page<Object[]> productData = productRepository.findBestSellingProductsByBranchAndMonthAndYear(branchId, month, year, pageable);
@@ -207,6 +216,7 @@ public class ImpProductService implements IProductService {
         return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndDayAndMonthAndYear(UUID branchId, int day, int month, int year, Pageable pageable) {
         Page<Object[]> productData = productRepository.findBestSellingProductsByBranchAndDayAndMonthAndYear(branchId, day, month, year, pageable);
@@ -214,6 +224,7 @@ public class ImpProductService implements IProductService {
         return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
     }
 
+    @Transactional
     @Override
     public String uploadProductImage(UUID productId, MultipartFile file) throws Exception {
         Product existingProduct = productRepository.findById(productId)
@@ -255,6 +266,7 @@ public class ImpProductService implements IProductService {
         }
     }
 
+    @Transactional
     @Override
     public String deleteProductImage(UUID productId) throws Exception {
         Product existingProduct = productRepository.findById(productId)

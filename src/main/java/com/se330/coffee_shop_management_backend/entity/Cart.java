@@ -37,7 +37,7 @@ public class Cart extends AbstractBaseEntity {
     )
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<CartDetail> cartDetails = new ArrayList<>();
 

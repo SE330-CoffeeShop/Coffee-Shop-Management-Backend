@@ -10,10 +10,11 @@ import com.se330.coffee_shop_management_backend.repository.CartRepository;
 import com.se330.coffee_shop_management_backend.repository.InventoryRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.cartservices.ICartDetailService;
-import jakarta.transaction.Transactional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -39,22 +40,26 @@ public class ImpCartDetailService implements ICartDetailService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CartDetail findByIdCartDetail(UUID id) {
         return cartDetailRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("CartDetail not found with id: " + id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<CartDetail> findAllCartDetails(Pageable pageable) {
         return cartDetailRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<CartDetail> findAllCartDetailsByCartId(UUID cartId, Pageable pageable) {
         return cartDetailRepository.findAllByCart_Id(cartId, pageable);
     }
 
     @Override
+    @Transactional
     public CartDetail createCartDetail(CartDetailCreateRequestDTO cartDetailCreateRequestDTO, UUID branchId, UUID cartId) {
         return cartDetailRepository.save(
                 CartDetail.builder()

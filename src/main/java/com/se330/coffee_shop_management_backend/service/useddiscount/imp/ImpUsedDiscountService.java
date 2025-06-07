@@ -10,7 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.service.useddiscount.IUsedDiscountService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.RollbackException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,11 +38,13 @@ public class ImpUsedDiscountService implements IUsedDiscountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UsedDiscount findByIdUsedDiscount(UUID id) {
         return usedDiscountRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<UsedDiscount> findAllUsedDiscounts(Pageable pageable) {
         return usedDiscountRepository.findAll(pageable);
     }
@@ -94,6 +96,7 @@ public class ImpUsedDiscountService implements IUsedDiscountService {
     }
 
     @Override
+    @Transactional
     public UsedDiscount updateUsedDiscount(UsedDiscountUpdateRequestDTO usedDiscountUpdateRequestDTO) {
         UsedDiscount existingUsedDiscount = usedDiscountRepository.findById(usedDiscountUpdateRequestDTO.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Used Discount not found with id: " + usedDiscountUpdateRequestDTO.getId()));
@@ -128,6 +131,7 @@ public class ImpUsedDiscountService implements IUsedDiscountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int timesUsedDiscountByUser(UUID discountId, UUID userId) {
         if (!discountRepository.existsById(discountId)) {
             throw new EntityNotFoundException("Discount not found with id: " + discountId);

@@ -44,15 +44,15 @@ public class ProductVariant extends AbstractBaseEntity {
     @JoinColumn(name = "fk_product-variant_product")
     private Product product;
 
-    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
-    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Recipe> recipes = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "product_variant_discounts",
             joinColumns = @JoinColumn(name = "var_id"),
@@ -61,7 +61,7 @@ public class ProductVariant extends AbstractBaseEntity {
     @Builder.Default
     private List<Discount> discounts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<CartDetail> cartDetails = new ArrayList<>();
 }

@@ -7,6 +7,7 @@ import com.se330.coffee_shop_management_backend.repository.WarehouseRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ public class WarehouseAndSupplier {
     private final WarehouseRepository warehouseRepository;
     private final SupplierRepository supplierRepository;
 
+    @Transactional
     public void create() {
         createWarehouse();
         createSupplier();

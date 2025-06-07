@@ -58,7 +58,7 @@ public class Discount extends AbstractBaseEntity {
     @Column(name = "discount_is_active", nullable = false)
     private boolean discountIsActive;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "branch_id",
             foreignKey = @ForeignKey(
@@ -68,11 +68,11 @@ public class Discount extends AbstractBaseEntity {
     )
     private Branch branch;
 
-    @ManyToMany(mappedBy = "discounts", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "discounts", fetch = FetchType.LAZY)
     @Builder.Default
     private List<ProductVariant> productVariants = new ArrayList<>();
 
-    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<UsedDiscount> usedDiscounts = new ArrayList<>();
 }

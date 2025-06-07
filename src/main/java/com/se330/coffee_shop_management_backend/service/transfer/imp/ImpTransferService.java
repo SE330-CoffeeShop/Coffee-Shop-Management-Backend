@@ -45,16 +45,19 @@ public class ImpTransferService implements ITransferService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Transfer findByIdTransfer(UUID id) {
         return transferRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Transfer> findAllTransfers(Pageable pageable) {
         return transferRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional
     public Transfer createTransfer(TransferCreateRequestDTO transferCreateRequestDTO) {
         Warehouse existingWarehouse = warehouseRepository.findById(transferCreateRequestDTO.getWarehouseId())
                 .orElseThrow(() -> new EntityNotFoundException("Warehouse not found with ID: " + transferCreateRequestDTO.getWarehouseId()));

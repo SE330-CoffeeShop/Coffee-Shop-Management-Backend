@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.service.dummydataservices.domain;
 
 import com.se330.coffee_shop_management_backend.entity.Branch;
+import com.se330.coffee_shop_management_backend.entity.Discount;
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.BranchRepository;
 import com.se330.coffee_shop_management_backend.repository.DiscountRepository;
@@ -9,6 +10,7 @@ import com.se330.coffee_shop_management_backend.util.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,14 +24,15 @@ public class Discounts {
     private final BranchRepository branchRepository;
     private final ProductVariantRepository productVariantRepository;
 
+    @Transactional
     public void create() {
         log.info("Creating discount dummy data...");
-        List<com.se330.coffee_shop_management_backend.entity.Discount> discounts = createDiscount();
+        List<Discount> discounts = createDiscount();
         createDiscountProductVariant(discounts);
         log.info("Created {} discounts", discounts.size());
     }
 
-    private List<com.se330.coffee_shop_management_backend.entity.Discount> createDiscount() {
+    public List<Discount> createDiscount() {
         List<Branch> branches = branchRepository.findAll();
         if (branches.isEmpty()) {
             log.error("Cannot create discounts: No branches found");
@@ -37,7 +40,7 @@ public class Discounts {
         }
 
         Random random = new Random();
-        List<com.se330.coffee_shop_management_backend.entity.Discount> discounts = new ArrayList<>();
+        List<Discount> discounts = new ArrayList<>();
 
         // Mã giảm giá theo phần trăm
         List<Map<String, Object>> percentageDiscounts = new ArrayList<>();
@@ -144,7 +147,7 @@ public class Discounts {
                     break;
             }
 
-            com.se330.coffee_shop_management_backend.entity.Discount discount = com.se330.coffee_shop_management_backend.entity.Discount.builder()
+            Discount discount = Discount.builder()
                     .discountName((String) info.get("name"))
                     .discountDescription((String) info.get("desc"))
                     .discountType(Constants.DiscountTypeEnum.PERCENTAGE)
@@ -189,7 +192,7 @@ public class Discounts {
                     break;
             }
 
-            com.se330.coffee_shop_management_backend.entity.Discount discount = com.se330.coffee_shop_management_backend.entity.Discount.builder()
+            Discount discount = Discount.builder()
                     .discountName((String) info.get("name"))
                     .discountDescription((String) info.get("desc"))
                     .discountType(Constants.DiscountTypeEnum.AMOUNT)
@@ -211,7 +214,7 @@ public class Discounts {
         return discountRepository.saveAll(discounts);
     }
 
-    private void createDiscountProductVariant(List<com.se330.coffee_shop_management_backend.entity.Discount> discounts) {
+    public void createDiscountProductVariant(List<Discount> discounts) {
         if (discounts.isEmpty()) {
             log.error("No discounts to associate with product variants");
             return;
@@ -226,7 +229,7 @@ public class Discounts {
         Random random = new Random();
 
         // Với mỗi discount, gắn 1-5 product variant
-        for (com.se330.coffee_shop_management_backend.entity.Discount discount : discounts) {
+        for (Discount discount : discounts) {
             int variantCount = 1 + random.nextInt(5);
             List<ProductVariant> selectedVariants = new ArrayList<>();
 

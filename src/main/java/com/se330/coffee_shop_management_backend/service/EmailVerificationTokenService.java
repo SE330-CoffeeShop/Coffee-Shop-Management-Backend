@@ -8,6 +8,7 @@ import com.se330.coffee_shop_management_backend.repository.EmailVerificationToke
 import com.se330.coffee_shop_management_backend.util.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Date;
@@ -57,6 +58,7 @@ public class EmailVerificationTokenService {
      * @param user User
      * @return EmailVerificationToken
      */
+    @Transactional
     public EmailVerificationToken create(User user) {
         String newToken = new RandomStringGenerator(EMAIL_VERIFICATION_TOKEN_LENGTH).next();
         Date expirationDate = Date.from(Instant.now().plusSeconds(expiresIn));
@@ -84,6 +86,7 @@ public class EmailVerificationTokenService {
      * @param token String
      * @return User
      */
+    @Transactional
     public User getUserByToken(String token) {
         EmailVerificationToken emailVerificationToken = emailVerificationTokenRepository.findByToken(token)
             .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
@@ -102,6 +105,7 @@ public class EmailVerificationTokenService {
      *
      * @param userId UUID
      */
+    @Transactional
     public void deleteByUserId(UUID userId) {
         emailVerificationTokenRepository.deleteByUserId(userId);
     }

@@ -39,11 +39,13 @@ public class ImpOrderDetailService implements IOrderDetailService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderDetail findByIdOrderDetail(UUID id) {
         return orderDetailRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<OrderDetail> findAllOrderDetails(Pageable pageable) {
         return orderDetailRepository.findAll(pageable);
     }
@@ -141,6 +143,7 @@ public class ImpOrderDetailService implements IOrderDetailService {
     }
 
     @Override
+    @Transactional
     public OrderDetail updateOrderDetail(OrderDetailUpdateRequestDTO orderDetailUpdateRequestDTO) {
         OrderDetail existingOrderDetail = orderDetailRepository.findById(orderDetailUpdateRequestDTO.getOrderDetailId())
                 .orElseThrow(() -> new EntityNotFoundException("Order detail not found with id: " + orderDetailUpdateRequestDTO.getOrderDetailId()));

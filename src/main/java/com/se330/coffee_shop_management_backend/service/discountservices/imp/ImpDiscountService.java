@@ -57,16 +57,19 @@ public class ImpDiscountService implements IDiscountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Discount findByIdDiscount(UUID id) {
         return discountRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Discount> findAllDiscounts(Pageable pageable) {
         return discountRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Discount> findAllDiscountsByBranchId(Pageable pageable, UUID branchId) {
         Branch existingBranch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchId));
@@ -75,6 +78,7 @@ public class ImpDiscountService implements IDiscountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Discount> findAllDiscountsByProductVariantId(Pageable pageable, UUID productVariantId) {
         return discountRepository.findAllByProductVariants_Id(productVariantId, pageable);
     }
@@ -239,6 +243,7 @@ public class ImpDiscountService implements IDiscountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isDiscountValid(UUID discountId, UUID productVariantId, UUID userId, UUID employeeId) {
         Discount discount = discountRepository.findById(discountId).orElse(null);
         if (discount == null) {

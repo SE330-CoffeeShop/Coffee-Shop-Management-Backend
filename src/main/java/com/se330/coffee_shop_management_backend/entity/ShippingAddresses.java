@@ -33,7 +33,7 @@ public class ShippingAddresses extends AbstractBaseEntity {
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
             foreignKey = @ForeignKey(

@@ -1,7 +1,6 @@
 package com.se330.coffee_shop_management_backend.service.cartservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.cart.CartCreateRequestDTO;
-import com.se330.coffee_shop_management_backend.dto.request.cart.CartDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.cart.CartUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Cart;
 import com.se330.coffee_shop_management_backend.entity.CartDetail;
@@ -11,10 +10,11 @@ import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.service.cartservices.ICartDetailService;
 import com.se330.coffee_shop_management_backend.service.cartservices.ICartService;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
-import jakarta.transaction.Transactional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,17 +41,20 @@ public class ImpCartService implements ICartService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Cart findByIdCart(UUID id) {
         return cartRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cart not found with id: " + id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Cart> findAllCarts(Pageable pageable) {
         return cartRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Cart> findCartsByUserId(UUID userId, Pageable pageable) {
         return cartRepository.findAllByUser_Id(userId, pageable);
     }
@@ -89,6 +92,7 @@ public class ImpCartService implements ICartService {
     }
 
     @Override
+    @Transactional
     public Cart updateCart(CartUpdateRequestDTO cartUpdateRequestDTO) {
         deleteCart(cartUpdateRequestDTO.getCartId());
         return createCart(CartCreateRequestDTO.builder()

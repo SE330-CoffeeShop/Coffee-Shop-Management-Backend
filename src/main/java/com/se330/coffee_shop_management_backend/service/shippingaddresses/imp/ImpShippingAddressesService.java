@@ -29,16 +29,19 @@ public class ImpShippingAddressesService implements IShippingAddressesService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ShippingAddresses findByIdShippingAddresses(UUID id) {
         return shippingAddressesRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ShippingAddresses> findAllShippingAddresses(Pageable pageable) {
         return shippingAddressesRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional
     public ShippingAddresses createShippingAddresses(ShippingAddressesCreateRequestDTO shippingAddressesCreateRequestDTO) {
         User existingUser = userRepository.findById(shippingAddressesCreateRequestDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
