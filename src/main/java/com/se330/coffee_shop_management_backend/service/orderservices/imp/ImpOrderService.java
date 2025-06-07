@@ -270,7 +270,7 @@ public class ImpOrderService implements IOrderService {
         }
 
         if (existingOrder.getShippingAddress() != null) {
-            existingOrder.setShippingAddress(null);
+            existingOrder.getShippingAddress().getOrders().remove(existingOrder);
         }
 
         if (existingOrder.getPaymentMethod() != null) {

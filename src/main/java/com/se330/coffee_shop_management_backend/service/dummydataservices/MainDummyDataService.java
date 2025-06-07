@@ -19,6 +19,7 @@ public class MainDummyDataService implements CommandLineRunner {
     private final StockAndInventory stockAndInventory;
     private final Comment comment;
     private final Discounts discount;
+    private final Logistics logistics;
 
     @Override
     public void run(String... args) throws Exception {
@@ -54,6 +55,10 @@ public class MainDummyDataService implements CommandLineRunner {
 
         log.info("Creating discounts...");
         discount.create();
+        log.info("Dummy data creation completed.");
+
+        log.info("Creating logistics...");
+        logistics.create();
         log.info("Dummy data creation completed.");
 
         log.info("All dummy data creation completed successfully.");
