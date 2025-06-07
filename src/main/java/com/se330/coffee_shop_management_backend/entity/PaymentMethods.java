@@ -26,11 +26,11 @@ public class PaymentMethods extends AbstractBaseEntity {
     @Column(name = "method_is_default", nullable = false)
     private boolean methodIsDefault;
 
-    @OneToMany(mappedBy = "paymentMethod", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "paymentMethod", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
             foreignKey = @ForeignKey(

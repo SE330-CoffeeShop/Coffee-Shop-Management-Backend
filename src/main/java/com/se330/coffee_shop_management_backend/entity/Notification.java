@@ -24,7 +24,7 @@ public class Notification extends AbstractBaseEntity {
     @Column(name = "notification_content")
     private String notificationContent;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_sender_id",
             foreignKey = @ForeignKey(
@@ -34,7 +34,7 @@ public class Notification extends AbstractBaseEntity {
     )
     private User sender;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_receiver_id",
             nullable = false,

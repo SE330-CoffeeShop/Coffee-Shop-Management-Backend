@@ -38,71 +38,85 @@ public class ImpCheckinService implements ICheckinService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Checkin findById(UUID id) {
         return checkinRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAll(Pageable pageable) {
         return checkinRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByShiftId(UUID shiftId, Pageable pageable) {
         return checkinRepository.findAllByShiftId(shiftId, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByEmployeeId(UUID employeeId, Pageable pageable) {
         return checkinRepository.findAllByEmployeeId(employeeId, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByBranchId(UUID branchId, Pageable pageable) {
         return checkinRepository.findAllByBranchId(branchId, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByShiftIdAndYear(UUID shiftId, int year, Pageable pageable) {
         return checkinRepository.findAllByShiftIdAndYear(shiftId, year, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByShiftIdAndYearAndMonth(UUID shiftId, int year, int month, Pageable pageable) {
         return checkinRepository.findAllByShiftIdAndYearAndMonth(shiftId, year, month, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByShiftIdAndYearAndMonthAndDay(UUID shiftId, int year, int month, int day, Pageable pageable) {
         return checkinRepository.findAllByShiftIdAndYearAndMonthAndDay(shiftId, year, month, day, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByEmployeeIdAndYear(UUID employeeId, int year, Pageable pageable) {
         return checkinRepository.findAllByEmployeeIdAndYear(employeeId, year, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByEmployeeIdAndYearAndMonth(UUID employeeId, int year, int month, Pageable pageable) {
         return checkinRepository.findAllByEmployeeIdAndYearAndMonth(employeeId, year, month, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByEmployeeIdAndYearAndMonthAndDay(UUID employeeId, int year, int month, int day, Pageable pageable) {
         return checkinRepository.findAllByEmployeeIdAndYearAndMonthAndDay(employeeId, year, month, day, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByBranchIdAndYear(UUID branchId, int year, Pageable pageable) {
         return checkinRepository.findAllByBranchIdAndYear(branchId, year, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByBranchIdAndYearAndMonth(UUID branchId, int year, int month, Pageable pageable) {
         return checkinRepository.findAllByBranchIdAndYearAndMonth(branchId, year, month, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Checkin> findAllByBranchIdAndYearAndMonthAndDay(UUID branchId, int year, int month, int day, Pageable pageable) {
         return checkinRepository.findAllByBranchIdAndYearAndMonthAndDay(branchId, year, month, day, pageable);
     }

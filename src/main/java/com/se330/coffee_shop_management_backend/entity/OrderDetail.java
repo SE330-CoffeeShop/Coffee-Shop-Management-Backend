@@ -51,7 +51,7 @@ public class OrderDetail extends AbstractBaseEntity {
     )
     private Order order;
 
-    @OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<UsedDiscount> usedDiscounts = new ArrayList<>();
 }

@@ -27,17 +27,20 @@ public class ImpPaymentMethodService implements IPaymentMethodService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PaymentMethods findByIdPaymentMethod(UUID id) {
         return paymentMethodsRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id: " + id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<PaymentMethods> findAllPaymentMethods(Pageable pageable) {
         return paymentMethodsRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional
     public PaymentMethods createPaymentMethod(PaymentMethodCreateRequestDTO paymentMethodCreateRequestDTO) {
         User user = null;
         if (paymentMethodCreateRequestDTO.getUserId() != null) {
@@ -56,6 +59,7 @@ public class ImpPaymentMethodService implements IPaymentMethodService {
     }
 
     @Override
+    @Transactional
     public PaymentMethods updatePaymentMethod(PaymentMethodUpdateRequestDTO paymentMethodUpdateRequestDTO) {
         PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(paymentMethodUpdateRequestDTO.getPaymentMethodId())
                 .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id: " + paymentMethodUpdateRequestDTO.getPaymentMethodId()));

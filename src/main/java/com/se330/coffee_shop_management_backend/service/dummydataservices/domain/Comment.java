@@ -6,6 +6,7 @@ import com.se330.coffee_shop_management_backend.repository.productrepositories.P
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,6 +20,7 @@ public class Comment {
     private final CommentRepository commentRepository;
     private final ProductRepository productRepository;
 
+    @Transactional
     public void create() {
         log.info("Creating dummy comments...");
 

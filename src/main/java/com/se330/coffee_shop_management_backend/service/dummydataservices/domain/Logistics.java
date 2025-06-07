@@ -9,6 +9,7 @@ import com.se330.coffee_shop_management_backend.util.CreateTrackingNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class Logistics {
     private final ShippingAddressesRepository shippingAddressesRepository;
     private final PaymentMethodsRepository paymentMethodsRepository;
 
+    @Transactional
     public void create() {
         createOrders();
     }
@@ -51,7 +53,7 @@ public class Logistics {
 
         Random random = new Random();
         List<Order> orders = new ArrayList<>();
-        int orderCount = 200;
+        int orderCount = 10000;
 
         // Create orders
         for (int i = 0; i < orderCount; i++) {

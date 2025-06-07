@@ -14,6 +14,7 @@ import com.se330.coffee_shop_management_backend.util.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindException;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class UserBasicInfo {
     private final ShippingAddressesRepository shippingAddressesRepository;
     private final PaymentMethodsRepository paymentMethodsRepository;
 
+    @Transactional
     public void create() throws BindException {
         createRoles();
         createUsers();

@@ -15,6 +15,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,16 +38,19 @@ public class ImpSupplierService implements ISupplierService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Supplier findByIdSupplier(UUID id) {
         return supplierRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Supplier> findAllSuppliers(Pageable pageable) {
         return supplierRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional
     public Supplier createSupplier(SupplierCreateRequestDTO supplierCreateRequestDTO) {
         Supplier newSupplier = supplierRepository.save(
                 Supplier.builder()
@@ -76,6 +80,7 @@ public class ImpSupplierService implements ISupplierService {
     }
 
     @Override
+    @Transactional
     public Supplier updateSupplier(SupplierUpdateRequestDTO supplierUpdateRequestDTO) {
         Supplier existingSupplier = supplierRepository.findById(supplierUpdateRequestDTO.getSupplierId())
                 .orElseThrow(() -> new EntityNotFoundException("Supplier not found with ID: " + supplierUpdateRequestDTO.getSupplierId()));
@@ -104,6 +109,7 @@ public class ImpSupplierService implements ISupplierService {
     }
 
     @Override
+    @Transactional
     public void deleteSupplier(UUID id) {
         Supplier existingSupplier = supplierRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Supplier not found with ID: " + id));

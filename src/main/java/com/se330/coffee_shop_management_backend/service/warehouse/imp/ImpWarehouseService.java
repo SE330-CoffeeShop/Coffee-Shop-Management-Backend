@@ -38,11 +38,13 @@ public class ImpWarehouseService implements IWarehouseService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Warehouse findByIdWarehouse(UUID id) {
         return warehouseRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Warehouse> findAllWarehouses(Pageable pageable) {
         return warehouseRepository.findAll(pageable);
     }

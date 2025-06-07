@@ -8,6 +8,7 @@ import com.se330.coffee_shop_management_backend.repository.CatalogRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductCategoryRepository;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductCategoryService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,22 +29,26 @@ public class ImpProductCategoryService implements IProductCategoryService {
         this.catalogRepository = catalogRepository;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ProductCategory findByIdProductCategory(UUID id) {
         return productCategoryRepository.findById(id).orElse(null);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<ProductCategory> findAllProductCategories(Pageable pageable) {
         return productCategoryRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<ProductCategory> findAllProductCategoriesByCatalogId(Integer catalogId, Pageable pageable) {
         return productCategoryRepository.findAllByCatalog_Id(catalogId, pageable);
     }
 
     @Override
+    @Transactional
     public ProductCategory createProductCategory(ProdutCategoryCreateRequestDTO productCategoryRequestDTO) {
         Catalog existingCatalog = catalogRepository.findById(productCategoryRequestDTO.getCatalogId())
                 .orElseThrow(() -> new EntityNotFoundException("Catalog not found with ID: " + productCategoryRequestDTO.getCatalogId()));
@@ -58,6 +63,7 @@ public class ImpProductCategoryService implements IProductCategoryService {
     }
 
     @Override
+    @Transactional
     public ProductCategory updateProductCategory(ProductCategoryUpdateRequestDTO productCategoryRequestDTO) {
         ProductCategory existingCategory = productCategoryRepository.findById(productCategoryRequestDTO.getCategoryId())
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productCategoryRequestDTO.getCategoryId()));
@@ -73,6 +79,7 @@ public class ImpProductCategoryService implements IProductCategoryService {
     }
 
     @Override
+    @Transactional
     public void deleteProductCategory(UUID id) {
         ProductCategory existingProduct = productCategoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + id));

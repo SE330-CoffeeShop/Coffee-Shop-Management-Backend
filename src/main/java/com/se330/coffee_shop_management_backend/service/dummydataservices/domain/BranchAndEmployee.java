@@ -10,6 +10,7 @@ import com.se330.coffee_shop_management_backend.util.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class BranchAndEmployee {
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
 
+    @Transactional
     public void create() {
         createBranch();
         createEmployee();

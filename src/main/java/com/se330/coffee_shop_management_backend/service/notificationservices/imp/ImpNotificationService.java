@@ -8,7 +8,6 @@ import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.repository.NotificationRepository;
 import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
-import com.se330.coffee_shop_management_backend.util.Constants;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -35,16 +33,19 @@ public class ImpNotificationService implements INotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Notification findByIdNotification(UUID id) {
         return notificationRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Notification> findAllNotifications(Pageable pageable) {
         return notificationRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Notification> findAllNotificationsByUserId(UUID userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -53,6 +54,7 @@ public class ImpNotificationService implements INotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Notification> findAllSentNotificationsByUserId(Pageable pageable, UUID senderId) {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
@@ -60,6 +62,7 @@ public class ImpNotificationService implements INotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Notification> findAllReceivedNotificationsByUserId(Pageable pageable, UUID userId) {
         User recipient = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Recipient not found"));
@@ -67,6 +70,7 @@ public class ImpNotificationService implements INotificationService {
     }
 
     @Override
+    @Transactional
     public Notification createNotification(NotificationCreateRequestDTO notificationCreateRequestDTO) {
 
         User sender = null;
@@ -132,6 +136,7 @@ public class ImpNotificationService implements INotificationService {
     }
 
     @Override
+    @Transactional
     public Page<Notification> sendNotificationToMany(NotificationForManyCreateRequestDTO notificationForManyCreateRequestDTO) {
         List<Notification> returnedNotifications = new ArrayList<>();
 
@@ -158,6 +163,7 @@ public class ImpNotificationService implements INotificationService {
     }
 
     @Override
+    @Transactional
     public Page<Notification> sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO) {
         List<Notification> returnedNotifications = new ArrayList<>();
 

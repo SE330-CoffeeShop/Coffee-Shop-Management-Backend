@@ -1,6 +1,5 @@
 package com.se330.coffee_shop_management_backend.service.orderservices.imp;
 
-import com.se330.coffee_shop_management_backend.dto.request.cart.CartDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
@@ -15,7 +14,6 @@ import com.se330.coffee_shop_management_backend.util.Constants;
 import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import com.se330.coffee_shop_management_backend.util.CreateTrackingNumber;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

@@ -34,16 +34,19 @@ public class ImpRecipeService implements IRecipeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Recipe findByIdRecipe(UUID id) {
         return recipeRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Recipe> findAllRecipes(Pageable pageable) {
         return recipeRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional
     public Recipe createRecipe(RecipeCreateRequestDTO recipeCreateRequestDTO) {
 
         ProductVariant existingProductVariant = productVariantRepository.findById(recipeCreateRequestDTO.getProductVariantId())

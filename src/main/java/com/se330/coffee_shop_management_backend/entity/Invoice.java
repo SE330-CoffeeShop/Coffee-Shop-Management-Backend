@@ -27,11 +27,11 @@ public class Invoice extends AbstractBaseEntity {
     @Column(name = "invoice_transfer_total_cost", nullable = false)
     private BigDecimal invoiceTransferTotalCost;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<InvoiceDetail> invoiceDetails = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "supplier_id",
             foreignKey = @ForeignKey(
@@ -41,7 +41,7 @@ public class Invoice extends AbstractBaseEntity {
     )
     private Supplier supplier;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "warehouse_id",
             foreignKey = @ForeignKey(

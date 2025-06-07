@@ -34,21 +34,25 @@ public class ImpInventoryService implements IInventoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Inventory findByIdInventory(UUID id) {
         return inventoryRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Inventory> findAllInventories(Pageable pageable) {
         return inventoryRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Inventory> findAllInventoriesByBrachId(UUID branchId, Pageable pageable) {
         return inventoryRepository.findAllByBranch_Id(branchId, pageable);
     }
 
     @Override
+    @Transactional
     public Inventory createInventory(InventoryCreateRequestDTO inventoryCreateRequestDTO) {
         Ingredient existingIngredient = ingredientRepository.findById(inventoryCreateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));

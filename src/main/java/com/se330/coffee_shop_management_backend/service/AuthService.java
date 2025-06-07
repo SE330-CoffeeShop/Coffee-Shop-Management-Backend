@@ -17,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -47,6 +48,7 @@ public class AuthService {
      * @param rememberMe Boolean
      * @return TokenResponse
      */
+    @Transactional
     public TokenResponse login(String email, final String password, final Boolean rememberMe) {
         log.info("Login request received: {}", email);
 
@@ -79,6 +81,7 @@ public class AuthService {
      * @param bearer String
      * @return TokenResponse
      */
+    @Transactional
     public TokenResponse refreshFromBearerString(final String bearer) {
         return refresh(jwtTokenProvider.extractJwtFromBearerString(bearer));
     }
@@ -88,6 +91,7 @@ public class AuthService {
      *
      * @param email String
      */
+    @Transactional
     public void resetPassword(String email) {
         log.info("Reset password request received: {}", email);
         userService.sendEmailPasswordResetMail(email);
@@ -99,6 +103,7 @@ public class AuthService {
      * @param user   User
      * @param bearer String
      */
+    @Transactional
     public void logout(User user, final String bearer) {
         JwtToken jwtToken = jwtTokenService.findByTokenOrRefreshToken(
             jwtTokenProvider.extractJwtFromBearerString(bearer));
@@ -116,6 +121,7 @@ public class AuthService {
      *
      * @param user User
      */
+    @Transactional
     public void logout(User user) {
         logout(user, httpServletRequest.getHeader(TOKEN_HEADER));
     }
@@ -126,7 +132,8 @@ public class AuthService {
      * @param refreshToken String
      * @return TokenResponse
      */
-    private TokenResponse refresh(final String refreshToken) {
+    @Transactional
+    public TokenResponse refresh(final String refreshToken) {
         log.info("Refresh request received: {}", refreshToken);
 
         if (!jwtTokenProvider.validateToken(refreshToken)) {
@@ -156,7 +163,8 @@ public class AuthService {
      * @param rememberMe Boolean option to set the expiration time for refresh token
      * @return an object of TokenResponse
      */
-    private TokenResponse generateTokens(final UUID id, final Boolean rememberMe) {
+    @Transactional
+    public TokenResponse generateTokens(final UUID id, final Boolean rememberMe) {
         String token = jwtTokenProvider.generateJwt(id.toString());
         String refreshToken = jwtTokenProvider.generateRefresh(id.toString());
         if (rememberMe) {

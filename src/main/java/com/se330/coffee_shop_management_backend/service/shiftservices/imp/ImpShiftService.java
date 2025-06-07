@@ -37,11 +37,13 @@ public class ImpShiftService implements IShiftService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Shift findByIdShift(UUID id) {
         return shiftRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Shift> findAllShifts(Pageable pageable) {
         return shiftRepository.findAll(pageable);
     }

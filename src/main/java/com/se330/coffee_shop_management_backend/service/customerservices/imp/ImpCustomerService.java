@@ -8,6 +8,8 @@ import com.se330.coffee_shop_management_backend.service.customerservices.ICustom
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.UUID;
 
@@ -23,11 +25,13 @@ public class ImpCustomerService implements ICustomerService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CustomerResponseDTO findByIdCustomer(UUID id, UUID branchId) {
         return CustomerResponseDTO.convert(userService.findById(id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<CustomerResponseDTO> findAllCustomerOfBranch(Pageable pageable, UUID branchId) {
         Page<User> userPage = userRepository.findAll(pageable);
         return userPage.map(CustomerResponseDTO::convert);

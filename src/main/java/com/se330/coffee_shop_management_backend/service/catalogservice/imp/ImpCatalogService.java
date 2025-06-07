@@ -21,12 +21,14 @@ public class ImpCatalogService implements ICatalogService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Catalog findByIdCatalog(Integer id) {
         return catalogRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Catalog not found with ID: " + id));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Catalog> findAllCatalogs(Pageable pageable) {
         return catalogRepository.findAll(pageable);
     }
@@ -100,6 +102,7 @@ public class ImpCatalogService implements ICatalogService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Catalog> findChildCatalogs(Integer parentId, Pageable pageable) {
         Catalog parentCatalog = catalogRepository.findById(parentId)
                 .orElseThrow(() -> new EntityNotFoundException("Parent Catalog not found with ID: " + parentId));

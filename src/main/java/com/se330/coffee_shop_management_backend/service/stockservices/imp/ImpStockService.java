@@ -35,21 +35,25 @@ public class ImpStockService implements IStockService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Stock findByIdStock(UUID id) {
         return stockRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Stock> findAllStocks(Pageable pageable) {
         return stockRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Stock> findAllStocksByWarehouseId(UUID warehouseId, Pageable pageable) {
         return stockRepository.findAllByWarehouse_Id(warehouseId, pageable);
     }
 
     @Override
+    @Transactional
     public Stock createStock(StockCreateRequestDTO stockCreateRequestDTO) {
         Ingredient existingIngredient = ingredientRepository.findById(stockCreateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new EntityNotFoundException("Ingredient not found with ID: " + stockCreateRequestDTO.getIngredientId()));

@@ -46,11 +46,13 @@ public class ImpBranchService implements IBranchService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Branch findByIdBranch(UUID id) {
         return branchRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Branch> findAllBranches(Pageable pageable) {
         return branchRepository.findAll(pageable);
     }
@@ -149,6 +151,7 @@ public class ImpBranchService implements IBranchService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BigDecimal getTotalOrderCostByBranchAndYear(UUID branchId, int year) {
         Branch branch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
@@ -158,6 +161,7 @@ public class ImpBranchService implements IBranchService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BigDecimal getTotalOrderCostByBranchAndMonthAndYear(UUID branchId, int month, int year) {
         Branch branch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
@@ -167,6 +171,7 @@ public class ImpBranchService implements IBranchService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BigDecimal getTotalOrderCostByBranchAndDayAndMonthAndYear(UUID branchId, int day, int month, int year) {
         Branch branch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
@@ -176,6 +181,7 @@ public class ImpBranchService implements IBranchService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<BranchIdWithRevenueResponseDTO> findAllBranchesWithRevenueWithYear(Pageable pageable, int year) {
         Page<Branch> branches = branchRepository.findAll(pageable);
 
@@ -195,6 +201,7 @@ public class ImpBranchService implements IBranchService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<BranchIdWithRevenueResponseDTO> findAllBranchesWithRevenueWithMonthYear(Pageable pageable, int month, int year) {
         Page<Branch> branches = branchRepository.findAll(pageable);
 
@@ -214,6 +221,7 @@ public class ImpBranchService implements IBranchService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<BranchIdWithRevenueResponseDTO> findAllBranchesWithRevenueWithDayMonthYear(Pageable pageable, int day, int month, int year) {
         Page<Branch> branches = branchRepository.findAll(pageable);
 
