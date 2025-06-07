@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.service.productservices.imp;
 
+import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.product.BestSellingProductResponseDTO;
@@ -8,7 +9,11 @@ import com.se330.coffee_shop_management_backend.entity.product.ProductCategory;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductCategoryRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository;
 import com.se330.coffee_shop_management_backend.service.CloudinaryService;
+import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductService;
+import com.se330.coffee_shop_management_backend.util.Constants;
+import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
+import com.se330.coffee_shop_management_backend.util.CreateSlug;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
@@ -31,15 +36,18 @@ public class ImpProductService implements IProductService {
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final CloudinaryService cloudinaryService;
+    private final INotificationService notificationService;
 
     public ImpProductService(
             ProductRepository productRepository,
             ProductCategoryRepository productCategoryRepository,
-            CloudinaryService cloudinaryService
+            CloudinaryService cloudinaryService,
+            INotificationService notificationService
     ) {
         this.productRepository = productRepository;
         this.productCategoryRepository = productCategoryRepository;
         this.cloudinaryService = cloudinaryService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -53,11 +61,12 @@ public class ImpProductService implements IProductService {
     }
 
     @Override
+    @Transactional
     public Product createProduct(ProductCreateRequestDTO productCreateRequestDTO) {
         ProductCategory category = productCategoryRepository.findById(productCreateRequestDTO.getProductCategory())
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productCreateRequestDTO.getProductCategory()));
 
-        return productRepository.save(
+        Product newProduct = productRepository.save(
                 Product.builder()
                         .productCategory(category)
                         .productDescription(productCreateRequestDTO.getProductDescription())
@@ -66,11 +75,23 @@ public class ImpProductService implements IProductService {
                         .productThumb(cloudinaryService.getProductDefault())
                         .productIsDeleted(false)
                         .productIsPublished(false)
-                        .productSlug("") // TODO: slugify product name
+                        .productSlug(CreateSlug.createSlug(productCreateRequestDTO.getProductName()))
                         .productCommentCount(0)
                         .productRatingsAverage(BigDecimal.valueOf(0))
                         .build()
         );
+
+        notificationService.sendNotificationToAllUsers(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.PRODUCT)
+                        .notificationContent(CreateNotiContentHelper.createProductAddedContentAll(newProduct.getProductName()))
+                        .senderId(null)
+                        .receiverId(null)
+                        .isRead(false)
+                        .build()
+        );
+
+        return newProduct;
     }
 
     @Transactional
@@ -92,11 +113,23 @@ public class ImpProductService implements IProductService {
         existingProduct.setProductPrice(productUpdateRequestDTO.getProductPrice());
         existingProduct.setProductName(productUpdateRequestDTO.getProductName());
         existingProduct.setProductIsDeleted(productUpdateRequestDTO.getProductIsDeleted());
-        existingProduct.setProductSlug(productUpdateRequestDTO.getProductSlug());
+        existingProduct.setProductSlug(CreateSlug.createSlug(productUpdateRequestDTO.getProductName()));
         existingProduct.setProductIsPublished(productUpdateRequestDTO.getProductIsPublished());
         existingProduct.setProductRatingsAverage(productUpdateRequestDTO.getProductRatingsAverage());
 
-        return productRepository.save(existingProduct);
+        productRepository.save(existingProduct);
+
+        notificationService.sendNotificationToAllUsers(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.PRODUCT)
+                        .notificationContent(CreateNotiContentHelper.createProductUpdatedContentAll(existingProduct.getProductName()))
+                        .senderId(null)
+                        .receiverId(null)
+                        .isRead(false)
+                        .build()
+        );
+
+        return existingProduct;
     }
 
     @Transactional
@@ -110,7 +143,19 @@ public class ImpProductService implements IProductService {
             existingProduct.setProductCategory(null);
         }
 
+
         productRepository.deleteById(id);
+
+        notificationService.sendNotificationToAllUsers(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.PRODUCT)
+                        .notificationContent(CreateNotiContentHelper.createProductDeletedContentAll(existingProduct.getProductName()))
+                        .senderId(null)
+                        .receiverId(null)
+                        .isRead(false)
+                        .build()
+        );
+
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.service.notificationservices;
 
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationForManyCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Notification;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ public interface INotificationService {
     Page<Notification> findAllReceivedNotificationsByUserId(Pageable pageable, UUID userId);
     Notification createNotification(NotificationCreateRequestDTO notificationCreateRequestDTO);
     Notification updateNotification(NotificationUpdateRequestDTO notificationUpdateRequestDTO);
-    void sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO);
+    Page<Notification> sendNotificationToMany(NotificationForManyCreateRequestDTO notificationForManyCreateRequestDTO);
+    Page<Notification> sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO);
     void deleteNotification(UUID id);
 }

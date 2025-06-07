@@ -10,6 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.SupplierRepository;
 import com.se330.coffee_shop_management_backend.repository.WarehouseRepository;
 import com.se330.coffee_shop_management_backend.service.invoiceservices.IInvoiceDetailService;
 import com.se330.coffee_shop_management_backend.service.invoiceservices.IInvoiceService;
+import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.util.CreateTrackingNumber;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,19 +28,22 @@ public class ImpInvoiceService implements IInvoiceService {
     private final SupplierRepository supplierRepository;
     private final IInvoiceDetailService invoiceDetailService;
     private final StockRepository stockRepository;
+    private final INotificationService notificationService;
 
     public ImpInvoiceService(
             InvoiceRepository invoiceRepository,
             WarehouseRepository warehouseRepository,
             SupplierRepository supplierRepository,
             IInvoiceDetailService invoiceDetailService,
-            StockRepository stockRepository
+            StockRepository stockRepository,
+            INotificationService notificationService
     ) {
         this.invoiceRepository = invoiceRepository;
         this.warehouseRepository = warehouseRepository;
         this.supplierRepository = supplierRepository;
         this.invoiceDetailService = invoiceDetailService;
         this.stockRepository = stockRepository;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -101,7 +105,11 @@ public class ImpInvoiceService implements IInvoiceService {
             }
         }
 
-        return invoiceRepository.save(newInvoice);
+        invoiceRepository.save(newInvoice);
+
+
+
+        return newInvoice;
     }
 
     /**

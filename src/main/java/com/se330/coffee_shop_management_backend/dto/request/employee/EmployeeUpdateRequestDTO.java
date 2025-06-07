@@ -13,6 +13,4 @@ public class EmployeeUpdateRequestDTO {
     private String employeePosition;
     private String employeeDepartment;
     private LocalDateTime employeeHireDate;
-    private UUID branchId;
-    private UUID userId;
 }

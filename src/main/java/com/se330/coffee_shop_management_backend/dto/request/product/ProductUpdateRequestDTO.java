@@ -13,7 +13,6 @@ public class ProductUpdateRequestDTO {
     private String productName;
     private String productDescription;
     private BigDecimal productPrice;
-    private String productSlug;
     private int productCommentCount;
     private BigDecimal productRatingsAverage;
     private Boolean productIsPublished;
