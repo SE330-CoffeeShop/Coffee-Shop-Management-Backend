@@ -66,7 +66,7 @@ public class VariantAndIngredient {
                     .variantDefault(false)
                     .variantSlug(product.getProductSlug() + "-small")
                     .variantSort(1)
-                    .variantPrice((long)(product.getProductPrice().doubleValue() * 0.8 * 1000)) // 80% of base price, converted to VND
+                    .variantPrice(BigDecimal.valueOf((product.getProductPrice().doubleValue() * 0.8 * 1000))) // 80% of base price, converted to VND
                     .variantIsPublished(true)
                     .variantIsDeleted(false)
                     .product(product)
@@ -79,7 +79,7 @@ public class VariantAndIngredient {
                     .variantDefault(true) // Set as default
                     .variantSlug(product.getProductSlug() + "-medium")
                     .variantSort(2)
-                    .variantPrice(product.getProductPrice().longValue() * 1000) // Base price, converted to VND
+                    .variantPrice(BigDecimal.valueOf(product.getProductPrice().longValue() * 1000)) // Base price, converted to VND
                     .variantIsPublished(true)
                     .variantIsDeleted(false)
                     .product(product)
@@ -92,7 +92,7 @@ public class VariantAndIngredient {
                     .variantDefault(false)
                     .variantSlug(product.getProductSlug() + "-large")
                     .variantSort(3)
-                    .variantPrice((long)(product.getProductPrice().doubleValue() * 1.2 * 1000)) // 120% of base price, converted to VND
+                    .variantPrice(BigDecimal.valueOf((product.getProductPrice().doubleValue() * 1.2 * 1000))) // 120% of base price, converted to VND
                     .variantIsPublished(true)
                     .variantIsDeleted(false)
                     .product(product)

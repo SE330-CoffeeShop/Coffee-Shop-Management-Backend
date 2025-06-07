@@ -30,9 +30,8 @@ public class Order extends AbstractBaseEntity {
     @Column(name = "order_total_cost", nullable = false)
     private BigDecimal orderTotalCost;
 
-    @Column(name = "order_status", nullable = false)
+    @Column(name = "order_status")
     @Enumerated(EnumType.STRING)
-    @NaturalId
     private Constants.OrderStatusEnum orderStatus;
 
     @Column(name = "order_tracking_number", nullable = false)
@@ -72,12 +71,12 @@ public class Order extends AbstractBaseEntity {
     )
     private User user;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(
             name = "shipping_address_id",
             foreignKey = @ForeignKey(
                     name = "fk_order_shipping_address",
-                    foreignKeyDefinition = "FOREIGN KEY (shipping_address_id) REFERENCES shipping_addresses (shipping_address_id) ON DELETE CASCADE"
+                    foreignKeyDefinition = "FOREIGN KEY (shipping_address_id) REFERENCES shipping_addresses (shipping_address_id)"
             )
     )
     private ShippingAddresses shippingAddress;

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +45,7 @@ public class ProductVariantResponseDTO{
     private Boolean variantDefault;
     private String variantSlug;
     private int variantSort;
-    private Long variantPrice;
+    private BigDecimal variantPrice;
     private Boolean variantIsPublished;
     private Boolean variantIsDeleted;
 

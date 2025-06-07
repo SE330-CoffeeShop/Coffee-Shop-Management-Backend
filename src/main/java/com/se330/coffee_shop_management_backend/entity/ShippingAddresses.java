@@ -3,6 +3,9 @@ package com.se330.coffee_shop_management_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "shipping_addresses")
 @Getter
@@ -26,8 +29,9 @@ public class ShippingAddresses extends AbstractBaseEntity {
     @Column(name = "address_is_default", nullable = false)
     private boolean addressIsDefault;
 
-    @OneToOne(mappedBy = "shippingAddress", fetch = FetchType.EAGER)
-    private Order order;
+    @OneToMany(mappedBy = "shippingAddress", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<Order> orders = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(

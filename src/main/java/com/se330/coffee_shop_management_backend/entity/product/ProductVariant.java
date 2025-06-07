@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.entity.*;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class ProductVariant extends AbstractBaseEntity {
     private int variantSort = 0;
 
     @Column(name = "variant_price", nullable = false)
-    private Long variantPrice = 0L;
+    private BigDecimal variantPrice;
 
     @Column(name = "variant_is_published", nullable = false)
     private Boolean variantIsPublished = false;
