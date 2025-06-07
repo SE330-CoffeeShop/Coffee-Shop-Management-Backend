@@ -1,7 +1,7 @@
 package com.se330.coffee_shop_management_backend.service.productservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductCategoryUpdateRequestDTO;
-import com.se330.coffee_shop_management_backend.dto.request.product.ProdutCategoryCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.product.ProductCategoryCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Catalog;
 import com.se330.coffee_shop_management_backend.entity.product.ProductCategory;
 import com.se330.coffee_shop_management_backend.repository.CatalogRepository;
@@ -49,7 +49,7 @@ public class ImpProductCategoryService implements IProductCategoryService {
 
     @Override
     @Transactional
-    public ProductCategory createProductCategory(ProdutCategoryCreateRequestDTO productCategoryRequestDTO) {
+    public ProductCategory createProductCategory(ProductCategoryCreateRequestDTO productCategoryRequestDTO) {
         Catalog existingCatalog = catalogRepository.findById(productCategoryRequestDTO.getCatalogId())
                 .orElseThrow(() -> new EntityNotFoundException("Catalog not found with ID: " + productCategoryRequestDTO.getCatalogId()));
 
