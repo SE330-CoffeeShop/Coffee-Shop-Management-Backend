@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ProdutCategoryCreateRequestDTO {
+public class ProductCategoryCreateRequestDTO {
     private String categoryName;
     private String categoryDescription;
     private Integer catalogId;

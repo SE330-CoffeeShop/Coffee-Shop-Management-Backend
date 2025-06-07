@@ -3,6 +3,7 @@ package com.se330.coffee_shop_management_backend.entity.product;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
 import com.se330.coffee_shop_management_backend.entity.Comment;
+import com.se330.coffee_shop_management_backend.entity.FavoriteDrink;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
@@ -64,4 +65,8 @@ public class Product extends AbstractBaseEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<FavoriteDrink> favoritedBy = new ArrayList<>();
 }

@@ -27,12 +27,22 @@ public class Logistics {
     private final EmployeeRepository employeeRepository;
     private final ProductVariantRepository productVariantRepository;
     private final InvoiceDetailRepository invoiceDetailRepository;
+    private final InvoiceRepository invoiceRepository;
     private final ShippingAddressesRepository shippingAddressesRepository;
     private final PaymentMethodsRepository paymentMethodsRepository;
+    private final TransferDetailRepository transferDetailRepository;
+    private final TransferRepository transferRepository;
+    private final WarehouseRepository warehouseRepository;
+    private final IngredientRepository ingredientRepository;
+    private final SupplierRepository supplierRepository;
+    private final FavoriteDrinkRepository favoriteDrinkRepository;
 
     @Transactional
     public void create() {
         createOrders();
+        createTransfer();
+        createInvoice();
+        createFavoriteDrink();
     }
 
     private void createOrders() {
@@ -187,5 +197,235 @@ public class Logistics {
         orderRepository.saveAll(orders);
 
         log.info("Created {} order details across {} orders", allOrderDetails.size(), orders.size());
+    }
+
+    private void createTransfer() {
+        log.info("Creating transfers...");
+
+        // Get all necessary data
+        List<Branch> branches = warehouseRepository.findAll().stream()
+                .limit(1)
+                .map(warehouse -> warehouse.getTransfers().stream()
+                        .map(Transfer::getBranch)
+                        .findFirst()
+                        .orElse(null))
+                .filter(branch -> branch != null)
+                .collect(Collectors.toList());
+
+        List<Warehouse> warehouses = warehouseRepository.findAll();
+        List<Ingredient> ingredients = ingredientRepository.findAll();
+
+        if (branches.isEmpty() || warehouses.isEmpty() || ingredients.isEmpty()) {
+            log.error("Cannot create transfers: Missing required data");
+            return;
+        }
+
+        Random random = new Random();
+        List<Transfer> transfers = new ArrayList<>();
+        int transferCount = 100;
+
+        // Create transfers
+        for (int i = 0; i < transferCount; i++) {
+            Branch branch = branches.get(random.nextInt(branches.size()));
+            Warehouse warehouse = warehouses.get(random.nextInt(warehouses.size()));
+
+            Transfer transfer = Transfer.builder()
+                    .transferDescription("Transfer from warehouse to branch " + (i + 1))
+                    .transferTrackingNumber(CreateTrackingNumber.createTrackingNumber("TRF"))
+                    .transferTotalCost(BigDecimal.ZERO) // Will be updated after adding items
+                    .branch(branch)
+                    .warehouse(warehouse)
+                    .transferDetails(new ArrayList<>())
+                    .build();
+
+            transfers.add(transfer);
+        }
+
+        transferRepository.saveAll(transfers);
+        log.info("Created {} transfers", transfers.size());
+
+        createTransferDetail(transfers, ingredients);
+    }
+
+    private void createTransferDetail(List<Transfer> transfers, List<Ingredient> ingredients) {
+        log.info("Creating transfer details...");
+
+        Random random = new Random();
+        List<TransferDetail> allTransferDetails = new ArrayList<>();
+        String[] units = {"kg", "g", "l", "ml", "piece", "box", "package"};
+
+        for (Transfer transfer : transfers) {
+            int detailCount = random.nextInt(10) + 1; // 1-10 details per transfer
+            List<TransferDetail> transferDetails = new ArrayList<>();
+            BigDecimal transferTotal = BigDecimal.ZERO;
+
+            // Create random unique items for this transfer
+            List<Ingredient> availableIngredients = new ArrayList<>(ingredients);
+            for (int i = 0; i < detailCount && !availableIngredients.isEmpty(); i++) {
+                int ingredientIndex = random.nextInt(availableIngredients.size());
+                Ingredient ingredient = availableIngredients.get(ingredientIndex);
+                availableIngredients.remove(ingredientIndex); // Ensure no duplicates
+
+                int quantity = random.nextInt(50) + 1; // 1-50 units
+                String unit = units[random.nextInt(units.length)];
+
+                TransferDetail detail = TransferDetail.builder()
+                        .transferDetailQuantity(quantity)
+                        .transferDetailUnit(unit)
+                        .ingredient(ingredient)
+                        .transfer(transfer)
+                        .build();
+
+                transferDetails.add(detail);
+
+                // Update transfer total cost
+                BigDecimal itemCost = ingredient.getIngredientPrice().multiply(BigDecimal.valueOf(quantity));
+                transferTotal = transferTotal.add(itemCost);
+            }
+
+            // Update transfer with calculated total and details
+            transfer.setTransferTotalCost(transferTotal);
+            transfer.setTransferDetails(transferDetails);
+
+            allTransferDetails.addAll(transferDetails);
+        }
+
+        transferDetailRepository.saveAll(allTransferDetails);
+        transferRepository.saveAll(transfers);
+
+        log.info("Created {} transfer details across {} transfers", allTransferDetails.size(), transfers.size());
+    }
+
+    private void createInvoice() {
+        log.info("Creating invoices...");
+
+        // Get all necessary data
+        List<Supplier> suppliers = supplierRepository.findAll();
+        List<Warehouse> warehouses = warehouseRepository.findAll();
+        List<Ingredient> ingredients = ingredientRepository.findAll();
+
+        if (suppliers.isEmpty() || warehouses.isEmpty() || ingredients.isEmpty()) {
+            log.error("Cannot create invoices: Missing required data");
+            return;
+        }
+
+        Random random = new Random();
+        List<Invoice> invoices = new ArrayList<>();
+        int invoiceCount = 100;
+
+        // Create invoices
+        for (int i = 0; i < invoiceCount; i++) {
+            Supplier supplier = suppliers.get(random.nextInt(suppliers.size()));
+            Warehouse warehouse = warehouses.get(random.nextInt(warehouses.size()));
+
+            Invoice invoice = Invoice.builder()
+                    .invoiceDescription("Purchase from supplier " + (i + 1))
+                    .invoiceTrackingNumber(CreateTrackingNumber.createTrackingNumber("INV"))
+                    .invoiceTransferTotalCost(BigDecimal.ZERO) // Will be updated after adding items
+                    .supplier(supplier)
+                    .warehouse(warehouse)
+                    .invoiceDetails(new ArrayList<>())
+                    .build();
+
+            invoices.add(invoice);
+        }
+
+        invoiceRepository.saveAll(invoices);
+        log.info("Created {} invoices", invoices.size());
+
+        createInvoiceDetail(invoices, ingredients);
+    }
+
+    private void createInvoiceDetail(List<Invoice> invoices, List<Ingredient> ingredients) {
+        log.info("Creating invoice details...");
+
+        Random random = new Random();
+        List<InvoiceDetail> allInvoiceDetails = new ArrayList<>();
+        String[] units = {"kg", "g", "l", "ml", "piece", "box", "package"};
+
+        for (Invoice invoice : invoices) {
+            int detailCount = random.nextInt(10) + 1; // 1-10 details per invoice
+            List<InvoiceDetail> invoiceDetails = new ArrayList<>();
+            BigDecimal invoiceTotal = BigDecimal.ZERO;
+
+            // Create random unique items for this invoice
+            List<Ingredient> availableIngredients = new ArrayList<>(ingredients);
+            for (int i = 0; i < detailCount && !availableIngredients.isEmpty(); i++) {
+                int ingredientIndex = random.nextInt(availableIngredients.size());
+                Ingredient ingredient = availableIngredients.get(ingredientIndex);
+                availableIngredients.remove(ingredientIndex); // Ensure no duplicates
+
+                int quantity = random.nextInt(100) + 10; // 10-109 units
+                String unit = units[random.nextInt(units.length)];
+
+                InvoiceDetail detail = InvoiceDetail.builder()
+                        .invoiceDetailQuantity(quantity)
+                        .invoiceDetailUnit(unit)
+                        .ingredient(ingredient)
+                        .invoice(invoice)
+                        .build();
+
+                invoiceDetails.add(detail);
+
+                // Update invoice total cost
+                BigDecimal itemCost = ingredient.getIngredientPrice().multiply(BigDecimal.valueOf(quantity));
+                invoiceTotal = invoiceTotal.add(itemCost);
+            }
+
+            // Update invoice with calculated total and details
+            invoice.setInvoiceTransferTotalCost(invoiceTotal);
+            invoice.setInvoiceDetails(invoiceDetails);
+
+            allInvoiceDetails.addAll(invoiceDetails);
+        }
+
+        invoiceDetailRepository.saveAll(allInvoiceDetails);
+        invoiceRepository.saveAll(invoices);
+
+        log.info("Created {} invoice details across {} invoices", allInvoiceDetails.size(), invoices.size());
+    }
+
+    private void createFavoriteDrink() {
+        log.info("Creating favorite drinks...");
+
+        // Get all necessary data
+        List<User> customers = userRepository.findAllByRoleName(Constants.RoleEnum.CUSTOMER);
+        List<ProductVariant> productVariants = productVariantRepository.findAll();
+
+        if (customers.isEmpty() || productVariants.isEmpty()) {
+            log.error("Cannot create favorite drinks: Missing required data");
+            return;
+        }
+
+        Random random = new Random();
+        List<FavoriteDrink> favoriteDrinks = new ArrayList<>();
+
+        // For each user, create 1-10 favorite drinks
+        for (User user : customers) {
+            int favoriteCount = random.nextInt(10) + 1; // 1-10 favorite drinks
+
+            // Create random unique favorites for this user
+            List<ProductVariant> availableVariants = new ArrayList<>(productVariants);
+            for (int i = 0; i < favoriteCount && !availableVariants.isEmpty(); i++) {
+                int variantIndex = random.nextInt(availableVariants.size());
+                ProductVariant variant = availableVariants.get(variantIndex);
+                availableVariants.remove(variantIndex); // Ensure no duplicates
+
+                // Get the parent product of the variant
+                if (variant.getProduct() == null) {
+                    continue;
+                }
+
+                FavoriteDrink favoriteDrink = FavoriteDrink.builder()
+                        .user(user)
+                        .product(variant.getProduct())
+                        .build();
+
+                favoriteDrinks.add(favoriteDrink);
+            }
+        }
+
+        favoriteDrinkRepository.saveAll(favoriteDrinks);
+        log.info("Created {} favorite drinks for {} users", favoriteDrinks.size(), customers.size());
     }
 }
