@@ -262,6 +262,54 @@ public class ImpNotificationService implements INotificationService {
         userRecipientTokenRepository.delete(existingToken);
     }
 
+    @Override
+    public void sendLoginPushNotification(User user) {
+        if (user != null && user.getRecipientTokens() != null && !user.getRecipientTokens().isEmpty()) {
+            for (UserRecipientToken token : user.getRecipientTokens()) {
+                try {
+                    com.google.firebase.messaging.Notification firebaseNotification = com.google.firebase.messaging.Notification.builder()
+                            .setTitle("Đăng nhập thành công")
+                            .setBody("Chào mừng bạn trở lại, " + user.getFullName() + "!")
+                            .build();
+
+                    // Add data payload for handling when app is in background
+                    Map<String, String> data = new HashMap<>();
+                    data.put("click_action", "OPEN_ACTIVITY");
+                    data.put("title", "Đăng nhập thành công");
+                    data.put("body", "Chào mừng bạn trở lại, " + user.getFullName() + "!");
+
+                    Message pushNotification = Message.builder()
+                            .setToken(token.getFCMRecipientToken())
+                            .setNotification(firebaseNotification)
+                            .putAllData(data)
+                            .setAndroidConfig(AndroidConfig.builder()
+                                    .setPriority(AndroidConfig.Priority.HIGH)
+                                    .setNotification(AndroidNotification.builder()
+                                            .setChannelId("default_channel")
+                                            .setSound("default")
+                                            .build())
+                                    .build())
+                            .build();
+
+                    String response = firebaseMessaging.send(pushNotification);
+                    System.out.println("Successfully sent notification to: " + token.getFCMRecipientToken());
+                    System.out.println("FCM Response: " + response);
+                } catch (FirebaseMessagingException e) {
+                    System.err.println("Failed to send notification to token: " + token.getFCMRecipientToken());
+                    System.err.println("Error code: " + e.getErrorCode() + ", message: " + e.getMessage());
+
+                    // Handle specific error cases
+                } catch (Exception e) {
+                    System.err.println("Unexpected error sending notification: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            System.out.println("No recipient tokens available for user: " + (user != null ? user.getId() : "null"));
+        }
+    }
+
+
     private void sendPushNotification(User user, String title, String body) {
         if (user != null && user.getRecipientTokens() != null && !user.getRecipientTokens().isEmpty()) {
             for (UserRecipientToken token : user.getRecipientTokens()) {

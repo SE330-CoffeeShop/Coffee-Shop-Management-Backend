@@ -41,6 +41,8 @@ public class AuthService {
 
     private final MessageSourceService messageSourceService;
 
+    private final INotificationService notificationService;
+
     /**
      * Authenticate user.
      *
@@ -55,8 +57,9 @@ public class AuthService {
 
         String badCredentialsMessage = messageSourceService.get("bad_credentials");
 
+        User user = null;
         try {
-            User user = userService.findByEmail(email);
+            user = userService.findByEmail(email);
             email = user.getEmail();
         } catch (NotFoundException e) {
             log.error("User not found with email: {}", email);
@@ -68,6 +71,8 @@ public class AuthService {
         try {
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             JwtUserDetails jwtUserDetails = jwtTokenProvider.getPrincipal(authentication);
+
+            notificationService.sendLoginPushNotification(user);
 
             return generateTokens(UUID.fromString(jwtUserDetails.getId()), rememberMe);
         } catch (NotFoundException e) {
