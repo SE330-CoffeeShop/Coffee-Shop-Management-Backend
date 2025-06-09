@@ -47,4 +47,5 @@ logs
 liquibase.properties
 
 ### FCM private key ###
+privatekey/
 bcoffee-backend-pushnoti-firebase-adminsdk-fbsvc-7143009951.json
