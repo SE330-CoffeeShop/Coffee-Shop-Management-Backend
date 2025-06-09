@@ -148,7 +148,20 @@ public class ProductController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<ProductResponseDTO>> create(@RequestBody ProductCreateRequestDTO dto) {
+    public ResponseEntity<SingleResponse<ProductResponseDTO>> create(
+            @RequestBody ProductCreateRequestDTO dto,
+            @RequestParam(value = "product-image", required = false) MultipartFile productImage
+    ) throws Exception {
+        if (productImage != null) {
+            ProductResponseDTO product = ProductResponseDTO.convert(productService.createProductWithImage(dto, productImage));
+            return ResponseEntity.status(HttpStatus.CREATED).body(
+                    new SingleResponse<>(
+                            HttpStatus.CREATED.value(),
+                            "Product created successfully with image",
+                            product
+                    )
+            );
+        }
         ProductResponseDTO product = ProductResponseDTO.convert(productService.createProduct(dto));
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new SingleResponse<>(
