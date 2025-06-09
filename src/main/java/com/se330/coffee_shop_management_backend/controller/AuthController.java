@@ -10,10 +10,12 @@ import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SuccessResponse;
 import com.se330.coffee_shop_management_backend.dto.response.auth.PasswordResetResponse;
 import com.se330.coffee_shop_management_backend.dto.response.auth.TokenResponse;
+import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.service.AuthService;
 import com.se330.coffee_shop_management_backend.service.MessageSourceService;
 import com.se330.coffee_shop_management_backend.service.PasswordResetTokenService;
 import com.se330.coffee_shop_management_backend.service.UserService;
+import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -28,13 +30,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
 
@@ -50,6 +48,8 @@ public class AuthController extends AbstractBaseController {
     private final PasswordResetTokenService passwordResetTokenService;
 
     private final MessageSourceService messageSourceService;
+
+    private final INotificationService notificationService;
 
     @PostMapping("/login")
     @Operation(
@@ -85,11 +85,17 @@ public class AuthController extends AbstractBaseController {
         @Parameter(description = "Request body to login", required = true)
         @RequestBody @Validated final LoginRequest request
     ) {
+        TokenResponse tokenResponse = authService.login(request.getEmail(), request.getPassword(), false);
+
+        if (request.getFirebaseToken() != null) {
+            notificationService.addTokenToUser(UUID.fromString(tokenResponse.getId()), request.getFirebaseToken());
+        }
+
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
                         "login_successful",
-                        authService.login(request.getEmail(), request.getPassword(), false)
+                        tokenResponse
                 )
         );
     }
@@ -383,8 +389,18 @@ public class AuthController extends AbstractBaseController {
             )
         }
     )
-    public ResponseEntity<SingleResponse<SuccessResponse>> logout() {
-        authService.logout(userService.getUser());
+    public ResponseEntity<SingleResponse<SuccessResponse>> logout(
+            @Parameter(description = "Firebase token (optional)")
+            @RequestParam(required = false) String firebaseToken
+    ) {
+
+        User user = userService.getUser();
+
+        authService.logout(user);
+
+        if (firebaseToken != null) {
+            notificationService.removeTokenFromUser(user.getId(), firebaseToken);
+        }
 
         return ResponseEntity.ok(
                 new SingleResponse<>(

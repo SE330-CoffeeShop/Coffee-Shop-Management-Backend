@@ -40,10 +40,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -127,9 +125,14 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public User findById(UUID id) {
-        return userRepository.findById(id)
+        User user = userRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
                 new String[]{messageSourceService.get("user")})));
+        if (user.getRole() != null) {
+            user.getRole().getName();
+        }
+        
+        return user;
     }
 
     /**
@@ -404,7 +407,8 @@ public class UserService {
      * @param request AbstractBaseCreateUserRequest
      * @return User
      */
-    private User createUser(AbstractBaseCreateUserRequest request) throws BindException {
+    @Transactional
+    protected User createUser(AbstractBaseCreateUserRequest request) throws BindException {
         BindingResult bindingResult = new BeanPropertyBindingResult(request, "request");
         userRepository.findByEmail(request.getEmail())
                 .ifPresent(user -> {
@@ -432,7 +436,8 @@ public class UserService {
      * @param request UpdateUserRequest
      * @return User
      */
-    private User updateUser(User user, AbstractBaseUpdateUserRequest request) throws BindException {
+    @Transactional
+    protected User updateUser(User user, AbstractBaseUpdateUserRequest request) throws BindException {
         BindingResult bindingResult = new BeanPropertyBindingResult(request, "request");
         if (!user.getEmail().equals(request.getEmail()) &&
                 userRepository.existsByEmailAndIdNot(request.getEmail(), user.getId())) {
@@ -484,7 +489,8 @@ public class UserService {
      *
      * @param user User
      */
-    private void passwordResetEventPublisher(User user) {
+    @Transactional
+    protected void passwordResetEventPublisher(User user) {
         user.setPasswordResetToken(passwordResetTokenService.create(user));
         eventPublisher.publishEvent(new UserPasswordResetSendEvent(this, user));
     }

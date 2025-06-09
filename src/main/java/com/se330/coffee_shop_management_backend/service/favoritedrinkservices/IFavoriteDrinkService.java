@@ -10,4 +10,5 @@ public interface IFavoriteDrinkService {
     void removeFavoriteDrink(UUID userId, UUID drinkId);
     Page<UUID> findAllFavoriteDrinksByUserId(UUID userId, Pageable pageable);
     Page<UUID> findTheMostFavoritedDrink(Pageable pageable);
+    boolean isDrinkFavoritedByUser(UUID userId, UUID drinkId);
 }

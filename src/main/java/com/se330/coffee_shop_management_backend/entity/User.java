@@ -93,6 +93,10 @@ public class User extends AbstractBaseEntity {
     @Builder.Default
     private List<FavoriteDrink> favoriteDrinks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<UserRecipientToken> recipientTokens = new ArrayList<>();
+
     /**
      * Get full name of user.
      *

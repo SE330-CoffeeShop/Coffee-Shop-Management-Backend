@@ -83,4 +83,9 @@ public class ImpFavoriteDrinkService implements IFavoriteDrinkService {
     public Page<UUID> findTheMostFavoritedDrink(Pageable pageable) {
         return favoriteDrinkRepository.findMostFavoritedProductIds(pageable);
     }
+
+    @Override
+    public boolean isDrinkFavoritedByUser(UUID userId, UUID drinkId) {
+        return favoriteDrinkRepository.existsFavoriteDrinkByUser_IdAndProduct_Id(userId, drinkId);
+    }
 }

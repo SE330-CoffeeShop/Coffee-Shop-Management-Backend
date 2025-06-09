@@ -196,4 +196,40 @@ public class FavoritedDrinkController {
                 )
         );
     }
+
+    @GetMapping("/{userId}/{drinkId}")
+    @Operation(
+            summary = "Check if a drink is favorited by a user",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully checked favorite status",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid user ID or drink ID",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<Boolean>> isDrinkFavoritedByUser(
+            @PathVariable UUID userId,
+            @PathVariable UUID drinkId) {
+
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Favorite status retrieved successfully",
+                        favoriteDrinkService.isDrinkFavoritedByUser(userId, drinkId)
+                )
+        );
+    }
 }

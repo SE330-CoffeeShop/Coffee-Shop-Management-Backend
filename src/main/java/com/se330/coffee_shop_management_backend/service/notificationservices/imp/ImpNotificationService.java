@@ -1,13 +1,19 @@
 package com.se330.coffee_shop_management_backend.service.notificationservices.imp;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Message;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationForManyCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Notification;
 import com.se330.coffee_shop_management_backend.entity.User;
+import com.se330.coffee_shop_management_backend.entity.UserRecipientToken;
 import com.se330.coffee_shop_management_backend.repository.NotificationRepository;
+import com.se330.coffee_shop_management_backend.repository.UserRecipientTokenRepository;
 import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
+import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -23,13 +29,19 @@ public class ImpNotificationService implements INotificationService {
 
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
+    private final UserRecipientTokenRepository userRecipientTokenRepository;
+    private final FirebaseMessaging firebaseMessaging;
 
     public ImpNotificationService(
             NotificationRepository notificationRepository,
-            UserRepository userRepository
+            UserRecipientTokenRepository userRecipientTokenRepository,
+            UserRepository userRepository,
+            FirebaseMessaging firebaseMessaging
     ) {
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
+        this.userRecipientTokenRepository = userRecipientTokenRepository;
+        this.firebaseMessaging = firebaseMessaging;
     }
 
     @Override
@@ -93,7 +105,7 @@ public class ImpNotificationService implements INotificationService {
                         .build()
         );
 
-        // TODO: Add push notification to receiver and sender
+        sendPushNotification(receiver, newNoti.getNotificationType().name(), newNoti.getNotificationContent());
 
         return newNoti;
     }
@@ -156,9 +168,15 @@ public class ImpNotificationService implements INotificationService {
             returnedNotifications.add(notificationRepository.save(notification));
 
             // TODO: Add push notification to receivers
+            sendPushNotification(user, notification.getNotificationType().name(), notification.getNotificationContent());
         }
 
         // TODO: Add push notification to sender if applicable
+        if (sender != null) {
+            sendPushNotification(sender, "Thông báo đã gửi",
+                    CreateNotiContentHelper.createManagerNotificationSentContentForMany(users.stream().map(User::getFullName).toList()));
+        }
+
         return new PageImpl<>(returnedNotifications);
     }
 
@@ -182,9 +200,14 @@ public class ImpNotificationService implements INotificationService {
                     .build();
             returnedNotifications.add(notificationRepository.save(notification));
             // TODO: Add push notification to receivers
+            sendPushNotification(user, notification.getNotificationType().name(), notification.getNotificationContent());
         }
 
         // TODO: Add push notification to sender if applicable
+        if (sender != null) {
+            sendPushNotification(sender, "Thông báo đã gửi",
+                    CreateNotiContentHelper.createManagerNotificationSentContentForAll());
+        }
 
         return new PageImpl<>(returnedNotifications);
     }
@@ -206,5 +229,61 @@ public class ImpNotificationService implements INotificationService {
         }
 
         notificationRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void addTokenToUser(UUID userId, String token) {
+        // check if the token already exists for the user
+        UserRecipientToken existingToken = userRecipientTokenRepository.findByFCMRecipientTokenAndUser_Id(token, userId);
+        if (existingToken != null) {
+            return;
+        }
+        userRecipientTokenRepository.save(
+                UserRecipientToken.builder()
+                        .FCMRecipientToken(token)
+                        .user(userRepository.findById(userId)
+                                .orElseThrow(() -> new EntityNotFoundException("User not found")))
+                        .build()
+        );
+    }
+
+    @Override
+    @Transactional
+    public void removeTokenFromUser(UUID userId, String token) {
+        UserRecipientToken existingToken = userRecipientTokenRepository.findByFCMRecipientTokenAndUser_Id(token, userId);
+        if (existingToken == null) {
+            return;
+        }
+
+        // Remove the token from the user's recipient tokens
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.getRecipientTokens().remove(existingToken);
+
+        userRecipientTokenRepository.delete(existingToken);
+    }
+
+    private void sendPushNotification(User user, String title, String body) {
+        if (user != null && user.getRecipientTokens() != null && !user.getRecipientTokens().isEmpty()) {
+            for (UserRecipientToken token : user.getRecipientTokens()) {
+                com.google.firebase.messaging.Notification firebaseNotification = com.google.firebase.messaging.Notification.builder()
+                        .setTitle(title)
+                        .setBody(body)
+                        .build();
+
+                Message pushNotification = Message.builder()
+                        .setToken(token.getFCMRecipientToken())
+                        .setNotification(firebaseNotification)
+                        .build();
+
+                try {
+                    firebaseMessaging.send(pushNotification);
+                } catch (Exception e) {
+                    System.err.println("Failed to send notification to token: " + token.getFCMRecipientToken());
+                }
+            }
+        }
     }
 }
