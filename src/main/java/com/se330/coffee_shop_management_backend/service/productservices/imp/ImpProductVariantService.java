@@ -41,6 +41,11 @@ public class ImpProductVariantService implements IProductVariantService {
         return productVariantRepository.findAll(pageable);
     }
 
+    @Override
+    public Page<ProductVariant> findAllProductVariantsByProductId(UUID productId, Pageable pageable) {
+        return productVariantRepository.findAllByProduct_Id(productId, pageable);
+    }
+
     @Transactional
     @Override
     public ProductVariant createProductVariant(ProductVariantCreateRequestDTO productVariantCreateRequestDTO) {

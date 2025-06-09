@@ -19,4 +19,6 @@ public interface FavoriteDrinkRepository extends JpaRepository<FavoriteDrink, UU
     Page<UUID> findMostFavoritedProductIds(Pageable pageable);
 
     Optional<FavoriteDrink> findByUser_IdAndProduct_Id(UUID userId, UUID drinkId);
+
+    boolean existsFavoriteDrinkByUser_IdAndProduct_Id(UUID userId, UUID productId);
 }

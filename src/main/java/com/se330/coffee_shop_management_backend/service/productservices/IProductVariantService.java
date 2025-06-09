@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface IProductVariantService {
     ProductVariant findByIdProductVariant(UUID id);
     Page<ProductVariant> findAllProductVariants(Pageable pageable);
+    Page<ProductVariant> findAllProductVariantsByProductId(UUID productId, Pageable pageable);
     ProductVariant createProductVariant(ProductVariantCreateRequestDTO productVariantCreateRequestDTO);
     ProductVariant updateProductVariant(ProductVariantUpdateRequestDTO productVariantUpdateRequestDTO);
     void deleteProductVariant(UUID id);

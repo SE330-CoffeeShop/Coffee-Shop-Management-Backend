@@ -23,7 +23,7 @@ public class LoginRequest {
         description = "E-mail of the user",
         type = "String",
         requiredMode = Schema.RequiredMode.REQUIRED,
-        example = "mail@example.com"
+        example = "admin@example.com"
     )
     private String email;
 
@@ -37,4 +37,12 @@ public class LoginRequest {
         example = "P@sswd123."
     )
     private String password;
+
+    @Schema(
+            name = "firebaseToken",
+            description = "Firebase token for push notifications",
+            type = "String",
+            example = "fcm_token_example"
+    )
+    private String firebaseToken;
 }

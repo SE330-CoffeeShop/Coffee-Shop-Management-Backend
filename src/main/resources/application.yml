@@ -124,3 +124,8 @@ cloudinary:
     cloud-name: ${CLOUD_NAME}
     api-key: ${CLOUDINARY_API_KEY}
     api-secret: ${CLOUDINARY_API_SECRET}
+
+firebase:
+  credentials:
+    file: ${FIREBASE_CREDENTIALS_FILE}
+  project-id: ${FIREBASE_PROJECT_ID}

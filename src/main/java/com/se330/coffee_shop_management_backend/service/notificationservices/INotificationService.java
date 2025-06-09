@@ -20,4 +20,6 @@ public interface INotificationService {
     Page<Notification> sendNotificationToMany(NotificationForManyCreateRequestDTO notificationForManyCreateRequestDTO);
     Page<Notification> sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO);
     void deleteNotification(UUID id);
+    void addTokenToUser(UUID userId, String token);
+    void removeTokenFromUser(UUID userId, String token);
 }
