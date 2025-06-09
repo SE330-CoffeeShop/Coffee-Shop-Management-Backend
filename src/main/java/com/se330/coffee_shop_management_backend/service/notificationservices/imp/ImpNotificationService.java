@@ -1,7 +1,6 @@
 package com.se330.coffee_shop_management_backend.service.notificationservices.imp;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.*;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationForManyCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationUpdateRequestDTO;
@@ -20,9 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ImpNotificationService implements INotificationService {
@@ -268,22 +265,46 @@ public class ImpNotificationService implements INotificationService {
     private void sendPushNotification(User user, String title, String body) {
         if (user != null && user.getRecipientTokens() != null && !user.getRecipientTokens().isEmpty()) {
             for (UserRecipientToken token : user.getRecipientTokens()) {
-                com.google.firebase.messaging.Notification firebaseNotification = com.google.firebase.messaging.Notification.builder()
-                        .setTitle(title)
-                        .setBody(body)
-                        .build();
-
-                Message pushNotification = Message.builder()
-                        .setToken(token.getFCMRecipientToken())
-                        .setNotification(firebaseNotification)
-                        .build();
-
                 try {
-                    firebaseMessaging.send(pushNotification);
-                } catch (Exception e) {
+                    com.google.firebase.messaging.Notification firebaseNotification = com.google.firebase.messaging.Notification.builder()
+                            .setTitle(title)
+                            .setBody(body)
+                            .build();
+
+                    // Add data payload for handling when app is in background
+                    Map<String, String> data = new HashMap<>();
+                    data.put("click_action", "OPEN_ACTIVITY");
+                    data.put("title", title);
+                    data.put("body", body);
+
+                    Message pushNotification = Message.builder()
+                            .setToken(token.getFCMRecipientToken())
+                            .setNotification(firebaseNotification)
+                            .putAllData(data)
+                            .setAndroidConfig(AndroidConfig.builder()
+                                    .setPriority(AndroidConfig.Priority.HIGH)
+                                    .setNotification(AndroidNotification.builder()
+                                            .setChannelId("default_channel")
+                                            .setSound("default")
+                                            .build())
+                                    .build())
+                            .build();
+
+                    String response = firebaseMessaging.send(pushNotification);
+                    System.out.println("Successfully sent notification to: " + token.getFCMRecipientToken());
+                    System.out.println("FCM Response: " + response);
+                } catch (FirebaseMessagingException e) {
                     System.err.println("Failed to send notification to token: " + token.getFCMRecipientToken());
+                    System.err.println("Error code: " + e.getErrorCode() + ", message: " + e.getMessage());
+
+                    // Handle specific error cases
+                } catch (Exception e) {
+                    System.err.println("Unexpected error sending notification: " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
+        } else {
+            System.out.println("No recipient tokens available for user: " + (user != null ? user.getId() : "null"));
         }
     }
 }
