@@ -220,4 +220,53 @@ public class ProductVariantController {
         productVariantService.deleteProductVariant(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/by-product/{productId}")
+    @Operation(
+            summary = "Get all product variants for a specific product with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved product variant list for the product",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<ProductVariantResponseDTO>> findAllByProductId(
+            @PathVariable UUID productId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<ProductVariant> variantPage = productVariantService.findAllProductVariantsByProductId(productId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Product variants for the specified product retrieved successfully",
+                        ProductVariantResponseDTO.convert(variantPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                variantPage.getNumber(),
+                                variantPage.getSize(),
+                                variantPage.getTotalElements(),
+                                variantPage.getTotalPages()
+                        )
+                )
+        );
+    }
 }
