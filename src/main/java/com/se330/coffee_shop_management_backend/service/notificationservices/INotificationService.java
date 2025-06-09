@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.notification.Notific
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationForManyCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Notification;
+import com.se330.coffee_shop_management_backend.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,4 +23,5 @@ public interface INotificationService {
     void deleteNotification(UUID id);
     void addTokenToUser(UUID userId, String token);
     void removeTokenFromUser(UUID userId, String token);
+    void sendLoginPushNotification(User user);
 }
