@@ -102,7 +102,7 @@ public class ImpNotificationService implements INotificationService {
                         .build()
         );
 
-        sendPushNotification(receiver, newNoti.getNotificationType().name(), newNoti.getNotificationContent());
+        sendPushNotification(receiver, newNoti.getNotificationType().getValue(), newNoti.getNotificationContent());
 
         return newNoti;
     }
@@ -165,7 +165,7 @@ public class ImpNotificationService implements INotificationService {
             returnedNotifications.add(notificationRepository.save(notification));
 
             // TODO: Add push notification to receivers
-            sendPushNotification(user, notification.getNotificationType().name(), notification.getNotificationContent());
+            sendPushNotification(user, notification.getNotificationType().getValue(), notification.getNotificationContent());
         }
 
         // TODO: Add push notification to sender if applicable
@@ -197,7 +197,7 @@ public class ImpNotificationService implements INotificationService {
                     .build();
             returnedNotifications.add(notificationRepository.save(notification));
             // TODO: Add push notification to receivers
-            sendPushNotification(user, notification.getNotificationType().name(), notification.getNotificationContent());
+            sendPushNotification(user, notification.getNotificationType().getValue(), notification.getNotificationContent());
         }
 
         // TODO: Add push notification to sender if applicable

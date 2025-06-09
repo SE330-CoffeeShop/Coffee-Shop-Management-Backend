@@ -96,6 +96,41 @@ public class ImpProductService implements IProductService {
         return newProduct;
     }
 
+    @Override
+    public Product createProductWithImage(ProductCreateRequestDTO productCreateRequestDTO, MultipartFile file) throws Exception {
+        ProductCategory category = productCategoryRepository.findById(productCreateRequestDTO.getProductCategory())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with ID: " + productCreateRequestDTO.getProductCategory()));
+
+        Product newProduct = productRepository.save(
+                Product.builder()
+                        .productCategory(category)
+                        .productDescription(productCreateRequestDTO.getProductDescription())
+                        .productPrice(productCreateRequestDTO.getProductPrice())
+                        .productName(productCreateRequestDTO.getProductName())
+                        .productThumb(cloudinaryService.getProductDefault())
+                        .productIsDeleted(false)
+                        .productIsPublished(false)
+                        .productSlug(CreateSlug.createSlug(productCreateRequestDTO.getProductName()))
+                        .productCommentCount(0)
+                        .productRatingsAverage(BigDecimal.valueOf(0))
+                        .build()
+        );
+
+        newProduct.setProductThumb(cloudinaryService.uploadFile(file, "product").get("url").toString());
+
+        notificationService.sendNotificationToAllUsers(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.PRODUCT)
+                        .notificationContent(CreateNotiContentHelper.createProductAddedContentAll(newProduct.getProductName()))
+                        .senderId(null)
+                        .receiverId(null)
+                        .isRead(false)
+                        .build()
+        );
+
+        return newProduct;
+    }
+
     @Transactional
     @Override
     public Product updateProduct(ProductUpdateRequestDTO productUpdateRequestDTO) {

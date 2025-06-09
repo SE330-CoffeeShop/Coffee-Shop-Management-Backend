@@ -76,7 +76,7 @@ public final class Constants {
          * - Đơn hàng giao thành công
          * - Mua hàng tại quầy thành công
          */
-        ORDER("ORDER"),
+        ORDER("ĐƠN HÀNG"),
 
         /**
          * Thông báo về các chương trình khuyến mãi và giảm giá.
@@ -86,7 +86,7 @@ public final class Constants {
          * - Cập nhật khuyến mãi
          * - Khuyến mãi sắp hết hạn
          */
-        DISCOUNT("DISCOUNT"),
+        DISCOUNT("KHUYẾN MÃI"),
 
         /**
          * Thông báo hệ thống ảnh hưởng đến tất cả người dùng.
@@ -95,7 +95,7 @@ public final class Constants {
          * - Cập nhật phiên bản
          * - Thay đổi chính sách
          */
-        SYSTEM("SYSTEM"),
+        SYSTEM("HỆ THỐNG"),
 
         /**
          * Thông báo liên quan đến quản lý kho.
@@ -103,7 +103,7 @@ public final class Constants {
          * - Cảnh báo hàng sắp hết
          * - Cảnh báo hàng sắp hết hạn
          */
-        INVENTORY("INVENTORY"),
+        INVENTORY("KHO HÀNG"),
 
         /**
          * Thông báo liên quan đến quản lý nhân sự.
@@ -113,7 +113,7 @@ public final class Constants {
          * - Checkin thành công
          * - Thông báo lương về
          */
-        EMPLOYEE("EMPLOYEE"),
+        EMPLOYEE("NHÂN SỰ"),
 
         /**
          * Thông báo trực tiếp từ quản lý đến nhân viên.
@@ -121,7 +121,7 @@ public final class Constants {
          * - Gửi thông báo cho nhân viên thành công
          * - Nhân viên nhận thông báo từ manager
          */
-        MANAGER("MANAGER"),
+        MANAGER("QUẢN LÝ"),
 
         /**
          * Thông báo liên quan đến hóa đơn nhập kho.
@@ -131,7 +131,7 @@ public final class Constants {
          * - Cập nhật phiếu nhập kho
          * - Hủy phiếu nhập kho
          */
-        INVOICE("INVOICE"),
+        INVOICE("KHO HÀNG"),
 
         /**
          * Thông báo liên quan đến chuyển kho.
@@ -142,12 +142,12 @@ public final class Constants {
          * - Cập nhật phiếu nhập xuất
          * - Hủy phiếu nhập xuất
          */
-        TRANSFER("TRANSFER"),
+        TRANSFER("CHUYỂN KHO"),
 
         /**
          * Thông báo liên quan đến chi nhánh.
          */
-        BRANCH("BRANCH"),
+        BRANCH("CHI NHÁNH"),
 
         /**
          * Thông báo liên quan đến nhà cung cấp.
@@ -156,7 +156,7 @@ public final class Constants {
          * - Cập nhật thông tin nhà cung cấp
          * - Xóa thông tin nhà cung cấp
          */
-        SUPPLIER("SUPPLIER"),
+        SUPPLIER("NHÀ CUNG CẤP"),
 
         /**
          * Thông báo liên quan đến các loại sản phẩm.
@@ -165,7 +165,7 @@ public final class Constants {
          * - Cập nhật thông tin product
          * - Xóa thông tin product
          */
-        PRODUCT("PRODUCT"),
+        PRODUCT("SẢN PHẨM"),
 
         /**
          * Thông báo liên quan đến nhà kho.
@@ -174,7 +174,7 @@ public final class Constants {
          * - Cập nhật thông tin nhà kho
          * - Xóa thông tin nhà kho
          */
-        WAREHOUSE("WAREHOUSE");
+        WAREHOUSE("NHÀ KHO"),;
 
         private final String value;
 

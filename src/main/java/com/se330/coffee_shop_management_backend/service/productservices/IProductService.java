@@ -14,6 +14,7 @@ public interface IProductService {
     Product findByIdProduct(UUID id);
     Page<Product> findAllProducts(Pageable pageable);
     Product createProduct(ProductCreateRequestDTO productCreateRequestDTO);
+    Product createProductWithImage(ProductCreateRequestDTO productCreateRequestDTO, MultipartFile file) throws Exception;
     Product updateProduct(ProductUpdateRequestDTO productUpdateRequestDTORequestDTO);
     void deleteProduct(UUID id);
     Page<BestSellingProductResponseDTO> findAllBestSellingProducts(Pageable pageable);
