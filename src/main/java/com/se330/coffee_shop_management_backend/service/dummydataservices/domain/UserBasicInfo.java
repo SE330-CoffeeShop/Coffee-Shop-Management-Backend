@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +65,9 @@ public class UserBasicInfo {
                 .lastName("Admin")
                 .role(Constants.RoleEnum.ADMIN)
                 .isEmailVerified(true)
+                .phoneNumber("098" + getRandomDigits())
+                .gender("Male")
+                .birthDate(LocalDateTime.now().minusYears(30 + (int)(Math.random() * 10)))
                 .isBlocked(false)
                 .build());
         adminUser.setAvatar(defaultAdminAvatarUrl);
@@ -74,6 +78,7 @@ public class UserBasicInfo {
         String[] customerLastNames = {"Hương", "Thành", "Linh", "Đạt", "Mai", "Tuấn", "Hà", "Dũng", "Thảo", "Nam"};
 
         for (int i = 0; i < 10; i++) {
+            String gender = customerFirstNames[i].contains("Thị") ? "Female" : "Male";
             User customerUser = userService.create(CreateUserRequest.builder()
                     .email("customer" + (i + 1) + "@example.com")
                     .password(defaultPassword)
@@ -81,6 +86,9 @@ public class UserBasicInfo {
                     .lastName(customerLastNames[i])
                     .role(Constants.RoleEnum.CUSTOMER)
                     .isEmailVerified(true)
+                    .phoneNumber("09" + (7 + i % 3) + getRandomDigits())
+                            .gender(gender)
+                            .birthDate(LocalDateTime.now().minusYears(18 + (int)(Math.random() * 42)))
                     .isBlocked(false)
                     .build());
             customerUser.setAvatar(defaultCustomerAvatarUrl);
@@ -92,6 +100,7 @@ public class UserBasicInfo {
         String[] managerLastNames = {"Quang", "Hòa", "Tâm", "Phương", "Khoa"};
 
         for (int i = 0; i < 5; i++) {
+            String gender = managerFirstNames[i].contains("Thị") ? "Female" : "Male";
             User managerUser = userService.create(CreateUserRequest.builder()
                     .email("manager" + (i + 1) + "@example.com")
                     .password(defaultPassword)
@@ -100,6 +109,9 @@ public class UserBasicInfo {
                     .role(Constants.RoleEnum.MANAGER)
                     .isEmailVerified(true)
                     .isBlocked(false)
+                    .phoneNumber("09" + (1 + i % 3) + getRandomDigits())
+                    .gender(gender)
+                    .birthDate(LocalDateTime.now().minusYears(28 + (int)(Math.random() * 15)))
                     .build());
             managerUser.setAvatar(defaultManagerAvatarUrl);
             userRepository.save(managerUser);
@@ -125,6 +137,7 @@ public class UserBasicInfo {
         };
 
         for (int i = 0; i < 30; i++) {
+            String gender = employeeFirstNames[i].contains("Thị") ? "Female" : "Male";
             User employeeUser = userService.create(CreateUserRequest.builder()
                     .email("employee" + (i + 1) + "@example.com")
                     .password(defaultPassword)
@@ -133,6 +146,9 @@ public class UserBasicInfo {
                     .role(Constants.RoleEnum.EMPLOYEE)
                     .isEmailVerified(true)
                     .isBlocked(false)
+                    .phoneNumber("09" + (3 + i % 6) + getRandomDigits())
+                    .gender(gender)
+                    .birthDate(LocalDateTime.now().minusYears(20 + (int)(Math.random() * 25)))
                     .build());
             employeeUser.setAvatar(defaultEmployeeAvatarUrl);
             userRepository.save(employeeUser);
@@ -267,5 +283,13 @@ public class UserBasicInfo {
 
         paymentMethodsRepository.saveAll(paymentMethods);
         log.info("Created {} payment methods", paymentMethods.size());
+    }
+
+    private String getRandomDigits() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 7; i++) {
+            sb.append((int)(Math.random() * 10));
+        }
+        return sb.toString();
     }
 }

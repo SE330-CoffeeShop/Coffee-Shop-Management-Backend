@@ -425,6 +425,9 @@ public class UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
                 .lastName(request.getLastName())
+                .gender(request.getGender())
+                .phoneNumber(request.getPhoneNumber())
+                .birthDate(request.getBirthDate())
                 .avatar(cloudinaryService.getAvatarDefault())
                 .build();
     }

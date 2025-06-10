@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -71,4 +73,34 @@ public abstract class AbstractBaseCreateUserRequest {
         example = "DOE"
     )
     private String lastName;
+
+    @Size(max = 20, message = "{max_length}")
+    @Schema(
+            name = "phoneNumber",
+            description = "Phone number of the user",
+            type = "String",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+            example = "+123456789"
+    )
+    private String phoneNumber;
+
+    @Size(max = 10, message = "{max_length}")
+    @Schema(
+            name = "gender",
+            description = "Gender of the user",
+            type = "String",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+            example = "Male"
+    )
+    private String gender;
+
+    @Schema(
+            name = "birthDate",
+            description = "Birth date of the user",
+            type = "string",
+            format = "date-time",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED,
+            example = "2000-01-01T00:00:00"
+    )
+    private LocalDateTime birthDate;
 }
