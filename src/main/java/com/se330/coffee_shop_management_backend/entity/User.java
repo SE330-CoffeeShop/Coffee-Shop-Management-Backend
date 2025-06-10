@@ -39,6 +39,15 @@ public class User extends AbstractBaseEntity {
     @Column(name = "avatar", columnDefinition = "text")
     private String avatar;
 
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Column(name = "gender", length = 10)
+    private String gender;
+
+    @Column(name = "birth_date", nullable = false)
+    private LocalDateTime birthDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "role_id",

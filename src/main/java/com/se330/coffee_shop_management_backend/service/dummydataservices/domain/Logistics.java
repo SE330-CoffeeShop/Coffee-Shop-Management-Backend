@@ -36,6 +36,7 @@ public class Logistics {
     private final IngredientRepository ingredientRepository;
     private final SupplierRepository supplierRepository;
     private final FavoriteDrinkRepository favoriteDrinkRepository;
+    private final BranchRepository branchRepository;
 
     @Transactional
     public void create() {
@@ -202,18 +203,9 @@ public class Logistics {
     private void createTransfer() {
         log.info("Creating transfers...");
 
-        // Get all necessary data
-        List<Branch> branches = warehouseRepository.findAll().stream()
-                .limit(1)
-                .map(warehouse -> warehouse.getTransfers().stream()
-                        .map(Transfer::getBranch)
-                        .findFirst()
-                        .orElse(null))
-                .filter(branch -> branch != null)
-                .collect(Collectors.toList());
-
         List<Warehouse> warehouses = warehouseRepository.findAll();
         List<Ingredient> ingredients = ingredientRepository.findAll();
+        List<Branch> branches = branchRepository.findAll();
 
         if (branches.isEmpty() || warehouses.isEmpty() || ingredients.isEmpty()) {
             log.error("Cannot create transfers: Missing required data");
@@ -341,19 +333,18 @@ public class Logistics {
 
         Random random = new Random();
         List<InvoiceDetail> allInvoiceDetails = new ArrayList<>();
-        String[] units = {"kg", "g", "l", "ml", "piece", "box", "package"};
+        String[] units = {"kg", "g", "l", "ml", "miếng", "hộp", "túi"};
 
         for (Invoice invoice : invoices) {
             int detailCount = random.nextInt(10) + 1; // 1-10 details per invoice
             List<InvoiceDetail> invoiceDetails = new ArrayList<>();
             BigDecimal invoiceTotal = BigDecimal.ZERO;
 
-            // Create random unique items for this invoice
-            List<Ingredient> availableIngredients = new ArrayList<>(ingredients);
-            for (int i = 0; i < detailCount && !availableIngredients.isEmpty(); i++) {
-                int ingredientIndex = random.nextInt(availableIngredients.size());
-                Ingredient ingredient = availableIngredients.get(ingredientIndex);
-                availableIngredients.remove(ingredientIndex); // Ensure no duplicates
+            // Create random items for this invoice (allowing duplicates)
+            for (int i = 0; i < detailCount; i++) {
+                // Select random ingredient (possible duplicates)
+                int ingredientIndex = random.nextInt(ingredients.size());
+                Ingredient ingredient = ingredients.get(ingredientIndex);
 
                 int quantity = random.nextInt(100) + 10; // 10-109 units
                 String unit = units[random.nextInt(units.length)];

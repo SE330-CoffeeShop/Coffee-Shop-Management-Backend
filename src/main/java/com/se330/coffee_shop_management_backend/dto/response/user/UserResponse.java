@@ -45,6 +45,10 @@ public class UserResponse {
     )
     private String lastName;
 
+    private String gender;
+    private String phoneNumber;
+    private LocalDateTime birthday;
+
     private String role;
 
     @Schema(
@@ -82,6 +86,8 @@ public class UserResponse {
     private LocalDateTime updatedAt;
 
 
+
+
     /**
      * Convert User to UserResponse
      * @param user User
@@ -95,6 +101,9 @@ public class UserResponse {
             .lastName(user.getLastName())
             .role(String.valueOf(user.getRole().getName()))
             .emailVerifiedAt(user.getEmailVerifiedAt())
+            .gender(user.getGender())
+            .phoneNumber(user.getPhoneNumber())
+            .birthday(user.getBirthDate())
             .blockedAt(user.getBlockedAt())
             .createdAt(user.getCreatedAt())
             .updatedAt(user.getUpdatedAt())
