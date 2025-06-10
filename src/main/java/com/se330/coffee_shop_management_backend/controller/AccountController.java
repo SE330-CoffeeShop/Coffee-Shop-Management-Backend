@@ -3,6 +3,7 @@ package com.se330.coffee_shop_management_backend.controller;
 import com.se330.coffee_shop_management_backend.dto.request.user.UpdatePasswordRequest;
 import com.se330.coffee_shop_management_backend.dto.response.DetailedErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SuccessResponse;
 import com.se330.coffee_shop_management_backend.dto.response.user.UserResponse;
 import com.se330.coffee_shop_management_backend.entity.User;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -61,89 +63,107 @@ public class AccountController extends AbstractBaseController {
             )
         }
     )
-    public ResponseEntity<UserResponse> me() {
-        return ResponseEntity.ok(UserResponse.convert(userService.getUser()));
+    public ResponseEntity<SingleResponse<UserResponse>> me() {
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Successful operation",
+                        UserResponse.convert(userService.getUser())
+                )
+        );
     }
 
     @PostMapping("/password")
     @Operation(
-        summary = "Password update endpoint",
-        security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-        responses = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Successful operation",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = SuccessResponse.class)
-                )
-            ),
-            @ApiResponse(
-                responseCode = "401",
-                description = "Bad credentials",
-                content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ErrorResponse.class)
-                )
-            ),
-            @ApiResponse(
-                responseCode = "422",
-                description = "Validation failed",
-                content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = DetailedErrorResponse.class)
-                )
-            )
-        }
+            summary = "Password update endpoint",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Bad credentials",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "422",
+                            description = "Validation failed",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = DetailedErrorResponse.class)
+                            )
+                    )
+            }
     )
-    public ResponseEntity<SuccessResponse> password(
-        @Parameter(description = "Request body to update password", required = true)
-        @RequestBody @Valid UpdatePasswordRequest request
+    public ResponseEntity<SingleResponse<SuccessResponse>> password(
+            @Parameter(description = "Request body to update password", required = true)
+            @RequestBody @Valid UpdatePasswordRequest request
     ) throws BindException {
         userService.updatePassword(request);
 
-        return ResponseEntity.ok(SuccessResponse.builder()
-            .message(messageSourceService.get("your_password_updated"))
-            .build());
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        messageSourceService.get("password_update_successful"),
+                        SuccessResponse.builder()
+                                .message(messageSourceService.get("your_password_updated"))
+                                .build()
+                )
+        );
     }
 
     @GetMapping("/resend-email-verification")
     @Operation(
-        summary = "Resend e-mail verification endpoint",
-        security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-        responses = {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Successful operation",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = SuccessResponse.class)
-                )
-            ),
-            @ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ErrorResponse.class)
-                )
-            ),
-            @ApiResponse(
-                responseCode = "401",
-                description = "Bad credentials",
-                content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ErrorResponse.class)
-                )
-            )
-        }
+            summary = "Resend e-mail verification endpoint",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successful operation",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Bad credentials",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
     )
-    public ResponseEntity<SuccessResponse> resendEmailVerificationMail() {
+    public ResponseEntity<SingleResponse<SuccessResponse>> resendEmailVerificationMail() {
         userService.resendEmailVerificationMail();
 
-        return ResponseEntity.ok(SuccessResponse.builder()
-            .message(messageSourceService.get("verification_email_sent"))
-            .build());
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        messageSourceService.get("verification_email_sent_successfully"),
+                        SuccessResponse.builder()
+                                .message(messageSourceService.get("verification_email_sent"))
+                                .build()
+                )
+        );
     }
 
     @PostMapping("/avatar")
@@ -156,7 +176,7 @@ public class AccountController extends AbstractBaseController {
                             description = "Avatar uploaded successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = Map.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -169,22 +189,26 @@ public class AccountController extends AbstractBaseController {
                     )
             }
     )
-    public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<SingleResponse<Map<String, String>>> uploadAvatar(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("File is empty or not provided");
+            throw new IllegalArgumentException("File is empty or not provided");
         }
 
         try {
             User currentUser = userService.getUser();
             String imageUrl = userService.uploadUserAvatar(currentUser.getId(), file);
-            return ResponseEntity.ok(Map.of(
-                    "status", 200,
-                    "message", "Avatar uploaded successfully",
-                    "url", imageUrl
-            ));
+            Map<String, String> responseData = Map.of("url", imageUrl);
+
+            return ResponseEntity.ok(
+                    new SingleResponse<>(
+                            HttpStatus.OK.value(),
+                            "Avatar uploaded successfully",
+                            responseData
+                    )
+            );
         } catch (Exception e) {
             log.error("Failed to upload avatar: {}", e.getMessage());
-            return ResponseEntity.status(500).body("Error uploading avatar: " + e.getMessage());
+            throw new RuntimeException("Error uploading avatar: " + e.getMessage());
         }
     }
 
@@ -198,7 +222,7 @@ public class AccountController extends AbstractBaseController {
                             description = "Avatar deleted successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = Map.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -211,18 +235,22 @@ public class AccountController extends AbstractBaseController {
                     )
             }
     )
-    public ResponseEntity<?> deleteAvatar() {
+    public ResponseEntity<SingleResponse<Map<String, String>>> deleteAvatar() {
         try {
             User currentUser = userService.getUser();
             String defaultAvatarUrl = userService.deleteUserAvatar(currentUser.getId());
-            return ResponseEntity.ok(Map.of(
-                    "status", 200,
-                    "message", "Avatar deleted successfully",
-                    "url", defaultAvatarUrl
-            ));
+            Map<String, String> responseData = Map.of("url", defaultAvatarUrl);
+
+            return ResponseEntity.ok(
+                    new SingleResponse<>(
+                            HttpStatus.OK.value(),
+                            "Avatar deleted successfully",
+                            responseData
+                    )
+            );
         } catch (Exception e) {
             log.error("Failed to delete avatar: {}", e.getMessage());
-            return ResponseEntity.status(500).body("Error deleting avatar: " + e.getMessage());
+            throw new RuntimeException("Error deleting avatar: " + e.getMessage());
         }
     }
 }

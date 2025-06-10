@@ -1,8 +1,6 @@
 package com.se330.coffee_shop_management_backend.service;
 
-import com.se330.coffee_shop_management_backend.dto.response.auth.TokenExpiresInResponse;
 import com.se330.coffee_shop_management_backend.dto.response.auth.TokenResponse;
-import com.se330.coffee_shop_management_backend.dto.response.user.UserResponse;
 import com.se330.coffee_shop_management_backend.entity.JwtToken;
 import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.exception.NotFoundException;
@@ -20,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.TOKEN_HEADER;
