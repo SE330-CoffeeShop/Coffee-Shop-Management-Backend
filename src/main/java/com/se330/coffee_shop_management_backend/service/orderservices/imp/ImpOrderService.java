@@ -34,7 +34,9 @@ public class ImpOrderService implements IOrderService {
     private final ShippingAddressesRepository shippingAddressesRepository;
     private final IOrderDetailService orderDetailService;
     private final IDiscountService discountService;
+    private final OrderDetailRepository orderDetailRepository;
     private final CartRepository cartRepository;
+    private final BranchRepository branchRepository;
     private final INotificationService notificationService;
 
     public ImpOrderService(
@@ -43,8 +45,10 @@ public class ImpOrderService implements IOrderService {
             PaymentMethodsRepository paymentMethodsRepository,
             UserRepository userRepository,
             ShippingAddressesRepository shippingAddressesRepository,
+            OrderDetailRepository orderDetailRepository,
             IOrderDetailService orderDetailService,
             IDiscountService discountService,
+            BranchRepository branchRepository,
             CartRepository cartRepository,
             INotificationService notificationService
     ) {
@@ -54,9 +58,11 @@ public class ImpOrderService implements IOrderService {
         this.userRepository = userRepository;
         this.shippingAddressesRepository = shippingAddressesRepository;
         this.orderDetailService = orderDetailService;
+        this.orderDetailRepository = orderDetailRepository;
         this.discountService = discountService;
         this.cartRepository = cartRepository;
         this.notificationService = notificationService;
+        this.branchRepository = branchRepository;
     }
 
     @Override
@@ -102,8 +108,19 @@ public class ImpOrderService implements IOrderService {
     @Override
     @Transactional
     public Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) {
-        Employee existingEmployee = employeeRepository.findById(orderCreateRequestDTO.getEmployeeId())
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + orderCreateRequestDTO.getEmployeeId()));
+        Employee existingEmployee = null;
+
+        if (orderCreateRequestDTO.getEmployeeId() != null) {
+            existingEmployee = employeeRepository.findById(orderCreateRequestDTO.getEmployeeId())
+                    .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + orderCreateRequestDTO.getEmployeeId()));
+        }
+
+        Branch existingBranch = null;
+
+        if (orderCreateRequestDTO.getBranchId() != null) {
+            existingBranch = branchRepository.findById(orderCreateRequestDTO.getBranchId())
+                    .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + orderCreateRequestDTO.getBranchId()));
+        }
 
         User existingUser = userRepository.findById(orderCreateRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderCreateRequestDTO.getUserId()));
@@ -117,8 +134,7 @@ public class ImpOrderService implements IOrderService {
         PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(orderCreateRequestDTO.getPaymentMethodId())
                 .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + orderCreateRequestDTO.getPaymentMethodId()));
         
-        Cart existingCart = cartRepository.findById(orderCreateRequestDTO.getCartId())
-                .orElseThrow(() -> new EntityNotFoundException("Cart not found with id:" + orderCreateRequestDTO.getCartId()));
+        Cart existingCart = cartRepository.findByUser_Id(orderCreateRequestDTO.getUserId());
 
         // create order first
         Order newOrder = orderRepository.save(
@@ -132,7 +148,7 @@ public class ImpOrderService implements IOrderService {
                     .orderTotalCost(BigDecimal.ZERO)
                     .orderDiscountCost(BigDecimal.ZERO)
                     .orderTotalCostAfterDiscount(BigDecimal.ZERO)
-                    .branch(existingCart.getBranch())
+                    .branch(existingBranch)
                     .build()
         );
 
@@ -149,11 +165,12 @@ public class ImpOrderService implements IOrderService {
         // now then add order details
         for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderDetailDtos) {
             orderDetailCreateRequestDTO.setOrderId(newOrder.getId());
+            orderDetailCreateRequestDTO.setBranchId(orderCreateRequestDTO.getBranchId() != null ? orderCreateRequestDTO.getBranchId() : existingBranch.getId());
             orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
         }
 
         // Calculate total cost
-        BigDecimal totalCost = updateTotalCost(newOrder);
+        BigDecimal totalCost = updateTotalCost(newOrder.getId());
         newOrder.setOrderTotalCost(totalCost);
 
         // now we loop for each order detail to apply discount for them
@@ -162,18 +179,12 @@ public class ImpOrderService implements IOrderService {
         }
 
         // update again the new total cost since the unit price of some order details have been changed
-        totalCost = updateTotalCost(newOrder);
+        totalCost = updateTotalCost(newOrder.getId());
         BigDecimal discountCost = newOrder.getOrderTotalCost().subtract(totalCost);
 
         // set the new total cost
         newOrder.setOrderDiscountCost(discountCost);
         newOrder.setOrderTotalCostAfterDiscount(totalCost);
-
-        // now delete the cart since we have created the order
-        if (existingCart.getUser() != null) {
-            existingCart.getUser().getCarts().remove(existingCart);
-        }
-        cartRepository.delete(existingCart);
 
         // save order again to update total cost and payment method
         orderRepository.save(newOrder);
@@ -199,7 +210,7 @@ public class ImpOrderService implements IOrderService {
                             .build());
         }
 
-        return newOrder;
+        return orderRepository.findById(newOrder.getId()).orElseThrow();
     }
 
     @Override
@@ -215,6 +226,12 @@ public class ImpOrderService implements IOrderService {
 
         ShippingAddresses existingShippingAddress = shippingAddressesRepository.findById(orderUpdateRequestDTO.getShippingAddressId())
                 .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with id:" + orderUpdateRequestDTO.getShippingAddressId()));
+
+        if (orderUpdateRequestDTO.getBranchId() != null) {
+            Branch existingBranch = branchRepository.findById(orderUpdateRequestDTO.getBranchId())
+                    .orElseThrow(() -> new EntityNotFoundException("Branch not found with id:" + orderUpdateRequestDTO.getBranchId()));
+            existingOrder.setBranch(existingBranch);
+        }
         
         if (existingOrder.getEmployee() == null) {
             if (orderUpdateRequestDTO.getEmployeeId() != null) {
@@ -241,6 +258,26 @@ public class ImpOrderService implements IOrderService {
                             .notificationContent(CreateNotiContentHelper.createOrderCompletedContent(existingOrder.getId()))
                             .senderId(null)
                             .isRead(false)
+                    .build());
+        }
+
+        if (existingOrder.getOrderStatus() != Constants.OrderStatusEnum.DELIVERING && orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERING) {
+            notificationService.createNotification(NotificationCreateRequestDTO.builder()
+                    .notificationType(Constants.NotificationTypeEnum.ORDER)
+                    .receiverId(existingUser.getId())
+                    .notificationContent(CreateNotiContentHelper.orderDeliveringContent(existingOrder.getId()))
+                    .senderId(null)
+                    .isRead(false)
+                    .build());
+        }
+
+        if (existingOrder.getOrderStatus() != Constants.OrderStatusEnum.DELIVERED && orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERED) {
+            notificationService.createNotification(NotificationCreateRequestDTO.builder()
+                    .notificationType(Constants.NotificationTypeEnum.ORDER)
+                    .receiverId(existingUser.getId())
+                    .notificationContent(CreateNotiContentHelper.orderDeliveredContent(existingOrder.getId()))
+                    .senderId(null)
+                    .isRead(false)
                     .build());
         }
 
@@ -289,10 +326,13 @@ public class ImpOrderService implements IOrderService {
     }
 
 
-    private BigDecimal updateTotalCost(Order order) {
+    private BigDecimal updateTotalCost(UUID orderId) {
         BigDecimal totalCost = BigDecimal.ZERO;
 
-        for (OrderDetail orderDetail : order.getOrderDetails()) {
+        // Truy vấn trực tiếp tất cả OrderDetails của Order này
+        List<OrderDetail> orderDetails = orderDetailRepository.findAllByOrder_Id(orderId);
+
+        for (OrderDetail orderDetail : orderDetails) {
             BigDecimal itemCost = orderDetail.getOrderDetailUnitPrice().multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
             totalCost = totalCost.add(itemCost);
         }

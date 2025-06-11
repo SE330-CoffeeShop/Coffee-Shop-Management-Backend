@@ -17,4 +17,5 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     boolean existsByEmailAndIdNot(String email, UUID id);
 
     List<User> findAllByRoleName(Constants.RoleEnum roleName);
+
 }

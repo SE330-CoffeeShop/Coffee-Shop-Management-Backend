@@ -1,18 +1,20 @@
 package com.se330.coffee_shop_management_backend.service.cartservices;
 
-import com.se330.coffee_shop_management_backend.dto.request.cart.CartCreateRequestDTO;
-import com.se330.coffee_shop_management_backend.dto.request.cart.CartUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.cart.CartDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Cart;
+import com.se330.coffee_shop_management_backend.entity.CartDetail;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.UUID;
 
 public interface ICartService {
-    Cart findByIdCart(UUID id);
-    Page<Cart> findAllCarts(Pageable pageable);
-    Page<Cart> findCartsByUserId(UUID userId, Pageable pageable);
-    Cart createCart(CartCreateRequestDTO cartCreateRequestDTO);
-    Cart updateCart(CartUpdateRequestDTO cartUpdateRequestDTO);
-    void deleteCart(UUID id);
+    Page<Cart> getAllCarts(Pageable pageable);
+    Cart getCartByUserId(UUID userId);
+    Page<CartDetail> getAllCartDetailsByUserId(UUID userId, Pageable pageable);
+    Page<UUID> findBranchesWithSufficientInventory(UUID userId, Pageable pageable);
+    Cart addCartDetail(UUID userId, CartDetailCreateRequestDTO cartDetailCreateRequestDTO);
+    Cart removeCartDetail(UUID userId, UUID cartDetailId);
+    Cart updateCartDetail(UUID userId, CartDetailCreateRequestDTO cartDetailCreateRequestDTO);
+    Cart clearCart(UUID userId);
 }

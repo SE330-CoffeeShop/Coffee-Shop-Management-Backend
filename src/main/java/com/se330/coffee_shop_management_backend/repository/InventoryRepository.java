@@ -17,4 +17,11 @@ public interface InventoryRepository extends JpaRepository<Inventory, UUID>, Jpa
 
     @Query("SELECT i FROM Inventory i WHERE i.branch.id = :branchId AND i.inventoryExpireDate >= CURRENT_TIMESTAMP ORDER BY i.inventoryExpireDate ASC")
     List<Inventory> findAllByBranch_IdSortedByExpiredDay(UUID branchId);
+
+    List<Inventory> findAllByBranch_IdAndIngredient_Id(UUID branchId, UUID ingredientId);
+
+    Page<Inventory> findAllByBranch_IdAndIngredient_Id(UUID branchId, UUID ingredientId, Pageable pageable);
+
+    @Query("SELECT COALESCE(SUM(i.inventoryQuantity), 0) FROM Inventory i WHERE i.branch.id = :branchId AND i.ingredient.id = :ingredientId AND i.inventoryExpireDate > CURRENT_TIMESTAMP")
+    Integer countQuantityByBranch_IdAndIngredient_Id(UUID branchId, UUID ingredientId);
 }

@@ -13,6 +13,7 @@ public class OrderUpdateRequestDTO {
     private Constants.OrderStatusEnum orderStatus;
     private UUID employeeId;
     private UUID userId;
+    private UUID branchId;
     private UUID shippingAddressId;
     private UUID paymentMethodId;
 }

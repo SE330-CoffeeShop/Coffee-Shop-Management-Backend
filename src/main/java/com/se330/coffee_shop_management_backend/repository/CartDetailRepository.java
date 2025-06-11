@@ -7,9 +7,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface CartDetailRepository extends JpaRepository<CartDetail, UUID>, JpaSpecificationExecutor<CartDetail> {
     Page<CartDetail> findAllByCart_Id(UUID cartId, Pageable pageable);
+
+    List<CartDetail> findAllByCart_Id(UUID cartId);
+
+    void deleteAllByCart_Id(UUID cartId);
+
+    CartDetail findByCart_IdAndProductVariant_Id(UUID cartId, UUID productVariantId);
+
+    Page<CartDetail> findAllByCart_User_Id(UUID cartUserId, Pageable pageable);
 }

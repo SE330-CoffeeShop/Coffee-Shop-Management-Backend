@@ -322,4 +322,63 @@ public class InventoryController {
                 )
         );
     }
+
+    @GetMapping("/branch/{branchId}/ingredient/{ingredientId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all inventories by branch ID and ingredient ID with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch's ingredient inventory list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid branch ID or ingredient ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<InventoryResponseDTO>> findAllInventoriesByBranchIdAndIngredientId(
+            @PathVariable UUID branchId,
+            @PathVariable UUID ingredientId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Inventory> inventoryPage = inventoryService.findAllInventoriesByBranchIdAndIngredientId(branchId, ingredientId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch ingredient inventories retrieved successfully",
+                        InventoryResponseDTO.convert(inventoryPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                inventoryPage.getNumber(),
+                                inventoryPage.getSize(),
+                                inventoryPage.getTotalElements(),
+                                inventoryPage.getTotalPages()
+                        )
+                )
+        );
+    }
 }

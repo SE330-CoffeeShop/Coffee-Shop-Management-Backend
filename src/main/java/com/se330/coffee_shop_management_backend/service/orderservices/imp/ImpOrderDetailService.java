@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCre
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
+import com.se330.coffee_shop_management_backend.repository.BranchRepository;
 import com.se330.coffee_shop_management_backend.repository.InventoryRepository;
 import com.se330.coffee_shop_management_backend.repository.OrderDetailRepository;
 import com.se330.coffee_shop_management_backend.repository.OrderRepository;
@@ -13,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -24,16 +26,19 @@ public class ImpOrderDetailService implements IOrderDetailService {
     private final OrderDetailRepository orderDetailRepository;
     private final ProductVariantRepository productVariantRepository;
     private final OrderRepository orderRepository;
+    private final BranchRepository branchRepository;
     private final InventoryRepository inventoryRepository;
 
     public ImpOrderDetailService(
             OrderDetailRepository orderDetailRepository,
             ProductVariantRepository productVariantRepository,
             OrderRepository orderRepository,
+            BranchRepository branchRepository,
             InventoryRepository inventoryRepository
     ) {
         this.orderDetailRepository = orderDetailRepository;
         this.productVariantRepository = productVariantRepository;
+        this.branchRepository = branchRepository;
         this.orderRepository = orderRepository;
         this.inventoryRepository = inventoryRepository;
     }
@@ -59,7 +64,9 @@ public class ImpOrderDetailService implements IOrderDetailService {
         Order existingOrder = orderRepository.findById(orderDetailCreateRequestDTO.getOrderId())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderDetailCreateRequestDTO.getOrderId()));
 
-        Branch branch = existingOrder.getEmployee().getBranch();
+        Branch branch = branchRepository.findById(orderDetailCreateRequestDTO.getBranchId()).orElseThrow(
+                () -> new EntityNotFoundException("Branch not found with id: " + orderDetailCreateRequestDTO.getBranchId()
+        ));
         UUID branchId = branch.getId();
 
         // Calculate required ingredients for this order detail

@@ -27,7 +27,7 @@ public class Cart extends AbstractBaseEntity {
     @Column(name = "cart_total_cost_after_discount", nullable = false)
     private BigDecimal cartTotalCostAfterDiscount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
             foreignKey = @ForeignKey(
@@ -40,14 +40,4 @@ public class Cart extends AbstractBaseEntity {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<CartDetail> cartDetails = new ArrayList<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "branch_id",
-            foreignKey = @ForeignKey(
-                    name = "fk_cart_branch",
-                    foreignKeyDefinition = "FOREIGN KEY (branch_id) REFERENCES branches (branch_id) ON DELETE CASCADE"
-            )
-    )
-    private Branch branch;
 }

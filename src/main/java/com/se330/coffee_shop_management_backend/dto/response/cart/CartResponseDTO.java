@@ -8,7 +8,6 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -22,7 +21,6 @@ public class CartResponseDTO {
     )
     private String id;
 
-    private UUID branchId;
     private String customerId;
     private BigDecimal cartTotalCost;
     private BigDecimal cartDiscountCost;
@@ -32,7 +30,6 @@ public class CartResponseDTO {
         return CartResponseDTO.builder()
                 .id(cart.getId().toString())
                 .customerId(cart.getUser().getId().toString())
-                .branchId(cart.getBranch() != null ? cart.getBranch().getId() : null)
                 .cartTotalCost(cart.getCartTotalCost())
                 .cartDiscountCost(cart.getCartDiscountCost())
                 .cartTotalCostAfterDiscount(cart.getCartTotalCostAfterDiscount())
