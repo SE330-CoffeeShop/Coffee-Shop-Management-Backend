@@ -67,7 +67,7 @@ public class DiscountResponseDTO {
                 .updatedAt(discount.getUpdatedAt())
                 .discountName(discount.getDiscountName())
                 .discountDescription(discount.getDiscountDescription())
-                .discountType(discount.getDiscountType().name())
+                .discountType(discount.getDiscountType().getValue())
                 .discountValue(discount.getDiscountValue())
                 .discountCode(discount.getDiscountCode())
                 .discountStartDate(discount.getDiscountStartDate())

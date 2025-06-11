@@ -24,6 +24,12 @@ public class NotificationResponseDTO {
     )
     private String id;
 
+    private String notificationType;
+    private String notificationContent;
+    private String senderId;
+    private String receiverId;
+    private boolean isRead;
+
     @Schema(
             name = "createdAt",
             description = "Date time field of employee creation",
@@ -40,18 +46,12 @@ public class NotificationResponseDTO {
     )
     private LocalDateTime updatedAt;
 
-    private Constants.NotificationTypeEnum notificationType;
-    private String notificationContent;
-    private String senderId;
-    private String receiverId;
-    private boolean isRead;
-
     public static NotificationResponseDTO convert(Notification notification) {
         return NotificationResponseDTO.builder()
                 .id(notification.getId().toString())
                 .createdAt(notification.getCreatedAt())
                 .updatedAt(notification.getUpdatedAt())
-                .notificationType(notification.getNotificationType())
+                .notificationType(notification.getNotificationType().getValue())
                 .notificationContent(notification.getNotificationContent())
                 .senderId(notification.getSender() != null ? notification.getSender().getId().toString() : null)
                 .receiverId(notification.getReceiver() != null ? notification.getReceiver().getId().toString() : null)

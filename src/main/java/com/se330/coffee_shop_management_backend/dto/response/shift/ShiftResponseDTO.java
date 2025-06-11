@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +25,11 @@ public class ShiftResponseDTO {
     )
     private String id;
 
+    private LocalTime shiftStartTime;
+    private LocalTime shiftEndTime;
+
+    private String dayOfWeek;
+
     @Schema(
             name = "createdAt",
             description = "Date time field of shift creation",
@@ -40,8 +46,7 @@ public class ShiftResponseDTO {
     )
     private LocalDateTime updatedAt;
 
-    private LocalDateTime shiftStartTime;
-    private LocalDateTime shiftEndTime;
+
 
     // Related entities
     private String employeeId;
@@ -53,6 +58,7 @@ public class ShiftResponseDTO {
                 .updatedAt(shift.getUpdatedAt())
                 .shiftStartTime(shift.getShiftStartTime())
                 .shiftEndTime(shift.getShiftEndTime())
+                .dayOfWeek(shift.getDayOfWeek().getValue())
                 .employeeId(shift.getEmployee() != null ? shift.getEmployee().getId().toString() : null)
                 .build();
     }
