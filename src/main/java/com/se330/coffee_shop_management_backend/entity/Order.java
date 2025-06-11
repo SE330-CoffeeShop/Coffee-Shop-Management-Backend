@@ -80,4 +80,14 @@ public class Order extends AbstractBaseEntity {
             )
     )
     private ShippingAddresses shippingAddress;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "branch_id",
+            foreignKey = @ForeignKey(
+                    name = "fk_order_branch",
+                    foreignKeyDefinition = "FOREIGN KEY (branch_id) REFERENCES branches (branch_id) ON DELETE CASCADE"
+            )
+    )
+    private Branch branch;
 }

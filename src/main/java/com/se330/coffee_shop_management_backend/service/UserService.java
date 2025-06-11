@@ -131,6 +131,10 @@ public class UserService {
         if (user.getRole() != null) {
             user.getRole().getName();
         }
+
+        if (user.getEmployee() != null) {
+            user.getEmployee().getBranch().getBranchName();
+        }
         
         return user;
     }

@@ -74,6 +74,11 @@ public class ImpOrderService implements IOrderService {
         return orderRepository.findAllByUser_Id(customerId, pageable);
     }
 
+    @Override
+    public Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, UUID branchId, Pageable pageable) {
+        return orderRepository.findAllByOrderStatusAndBranch_Id(status, branchId, pageable);
+    }
+
     /**
      * Creates a new order with associated order details and applies available discounts.
      *
@@ -127,6 +132,7 @@ public class ImpOrderService implements IOrderService {
                     .orderTotalCost(BigDecimal.ZERO)
                     .orderDiscountCost(BigDecimal.ZERO)
                     .orderTotalCostAfterDiscount(BigDecimal.ZERO)
+                    .branch(existingCart.getBranch())
                     .build()
         );
 
