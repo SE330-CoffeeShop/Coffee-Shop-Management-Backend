@@ -5,6 +5,7 @@ import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.repository.NotificationRepository;
 import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.util.Constants;
+import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.NotificationTypeEnum.*;
 
@@ -30,179 +32,193 @@ public class Notifications {
     }
 
     private void createNotifications() {
-        log.info("Creating notifications...");
+        log.info("Creating dummy notifications...");
+        Random random = new Random();
 
-        // Get all users and managers
+        // Get all users
         List<User> allUsers = userRepository.findAll();
-        List<User> managers = userRepository.findAllByRoleName(Constants.RoleEnum.MANAGER);
-
         if (allUsers.isEmpty()) {
-            log.error("Cannot create notifications: No users found");
+            log.error("No users found to create notifications");
             return;
         }
 
-        Random random = new Random();
+        // Separate managers and non-managers
+        List<User> managers = userRepository.findAllByRoleName(Constants.RoleEnum.MANAGER);
+
+        // All users can be receivers
+
+        // Prepare notification type values for random selection
+        List<Constants.NotificationTypeEnum> notificationTypes = List.of(
+                ORDER, DISCOUNT, SYSTEM, INVENTORY, EMPLOYEE, MANAGER, INVOICE, TRANSFER, BRANCH, SUPPLIER, PRODUCT, WAREHOUSE
+        );
+
         List<Notification> notifications = new ArrayList<>();
 
-        int totalNotificationsTarget = 100000;
-        int notificationsPerUser = Math.max(1, totalNotificationsTarget / allUsers.size());
+        for (int i = 0; i < 10000; i++) {
+            // Random notification type
+            Constants.NotificationTypeEnum notificationType = notificationTypes.get(random.nextInt(notificationTypes.size()));
 
-        for (User user : allUsers) {
-            for (int i = 0; i < notificationsPerUser; i++) {
-                // Select random notification type
-                Constants.NotificationTypeEnum notificationType = Constants.NotificationTypeEnum.values()[
-                        random.nextInt(Constants.NotificationTypeEnum.values().length)];
+            // Random receiver (cannot be null)
+            User receiver = allUsers.get(random.nextInt(allUsers.size()));
 
-                // Generate relevant Vietnamese content
-                String content = generateVietnameseContent(notificationType, random);
+            // Random sender (can be null or a manager)
+            User sender = random.nextBoolean() && !managers.isEmpty() ? managers.get(random.nextInt(managers.size())) : null;
 
-                // Decide sender: null (system) or random manager
-                User sender = random.nextBoolean() ? null :
-                        (!managers.isEmpty() ? managers.get(random.nextInt(managers.size())) : null);
+            // Generate content based on notification type
+            String content = generateRandomContent(notificationType, random);
 
-                // Create notification
-                Notification notification = Notification.builder()
-                        .notificationType(notificationType)
-                        .notificationContent(content)
-                        .sender(sender)
-                        .receiver(user)
-                        .isRead(random.nextBoolean())
-                        .build();
+            // Create notification
+            Notification notification = Notification.builder()
+                    .notificationType(notificationType)
+                    .notificationContent(content)
+                    .sender(sender)
+                    .receiver(receiver)
+                    .isRead(random.nextBoolean())
+                    .build();
 
-                notifications.add(notification);
+            notifications.add(notification);
+
+            // Save in batches of 500 to avoid memory issues
+            if (i > 0 && i % 500 == 0) {
+                notificationRepository.saveAll(notifications);
+                notifications.clear();
+                log.info("Created {} notifications so far", i);
             }
         }
 
-        notificationRepository.saveAll(notifications);
-        log.info("Created {} notifications for {} users", notifications.size(), allUsers.size());
+        // Save remaining notifications
+        if (!notifications.isEmpty()) {
+            notificationRepository.saveAll(notifications);
+        }
+
+        log.info("Created 10,000 dummy notifications successfully");
     }
 
-    private String generateVietnameseContent(Constants.NotificationTypeEnum type, Random random) {
+    private String generateRandomContent(Constants.NotificationTypeEnum type, Random random) {
+        UUID randomId = UUID.randomUUID();
+        String randomName = "Item" + random.nextInt(100);
+        String randomBranchName = "Chi nhánh " + random.nextInt(10);
+        String randomDiscountName = "Khuyến mãi " + random.nextInt(20);
+        String randomEmployeeName = "Nhân viên " + random.nextInt(50);
+
         return switch (type) {
             case ORDER -> {
-                String[] orderMessages = {
-                        "Đơn hàng #ORD-%04d đã được tạo thành công",
-                        "Đơn hàng #ORD-%04d đã được thanh toán",
-                        "Đơn hàng #ORD-%04d đang được xử lý",
-                        "Đơn hàng #ORD-%04d đã hoàn thành",
-                        "Đơn hàng #ORD-%04d đã bị hủy do hết nguyên liệu",
-                        "Cảm ơn bạn đã mua hàng tại cửa hàng của chúng tôi"
+                int choice = random.nextInt(8);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createOrderSuccessContentCustomer(randomId);
+                    case 1 -> CreateNotiContentHelper.createOrderFailedPaymentContent(randomId);
+                    case 2 -> CreateNotiContentHelper.createOrderFailedIngredientsContent(randomId);
+                    case 3 -> CreateNotiContentHelper.createOrderInvalidContent(randomId);
+                    case 4 -> CreateNotiContentHelper.createOrderReceivedContent(randomId);
+                    case 5 -> CreateNotiContentHelper.createOrderCompletedContent(randomId);
+                    case 6 -> CreateNotiContentHelper.createOrderCancelledContent(randomId);
+                    default -> CreateNotiContentHelper.createInStorePurchaseContent(randomId);
                 };
-                yield String.format(orderMessages[random.nextInt(orderMessages.length)], random.nextInt(10000));
             }
             case DISCOUNT -> {
-                String[] discountMessages = {
-                        "Khuyến mãi mới: Giảm 20% cho tất cả đồ uống",
-                        "Ưu đãi đặc biệt: Mua 1 tặng 1 vào thứ hai",
-                        "Khuyến mãi sắp kết thúc! Còn 3 ngày để nhận ưu đãi",
-                        "Mừng sinh nhật với ưu đãi 50% cho đơn hàng đầu tiên",
-                        "Giảm 30% cho đơn hàng trên 100.000đ"
+                int choice = random.nextInt(5);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createDiscountForManager(randomDiscountName);
+                    case 1 -> CreateNotiContentHelper.updateDiscountForManager(randomDiscountName);
+                    case 2 -> CreateNotiContentHelper.createDiscountAddedContent(randomDiscountName,
+                            random.nextInt(50) + "K",
+                            "01/01/2023", "31/12/2023", randomBranchName);
+                    case 3 -> CreateNotiContentHelper.createDiscountDeletedContent(randomDiscountName, randomBranchName);
+                    default -> CreateNotiContentHelper.createDiscountExpiringContent(randomDiscountName, random.nextInt(5) + 1, randomBranchName);
                 };
-                yield discountMessages[random.nextInt(discountMessages.length)];
             }
             case SYSTEM -> {
-                String[] systemMessages = {
-                        "Hệ thống sẽ bảo trì từ 00:00 đến 02:00 ngày mai",
-                        "Đã cập nhật phiên bản mới của ứng dụng",
-                        "Thay đổi chính sách bảo mật từ ngày 01/06/2023",
-                        "Cập nhật điều khoản sử dụng dịch vụ",
-                        "Hệ thống đang gặp sự cố, chúng tôi đang khắc phục"
+                int choice = random.nextInt(3);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createMaintenanceNotificationContent("20:00", "2 giờ");
+                    case 1 -> CreateNotiContentHelper.createVersionUpdateContent("2.0." + random.nextInt(10));
+                    default -> CreateNotiContentHelper.createPolicyChangeContent("Chính sách bảo mật");
                 };
-                yield systemMessages[random.nextInt(systemMessages.length)];
             }
             case INVENTORY -> {
-                String[] inventoryMessages = {
-                        "Cảnh báo: Cà phê arabica sắp hết hàng",
-                        "Đã nhập thêm nguyên liệu vào kho",
-                        "Kiểm kê kho định kỳ vào cuối tháng",
-                        "Một số nguyên liệu sắp hết hạn sử dụng",
-                        "Cập nhật tồn kho thành công"
-                };
-                yield inventoryMessages[random.nextInt(inventoryMessages.length)];
+                int choice = random.nextInt(2);
+                yield choice == 0 ?
+                        CreateNotiContentHelper.createLowStockWarningContent(randomName, random.nextInt(10)) :
+                        CreateNotiContentHelper.createExpirationWarningContent(randomName, random.nextInt(10) + 1);
             }
             case EMPLOYEE -> {
-                String[] employeeMessages = {
-                        "Chào mừng bạn gia nhập chi nhánh mới",
-                        "Ca làm việc của bạn đã được cập nhật",
-                        "Lương tháng này đã được chuyển",
-                        "Checkin thành công vào lúc 08:00",
-                        "Vui lòng hoàn thành báo cáo cuối ngày"
+                int choice = random.nextInt(6);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createWelcomeBranchContentManager(randomEmployeeName);
+                    case 1 -> CreateNotiContentHelper.createWelcomeBranchContent(randomBranchName);
+                    case 2 -> CreateNotiContentHelper.createNewShiftAssignmentContentManager(randomEmployeeName,
+                            String.valueOf(random.nextInt(12) + 1), "2023");
+                    case 3 -> CreateNotiContentHelper.createNewShiftAssignmentContent(String.valueOf(random.nextInt(12) + 1), "2023");
+                    case 4 -> CreateNotiContentHelper.createCheckinSuccessContent(randomEmployeeName, "08:00");
+                    default -> CreateNotiContentHelper.createCheckinSuccessContent("08:00");
                 };
-                yield employeeMessages[random.nextInt(employeeMessages.length)];
             }
             case MANAGER -> {
-                String[] managerMessages = {
-                        "Quản lý đã gửi một thông báo mới",
-                        "Cuộc họp nhân viên vào ngày mai lúc 09:00",
-                        "Vui lòng cập nhật tình trạng công việc",
-                        "Nhắc nhở: Đóng cửa hàng đúng giờ",
-                        "Kiểm tra và báo cáo tồn kho cuối ngày"
+                int choice = random.nextInt(3);
+                List<String> names = List.of("Nguyễn Văn A", "Trần Thị B", "Lê Văn C");
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createManagerNotificationSentContent(randomEmployeeName);
+                    case 1 -> CreateNotiContentHelper.createManagerNotificationSentContentForMany(names);
+                    default -> CreateNotiContentHelper.createManagerNotificationReceivedContent("Quản lý", "Họp gấp lúc 15:00");
                 };
-                yield managerMessages[random.nextInt(managerMessages.length)];
             }
-
-            // Other notification types with Vietnamese content
             case INVOICE -> {
-                String[] invoiceMessages = {
-                        "Hóa đơn nhập kho #INV-%04d đã được tạo",
-                        "Đã nhập thành công 50kg cà phê vào kho",
-                        "Cập nhật hóa đơn nhập kho #INV-%04d",
-                        "Hóa đơn #INV-%04d đã được thanh toán",
-                        "Một số mặt hàng thiếu so với đơn đặt hàng"
+                int choice = random.nextInt(4);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createInvoiceSuccessContent(randomId, "Kho " + random.nextInt(5));
+                    case 1 -> CreateNotiContentHelper.createInvoiceFailedContent(randomId, "Thiếu thông tin");
+                    case 2 -> CreateNotiContentHelper.createInvoiceUpdatedContent(randomId);
+                    default -> CreateNotiContentHelper.createInvoiceCancelledContent(randomId);
                 };
-                yield String.format(invoiceMessages[random.nextInt(invoiceMessages.length)], random.nextInt(10000));
             }
             case TRANSFER -> {
-                String[] transferMessages = {
-                        "Đã xuất 20kg đường cho chi nhánh Quận 1",
-                        "Yêu cầu chuyển kho đã được phê duyệt",
-                        "Chuyển kho thành công: 30 hộp sữa đến chi nhánh Quận 3",
-                        "Chuyển kho bị từ chối: Kho nguồn không đủ hàng",
-                        "Cập nhật thông tin chuyển kho #TRF-%04d"
+                int choice = random.nextInt(5);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createTransferSuccessContent(randomId, randomBranchName);
+                    case 1 -> CreateNotiContentHelper.createTransferFailedContent(randomId, "Lỗi hệ thống");
+                    case 2 -> CreateNotiContentHelper.createTransferInsufficientContent(randomId, randomName);
+                    case 3 -> CreateNotiContentHelper.createTransferUpdatedContent(randomId);
+                    default -> CreateNotiContentHelper.createTransferCancelledContent(randomId);
                 };
-                yield String.format(transferMessages[random.nextInt(transferMessages.length)], random.nextInt(10000));
             }
             case BRANCH -> {
-                String[] branchMessages = {
-                        "Chi nhánh mới đã mở tại Quận 7",
-                        "Chi nhánh Quận 2 sẽ đóng cửa để sửa chữa từ ngày 15/07",
-                        "Chi nhánh Quận 1 đạt doanh thu cao nhất tháng này",
-                        "Cập nhật giờ mở cửa cho chi nhánh Thủ Đức",
-                        "Kiểm tra thiết bị tại chi nhánh Bình Thạnh"
+                int choice = random.nextInt(3);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createBranchAddedContent(randomBranchName, "123 Đường ABC, Quận 1");
+                    case 1 -> CreateNotiContentHelper.createBranchDeletedContent(randomBranchName, "31/12/2023");
+                    default -> CreateNotiContentHelper.createBranchUpdatedContent(randomBranchName);
                 };
-                yield branchMessages[random.nextInt(branchMessages.length)];
             }
             case SUPPLIER -> {
-                String[] supplierMessages = {
-                        "Nhà cung cấp mới: Công ty TNHH Cà Phê Việt",
-                        "Cập nhật thông tin liên hệ nhà cung cấp",
-                        "Đã hủy hợp đồng với nhà cung cấp Nguyên liệu ABC",
-                        "Đơn hàng từ nhà cung cấp đã được xác nhận",
-                        "Đàm phán giá thành công với nhà cung cấp sữa"
+                int choice = random.nextInt(3);
+                String supplierName = "Nhà cung cấp " + random.nextInt(10);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createSupplierAddedContentManager(supplierName);
+                    case 1 -> CreateNotiContentHelper.createSupplierUpdatedContentManager(supplierName);
+                    default -> CreateNotiContentHelper.createSupplierDeletedContentManager(supplierName);
                 };
-                yield supplierMessages[random.nextInt(supplierMessages.length)];
             }
             case PRODUCT -> {
-                String[] productMessages = {
-                        "Sản phẩm mới: Cà phê dừa đã có mặt tại cửa hàng",
-                        "Cập nhật giá cho một số sản phẩm",
-                        "Ngừng kinh doanh sản phẩm Trà sữa trân châu",
-                        "Thêm kích cỡ mới cho các loại đồ uống",
-                        "Cập nhật công thức cho Cappuccino"
+                int choice = random.nextInt(6);
+                String productName = "Sản phẩm " + random.nextInt(20);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createProductAddedContentManager(productName);
+                    case 1 -> CreateNotiContentHelper.createProductAddedContentAll(productName);
+                    case 2 -> CreateNotiContentHelper.createProductUpdatedContentManager(productName);
+                    case 3 -> CreateNotiContentHelper.createProductUpdatedContentAll(productName);
+                    case 4 -> CreateNotiContentHelper.createProductDeletedContentManager(productName);
+                    default -> CreateNotiContentHelper.createProductDeletedContentAll(productName);
                 };
-                yield productMessages[random.nextInt(productMessages.length)];
             }
             case WAREHOUSE -> {
-                String[] warehouseMessages = {
-                        "Kho mới đã được thêm vào hệ thống",
-                        "Cập nhật địa chỉ kho hàng trung tâm",
-                        "Kho hàng quận 9 sẽ đóng cửa để kiểm kê vào ngày 20/08",
-                        "Cập nhật quy trình xuất nhập kho",
-                        "Phân công nhân viên quản lý kho mới"
+                int choice = random.nextInt(3);
+                String warehouseName = "Kho " + random.nextInt(5);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createWarehouseAddedContentManager(warehouseName);
+                    case 1 -> CreateNotiContentHelper.createWarehouseUpdatedContentManager(warehouseName);
+                    default -> CreateNotiContentHelper.createWarehouseDeletedContentManager(warehouseName);
                 };
-                yield warehouseMessages[random.nextInt(warehouseMessages.length)];
             }
-            default -> "Thông báo hệ thống mới";
         };
     }
 }
