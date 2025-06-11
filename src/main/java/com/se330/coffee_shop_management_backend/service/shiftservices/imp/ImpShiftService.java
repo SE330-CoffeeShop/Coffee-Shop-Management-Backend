@@ -49,6 +49,21 @@ public class ImpShiftService implements IShiftService {
     }
 
     @Override
+    public Page<Shift> findAllShiftsByBranch(UUID branchId, Pageable pageable) {
+        return shiftRepository.findByEmployee_Branch_Id(branchId, pageable);
+    }
+
+    @Override
+    public Page<Shift> findAllShiftsByEmployee(UUID employeeId, Pageable pageable) {
+        return shiftRepository.findAllByEmployee_Id(employeeId, pageable);
+    }
+
+    @Override
+    public Page<Shift> findAllShiftsByBranchAndDayOfWeekAndMonthAndYear(UUID branchId, Constants.DayOfWeekEnum dayOfWeek, int month, int year, Pageable pageable) {
+        return shiftRepository.findByEmployee_Branch_IdAndDayOfWeekAndMonthAndYear(branchId, dayOfWeek, month, year, pageable);
+    }
+
+    @Override
     @Transactional
     public Shift createShift(ShiftCreateRequestDTO shiftCreateRequestDTO) {
         Employee employee = employeeRepository.findById(shiftCreateRequestDTO.getEmployeeId())

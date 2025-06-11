@@ -34,6 +34,11 @@ public class ImpPaymentMethodService implements IPaymentMethodService {
     }
 
     @Override
+    public Page<PaymentMethods> findAllPaymentMethodsByUserId(UUID userId, Pageable pageable) {
+        return paymentMethodsRepository.findAllByUser_Id(userId, pageable);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Page<PaymentMethods> findAllPaymentMethods(Pageable pageable) {
         return paymentMethodsRepository.findAll(pageable);

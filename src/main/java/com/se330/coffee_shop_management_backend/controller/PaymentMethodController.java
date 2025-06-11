@@ -119,6 +119,63 @@ public class PaymentMethodController {
         );
     }
 
+    @GetMapping("/user/{userId}")
+    @Operation(
+            summary = "Get all payment methods by user ID with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved payment methods for user",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid user ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "User not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<PaymentMethodResponseDTO>> findAllPaymentMethodsByUserId(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<PaymentMethods> paymentMethodPage = paymentMethodService.findAllPaymentMethodsByUserId(userId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "User payment methods retrieved successfully",
+                        PaymentMethodResponseDTO.convert(paymentMethodPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                paymentMethodPage.getNumber(),
+                                paymentMethodPage.getSize(),
+                                paymentMethodPage.getTotalElements(),
+                                paymentMethodPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
     @PostMapping("/")
     @Operation(
             summary = "Create new payment method",
