@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
@@ -27,8 +28,10 @@ public class ShiftResponseDTO {
 
     private LocalTime shiftStartTime;
     private LocalTime shiftEndTime;
-
     private String dayOfWeek;
+    private int month;
+    private int year;
+    private BigDecimal shiftSalary;
 
     @Schema(
             name = "createdAt",
@@ -56,6 +59,8 @@ public class ShiftResponseDTO {
                 .id(shift.getId().toString())
                 .createdAt(shift.getCreatedAt())
                 .updatedAt(shift.getUpdatedAt())
+                .month(shift.getMonth())
+                .year(shift.getYear())
                 .shiftStartTime(shift.getShiftStartTime())
                 .shiftEndTime(shift.getShiftEndTime())
                 .dayOfWeek(shift.getDayOfWeek().getValue())

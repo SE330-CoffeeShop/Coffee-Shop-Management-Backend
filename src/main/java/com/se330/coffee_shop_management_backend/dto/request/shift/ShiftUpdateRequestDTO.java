@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.util.Constants;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -14,5 +15,8 @@ public class ShiftUpdateRequestDTO {
     private LocalTime shiftStartTime;
     private LocalTime shiftEndTime;
     private Constants.DayOfWeekEnum dayOfWeek;
+    private int month;
+    private int year;
+    private BigDecimal shiftSalary;
     private UUID employeeId;
 }
