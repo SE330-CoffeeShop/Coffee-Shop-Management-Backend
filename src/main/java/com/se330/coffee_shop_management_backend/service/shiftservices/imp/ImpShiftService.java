@@ -62,6 +62,7 @@ public class ImpShiftService implements IShiftService {
                         .employee(employee)
                         .shiftEndTime(shiftCreateRequestDTO.getShiftEndTime())
                         .shiftStartTime(shiftCreateRequestDTO.getShiftStartTime())
+                        .dayOfWeek(shiftCreateRequestDTO.getDayOfWeek())
                         .build()
         );
 
@@ -115,6 +116,7 @@ public class ImpShiftService implements IShiftService {
 
         existingShift.setShiftStartTime(shiftUpdateRequestDTO.getShiftStartTime());
         existingShift.setShiftEndTime(shiftUpdateRequestDTO.getShiftEndTime());
+        existingShift.setDayOfWeek(shiftUpdateRequestDTO.getDayOfWeek());
 
         notificationService.createNotification(
                 NotificationCreateRequestDTO.builder()

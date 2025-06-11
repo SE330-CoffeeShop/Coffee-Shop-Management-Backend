@@ -66,7 +66,7 @@ public class UserBasicInfo {
                 .role(Constants.RoleEnum.ADMIN)
                 .isEmailVerified(true)
                 .phoneNumber("098" + getRandomDigits())
-                .gender("Male")
+                .gender("Nam")
                 .birthDate(LocalDateTime.now().minusYears(30 + (int)(Math.random() * 10)))
                 .isBlocked(false)
                 .build());
@@ -100,7 +100,7 @@ public class UserBasicInfo {
         String[] managerLastNames = {"Quang", "Hòa", "Tâm", "Phương", "Khoa"};
 
         for (int i = 0; i < 5; i++) {
-            String gender = managerFirstNames[i].contains("Thị") ? "Female" : "Male";
+            String gender = managerFirstNames[i].contains("Thị") ? "Nữ" : "Nam";
             User managerUser = userService.create(CreateUserRequest.builder()
                     .email("manager" + (i + 1) + "@example.com")
                     .password(defaultPassword)
@@ -137,7 +137,7 @@ public class UserBasicInfo {
         };
 
         for (int i = 0; i < 30; i++) {
-            String gender = employeeFirstNames[i].contains("Thị") ? "Female" : "Male";
+            String gender = employeeFirstNames[i].contains("Thị") ? "Nữ" : "Nam";
             User employeeUser = userService.create(CreateUserRequest.builder()
                     .email("employee" + (i + 1) + "@example.com")
                     .password(defaultPassword)

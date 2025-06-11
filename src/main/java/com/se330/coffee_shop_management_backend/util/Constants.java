@@ -26,11 +26,11 @@ public final class Constants {
     @Getter
     @AllArgsConstructor
     public enum RoleEnum {
-        ADMIN("ADMIN"),
-        CUSTOMER("CUSTOMER"),
-        EMPLOYEE("EMPLOYEE"),
-        MANAGER("MANAGER"),
-        USER("USER");
+        ADMIN("QUẢN TRỊ VIÊN"),
+        CUSTOMER("KHÁCH HÀNG"),
+        EMPLOYEE("NHÂN VIÊN"),
+        MANAGER("QUẢN LÝ"),
+        USER("NGƯỜI DÙNG"),;
 
         private final String value;
 
@@ -45,10 +45,12 @@ public final class Constants {
     @Getter
     @AllArgsConstructor
     public enum OrderStatusEnum {
-        PENDING("PENDING"),
-        PROCESSING("PROCESSING"),
-        COMPLETED("COMPLETED"),
-        CANCELLED("CANCELLED");
+        PENDING("ĐANG CHỜ"),
+        PROCESSING("ĐANG XỬ LÝ"),
+        COMPLETED("HOÀN TẤT"),
+        DELIVERING("ĐANG GIAO HÀNG"),
+        DELIVERED("ĐÃ GIAO HÀNG"),
+        CANCELLED("ĐÃ HỦY"),;
 
         private final String value;
 
@@ -189,8 +191,8 @@ public final class Constants {
     @Getter
     @AllArgsConstructor
     public enum DiscountTypeEnum {
-        PERCENTAGE("PERCENTAGE"),
-        AMOUNT("AMOUNT");
+        PERCENTAGE("PHẦN TRĂM"),
+        AMOUNT("SỐ TIỀN"),;
 
         private final String value;
 
@@ -217,5 +219,26 @@ public final class Constants {
             System.out.println("Cannot find user or channel id from the path!. Ex:"+ e.getMessage());
         }
         return null;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum DayOfWeekEnum {
+        MONDAY("THỨ HAI"),
+        TUESDAY("THỨ BA"),
+        WEDNESDAY("THỨ TƯ"),
+        THURSDAY("THỨ NĂM"),
+        FRIDAY("THỨ SÁU"),
+        SATURDAY("THỨ BẢY"),
+        SUNDAY("CHỦ NHẬT"),;
+
+        private final String value;
+
+        public static DayOfWeekEnum get(final String name) {
+            return Stream.of(DayOfWeekEnum.values())
+                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid day of week name: %s", name)));
+        }
     }
 }

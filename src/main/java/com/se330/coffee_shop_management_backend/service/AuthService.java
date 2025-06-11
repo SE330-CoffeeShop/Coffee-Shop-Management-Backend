@@ -186,7 +186,7 @@ public class AuthService {
         log.info("Token generated for user: {}", id);
 
         User user = userService.findById(id);
-        String role = user.getRole().getName().toString();
+        String role = user.getRole().getName().getValue();
 
         return TokenResponse.builder()
             .accessToken(token)
