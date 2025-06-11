@@ -63,6 +63,11 @@ public class ImpProductService implements IProductService {
     }
 
     @Override
+    public Page<Product> findAllProductsByCategory(UUID categoryId, Pageable pageable) {
+        return productRepository.findAllByProductCategory_Id(categoryId, pageable);
+    }
+
+    @Override
     @Transactional
     public Product createProduct(ProductCreateRequestDTO productCreateRequestDTO) {
         ProductCategory category = productCategoryRepository.findById(productCreateRequestDTO.getProductCategory())

@@ -8,6 +8,7 @@ import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.shift.ShiftResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Shift;
 import com.se330.coffee_shop_management_backend.service.shiftservices.IShiftService;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -221,5 +222,159 @@ public class ShiftController {
     public ResponseEntity<Void> deleteShift(@PathVariable UUID id) {
         shiftService.deleteShift(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/branch/{branchId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all shifts for a specific branch",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved shifts for branch",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid branch ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<ShiftResponseDTO>> findAllShiftsByBranch(
+            @PathVariable UUID branchId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Shift> shiftPage = shiftService.findAllShiftsByBranch(branchId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch shifts retrieved successfully",
+                        ShiftResponseDTO.convert(shiftPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                shiftPage.getNumber(),
+                                shiftPage.getSize(),
+                                shiftPage.getTotalElements(),
+                                shiftPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/employee/{employeeId}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all shifts for a specific employee",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved shifts for employee",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid employee ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<ShiftResponseDTO>> findAllShiftsByEmployee(
+            @PathVariable UUID employeeId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Shift> shiftPage = shiftService.findAllShiftsByEmployee(employeeId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Employee shifts retrieved successfully",
+                        ShiftResponseDTO.convert(shiftPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                shiftPage.getNumber(),
+                                shiftPage.getSize(),
+                                shiftPage.getTotalElements(),
+                                shiftPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/branch/{branchId}/filter")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all shifts for a branch filtered by day of week, month, and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved filtered shifts for branch",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid parameters",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<ShiftResponseDTO>> findAllShiftsByBranchAndDayOfWeekAndMonthAndYear(
+            @PathVariable UUID branchId,
+            @RequestParam Constants.DayOfWeekEnum dayOfWeek,
+            @RequestParam int month,
+            @RequestParam int year,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Shift> shiftPage = shiftService.findAllShiftsByBranchAndDayOfWeekAndMonthAndYear(
+                branchId, dayOfWeek, month, year, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Filtered branch shifts retrieved successfully",
+                        ShiftResponseDTO.convert(shiftPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                shiftPage.getNumber(),
+                                shiftPage.getSize(),
+                                shiftPage.getTotalElements(),
+                                shiftPage.getTotalPages()
+                        )
+                )
+        );
     }
 }

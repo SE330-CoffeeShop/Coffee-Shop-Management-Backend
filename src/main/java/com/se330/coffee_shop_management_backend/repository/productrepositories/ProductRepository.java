@@ -132,4 +132,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             @Param("month") int month,
             @Param("year") int year,
             Pageable pageable);
+
+    Page<Product> findAllByProductCategory_Id(UUID productCategoryId, Pageable pageable);
 }

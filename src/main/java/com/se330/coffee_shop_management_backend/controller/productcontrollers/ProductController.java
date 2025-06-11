@@ -84,6 +84,55 @@ public class ProductController {
         );
     }
 
+    @GetMapping("/by-category/{categoryId}")
+    @Operation(
+            summary = "Get all products by category with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved products for the specified category",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Category not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<ProductResponseDTO>> findAllProductsByCategory(
+            @PathVariable UUID categoryId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Product> productPage = productService.findAllProductsByCategory(categoryId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Products for category retrieved successfully",
+                        ProductResponseDTO.convert(productPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                productPage.getNumber(),
+                                productPage.getSize(),
+                                productPage.getTotalElements(),
+                                productPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
     @GetMapping("/all")
     @Operation(
             summary = "Get all products with pagination",

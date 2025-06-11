@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface IPaymentMethodService {
     PaymentMethods findByIdPaymentMethod(UUID id);
+    Page<PaymentMethods> findAllPaymentMethodsByUserId(UUID userId, Pageable pageable);
     Page<PaymentMethods> findAllPaymentMethods(Pageable pageable);
     PaymentMethods createPaymentMethod(PaymentMethodCreateRequestDTO paymentMethodCreateRequestDTO);
     PaymentMethods updatePaymentMethod(PaymentMethodUpdateRequestDTO paymentMethodUpdateRequestDTO);

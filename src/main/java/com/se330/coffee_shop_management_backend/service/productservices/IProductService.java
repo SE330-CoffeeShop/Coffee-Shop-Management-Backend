@@ -13,6 +13,7 @@ import java.util.UUID;
 public interface IProductService {
     Product findByIdProduct(UUID id);
     Page<Product> findAllProducts(Pageable pageable);
+    Page<Product> findAllProductsByCategory(UUID categoryId, Pageable pageable);
     Product createProduct(ProductCreateRequestDTO productCreateRequestDTO);
     Product createProductWithImage(ProductCreateRequestDTO productCreateRequestDTO, MultipartFile file) throws Exception;
     Product updateProduct(ProductUpdateRequestDTO productUpdateRequestDTORequestDTO);
