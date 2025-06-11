@@ -4,805 +4,845 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="0" author="minh" runOnChange="true">
+    <changeSet id="2" author="minh" runOnChange="true">
         <sql>
             <![CDATA[
+            -- public.ingredients definition
 
 -- Drop table
 
 -- DROP TABLE public.ingredients;
 
-        CREATE TABLE public.ingredients (
-                                            ingredient_price numeric(38, 2) NOT NULL,
-                                            created_at timestamp(6) NOT NULL,
-                                            shelf_life_days int8 NOT NULL,
-                                            updated_at timestamp(6) NOT NULL,
-                                            ingredient_id uuid NOT NULL,
-                                            ingredient_description varchar(255) NOT NULL,
-                                            ingredient_name varchar(255) NOT NULL,
-                                            ingredient_type varchar(255) NOT NULL,
-                                            CONSTRAINT ingredients_pkey PRIMARY KEY (ingredient_id)
-        );
+            CREATE TABLE public.ingredients (
+                                                ingredient_price numeric(38, 2) NOT NULL,
+                                                created_at timestamp(6) NOT NULL,
+                                                shelf_life_days int8 NOT NULL,
+                                                updated_at timestamp(6) NOT NULL,
+                                                ingredient_id uuid NOT NULL,
+                                                ingredient_description varchar(255) NOT NULL,
+                                                ingredient_name varchar(255) NOT NULL,
+                                                ingredient_type varchar(255) NOT NULL,
+                                                CONSTRAINT ingredients_pkey PRIMARY KEY (ingredient_id)
+            );
 
 
-        -- public.roles definition
+            -- public.roles definition
 
 -- Drop table
 
 -- DROP TABLE public.roles;
 
-        CREATE TABLE public.roles (
-                                      created_at timestamp(6) NOT NULL,
-                                      updated_at timestamp(6) NOT NULL,
-                                      id uuid NOT NULL,
-                                      "name" varchar(16) NULL,
-                                      CONSTRAINT roles_name_check CHECK (((name)::text = ANY ((ARRAY['ADMIN'::character varying, 'CUSTOMER'::character varying, 'EMPLOYEE'::character varying, 'MANAGER'::character varying, 'USER'::character varying])::text[]))),
+            CREATE TABLE public.roles (
+                                          created_at timestamp(6) NOT NULL,
+                                          updated_at timestamp(6) NOT NULL,
+                                          id uuid NOT NULL,
+                                          "name" varchar(16) NULL,
+                                          CONSTRAINT roles_name_check CHECK (((name)::text = ANY ((ARRAY['ADMIN'::character varying, 'CUSTOMER'::character varying, 'EMPLOYEE'::character varying, 'MANAGER'::character varying, 'USER'::character varying])::text[]))),
 	CONSTRAINT roles_pkey PRIMARY KEY (id),
 	CONSTRAINT uk_roles_name UNIQUE (name)
 );
-        CREATE INDEX idx_roles_name ON public.roles USING btree (name);
+            CREATE INDEX idx_roles_name ON public.roles USING btree (name);
 
 
-        -- public.settings definition
+            -- public.settings definition
 
 -- Drop table
 
 -- DROP TABLE public.settings;
 
-        CREATE TABLE public.settings (
-                                         created_at timestamp(6) NOT NULL,
-                                         updated_at timestamp(6) NOT NULL,
-                                         id uuid NOT NULL,
-                                         "key" varchar(255) NOT NULL,
-                                         value text NULL,
-                                         CONSTRAINT settings_pkey PRIMARY KEY (id),
-                                         CONSTRAINT uk_settings_key UNIQUE (key)
-        );
-        CREATE INDEX idx_settings_value ON public.settings USING btree (value);
+            CREATE TABLE public.settings (
+                                             created_at timestamp(6) NOT NULL,
+                                             updated_at timestamp(6) NOT NULL,
+                                             id uuid NOT NULL,
+                                             "key" varchar(255) NOT NULL,
+                                             value text NULL,
+                                             CONSTRAINT settings_pkey PRIMARY KEY (id),
+                                             CONSTRAINT uk_settings_key UNIQUE (key)
+            );
+            CREATE INDEX idx_settings_value ON public.settings USING btree (value);
 
 
-        -- public.suppliers definition
+            -- public.suppliers definition
 
 -- Drop table
 
 -- DROP TABLE public.suppliers;
 
-        CREATE TABLE public.suppliers (
-                                          created_at timestamp(6) NOT NULL,
-                                          updated_at timestamp(6) NOT NULL,
-                                          supplier_id uuid NOT NULL,
-                                          supplier_address varchar(255) NOT NULL,
-                                          supplier_email varchar(255) NOT NULL,
-                                          supplier_name varchar(255) NOT NULL,
-                                          supplier_phone varchar(255) NOT NULL,
-                                          CONSTRAINT suppliers_pkey PRIMARY KEY (supplier_id)
-        );
-
-
-        -- public.users definition
-
--- Drop table
-
--- DROP TABLE public.users;
-
-        CREATE TABLE public.users (
-                                      blocked_at timestamp(6) NULL,
-                                      created_at timestamp(6) NOT NULL,
-                                      email_verified_at timestamp(6) NULL,
-                                      updated_at timestamp(6) NOT NULL,
-                                      id uuid NOT NULL,
-                                      last_name varchar(50) NOT NULL,
-                                      "name" varchar(50) NOT NULL,
-                                      avatar text NULL,
-                                      email varchar(255) NOT NULL,
-                                      "password" varchar(255) NOT NULL,
-                                      CONSTRAINT uk_users_email UNIQUE (email),
-                                      CONSTRAINT users_pkey PRIMARY KEY (id)
-        );
-        CREATE INDEX idx_users_last_name ON public.users USING btree (last_name);
-        CREATE INDEX idx_users_name ON public.users USING btree (name);
-
-
-        -- public.warehouses definition
-
--- Drop table
-
--- DROP TABLE public.warehouses;
-
-        CREATE TABLE public.warehouses (
-                                           created_at timestamp(6) NOT NULL,
-                                           updated_at timestamp(6) NOT NULL,
-                                           warehouse_id uuid NOT NULL,
-                                           warehouse_address varchar(255) NOT NULL,
-                                           warehouse_email varchar(255) NOT NULL,
-                                           warehouse_name varchar(255) NOT NULL,
-                                           warehouse_phone varchar(255) NOT NULL,
-                                           CONSTRAINT warehouses_pkey PRIMARY KEY (warehouse_id)
-        );
-
-
-        -- public.catalogs definition
-
--- Drop table
-
--- DROP TABLE public.catalogs;
-
-        CREATE TABLE public.catalogs (
-                                         catalog_id serial4 NOT NULL,
-                                         parent_catalog_id int4 NULL,
-                                         created_at timestamp(6) NOT NULL,
-                                         updated_at timestamp(6) NOT NULL,
-                                         description varchar(255) NOT NULL,
-                                         "name" varchar(255) NOT NULL,
-                                         CONSTRAINT catalogs_pkey PRIMARY KEY (catalog_id),
-                                         CONSTRAINT "FK1evr6us9hyla1737ttavvyopa" FOREIGN KEY (parent_catalog_id) REFERENCES public.catalogs(catalog_id)
-        );
-
-
-        -- public.email_verification_tokens definition
-
--- Drop table
-
--- DROP TABLE public.email_verification_tokens;
-
-        CREATE TABLE public.email_verification_tokens (
-                                                          created_at timestamp(6) NOT NULL,
-                                                          expiration_date timestamp(6) NOT NULL,
-                                                          updated_at timestamp(6) NOT NULL,
-                                                          id uuid NOT NULL,
-                                                          user_id uuid NOT NULL,
-                                                          "token" varchar(64) NOT NULL,
-                                                          CONSTRAINT email_verification_tokens_pkey PRIMARY KEY (id),
-                                                          CONSTRAINT email_verification_tokens_user_id_key UNIQUE (user_id),
-                                                          CONSTRAINT uk_email_verification_tokens_token UNIQUE (token),
-                                                          CONSTRAINT fk_email_verification_tokens_user_id FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
-        );
-
-
-        -- public.invoices definition
-
--- Drop table
-
--- DROP TABLE public.invoices;
-
-        CREATE TABLE public.invoices (
-                                         invoice_transfer_total_cost numeric(38, 2) NOT NULL,
-                                         created_at timestamp(6) NOT NULL,
-                                         updated_at timestamp(6) NOT NULL,
-                                         invoice_id uuid NOT NULL,
-                                         supplier_id uuid NULL,
-                                         warehouse_id uuid NULL,
-                                         invoice_description varchar(255) NOT NULL,
-                                         invoice_tracking_number varchar(255) NOT NULL,
-                                         CONSTRAINT invoices_pkey PRIMARY KEY (invoice_id),
-                                         CONSTRAINT fk_invoice_supplier FOREIGN KEY (supplier_id) REFERENCES public.suppliers(supplier_id) ON DELETE CASCADE,
-                                         CONSTRAINT fk_invoice_warehouse FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(warehouse_id) ON DELETE CASCADE
-        );
-
-
-        -- public.notifications definition
-
--- Drop table
-
--- DROP TABLE public.notifications;
-
-        CREATE TABLE public.notifications (
-                                              is_read bool NOT NULL,
-                                              notification_type int2 NOT NULL,
+            CREATE TABLE public.suppliers (
                                               created_at timestamp(6) NOT NULL,
                                               updated_at timestamp(6) NOT NULL,
-                                              notification_id uuid NOT NULL,
-                                              user_receiver_id uuid NULL,
-                                              user_sender_id uuid NULL,
-                                              notification_content varchar(255) NULL,
-                                              CONSTRAINT notifications_notification_type_check CHECK (((notification_type >= 0) AND (notification_type <= 3))),
-                                              CONSTRAINT notifications_pkey PRIMARY KEY (notification_id),
-                                              CONSTRAINT fk_notification_receiver FOREIGN KEY (user_receiver_id) REFERENCES public.users(id) ON DELETE CASCADE,
-                                              CONSTRAINT fk_notification_sender FOREIGN KEY (user_sender_id) REFERENCES public.users(id) ON DELETE CASCADE
-        );
+                                              supplier_id uuid NOT NULL,
+                                              supplier_address varchar(255) NOT NULL,
+                                              supplier_email varchar(255) NOT NULL,
+                                              supplier_name varchar(255) NOT NULL,
+                                              supplier_phone varchar(255) NOT NULL,
+                                              CONSTRAINT suppliers_pkey PRIMARY KEY (supplier_id)
+            );
 
 
-        -- public.password_reset_tokens definition
-
--- Drop table
-
--- DROP TABLE public.password_reset_tokens;
-
-        CREATE TABLE public.password_reset_tokens (
-                                                      created_at timestamp(6) NOT NULL,
-                                                      expiration_date timestamp(6) NOT NULL,
-                                                      updated_at timestamp(6) NOT NULL,
-                                                      id uuid NOT NULL,
-                                                      user_id uuid NOT NULL,
-                                                      "token" varchar(32) NOT NULL,
-                                                      CONSTRAINT password_reset_tokens_pkey PRIMARY KEY (id),
-                                                      CONSTRAINT password_reset_tokens_user_id_key UNIQUE (user_id),
-                                                      CONSTRAINT uk_password_reset_tokens_token UNIQUE (token),
-                                                      CONSTRAINT fk_email_verification_tokens_user_id FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
-        );
-
-
-        -- public.payment_methods definition
-
--- Drop table
-
--- DROP TABLE public.payment_methods;
-
-        CREATE TABLE public.payment_methods (
-                                                method_is_default bool NOT NULL,
-                                                created_at timestamp(6) NOT NULL,
-                                                updated_at timestamp(6) NOT NULL,
-                                                payment_method_id uuid NOT NULL,
-                                                user_id uuid NULL,
-                                                method_details varchar(255) NOT NULL,
-                                                method_type varchar(255) NOT NULL,
-                                                CONSTRAINT payment_methods_pkey PRIMARY KEY (payment_method_id),
-                                                CONSTRAINT fk_payment_method_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
-        );
-
-
-        -- public.product_categories definition
-
--- Drop table
-
--- DROP TABLE public.product_categories;
-
-        CREATE TABLE public.product_categories (
-                                                   catalog_id int4 NULL,
-                                                   created_at timestamp(6) NOT NULL,
-                                                   updated_at timestamp(6) NOT NULL,
-                                                   category_id uuid NOT NULL,
-                                                   category_description varchar(255) NOT NULL,
-                                                   category_name varchar(255) NOT NULL,
-                                                   CONSTRAINT product_categories_pkey PRIMARY KEY (category_id),
-                                                   CONSTRAINT "FKrcjgdog151fsr9kfiw2s46c0q" FOREIGN KEY (catalog_id) REFERENCES public.catalogs(catalog_id)
-        );
-
-
-        -- public.products definition
-
--- Drop table
-
--- DROP TABLE public.products;
-
-        CREATE TABLE public.products (
-                                         product_comment_count int4 NOT NULL,
-                                         product_is_deleted bool NOT NULL,
-                                         product_is_published bool NOT NULL,
-                                         product_price numeric(38, 2) NOT NULL,
-                                         product_ratings_average numeric(2, 1) NOT NULL,
-                                         created_at timestamp(6) NOT NULL,
-                                         updated_at timestamp(6) NOT NULL,
-                                         "fk_product_product-category" uuid NULL,
-                                         product_id uuid NOT NULL,
-                                         product_description varchar(1000) NOT NULL,
-                                         product_name varchar(255) NOT NULL,
-                                         product_slug varchar(255) NOT NULL,
-                                         product_thumb varchar(255) NOT NULL,
-                                         CONSTRAINT products_pkey PRIMARY KEY (product_id),
-                                         CONSTRAINT "FKlmkscvip1w2owjvvxd8njlbo0" FOREIGN KEY ("fk_product_product-category") REFERENCES public.product_categories(category_id)
-        );
-
-
-        -- public.shipping_addresses definition
-
--- Drop table
-
--- DROP TABLE public.shipping_addresses;
-
-        CREATE TABLE public.shipping_addresses (
-                                                   address_is_default bool NOT NULL,
-                                                   created_at timestamp(6) NOT NULL,
-                                                   updated_at timestamp(6) NOT NULL,
-                                                   shipping_address_id uuid NOT NULL,
-                                                   user_id uuid NULL,
-                                                   address_city varchar(255) NOT NULL,
-                                                   address_district varchar(255) NOT NULL,
-                                                   address_line varchar(255) NOT NULL,
-                                                   CONSTRAINT shipping_addresses_pkey PRIMARY KEY (shipping_address_id),
-                                                   CONSTRAINT fk_shipping_address_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
-        );
-
-
-        -- public.stocks definition
-
--- Drop table
-
--- DROP TABLE public.stocks;
-
-        CREATE TABLE public.stocks (
-                                       stock_quantity int4 NOT NULL,
-                                       created_at timestamp(6) NOT NULL,
-                                       updated_at timestamp(6) NOT NULL,
-                                       ingredient_id uuid NULL,
-                                       stock_id uuid NOT NULL,
-                                       warehouse_id uuid NULL,
-                                       stock_unit varchar(255) NOT NULL,
-                                       CONSTRAINT stocks_pkey PRIMARY KEY (stock_id),
-                                       CONSTRAINT fk_stock_ingredient FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(ingredient_id) ON DELETE CASCADE,
-                                       CONSTRAINT fk_stock_warehouse FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(warehouse_id) ON DELETE CASCADE
-        );
-
-
-        -- public.user_roles definition
+            -- public.user_roles definition
 
 -- Drop table
 
 -- DROP TABLE public.user_roles;
 
-        CREATE TABLE public.user_roles (
-                                           role_id uuid NOT NULL,
-                                           user_id uuid NOT NULL,
-                                           CONSTRAINT user_roles_pkey PRIMARY KEY (user_id, role_id),
-                                           CONSTRAINT fk_user_roles_role_id FOREIGN KEY (role_id) REFERENCES public.roles(id) ON DELETE CASCADE,
-                                           CONSTRAINT fk_user_roles_user_id FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
-        );
+            CREATE TABLE public.user_roles (
+                                               role_id uuid NOT NULL,
+                                               user_id uuid NOT NULL,
+                                               CONSTRAINT user_roles_pkey PRIMARY KEY (user_id, role_id)
+            );
 
 
-        -- public."comments" definition
+            -- public.warehouses definition
+
+-- Drop table
+
+-- DROP TABLE public.warehouses;
+
+            CREATE TABLE public.warehouses (
+                                               created_at timestamp(6) NOT NULL,
+                                               updated_at timestamp(6) NOT NULL,
+                                               warehouse_id uuid NOT NULL,
+                                               warehouse_address varchar(255) NOT NULL,
+                                               warehouse_email varchar(255) NOT NULL,
+                                               warehouse_name varchar(255) NOT NULL,
+                                               warehouse_phone varchar(255) NOT NULL,
+                                               CONSTRAINT warehouses_pkey PRIMARY KEY (warehouse_id)
+            );
+
+
+            -- public.catalogs definition
+
+-- Drop table
+
+-- DROP TABLE public.catalogs;
+
+            CREATE TABLE public.catalogs (
+                                             catalog_id serial4 NOT NULL,
+                                             parent_catalog_id int4 NULL,
+                                             created_at timestamp(6) NOT NULL,
+                                             updated_at timestamp(6) NOT NULL,
+                                             description varchar(255) NOT NULL,
+                                             "name" varchar(255) NOT NULL,
+                                             CONSTRAINT catalogs_pkey PRIMARY KEY (catalog_id),
+                                             CONSTRAINT "FK1evr6us9hyla1737ttavvyopa" FOREIGN KEY (parent_catalog_id) REFERENCES public.catalogs(catalog_id)
+            );
+
+
+            -- public.invoices definition
+
+-- Drop table
+
+-- DROP TABLE public.invoices;
+
+            CREATE TABLE public.invoices (
+                                             invoice_transfer_total_cost numeric(38, 2) NOT NULL,
+                                             created_at timestamp(6) NOT NULL,
+                                             updated_at timestamp(6) NOT NULL,
+                                             invoice_id uuid NOT NULL,
+                                             supplier_id uuid NULL,
+                                             warehouse_id uuid NULL,
+                                             invoice_description varchar(255) NOT NULL,
+                                             invoice_tracking_number varchar(255) NOT NULL,
+                                             CONSTRAINT invoices_pkey PRIMARY KEY (invoice_id),
+                                             CONSTRAINT fk_invoice_supplier FOREIGN KEY (supplier_id) REFERENCES public.suppliers(supplier_id) ON DELETE CASCADE,
+                                             CONSTRAINT fk_invoice_warehouse FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(warehouse_id) ON DELETE CASCADE
+            );
+
+
+            -- public.product_categories definition
+
+-- Drop table
+
+-- DROP TABLE public.product_categories;
+
+            CREATE TABLE public.product_categories (
+                                                       catalog_id int4 NULL,
+                                                       created_at timestamp(6) NOT NULL,
+                                                       updated_at timestamp(6) NOT NULL,
+                                                       category_id uuid NOT NULL,
+                                                       category_description varchar(1000) NOT NULL,
+                                                       category_name varchar(255) NOT NULL,
+                                                       CONSTRAINT product_categories_pkey PRIMARY KEY (category_id),
+                                                       CONSTRAINT "FKrcjgdog151fsr9kfiw2s46c0q" FOREIGN KEY (catalog_id) REFERENCES public.catalogs(catalog_id)
+            );
+
+
+            -- public.products definition
+
+-- Drop table
+
+-- DROP TABLE public.products;
+
+            CREATE TABLE public.products (
+                                             product_comment_count int4 NOT NULL,
+                                             product_is_deleted bool NOT NULL,
+                                             product_is_published bool NOT NULL,
+                                             product_price numeric(38, 2) NOT NULL,
+                                             product_ratings_average numeric(2, 1) NOT NULL,
+                                             created_at timestamp(6) NOT NULL,
+                                             updated_at timestamp(6) NOT NULL,
+                                             "fk_product_product-category" uuid NULL,
+                                             product_id uuid NOT NULL,
+                                             product_description varchar(1000) NOT NULL,
+                                             product_name varchar(255) NOT NULL,
+                                             product_slug varchar(255) NOT NULL,
+                                             product_thumb varchar(255) NOT NULL,
+                                             CONSTRAINT products_pkey PRIMARY KEY (product_id),
+                                             CONSTRAINT "FKlmkscvip1w2owjvvxd8njlbo0" FOREIGN KEY ("fk_product_product-category") REFERENCES public.product_categories(category_id)
+            );
+
+
+            -- public.stocks definition
+
+-- Drop table
+
+-- DROP TABLE public.stocks;
+
+            CREATE TABLE public.stocks (
+                                           stock_quantity int4 NOT NULL,
+                                           created_at timestamp(6) NOT NULL,
+                                           updated_at timestamp(6) NOT NULL,
+                                           ingredient_id uuid NULL,
+                                           stock_id uuid NOT NULL,
+                                           warehouse_id uuid NULL,
+                                           stock_unit varchar(255) NOT NULL,
+                                           CONSTRAINT stocks_pkey PRIMARY KEY (stock_id),
+                                           CONSTRAINT fk_stock_ingredient FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(ingredient_id) ON DELETE CASCADE,
+                                           CONSTRAINT fk_stock_warehouse FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(warehouse_id) ON DELETE CASCADE
+            );
+
+
+            -- public.users definition
+
+-- Drop table
+
+-- DROP TABLE public.users;
+
+            CREATE TABLE public.users (
+                                          birth_date timestamp(6) NOT NULL,
+                                          blocked_at timestamp(6) NULL,
+                                          created_at timestamp(6) NOT NULL,
+                                          email_verified_at timestamp(6) NULL,
+                                          updated_at timestamp(6) NOT NULL,
+                                          gender varchar(10) NULL,
+                                          id uuid NOT NULL,
+                                          role_id uuid NULL,
+                                          phone_number varchar(20) NULL,
+                                          last_name varchar(50) NOT NULL,
+                                          "name" varchar(50) NOT NULL,
+                                          avatar text NULL,
+                                          email varchar(255) NOT NULL,
+                                          "password" varchar(255) NOT NULL,
+                                          CONSTRAINT uk_users_email UNIQUE (email),
+                                          CONSTRAINT users_pkey PRIMARY KEY (id),
+                                          CONSTRAINT fk_users_role_id FOREIGN KEY (role_id) REFERENCES public.roles(id)
+            );
+            CREATE INDEX idx_users_last_name ON public.users USING btree (last_name);
+            CREATE INDEX idx_users_name ON public.users USING btree (name);
+
+
+            -- public."comments" definition
 
 -- Drop table
 
 -- DROP TABLE public."comments";
 
-        CREATE TABLE public."comments" (
-                                           comment_id serial4 NOT NULL,
-                                           comment_is_deleted bool NOT NULL,
-                                           comment_left int4 NOT NULL,
-                                           comment_rating numeric(2, 2) NOT NULL,
-                                           comment_right int4 NOT NULL,
-                                           created_at timestamp(6) NOT NULL,
-                                           updated_at timestamp(6) NOT NULL,
-                                           product_id uuid NULL,
-                                           comment_content varchar(255) NOT NULL,
-                                           CONSTRAINT comments_pkey PRIMARY KEY (comment_id),
-                                           CONSTRAINT fk_comment_product FOREIGN KEY (product_id) REFERENCES public.products(product_id) ON DELETE CASCADE
-        );
+            CREATE TABLE public."comments" (
+                                               comment_id serial4 NOT NULL,
+                                               comment_is_deleted bool NOT NULL,
+                                               comment_left int4 NOT NULL,
+                                               comment_rating numeric(2, 2) NOT NULL,
+                                               comment_right int4 NOT NULL,
+                                               created_at timestamp(6) NOT NULL,
+                                               updated_at timestamp(6) NOT NULL,
+                                               product_id uuid NULL,
+                                               comment_content varchar(255) NOT NULL,
+                                               CONSTRAINT comments_pkey PRIMARY KEY (comment_id),
+                                               CONSTRAINT fk_comment_product FOREIGN KEY (product_id) REFERENCES public.products(product_id) ON DELETE CASCADE
+            );
 
 
-        -- public.invoice_details definition
+            -- public.email_verification_tokens definition
+
+-- Drop table
+
+-- DROP TABLE public.email_verification_tokens;
+
+            CREATE TABLE public.email_verification_tokens (
+                                                              created_at timestamp(6) NOT NULL,
+                                                              expiration_date timestamp(6) NOT NULL,
+                                                              updated_at timestamp(6) NOT NULL,
+                                                              id uuid NOT NULL,
+                                                              user_id uuid NOT NULL,
+                                                              "token" varchar(64) NOT NULL,
+                                                              CONSTRAINT email_verification_tokens_pkey PRIMARY KEY (id),
+                                                              CONSTRAINT email_verification_tokens_user_id_key UNIQUE (user_id),
+                                                              CONSTRAINT uk_email_verification_tokens_token UNIQUE (token),
+                                                              CONSTRAINT fk_email_verification_tokens_user_id FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+            );
+
+
+            -- public.favorite_drinks definition
+
+-- Drop table
+
+-- DROP TABLE public.favorite_drinks;
+
+            CREATE TABLE public.favorite_drinks (
+                                                    created_at timestamp(6) NOT NULL,
+                                                    updated_at timestamp(6) NOT NULL,
+                                                    favorite_drink_id uuid NOT NULL,
+                                                    product_id uuid NULL,
+                                                    user_id uuid NULL,
+                                                    CONSTRAINT favorite_drinks_pkey PRIMARY KEY (favorite_drink_id),
+                                                    CONSTRAINT fk_favorite_drink_product FOREIGN KEY (product_id) REFERENCES public.products(product_id) ON DELETE CASCADE,
+                                                    CONSTRAINT fk_favorite_drink_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+            );
+
+
+            -- public.invoice_details definition
 
 -- Drop table
 
 -- DROP TABLE public.invoice_details;
 
-        CREATE TABLE public.invoice_details (
-                                                invoice_detail_quantity int4 NOT NULL,
-                                                created_at timestamp(6) NOT NULL,
-                                                updated_at timestamp(6) NOT NULL,
-                                                ingredient_id uuid NULL,
-                                                invoice_detail_id uuid NOT NULL,
-                                                invoice_id uuid NULL,
-                                                invoice_detail_unit varchar(255) NOT NULL,
-                                                CONSTRAINT invoice_details_pkey PRIMARY KEY (invoice_detail_id),
-                                                CONSTRAINT fk_invoice_detail_ingredient FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(ingredient_id) ON DELETE CASCADE,
-                                                CONSTRAINT fk_invoice_detail_invoice FOREIGN KEY (invoice_id) REFERENCES public.invoices(invoice_id) ON DELETE CASCADE
-        );
+            CREATE TABLE public.invoice_details (
+                                                    invoice_detail_quantity int4 NOT NULL,
+                                                    created_at timestamp(6) NOT NULL,
+                                                    updated_at timestamp(6) NOT NULL,
+                                                    ingredient_id uuid NULL,
+                                                    invoice_detail_id uuid NOT NULL,
+                                                    invoice_id uuid NULL,
+                                                    invoice_detail_unit varchar(255) NOT NULL,
+                                                    CONSTRAINT invoice_details_pkey PRIMARY KEY (invoice_detail_id),
+                                                    CONSTRAINT fk_invoice_detail_ingredient FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(ingredient_id) ON DELETE CASCADE,
+                                                    CONSTRAINT fk_invoice_detail_invoice FOREIGN KEY (invoice_id) REFERENCES public.invoices(invoice_id) ON DELETE CASCADE
+            );
 
 
-        -- public.product_variants definition
+            -- public.notifications definition
+
+-- Drop table
+
+-- DROP TABLE public.notifications;
+
+            CREATE TABLE public.notifications (
+                                                  is_read bool NOT NULL,
+                                                  notification_type int2 NOT NULL,
+                                                  created_at timestamp(6) NOT NULL,
+                                                  updated_at timestamp(6) NOT NULL,
+                                                  notification_id uuid NOT NULL,
+                                                  user_receiver_id uuid NOT NULL,
+                                                  user_sender_id uuid NULL,
+                                                  notification_content varchar(255) NULL,
+                                                  CONSTRAINT notifications_notification_type_check CHECK (((notification_type >= 0) AND (notification_type <= 11))),
+                                                  CONSTRAINT notifications_pkey PRIMARY KEY (notification_id),
+                                                  CONSTRAINT fk_notification_receiver FOREIGN KEY (user_receiver_id) REFERENCES public.users(id) ON DELETE CASCADE,
+                                                  CONSTRAINT fk_notification_sender FOREIGN KEY (user_sender_id) REFERENCES public.users(id) ON DELETE CASCADE
+            );
+
+
+            -- public.password_reset_tokens definition
+
+-- Drop table
+
+-- DROP TABLE public.password_reset_tokens;
+
+            CREATE TABLE public.password_reset_tokens (
+                                                          created_at timestamp(6) NOT NULL,
+                                                          expiration_date timestamp(6) NOT NULL,
+                                                          updated_at timestamp(6) NOT NULL,
+                                                          id uuid NOT NULL,
+                                                          user_id uuid NOT NULL,
+                                                          "token" varchar(32) NOT NULL,
+                                                          CONSTRAINT password_reset_tokens_pkey PRIMARY KEY (id),
+                                                          CONSTRAINT password_reset_tokens_user_id_key UNIQUE (user_id),
+                                                          CONSTRAINT uk_password_reset_tokens_token UNIQUE (token),
+                                                          CONSTRAINT fk_email_verification_tokens_user_id FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+            );
+
+
+            -- public.payment_methods definition
+
+-- Drop table
+
+-- DROP TABLE public.payment_methods;
+
+            CREATE TABLE public.payment_methods (
+                                                    method_is_default bool NOT NULL,
+                                                    created_at timestamp(6) NOT NULL,
+                                                    updated_at timestamp(6) NOT NULL,
+                                                    payment_method_id uuid NOT NULL,
+                                                    user_id uuid NULL,
+                                                    method_details varchar(255) NOT NULL,
+                                                    method_type varchar(255) NOT NULL,
+                                                    CONSTRAINT payment_methods_pkey PRIMARY KEY (payment_method_id),
+                                                    CONSTRAINT fk_payment_method_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+            );
+
+
+            -- public.product_variants definition
 
 -- Drop table
 
 -- DROP TABLE public.product_variants;
 
-        CREATE TABLE public.product_variants (
-                                                 variant_default bool NOT NULL,
-                                                 variant_is_deleted bool NOT NULL,
-                                                 variant_is_published bool NOT NULL,
-                                                 variant_sort int4 NOT NULL,
-                                                 created_at timestamp(6) NOT NULL,
-                                                 updated_at timestamp(6) NOT NULL,
-                                                 variant_price int8 NOT NULL,
-                                                 "fk_product-variant_product" uuid NULL,
-                                                 var_id uuid NOT NULL,
-                                                 variant_slug varchar(255) NOT NULL,
-                                                 variant_tier_idx varchar(255) NOT NULL,
-                                                 CONSTRAINT product_variants_pkey PRIMARY KEY (var_id),
-                                                 CONSTRAINT "FKs5m5lkkvp0d44s507ybjcecwn" FOREIGN KEY ("fk_product-variant_product") REFERENCES public.products(product_id)
-        );
+            CREATE TABLE public.product_variants (
+                                                     variant_default bool NOT NULL,
+                                                     variant_is_deleted bool NOT NULL,
+                                                     variant_is_published bool NOT NULL,
+                                                     variant_price numeric(38, 2) NOT NULL,
+                                                     variant_sort int4 NOT NULL,
+                                                     created_at timestamp(6) NOT NULL,
+                                                     updated_at timestamp(6) NOT NULL,
+                                                     "fk_product-variant_product" uuid NULL,
+                                                     var_id uuid NOT NULL,
+                                                     variant_slug varchar(255) NOT NULL,
+                                                     variant_tier_idx varchar(255) NOT NULL,
+                                                     CONSTRAINT product_variants_pkey PRIMARY KEY (var_id),
+                                                     CONSTRAINT "FKs5m5lkkvp0d44s507ybjcecwn" FOREIGN KEY ("fk_product-variant_product") REFERENCES public.products(product_id)
+            );
 
 
-        -- public.recipes definition
+            -- public.recipes definition
 
 -- Drop table
 
 -- DROP TABLE public.recipes;
 
-        CREATE TABLE public.recipes (
-                                        recipe_is_topping bool NOT NULL,
-                                        recipe_quantity int4 NOT NULL,
-                                        created_at timestamp(6) NOT NULL,
-                                        updated_at timestamp(6) NOT NULL,
-                                        ingredient_id uuid NULL,
-                                        recipe_id uuid NOT NULL,
-                                        var_id uuid NULL,
-                                        recipe_unit varchar(255) NOT NULL,
-                                        CONSTRAINT recipes_pkey PRIMARY KEY (recipe_id),
-                                        CONSTRAINT fk_recipe_ingredient FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(ingredient_id) ON DELETE CASCADE,
-                                        CONSTRAINT fk_recipe_product_variant FOREIGN KEY (var_id) REFERENCES public.product_variants(var_id) ON DELETE CASCADE
-        );
+            CREATE TABLE public.recipes (
+                                            recipe_is_topping bool NOT NULL,
+                                            recipe_quantity int4 NOT NULL,
+                                            created_at timestamp(6) NOT NULL,
+                                            updated_at timestamp(6) NOT NULL,
+                                            ingredient_id uuid NULL,
+                                            recipe_id uuid NOT NULL,
+                                            var_id uuid NULL,
+                                            recipe_unit varchar(255) NOT NULL,
+                                            CONSTRAINT recipes_pkey PRIMARY KEY (recipe_id),
+                                            CONSTRAINT fk_recipe_ingredient FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(ingredient_id) ON DELETE CASCADE,
+                                            CONSTRAINT fk_recipe_product_variant FOREIGN KEY (var_id) REFERENCES public.product_variants(var_id) ON DELETE CASCADE
+            );
 
 
-        -- public.branches definition
+            -- public.shipping_addresses definition
+
+-- Drop table
+
+-- DROP TABLE public.shipping_addresses;
+
+            CREATE TABLE public.shipping_addresses (
+                                                       address_is_default bool NOT NULL,
+                                                       created_at timestamp(6) NOT NULL,
+                                                       updated_at timestamp(6) NOT NULL,
+                                                       shipping_address_id uuid NOT NULL,
+                                                       user_id uuid NULL,
+                                                       address_city varchar(255) NOT NULL,
+                                                       address_district varchar(255) NOT NULL,
+                                                       address_line varchar(255) NOT NULL,
+                                                       CONSTRAINT shipping_addresses_pkey PRIMARY KEY (shipping_address_id),
+                                                       CONSTRAINT fk_shipping_address_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
+            );
+
+
+            -- public.user_recipient_tokens definition
+
+-- Drop table
+
+-- DROP TABLE public.user_recipient_tokens;
+
+            CREATE TABLE public.user_recipient_tokens (
+                                                          created_at timestamp(6) NOT NULL,
+                                                          updated_at timestamp(6) NOT NULL,
+                                                          user_id uuid NULL,
+                                                          user_recipient_token_id uuid NOT NULL,
+                                                          recipient_token text NOT NULL,
+                                                          CONSTRAINT user_recipient_tokens_pkey PRIMARY KEY (user_recipient_token_id),
+                                                          CONSTRAINT fk_user_recipient_tokens_user_id FOREIGN KEY (user_id) REFERENCES public.users(id)
+            );
+
+
+            -- public.branches definition
 
 -- Drop table
 
 -- DROP TABLE public.branches;
 
-        CREATE TABLE public.branches (
-                                         created_at timestamp(6) NOT NULL,
-                                         updated_at timestamp(6) NOT NULL,
-                                         branch_id uuid NOT NULL,
-                                         manager_id uuid NULL,
-                                         branch_address varchar(255) NOT NULL,
-                                         branch_email varchar(255) NOT NULL,
-                                         branch_name varchar(255) NOT NULL,
-                                         branch_phone varchar(255) NOT NULL,
-                                         CONSTRAINT branches_branch_name_key UNIQUE (branch_name),
-                                         CONSTRAINT branches_manager_id_key UNIQUE (manager_id),
-                                         CONSTRAINT branches_pkey PRIMARY KEY (branch_id)
-        );
+            CREATE TABLE public.branches (
+                                             created_at timestamp(6) NOT NULL,
+                                             updated_at timestamp(6) NOT NULL,
+                                             branch_id uuid NOT NULL,
+                                             manager_id uuid NULL,
+                                             branch_address varchar(255) NOT NULL,
+                                             branch_email varchar(255) NOT NULL,
+                                             branch_name varchar(255) NOT NULL,
+                                             branch_phone varchar(255) NOT NULL,
+                                             CONSTRAINT branches_branch_name_key UNIQUE (branch_name),
+                                             CONSTRAINT branches_manager_id_key UNIQUE (manager_id),
+                                             CONSTRAINT branches_pkey PRIMARY KEY (branch_id)
+            );
 
 
-        -- public.cart_details definition
+            -- public.cart_details definition
 
 -- Drop table
 
 -- DROP TABLE public.cart_details;
 
-        CREATE TABLE public.cart_details (
-                                             cart_detail_discount_cost numeric(38, 2) NOT NULL,
-                                             cart_detail_quantity int4 NOT NULL,
-                                             cart_detail_unit_price numeric(38, 2) NOT NULL,
-                                             cart_detail_unit_price_after_discount numeric(38, 2) NOT NULL,
-                                             created_at timestamp(6) NOT NULL,
-                                             updated_at timestamp(6) NOT NULL,
-                                             cart_detail_id uuid NOT NULL,
-                                             cart_id uuid NULL,
-                                             var_id uuid NULL,
-                                             CONSTRAINT cart_details_pkey PRIMARY KEY (cart_detail_id)
-        );
+            CREATE TABLE public.cart_details (
+                                                 cart_detail_discount_cost numeric(38, 2) NOT NULL,
+                                                 cart_detail_quantity int4 NOT NULL,
+                                                 cart_detail_unit_price numeric(38, 2) NOT NULL,
+                                                 cart_detail_unit_price_after_discount numeric(38, 2) NOT NULL,
+                                                 created_at timestamp(6) NOT NULL,
+                                                 updated_at timestamp(6) NOT NULL,
+                                                 cart_detail_id uuid NOT NULL,
+                                                 cart_id uuid NULL,
+                                                 var_id uuid NULL,
+                                                 CONSTRAINT cart_details_pkey PRIMARY KEY (cart_detail_id)
+            );
 
 
-        -- public.carts definition
+            -- public.carts definition
 
 -- Drop table
 
 -- DROP TABLE public.carts;
 
-        CREATE TABLE public.carts (
-                                      cart_discount_cost numeric(38, 2) NOT NULL,
-                                      cart_total_cost numeric(38, 2) NOT NULL,
-                                      cart_total_cost_after_discount numeric(38, 2) NOT NULL,
-                                      created_at timestamp(6) NOT NULL,
-                                      updated_at timestamp(6) NOT NULL,
-                                      branch_id uuid NULL,
-                                      cart_id uuid NOT NULL,
-                                      user_id uuid NULL,
-                                      CONSTRAINT carts_pkey PRIMARY KEY (cart_id)
-        );
+            CREATE TABLE public.carts (
+                                          cart_discount_cost numeric(38, 2) NOT NULL,
+                                          cart_total_cost numeric(38, 2) NOT NULL,
+                                          cart_total_cost_after_discount numeric(38, 2) NOT NULL,
+                                          created_at timestamp(6) NOT NULL,
+                                          updated_at timestamp(6) NOT NULL,
+                                          branch_id uuid NULL,
+                                          cart_id uuid NOT NULL,
+                                          user_id uuid NULL,
+                                          CONSTRAINT carts_pkey PRIMARY KEY (cart_id)
+            );
 
 
-        -- public.checkins definition
+            -- public.checkins definition
 
 -- Drop table
 
 -- DROP TABLE public.checkins;
 
-        CREATE TABLE public.checkins (
-                                         checkin_time timestamp(6) NOT NULL,
-                                         created_at timestamp(6) NOT NULL,
-                                         updated_at timestamp(6) NOT NULL,
-                                         checkin_id uuid NOT NULL,
-                                         shift_id uuid NULL,
-                                         CONSTRAINT checkins_pkey PRIMARY KEY (checkin_id)
-        );
+            CREATE TABLE public.checkins (
+                                             checkin_time timestamp(6) NOT NULL,
+                                             created_at timestamp(6) NOT NULL,
+                                             updated_at timestamp(6) NOT NULL,
+                                             checkin_id uuid NOT NULL,
+                                             shift_id uuid NULL,
+                                             CONSTRAINT checkins_pkey PRIMARY KEY (checkin_id)
+            );
 
 
-        -- public.discounts definition
+            -- public.discounts definition
 
 -- Drop table
 
 -- DROP TABLE public.discounts;
 
-        CREATE TABLE public.discounts (
-                                          discount_is_active bool NOT NULL,
-                                          discount_max_per_user int4 NOT NULL,
-                                          discount_max_users int4 NOT NULL,
-                                          discount_min_order_value numeric(38, 2) NOT NULL,
-                                          discount_type int2 NOT NULL,
-                                          discount_user_count int4 NOT NULL,
-                                          discount_value numeric(38, 2) NOT NULL,
-                                          created_at timestamp(6) NOT NULL,
-                                          discount_end_date timestamp(6) NOT NULL,
-                                          discount_start_date timestamp(6) NOT NULL,
-                                          updated_at timestamp(6) NOT NULL,
-                                          branch_id uuid NULL,
-                                          discount_id uuid NOT NULL,
-                                          discount_code varchar(255) NOT NULL,
-                                          discount_description varchar(255) NOT NULL,
-                                          discount_name varchar(255) NOT NULL,
-                                          CONSTRAINT discounts_discount_type_check CHECK (((discount_type >= 0) AND (discount_type <= 1))),
-                                          CONSTRAINT discounts_pkey PRIMARY KEY (discount_id)
-        );
+            CREATE TABLE public.discounts (
+                                              discount_is_active bool NOT NULL,
+                                              discount_max_per_user int4 NOT NULL,
+                                              discount_max_users int4 NOT NULL,
+                                              discount_min_order_value numeric(38, 2) NOT NULL,
+                                              discount_type int2 NOT NULL,
+                                              discount_user_count int4 NOT NULL,
+                                              discount_value numeric(38, 2) NOT NULL,
+                                              created_at timestamp(6) NOT NULL,
+                                              discount_end_date timestamp(6) NOT NULL,
+                                              discount_start_date timestamp(6) NOT NULL,
+                                              updated_at timestamp(6) NOT NULL,
+                                              branch_id uuid NULL,
+                                              discount_id uuid NOT NULL,
+                                              discount_code varchar(255) NOT NULL,
+                                              discount_description varchar(255) NOT NULL,
+                                              discount_name varchar(255) NOT NULL,
+                                              CONSTRAINT discounts_discount_type_check CHECK (((discount_type >= 0) AND (discount_type <= 1))),
+                                              CONSTRAINT discounts_pkey PRIMARY KEY (discount_id)
+            );
 
 
-        -- public.employees definition
+            -- public.employees definition
 
 -- Drop table
 
 -- DROP TABLE public.employees;
 
-        CREATE TABLE public.employees (
-                                          created_at timestamp(6) NOT NULL,
-                                          employee_hire_date timestamp(6) NOT NULL,
-                                          updated_at timestamp(6) NOT NULL,
-                                          branch_id uuid NULL,
-                                          employee_id uuid NOT NULL,
-                                          user_id uuid NULL,
-                                          employee_department varchar(255) NOT NULL,
-                                          employee_position varchar(255) NOT NULL,
-                                          CONSTRAINT employees_pkey PRIMARY KEY (employee_id),
-                                          CONSTRAINT employees_user_id_key UNIQUE (user_id)
-        );
+            CREATE TABLE public.employees (
+                                              created_at timestamp(6) NOT NULL,
+                                              employee_hire_date timestamp(6) NOT NULL,
+                                              updated_at timestamp(6) NOT NULL,
+                                              branch_id uuid NULL,
+                                              employee_id uuid NOT NULL,
+                                              user_id uuid NULL,
+                                              employee_department varchar(255) NOT NULL,
+                                              employee_position varchar(255) NOT NULL,
+                                              CONSTRAINT employees_pkey PRIMARY KEY (employee_id),
+                                              CONSTRAINT employees_user_id_key UNIQUE (user_id)
+            );
 
 
-        -- public.inventories definition
+            -- public.inventories definition
 
 -- Drop table
 
 -- DROP TABLE public.inventories;
 
-        CREATE TABLE public.inventories (
-                                            inventory_quantity int4 NOT NULL,
-                                            created_at timestamp(6) NOT NULL,
-                                            inventory_expire_date timestamp(6) NOT NULL,
-                                            updated_at timestamp(6) NOT NULL,
-                                            branch_id uuid NULL,
-                                            ingredient_id uuid NULL,
-                                            inventory_id uuid NOT NULL,
-                                            CONSTRAINT inventories_pkey PRIMARY KEY (inventory_id)
-        );
+            CREATE TABLE public.inventories (
+                                                inventory_quantity int4 NOT NULL,
+                                                created_at timestamp(6) NOT NULL,
+                                                inventory_expire_date timestamp(6) NOT NULL,
+                                                updated_at timestamp(6) NOT NULL,
+                                                branch_id uuid NULL,
+                                                ingredient_id uuid NULL,
+                                                inventory_id uuid NOT NULL,
+                                                CONSTRAINT inventories_pkey PRIMARY KEY (inventory_id)
+            );
 
 
-        -- public.order_details definition
+            -- public.order_details definition
 
 -- Drop table
 
 -- DROP TABLE public.order_details;
 
-        CREATE TABLE public.order_details (
-                                              order_detail_discount_cost numeric(38, 2) NOT NULL,
-                                              order_detail_quantity int4 NOT NULL,
-                                              order_detail_unit_price numeric(38, 2) NOT NULL,
-                                              order_detail_unit_price_after_discount numeric(38, 2) NOT NULL,
-                                              created_at timestamp(6) NOT NULL,
-                                              updated_at timestamp(6) NOT NULL,
-                                              order_detail_id uuid NOT NULL,
-                                              order_id uuid NULL,
-                                              var_id uuid NULL,
-                                              CONSTRAINT order_details_pkey PRIMARY KEY (order_detail_id)
-        );
+            CREATE TABLE public.order_details (
+                                                  order_detail_discount_cost numeric(38, 2) NOT NULL,
+                                                  order_detail_quantity int4 NOT NULL,
+                                                  order_detail_unit_price numeric(38, 2) NOT NULL,
+                                                  order_detail_unit_price_after_discount numeric(38, 2) NOT NULL,
+                                                  created_at timestamp(6) NOT NULL,
+                                                  updated_at timestamp(6) NOT NULL,
+                                                  order_detail_id uuid NOT NULL,
+                                                  order_id uuid NULL,
+                                                  var_id uuid NULL,
+                                                  CONSTRAINT order_details_pkey PRIMARY KEY (order_detail_id)
+            );
 
 
-        -- public.orders definition
+            -- public.orders definition
 
 -- Drop table
 
 -- DROP TABLE public.orders;
 
-        CREATE TABLE public.orders (
-                                       order_discount_cost numeric(38, 2) NOT NULL,
-                                       order_total_cost numeric(38, 2) NOT NULL,
-                                       order_total_cost_after_discount numeric(38, 2) NOT NULL,
-                                       created_at timestamp(6) NOT NULL,
-                                       updated_at timestamp(6) NOT NULL,
-                                       employee_id uuid NULL,
-                                       order_id uuid NOT NULL,
-                                       payment_method_id uuid NULL,
-                                       shipping_address_id uuid NULL,
-                                       user_id uuid NULL,
-                                       order_status varchar(255) NOT NULL,
-                                       order_tracking_number varchar(255) NOT NULL,
-                                       CONSTRAINT orders_order_status_check CHECK (((order_status)::text = ANY ((ARRAY['PENDING'::character varying, 'PROCESSING'::character varying, 'COMPLETED'::character varying, 'CANCELLED'::character varying])::text[]))),
-	CONSTRAINT orders_order_status_key UNIQUE (order_status),
-	CONSTRAINT orders_pkey PRIMARY KEY (order_id),
-	CONSTRAINT orders_shipping_address_id_key UNIQUE (shipping_address_id)
+            CREATE TABLE public.orders (
+                                           order_discount_cost numeric(38, 2) NOT NULL,
+                                           order_total_cost numeric(38, 2) NOT NULL,
+                                           order_total_cost_after_discount numeric(38, 2) NOT NULL,
+                                           created_at timestamp(6) NOT NULL,
+                                           updated_at timestamp(6) NOT NULL,
+                                           branch_id uuid NULL,
+                                           employee_id uuid NULL,
+                                           order_id uuid NOT NULL,
+                                           payment_method_id uuid NULL,
+                                           shipping_address_id uuid NULL,
+                                           user_id uuid NULL,
+                                           order_status varchar(255) NULL,
+                                           order_tracking_number varchar(255) NOT NULL,
+                                           CONSTRAINT orders_order_status_check CHECK (((order_status)::text = ANY ((ARRAY['PENDING'::character varying, 'PROCESSING'::character varying, 'COMPLETED'::character varying, 'CANCELLED'::character varying])::text[]))),
+	CONSTRAINT orders_pkey PRIMARY KEY (order_id)
 );
 
 
-        -- public.product_variant_discounts definition
+            -- public.product_variant_discounts definition
 
 -- Drop table
 
 -- DROP TABLE public.product_variant_discounts;
 
-        CREATE TABLE public.product_variant_discounts (
-                                                          discount_id uuid NOT NULL,
-                                                          var_id uuid NOT NULL
-        );
+            CREATE TABLE public.product_variant_discounts (
+                                                              discount_id uuid NOT NULL,
+                                                              var_id uuid NOT NULL
+            );
 
 
-        -- public.salaries definition
+            -- public.salaries definition
 
 -- Drop table
 
 -- DROP TABLE public.salaries;
 
-        CREATE TABLE public.salaries (
-                                         "month" int4 NOT NULL,
-                                         month_salary numeric(38, 2) NOT NULL,
-                                         "year" int4 NOT NULL,
-                                         created_at timestamp(6) NOT NULL,
-                                         updated_at timestamp(6) NOT NULL,
-                                         employee_id uuid NULL,
-                                         salary_id uuid NOT NULL,
-                                         CONSTRAINT salaries_pkey PRIMARY KEY (salary_id)
-        );
+            CREATE TABLE public.salaries (
+                                             "month" int4 NOT NULL,
+                                             month_salary numeric(38, 2) NOT NULL,
+                                             "year" int4 NOT NULL,
+                                             created_at timestamp(6) NOT NULL,
+                                             updated_at timestamp(6) NOT NULL,
+                                             employee_id uuid NULL,
+                                             salary_id uuid NOT NULL,
+                                             CONSTRAINT salaries_pkey PRIMARY KEY (salary_id)
+            );
 
 
-        -- public.shifts definition
+            -- public.shifts definition
 
 -- Drop table
 
 -- DROP TABLE public.shifts;
 
-        CREATE TABLE public.shifts (
-                                       "month" int4 NOT NULL,
-                                       shift_salary numeric(38, 2) NOT NULL,
-                                       "year" int4 NOT NULL,
-                                       created_at timestamp(6) NOT NULL,
-                                       shift_end_time timestamp(6) NOT NULL,
-                                       shift_start_time timestamp(6) NOT NULL,
-                                       updated_at timestamp(6) NOT NULL,
-                                       employee_id uuid NULL,
-                                       shift_id uuid NOT NULL,
-                                       CONSTRAINT shifts_pkey PRIMARY KEY (shift_id)
-        );
+            CREATE TABLE public.shifts (
+                                           "month" int4 NOT NULL,
+                                           shift_salary numeric(38, 2) NOT NULL,
+                                           "year" int4 NOT NULL,
+                                           created_at timestamp(6) NOT NULL,
+                                           shift_end_time timestamp(6) NOT NULL,
+                                           shift_start_time timestamp(6) NOT NULL,
+                                           updated_at timestamp(6) NOT NULL,
+                                           employee_id uuid NULL,
+                                           shift_id uuid NOT NULL,
+                                           CONSTRAINT shifts_pkey PRIMARY KEY (shift_id)
+            );
 
 
-        -- public.transfer_details definition
+            -- public.transfer_details definition
 
 -- Drop table
 
 -- DROP TABLE public.transfer_details;
 
-        CREATE TABLE public.transfer_details (
-                                                 transfer_detail_quantity int4 NOT NULL,
-                                                 created_at timestamp(6) NOT NULL,
-                                                 updated_at timestamp(6) NOT NULL,
-                                                 ingredient_id uuid NULL,
-                                                 transfer_detail_id uuid NOT NULL,
-                                                 transfer_id uuid NULL,
-                                                 transfer_detail_unit varchar(255) NOT NULL,
-                                                 CONSTRAINT transfer_details_pkey PRIMARY KEY (transfer_detail_id)
-        );
+            CREATE TABLE public.transfer_details (
+                                                     transfer_detail_quantity int4 NOT NULL,
+                                                     created_at timestamp(6) NOT NULL,
+                                                     updated_at timestamp(6) NOT NULL,
+                                                     ingredient_id uuid NULL,
+                                                     transfer_detail_id uuid NOT NULL,
+                                                     transfer_id uuid NULL,
+                                                     transfer_detail_unit varchar(255) NOT NULL,
+                                                     CONSTRAINT transfer_details_pkey PRIMARY KEY (transfer_detail_id)
+            );
 
 
-        -- public.transfers definition
+            -- public.transfers definition
 
 -- Drop table
 
 -- DROP TABLE public.transfers;
 
-        CREATE TABLE public.transfers (
-                                          transfer_total_cost numeric(38, 2) NOT NULL,
-                                          created_at timestamp(6) NOT NULL,
-                                          updated_at timestamp(6) NOT NULL,
-                                          branch_id uuid NULL,
-                                          transfer_id uuid NOT NULL,
-                                          warehouse_id uuid NULL,
-                                          transfer_description varchar(255) NOT NULL,
-                                          transfer_tracking_number varchar(255) NOT NULL,
-                                          CONSTRAINT transfers_pkey PRIMARY KEY (transfer_id)
-        );
+            CREATE TABLE public.transfers (
+                                              transfer_total_cost numeric(38, 2) NOT NULL,
+                                              created_at timestamp(6) NOT NULL,
+                                              updated_at timestamp(6) NOT NULL,
+                                              branch_id uuid NULL,
+                                              transfer_id uuid NOT NULL,
+                                              warehouse_id uuid NULL,
+                                              transfer_description varchar(255) NOT NULL,
+                                              transfer_tracking_number varchar(255) NOT NULL,
+                                              CONSTRAINT transfers_pkey PRIMARY KEY (transfer_id)
+            );
 
 
-        -- public.used_discounts definition
+            -- public.used_discounts definition
 
 -- Drop table
 
 -- DROP TABLE public.used_discounts;
 
-        CREATE TABLE public.used_discounts (
-                                               times_use int4 NOT NULL,
-                                               created_at timestamp(6) NOT NULL,
-                                               updated_at timestamp(6) NOT NULL,
-                                               cart_detail_id uuid NULL,
-                                               discount_id uuid NULL,
-                                               order_detail_id uuid NULL,
-                                               used_discount_id uuid NOT NULL,
-                                               CONSTRAINT used_discounts_pkey PRIMARY KEY (used_discount_id)
-        );
+            CREATE TABLE public.used_discounts (
+                                                   times_use int4 NOT NULL,
+                                                   created_at timestamp(6) NOT NULL,
+                                                   updated_at timestamp(6) NOT NULL,
+                                                   cart_detail_id uuid NULL,
+                                                   discount_id uuid NULL,
+                                                   order_detail_id uuid NULL,
+                                                   used_discount_id uuid NOT NULL,
+                                                   CONSTRAINT used_discounts_pkey PRIMARY KEY (used_discount_id)
+            );
 
 
 -- public.branches foreign keys
 
-        ALTER TABLE public.branches ADD CONSTRAINT fk_branch_manager FOREIGN KEY (manager_id) REFERENCES public.employees(employee_id) ON DELETE SET NULL;
+            ALTER TABLE public.branches ADD CONSTRAINT fk_branch_manager FOREIGN KEY (manager_id) REFERENCES public.employees(employee_id) ON DELETE SET NULL;
 
 
 -- public.cart_details foreign keys
 
-        ALTER TABLE public.cart_details ADD CONSTRAINT fk_cart_detail_cart FOREIGN KEY (cart_id) REFERENCES public.carts(cart_id) ON DELETE CASCADE;
-        ALTER TABLE public.cart_details ADD CONSTRAINT fk_cart_detail_product_variant FOREIGN KEY (var_id) REFERENCES public.product_variants(var_id) ON DELETE CASCADE;
+            ALTER TABLE public.cart_details ADD CONSTRAINT fk_cart_detail_cart FOREIGN KEY (cart_id) REFERENCES public.carts(cart_id) ON DELETE CASCADE;
+            ALTER TABLE public.cart_details ADD CONSTRAINT fk_cart_detail_product_variant FOREIGN KEY (var_id) REFERENCES public.product_variants(var_id) ON DELETE CASCADE;
 
 
 -- public.carts foreign keys
 
-        ALTER TABLE public.carts ADD CONSTRAINT fk_cart_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
-        ALTER TABLE public.carts ADD CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+            ALTER TABLE public.carts ADD CONSTRAINT fk_cart_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
+            ALTER TABLE public.carts ADD CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 -- public.checkins foreign keys
 
-        ALTER TABLE public.checkins ADD CONSTRAINT fk_checkin_shift FOREIGN KEY (shift_id) REFERENCES public.shifts(shift_id) ON DELETE CASCADE;
+            ALTER TABLE public.checkins ADD CONSTRAINT fk_checkin_shift FOREIGN KEY (shift_id) REFERENCES public.shifts(shift_id) ON DELETE CASCADE;
 
 
 -- public.discounts foreign keys
 
-        ALTER TABLE public.discounts ADD CONSTRAINT fk_inventory_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
+            ALTER TABLE public.discounts ADD CONSTRAINT fk_inventory_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
 
 
 -- public.employees foreign keys
 
-        ALTER TABLE public.employees ADD CONSTRAINT fk_employee_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
-        ALTER TABLE public.employees ADD CONSTRAINT fk_employee_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+            ALTER TABLE public.employees ADD CONSTRAINT fk_employee_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
+            ALTER TABLE public.employees ADD CONSTRAINT fk_employee_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 -- public.inventories foreign keys
 
-        ALTER TABLE public.inventories ADD CONSTRAINT fk_inventory_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
-        ALTER TABLE public.inventories ADD CONSTRAINT fk_inventory_ingredient FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(ingredient_id) ON DELETE CASCADE;
+            ALTER TABLE public.inventories ADD CONSTRAINT fk_inventory_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
+            ALTER TABLE public.inventories ADD CONSTRAINT fk_inventory_ingredient FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(ingredient_id) ON DELETE CASCADE;
 
 
 -- public.order_details foreign keys
 
-        ALTER TABLE public.order_details ADD CONSTRAINT fk_order_detail_order FOREIGN KEY (order_id) REFERENCES public.orders(order_id) ON DELETE CASCADE;
-        ALTER TABLE public.order_details ADD CONSTRAINT fk_order_detail_product_variant FOREIGN KEY (var_id) REFERENCES public.product_variants(var_id) ON DELETE CASCADE;
+            ALTER TABLE public.order_details ADD CONSTRAINT fk_order_detail_order FOREIGN KEY (order_id) REFERENCES public.orders(order_id) ON DELETE CASCADE;
+            ALTER TABLE public.order_details ADD CONSTRAINT fk_order_detail_product_variant FOREIGN KEY (var_id) REFERENCES public.product_variants(var_id) ON DELETE CASCADE;
 
 
 -- public.orders foreign keys
 
-        ALTER TABLE public.orders ADD CONSTRAINT fk_order_employee FOREIGN KEY (employee_id) REFERENCES public.employees(employee_id) ON DELETE CASCADE;
-        ALTER TABLE public.orders ADD CONSTRAINT fk_order_payment_method FOREIGN KEY (payment_method_id) REFERENCES public.payment_methods(payment_method_id) ON DELETE CASCADE;
-        ALTER TABLE public.orders ADD CONSTRAINT fk_order_shipping_address FOREIGN KEY (shipping_address_id) REFERENCES public.shipping_addresses(shipping_address_id) ON DELETE CASCADE;
-        ALTER TABLE public.orders ADD CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+            ALTER TABLE public.orders ADD CONSTRAINT fk_order_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
+            ALTER TABLE public.orders ADD CONSTRAINT fk_order_employee FOREIGN KEY (employee_id) REFERENCES public.employees(employee_id) ON DELETE CASCADE;
+            ALTER TABLE public.orders ADD CONSTRAINT fk_order_payment_method FOREIGN KEY (payment_method_id) REFERENCES public.payment_methods(payment_method_id) ON DELETE CASCADE;
+            ALTER TABLE public.orders ADD CONSTRAINT fk_order_shipping_address FOREIGN KEY (shipping_address_id) REFERENCES public.shipping_addresses(shipping_address_id);
+            ALTER TABLE public.orders ADD CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 -- public.product_variant_discounts foreign keys
 
-        ALTER TABLE public.product_variant_discounts ADD CONSTRAINT "FK1h0j81ynj7kh56b0xxy1qg65y" FOREIGN KEY (discount_id) REFERENCES public.discounts(discount_id);
-        ALTER TABLE public.product_variant_discounts ADD CONSTRAINT "FKfq4k4msdxevi4asniblqnioxx" FOREIGN KEY (var_id) REFERENCES public.product_variants(var_id);
+            ALTER TABLE public.product_variant_discounts ADD CONSTRAINT "FK1h0j81ynj7kh56b0xxy1qg65y" FOREIGN KEY (discount_id) REFERENCES public.discounts(discount_id);
+            ALTER TABLE public.product_variant_discounts ADD CONSTRAINT "FKfq4k4msdxevi4asniblqnioxx" FOREIGN KEY (var_id) REFERENCES public.product_variants(var_id);
 
 
 -- public.salaries foreign keys
 
-        ALTER TABLE public.salaries ADD CONSTRAINT fk_salary_employee FOREIGN KEY (employee_id) REFERENCES public.employees(employee_id) ON DELETE CASCADE;
+            ALTER TABLE public.salaries ADD CONSTRAINT fk_salary_employee FOREIGN KEY (employee_id) REFERENCES public.employees(employee_id) ON DELETE CASCADE;
 
 
 -- public.shifts foreign keys
 
-        ALTER TABLE public.shifts ADD CONSTRAINT fk_shift_employee FOREIGN KEY (employee_id) REFERENCES public.employees(employee_id) ON DELETE CASCADE;
+            ALTER TABLE public.shifts ADD CONSTRAINT fk_shift_employee FOREIGN KEY (employee_id) REFERENCES public.employees(employee_id) ON DELETE CASCADE;
 
 
 -- public.transfer_details foreign keys
 
-        ALTER TABLE public.transfer_details ADD CONSTRAINT fk_transfer_detail_ingredient FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(ingredient_id) ON DELETE CASCADE;
-        ALTER TABLE public.transfer_details ADD CONSTRAINT fk_transfer_detail_transfer FOREIGN KEY (transfer_id) REFERENCES public.transfers(transfer_id) ON DELETE CASCADE;
+            ALTER TABLE public.transfer_details ADD CONSTRAINT fk_transfer_detail_ingredient FOREIGN KEY (ingredient_id) REFERENCES public.ingredients(ingredient_id) ON DELETE CASCADE;
+            ALTER TABLE public.transfer_details ADD CONSTRAINT fk_transfer_detail_transfer FOREIGN KEY (transfer_id) REFERENCES public.transfers(transfer_id) ON DELETE CASCADE;
 
 
 -- public.transfers foreign keys
 
-        ALTER TABLE public.transfers ADD CONSTRAINT fk_transfer_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
-        ALTER TABLE public.transfers ADD CONSTRAINT fk_transfer_warehouse FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(warehouse_id) ON DELETE CASCADE;
+            ALTER TABLE public.transfers ADD CONSTRAINT fk_transfer_branch FOREIGN KEY (branch_id) REFERENCES public.branches(branch_id) ON DELETE CASCADE;
+            ALTER TABLE public.transfers ADD CONSTRAINT fk_transfer_warehouse FOREIGN KEY (warehouse_id) REFERENCES public.warehouses(warehouse_id) ON DELETE CASCADE;
 
 
 -- public.used_discounts foreign keys
 
-        ALTER TABLE public.used_discounts ADD CONSTRAINT fk_used_discount_cart_detail FOREIGN KEY (cart_detail_id) REFERENCES public.cart_details(cart_detail_id) ON DELETE CASCADE;
-        ALTER TABLE public.used_discounts ADD CONSTRAINT fk_used_discount_discount FOREIGN KEY (discount_id) REFERENCES public.discounts(discount_id) ON DELETE CASCADE;
-        ALTER TABLE public.used_discounts ADD CONSTRAINT fk_used_discount_order_detail FOREIGN KEY (order_detail_id) REFERENCES public.order_details(order_detail_id) ON DELETE CASCADE;]]>
+            ALTER TABLE public.used_discounts ADD CONSTRAINT fk_used_discount_cart_detail FOREIGN KEY (cart_detail_id) REFERENCES public.cart_details(cart_detail_id) ON DELETE CASCADE;
+            ALTER TABLE public.used_discounts ADD CONSTRAINT fk_used_discount_discount FOREIGN KEY (discount_id) REFERENCES public.discounts(discount_id) ON DELETE CASCADE;
+            ALTER TABLE public.used_discounts ADD CONSTRAINT fk_used_discount_order_detail FOREIGN KEY (order_detail_id) REFERENCES public.order_details(order_detail_id) ON DELETE CASCADE;
+]]>
         </sql>
     </changeSet>
 </databaseChangeLog>
