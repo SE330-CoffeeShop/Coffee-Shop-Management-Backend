@@ -8,6 +8,7 @@ import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.order.OrderResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Order;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -310,6 +311,65 @@ public class OrderController {
                 new PageResponse<>(
                         HttpStatus.OK.value(),
                         "Customer orders retrieved successfully",
+                        OrderResponseDTO.convert(orderPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                orderPage.getNumber(),
+                                orderPage.getSize(),
+                                orderPage.getTotalElements(),
+                                orderPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/branch/{branchId}/status/{status}")
+    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'MANAGER')")
+    @Operation(
+            summary = "Get all orders by branch ID and status with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch orders by status",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid ID format or status",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<OrderResponseDTO>> findAllOrdersByBranchAndStatus(
+            @PathVariable UUID branchId,
+            @PathVariable Constants.OrderStatusEnum status,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Order> orderPage = orderService.findAllOrderByStatusAndBranchId(status, branchId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch orders by status retrieved successfully",
                         OrderResponseDTO.convert(orderPage.getContent()),
                         new PageResponse.PagingResponse(
                                 orderPage.getNumber(),

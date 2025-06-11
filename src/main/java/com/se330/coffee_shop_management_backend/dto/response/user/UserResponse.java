@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -50,6 +49,7 @@ public class UserResponse {
     private LocalDateTime birthday;
 
     private String role;
+    private String branchId;
 
     @Schema(
         name = "emailVerifiedAt",
@@ -100,6 +100,7 @@ public class UserResponse {
             .name(user.getName())
             .lastName(user.getLastName())
             .role(String.valueOf(user.getRole().getName()))
+            .branchId(user.getEmployee() != null ? String.valueOf(user.getEmployee().getBranch().getId()) : null)
             .emailVerifiedAt(user.getEmailVerifiedAt())
             .gender(user.getGender())
             .phoneNumber(user.getPhoneNumber())
