@@ -13,4 +13,5 @@ public class OrderDetailCreateRequestDTO {
     private BigDecimal orderDetailUnitPrice;
     private UUID productVariantId;
     private UUID orderId;
+    private UUID branchId;
 }

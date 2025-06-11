@@ -58,14 +58,14 @@ public class StockAndInventory {
         unitsByType.put("MEAT", "kg");
         unitsByType.put("CAKE_MIX", "kg");
 
-        // Define warehouse specializations to distribute ingredients realistically
+        // Define warehouse specializations
         Map<String, List<String>> warehouseSpecializations = new HashMap<>();
         warehouseSpecializations.put("Kho Trung Tâm TP.HCM", Arrays.asList("COFFEE_BASE", "DAIRY", "SYRUP", "BASE", "SWEETENER", "TOPPING", "POWDER"));
         warehouseSpecializations.put("Kho Nguyên Liệu Đà Lạt", Arrays.asList("COFFEE_BEANS", "TEA_LEAVES", "FRUIT"));
         warehouseSpecializations.put("Kho Xuất Khẩu Miền Đông", Arrays.asList("COFFEE_BEANS", "TEA_LEAVES", "FLOUR", "CAKE_MIX"));
         warehouseSpecializations.put("Kho Vận Miền Tây", Arrays.asList("TEA_TOPPING", "FRUIT", "MEAT", "FLOUR"));
 
-        // Create stock for each ingredient in appropriate warehouses
+        // Create stock for each ingredient in all warehouses
         for (Ingredient ingredient : ingredients) {
             String ingredientType = ingredient.getIngredientType();
             String unit = unitsByType.getOrDefault(ingredientType, "kg");
@@ -75,18 +75,13 @@ public class StockAndInventory {
                 boolean isSpecialized = warehouseSpecializations.getOrDefault(warehouse.getWarehouseName(), Collections.emptyList())
                         .contains(ingredientType);
 
-                // Skip creating stock for non-specialized warehouses (50% chance)
-                if (!isSpecialized && random.nextBoolean()) {
-                    continue;
-                }
-
                 // Calculate base quantity based on ingredient type
                 int baseQuantity = getBaseQuantity(ingredientType);
 
                 // Adjust quantity based on warehouse specialization
                 int quantity = isSpecialized ?
                         baseQuantity + random.nextInt(baseQuantity) : // More stock in specialized warehouses
-                        Math.max(1, baseQuantity / 2 + random.nextInt(baseQuantity / 2)); // Less stock elsewhere
+                        Math.max(1, baseQuantity / 3 + random.nextInt(baseQuantity / 2)); // Less stock elsewhere
 
                 stocks.add(Stock.builder()
                         .ingredient(ingredient)
@@ -160,45 +155,51 @@ public class StockAndInventory {
         branchSizeMultipliers.put("BCoffee Tân Bình", 1.0);    // Standard branch
         branchSizeMultipliers.put("BCoffee Bình Thạnh", 0.8);  // Smaller branch
 
-        // Define ingredients that all branches must have
-        List<String> essentialIngredients = Arrays.asList(
-                "Hạt Cà Phê", "Sữa Tươi", "Sữa Đặc", "Đường Nước", "Đá Viên"
-        );
-
+        // Create inventory for all combinations of branches and ingredients
         for (Branch branch : branches) {
             double sizeMultiplier = branchSizeMultipliers.getOrDefault(branch.getBranchName(), 1.0);
 
             for (Ingredient ingredient : ingredients) {
-                String ingredientName = ingredient.getIngredientName();
                 String ingredientType = ingredient.getIngredientType();
 
-                // Essential ingredients are in all branches
-                boolean isEssential = essentialIngredients.stream()
-                        .anyMatch(ingredientName::contains);
+                // Generate 5-10 inventory records per ingredient per branch
+                int recordCount = 5 + random.nextInt(6); // Range from 5 to 10
 
-                // Skip some non-essential ingredients randomly (30% chance)
-                if (!isEssential && random.nextDouble() > 0.7) {
-                    continue;
+                for (int i = 0; i < recordCount; i++) {
+                    // Calculate base quantity for this inventory batch
+                    int branchBaseQuantity = getBranchBaseQuantity(ingredientType);
+
+                    // Adjust quantity based on branch size with some randomness
+                    int quantity = (int) Math.round(branchBaseQuantity * sizeMultiplier *
+                            (0.5 + random.nextDouble() * 0.8)) * 10000;
+
+                    // Determine if this inventory record should be expired (30% chance)
+//                    boolean isExpired = random.nextDouble() < 0.3;
+                    boolean isExpired = false;
+
+                    LocalDateTime expireDate;
+                    if (isExpired) {
+                        // Generate an expiration date in the past (1-30 days ago)
+                        expireDate = now.minusDays(1 + random.nextInt(30));
+                    } else {
+                        // Generate an expiration date in the future based on shelf life
+                        expireDate = now.plusDays( 1 +
+                                (long) (ingredient.getShelfLifeDays() * (0.2 + random.nextDouble() * 0.8))
+                        );
+                    }
+
+                    if (expireDate.isBefore(now)) {
+                        log.warn("FUCK ");
+                    }
+
+                    // Create inventory record
+                    inventories.add(Inventory.builder()
+                            .branch(branch)
+                            .ingredient(ingredient)
+                            .inventoryQuantity(quantity)
+                            .inventoryExpireDate(expireDate)
+                            .build());
                 }
-
-                // Calculate base quantity based on ingredient type
-                int branchBaseQuantity = getBranchBaseQuantity(ingredientType);
-
-                // Adjust quantity based on branch size
-                int quantity = (int) Math.round(branchBaseQuantity * sizeMultiplier * (0.7 + random.nextDouble() * 0.6));
-
-                // Set expiration date based on ingredient shelf life
-                LocalDateTime expireDate = now.plusDays(
-                        (long) (ingredient.getShelfLifeDays() * (0.3 + random.nextDouble() * 0.7))
-                );
-
-                // Create inventory record
-                inventories.add(Inventory.builder()
-                        .branch(branch)
-                        .ingredient(ingredient)
-                        .inventoryQuantity(quantity)
-                        .inventoryExpireDate(expireDate)
-                        .build());
             }
         }
 

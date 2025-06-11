@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -49,6 +51,11 @@ public class ImpInventoryService implements IInventoryService {
     @Transactional(readOnly = true)
     public Page<Inventory> findAllInventoriesByBrachId(UUID branchId, Pageable pageable) {
         return inventoryRepository.findAllByBranch_Id(branchId, pageable);
+    }
+
+    @Override
+    public Page<Inventory> findAllInventoriesByBranchIdAndIngredientId(UUID branchId, UUID ingredientId, Pageable pageable) {
+        return inventoryRepository.findAllByBranch_IdAndIngredient_Id(branchId, ingredientId, pageable);
     }
 
     @Override

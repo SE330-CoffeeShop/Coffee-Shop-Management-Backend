@@ -16,5 +16,5 @@ public class OrderCreateRequestDTO {
     private UUID userId;
     private UUID shippingAddressId;
     private UUID paymentMethodId;
-    private UUID cartId;
+    private UUID branchId;
 }

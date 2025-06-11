@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,6 +17,9 @@ import java.util.UUID;
 public interface BranchRepository extends JpaRepository<Branch, UUID> {
     @Override
     Page<Branch> findAll(Pageable pageable);
+
+    @Override
+    List<Branch> findAll();
 
     // Case 1: Filter by branch and year
     @Query("SELECT COALESCE(SUM(o.orderTotalCost), 0) FROM Order o " +

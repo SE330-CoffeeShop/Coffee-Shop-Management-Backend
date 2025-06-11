@@ -45,6 +45,16 @@ public class CreateNotiContentHelper {
                 orderId.toString().substring(0, 8));
     }
 
+    public static String orderDeliveringContent(UUID orderId) {
+        return String.format("Đơn hàng #%s của bạn đã hoàn thành và đang được giao. Vui lòng chờ trong giây lát.",
+                orderId.toString().substring(0, 8));
+    }
+
+    public static String orderDeliveredContent(UUID orderId) {
+        return String.format("Đơn hàng #%s của bạn đã được giao thành công. Cảm ơn bạn đã đặt hàng tại BCoffee!",
+                orderId.toString().substring(0, 8));
+    }
+
     // DISCOUNT notification content methods
 
     public static String createDiscountForManager(String discountName) {
