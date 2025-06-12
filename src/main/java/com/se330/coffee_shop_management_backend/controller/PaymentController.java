@@ -43,7 +43,7 @@ public class PaymentController {
         this.orderPaymentService = orderPaymentService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/detail/{id}")
     @Operation(
             summary = "Get payment detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -292,5 +292,29 @@ public class PaymentController {
                         )
                 )
         );
+    }
+
+
+    @GetMapping("/cancel")
+    public ResponseEntity<SingleResponse<String>> paypalCancel(String orderId) {
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Paypal payment cancelled",
+                        "Payment cancelled for order ID: " + orderId
+                )
+        );
+    }
+
+    @GetMapping("/success")
+    public ResponseEntity<?> paypalSuccess(
+            @RequestParam("paymentId") String paymentId,
+            @RequestParam(value = "PayerID", required = false) String payerId) {
+
+        // Handle the PayPal success callback
+        OrderPayment payment = orderPaymentService.executePaypalPayment(paymentId, payerId);
+
+        // Return appropriate response or redirect
+        return ResponseEntity.ok("Success");
     }
 }

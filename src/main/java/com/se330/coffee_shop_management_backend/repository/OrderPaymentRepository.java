@@ -12,4 +12,6 @@ import java.util.UUID;
 @Repository
 public interface OrderPaymentRepository extends JpaRepository<OrderPayment, UUID>, JpaSpecificationExecutor<OrderPayment> {
     Page<OrderPayment> findAllByOrder_User_Id(UUID orderUserId, Pageable pageable);
+
+    OrderPayment findByTransactionId(String transactionId);
 }
