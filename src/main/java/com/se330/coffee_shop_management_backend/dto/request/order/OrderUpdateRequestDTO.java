@@ -15,5 +15,4 @@ public class OrderUpdateRequestDTO {
     private UUID userId;
     private UUID branchId;
     private UUID shippingAddressId;
-    private UUID paymentMethodId;
 }

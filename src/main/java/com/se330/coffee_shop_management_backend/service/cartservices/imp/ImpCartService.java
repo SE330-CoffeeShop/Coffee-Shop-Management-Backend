@@ -118,7 +118,6 @@ public class ImpCartService implements ICartService {
     @Override
     @Transactional
     public Cart addCartDetail(UUID userId, CartDetailCreateRequestDTO cartDetailCreateRequestDTO) {
-
         Cart existingCart = null;
 
         if (!cartRepository.existsByUser_Id(userId))
@@ -137,20 +136,26 @@ public class ImpCartService implements ICartService {
         ProductVariant existingProductVariant = productVariantRepository.findById(cartDetailCreateRequestDTO.getVariantId())
                 .orElseThrow(() -> new IllegalArgumentException("Product variant not found"));
 
-        cartDetailRepository.save(
-                CartDetail.builder()
-                        .cart(existingCart)
-                        .productVariant(existingProductVariant)
-                        .cartDetailQuantity(cartDetailCreateRequestDTO.getCartDetailQuantity())
-                        .cartDetailUnitPrice(cartDetailCreateRequestDTO.getCartDetailUnitPrice())
-                        .cartDetailDiscountCost(BigDecimal.ZERO)
-                        .cartDetailUnitPriceAfterDiscount(cartDetailCreateRequestDTO.getCartDetailUnitPrice())
-                        .build()
-        );
+        // Tạo CartDetail mới
+        CartDetail newCartDetail = CartDetail.builder()
+                .cart(existingCart)
+                .productVariant(existingProductVariant)
+                .cartDetailQuantity(cartDetailCreateRequestDTO.getCartDetailQuantity())
+                .cartDetailUnitPrice(cartDetailCreateRequestDTO.getCartDetailUnitPrice())
+                .cartDetailDiscountCost(BigDecimal.ZERO)
+                .cartDetailUnitPriceAfterDiscount(cartDetailCreateRequestDTO.getCartDetailUnitPrice())
+                .build();
+
+        // Lưu CartDetail vào database
+        newCartDetail = cartDetailRepository.save(newCartDetail);
+
+        // Thêm CartDetail vào danh sách trong Cart (quan trọng)
+        existingCart.getCartDetails().add(newCartDetail);
 
         calculateCartTotalCost(existingCart);
 
-        return cartRepository.findById(existingCart.getId()).orElseThrow();
+        // Lưu Cart sau khi cập nhật
+        return cartRepository.save(existingCart);
     }
 
     @Override
@@ -206,18 +211,24 @@ public class ImpCartService implements ICartService {
 
 
 
-    @Override
     @Transactional
     public Cart clearCart(UUID userId) {
-        Cart existingCart = cartRepository.findByUser_Id(userId);
-        existingCart.setCartDetails(null);
-        cartDetailRepository.deleteAllByCart_Id(existingCart.getId());
+        Cart cart = cartRepository.findByUser_Id(userId);
 
-        existingCart.setCartTotalCost(BigDecimal.ZERO);
-        existingCart.setCartDiscountCost(BigDecimal.ZERO);
-        existingCart.setCartTotalCostAfterDiscount(BigDecimal.ZERO);
+        if (cart == null) {
+            return getCartByUserId(userId);
+        }
 
-        return cartRepository.save(existingCart);
+        // Xóa tất cả cart details thông qua việc clear collection
+        cart.getCartDetails().clear();
+
+        // Cập nhật lại giá trị giỏ hàng
+        cart.setCartTotalCost(BigDecimal.ZERO);
+        cart.setCartDiscountCost(BigDecimal.ZERO);
+        cart.setCartTotalCostAfterDiscount(BigDecimal.ZERO);
+
+        // Lưu giỏ hàng đã cập nhật
+        return cartRepository.save(cart);
     }
 
     @Transactional

@@ -48,7 +48,6 @@ public class OrderResponseDTO {
     private String orderTrackingNumber;
 
     private String employeeId;
-    private String paymentMethodId;
     private String userId;
     private String shippingAddressId;
 
@@ -64,7 +63,6 @@ public class OrderResponseDTO {
                 .orderStatus(order.getOrderStatus().getValue())
                 .orderTrackingNumber(order.getOrderTrackingNumber())
                 .employeeId(order.getEmployee() != null ? order.getEmployee().getId().toString() : null)
-                .paymentMethodId(order.getPaymentMethod() != null ? order.getPaymentMethod().getId().toString() : null)
                 .userId(order.getUser() != null ? order.getUser().getId().toString() : null)
                 .shippingAddressId(order.getShippingAddress() != null ? order.getShippingAddress().getId().toString() : null)
                 .build();

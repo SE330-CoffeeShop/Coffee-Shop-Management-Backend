@@ -1,4 +1,4 @@
-package com.se330.coffee_shop_management_backend.dto.response.paymentmethod;
+package com.se330.coffee_shop_management_backend.dto.response.payment;
 
 import com.se330.coffee_shop_management_backend.entity.PaymentMethods;
 import lombok.AllArgsConstructor;
@@ -16,20 +16,18 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class PaymentMethodResponseDTO {
     private String paymentMethodId;
-    private String methodType;
-    private String methodDetails;
-    private boolean methodIsDefault;
-    private String userId;
+    private String paymentMethodName;
+    private String paymentMethodDescription;
+    private boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public static PaymentMethodResponseDTO convert(PaymentMethods paymentMethod) {
         return PaymentMethodResponseDTO.builder()
                 .paymentMethodId(paymentMethod.getId().toString())
-                .methodType(paymentMethod.getMethodType())
-                .methodDetails(paymentMethod.getMethodDetails())
-                .methodIsDefault(paymentMethod.isMethodIsDefault())
-                .userId(paymentMethod.getUser() != null ? paymentMethod.getUser().getId().toString() : null)
+                .paymentMethodName(paymentMethod.getPaymentMethodName().getValue())
+                .paymentMethodDescription(paymentMethod.getPaymentMethodDescription())
+                .isActive(paymentMethod.isActive())
                 .createdAt(paymentMethod.getCreatedAt())
                 .updatedAt(paymentMethod.getUpdatedAt())
                 .build();

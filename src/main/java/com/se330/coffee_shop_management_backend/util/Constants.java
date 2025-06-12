@@ -241,4 +241,41 @@ public final class Constants {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid day of week name: %s", name)));
         }
     }
+
+    @Getter
+    @AllArgsConstructor
+    public enum PaymentMethodEnum {
+        CASH("TIỀN MẶT"),
+        PAYPAL("PAYPAL"),
+        VNPAY("VN PAY"),
+        MOMO("MOMO"),
+        ZALOPAY("ZALO PAY"),;
+
+        private final String value;
+
+        public static PaymentMethodEnum get(final String name) {
+            return Stream.of(PaymentMethodEnum.values())
+                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid payment method name: %s", name)));
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public enum PaymentStatusEnum {
+        PENDING("ĐANG CHỜ"),
+        COMPLETED("HOÀN TẤT"),
+        FAILED("THẤT BẠI"),
+        REFUNDED("ĐÃ HOÀN TIỀN"),;
+
+        private final String value;
+
+        public static PaymentStatusEnum get(final String name) {
+            return Stream.of(PaymentStatusEnum.values())
+                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid payment status name: %s", name)));
+        }
+    }
 }
