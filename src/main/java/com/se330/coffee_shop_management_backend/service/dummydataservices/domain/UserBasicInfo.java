@@ -219,70 +219,41 @@ public class UserBasicInfo {
     private void createPaymentMethods() {
         log.info("Creating payment methods...");
 
-        // Get only CUSTOMER users
-        List<User> customerUsers = userRepository.findAllByRoleName(Constants.RoleEnum.CUSTOMER);
+        List<PaymentMethods> methods = new ArrayList<>();
 
-        if (customerUsers.isEmpty()) {
-            log.error("Cannot create payment methods: No CUSTOMER users found");
-            return;
-        }
+        // Create payment methods using the enum values
+        methods.add(PaymentMethods.builder()
+                .paymentMethodName(Constants.PaymentMethodEnum.CASH)
+                .paymentMethodDescription("Thanh toán bằng tiền mặt tại quầy hoặc khi nhận hàng")
+                .isActive(true)
+                .build());
 
-        List<PaymentMethods> paymentMethods = new ArrayList<>();
+        methods.add(PaymentMethods.builder()
+                .paymentMethodName(Constants.PaymentMethodEnum.PAYPAL)
+                .paymentMethodDescription("Thanh toán trực tuyến qua cổng PayPal")
+                .isActive(false)
+                .build());
 
-        // Vietnamese banks
-        String[] banks = {
-                "Vietcombank", "BIDV", "VPBank", "Techcombank", "MB Bank",
-                "ACB", "Sacombank", "VIB", "TPBank", "HDBank"
-        };
+        methods.add(PaymentMethods.builder()
+                .paymentMethodName(Constants.PaymentMethodEnum.VNPAY)
+                .paymentMethodDescription("Thanh toán qua ví điện tử VN Pay")
+                .isActive(true)
+                .build());
 
-        // Payment method types with Vietnamese names
-        String[][] methodTypes = {
-                {"Thẻ tín dụng", "VISA", "Mastercard", "JCB"},
-                {"Thẻ ghi nợ", "NAPAS", "Visa Debit", "ATM"},
-                {"Ví điện tử", "Momo", "ZaloPay", "VNPay", "ShopeePay"}
-        };
+        methods.add(PaymentMethods.builder()
+                .paymentMethodName(Constants.PaymentMethodEnum.MOMO)
+                .paymentMethodDescription("Thanh toán qua ví điện tử MoMo")
+                .isActive(false)
+                .build());
 
-        // Creating 1 cash method (default method)
-        PaymentMethods cashMethod = PaymentMethods.builder()
-                .methodType("Tiền mặt")
-                .methodDetails("Thanh toán khi nhận hàng")
-                .methodIsDefault(true)
-                .user(null) // Cash is a global payment method, not tied to a user
-                .build();
+        methods.add(PaymentMethods.builder()
+                .paymentMethodName(Constants.PaymentMethodEnum.ZALOPAY)
+                .paymentMethodDescription("Thanh toán qua ví điện tử Zalo Pay")
+                .isActive(false)
+                .build());
 
-        paymentMethods.add(cashMethod);
-
-        // Create 3 payment methods for each customer (30 total if we have 10 customers)
-        for (User customer : customerUsers) {
-            // For each customer, create one payment method of each type: credit card, debit card, e-wallet
-            for (int typeIdx = 0; typeIdx < methodTypes.length; typeIdx++) {
-                String methodType = methodTypes[typeIdx][0];
-                String provider = methodTypes[typeIdx][1 + (customerUsers.indexOf(customer) % (methodTypes[typeIdx].length - 1))];
-                String bank = banks[customerUsers.indexOf(customer) % banks.length];
-
-                // Format details based on type
-                String details;
-                if (typeIdx == 0) { // Credit card
-                    details = provider + " **** **** **** " + (1000 + (customerUsers.indexOf(customer) * 731) % 9000);
-                } else if (typeIdx == 1) { // Debit card
-                    details = bank + " - " + provider + " **** " + (1000 + (customerUsers.indexOf(customer) * 157) % 9000);
-                } else { // E-wallet
-                    details = provider + " - " + customer.getEmail();
-                }
-
-                PaymentMethods method = PaymentMethods.builder()
-                        .methodType(methodType)
-                        .methodDetails(details)
-                        .methodIsDefault(typeIdx == 0) // Make credit card the default for each user
-                        .user(customer)
-                        .build();
-
-                paymentMethods.add(method);
-            }
-        }
-
-        paymentMethodsRepository.saveAll(paymentMethods);
-        log.info("Created {} payment methods", paymentMethods.size());
+        paymentMethodsRepository.saveAll(methods);
+        log.info("Created {} payment methods", methods.size());
     }
 
     private String getRandomDigits() {

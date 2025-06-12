@@ -1,13 +1,16 @@
 package com.se330.coffee_shop_management_backend.controller;
 
-import com.se330.coffee_shop_management_backend.dto.request.paymentmethod.PaymentMethodCreateRequestDTO;
-import com.se330.coffee_shop_management_backend.dto.request.paymentmethod.PaymentMethodUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.payment.OrderPaymentCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
-import com.se330.coffee_shop_management_backend.dto.response.paymentmethod.PaymentMethodResponseDTO;
+import com.se330.coffee_shop_management_backend.dto.response.payment.OrderPaymentResponseDTO;
+import com.se330.coffee_shop_management_backend.dto.response.payment.PaymentMethodResponseDTO;
+import com.se330.coffee_shop_management_backend.entity.OrderPayment;
 import com.se330.coffee_shop_management_backend.entity.PaymentMethods;
-import com.se330.coffee_shop_management_backend.service.paymentmethodservices.IPaymentMethodService;
+import com.se330.coffee_shop_management_backend.service.paymentservices.IOrderPaymentService;
+import com.se330.coffee_shop_management_backend.service.paymentservices.IPaymentMethodService;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -27,23 +29,28 @@ import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_S
 import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.createPageable;
 
 @RestController
-@RequestMapping("/payment-method")
-public class PaymentMethodController {
+@RequestMapping("/payment")
+public class PaymentController {
 
     private final IPaymentMethodService paymentMethodService;
+    private final IOrderPaymentService orderPaymentService;
 
-    public PaymentMethodController(IPaymentMethodService paymentMethodService) {
+    public PaymentController(
+            IPaymentMethodService paymentMethodService,
+            IOrderPaymentService orderPaymentService
+    ){
         this.paymentMethodService = paymentMethodService;
+        this.orderPaymentService = orderPaymentService;
     }
 
     @GetMapping("/{id}")
     @Operation(
-            summary = "Get payment method detail",
+            summary = "Get payment detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved payment method",
+                            description = "Successfully retrieved payment",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = SingleResponse.class)
@@ -59,7 +66,7 @@ public class PaymentMethodController {
                     ),
                     @ApiResponse(
                             responseCode = "404",
-                            description = "Payment method not found",
+                            description = "Payment not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -72,21 +79,20 @@ public class PaymentMethodController {
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
-                        "Payment method retrieved successfully",
+                        "Payment retrieved successfully",
                         paymentMethod
                 )
         );
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
-            summary = "Get all payment methods with pagination",
+            summary = "Get all payments with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved payment method list",
+                            description = "Successfully retrieved payment list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
@@ -107,7 +113,7 @@ public class PaymentMethodController {
         return ResponseEntity.ok(
                 new PageResponse<>(
                         HttpStatus.OK.value(),
-                        "Payment methods retrieved successfully",
+                        "Payments retrieved successfully",
                         PaymentMethodResponseDTO.convert(paymentMethodPage.getContent()),
                         new PageResponse.PagingResponse(
                                 paymentMethodPage.getNumber(),
@@ -119,30 +125,22 @@ public class PaymentMethodController {
         );
     }
 
-    @GetMapping("/user/{userId}")
+    @PostMapping("/order")
     @Operation(
-            summary = "Get all payment methods by user ID with pagination",
+            summary = "Create order payment",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
-                            responseCode = "200",
-                            description = "Successfully retrieved payment methods for user",
+                            responseCode = "201",
+                            description = "Order payment created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PageResponse.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Invalid user ID format",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "User not found",
+                            description = "Invalid request data",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -150,8 +148,79 @@ public class PaymentMethodController {
                     )
             }
     )
-    public ResponseEntity<PageResponse<PaymentMethodResponseDTO>> findAllPaymentMethodsByUserId(
-            @PathVariable UUID userId,
+    public ResponseEntity<SingleResponse<OrderPaymentResponseDTO>> createOrderPayment(
+            @RequestBody OrderPaymentCreateRequestDTO orderPaymentCreateRequestDTO) {
+        OrderPayment orderPayment = orderPaymentService.createOrderPayment(orderPaymentCreateRequestDTO);
+        return new ResponseEntity<>(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Order payment created successfully",
+                        OrderPaymentResponseDTO.convert(orderPayment)
+                ),
+                HttpStatus.CREATED
+        );
+    }
+
+    @PatchMapping("/order/{id}/status")
+    @Operation(
+            summary = "Update order payment status",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Order payment status updated successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid ID format or status",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Order payment not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<OrderPaymentResponseDTO>> updateOrderPaymentStatus(
+            @PathVariable UUID id,
+            @RequestParam Constants.PaymentStatusEnum status) {
+        OrderPayment orderPayment = orderPaymentService.updateOrderPaymentStatus(id, status);
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Order payment status updated successfully",
+                        OrderPaymentResponseDTO.convert(orderPayment)
+                )
+        );
+    }
+
+    @GetMapping("/order/all")
+    @Operation(
+            summary = "Get all order payments with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved order payment list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<OrderPaymentResponseDTO>> findAllOrderPayments(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -159,81 +228,39 @@ public class PaymentMethodController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<PaymentMethods> paymentMethodPage = paymentMethodService.findAllPaymentMethodsByUserId(userId, pageable);
+        Page<OrderPayment> orderPaymentPage = orderPaymentService.findAllOrderPayments(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
                         HttpStatus.OK.value(),
-                        "User payment methods retrieved successfully",
-                        PaymentMethodResponseDTO.convert(paymentMethodPage.getContent()),
+                        "Order payments retrieved successfully",
+                        OrderPaymentResponseDTO.convert(orderPaymentPage.getContent()),
                         new PageResponse.PagingResponse(
-                                paymentMethodPage.getNumber(),
-                                paymentMethodPage.getSize(),
-                                paymentMethodPage.getTotalElements(),
-                                paymentMethodPage.getTotalPages()
+                                orderPaymentPage.getNumber(),
+                                orderPaymentPage.getSize(),
+                                orderPaymentPage.getTotalElements(),
+                                orderPaymentPage.getTotalPages()
                         )
                 )
         );
     }
 
-    @PostMapping("/")
+    @GetMapping("/order/customer/{customerId}")
     @Operation(
-            summary = "Create new payment method",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "201",
-                            description = "Payment method created successfully",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = SingleResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
-    public ResponseEntity<SingleResponse<PaymentMethodResponseDTO>> createPaymentMethod(@RequestBody PaymentMethodCreateRequestDTO paymentMethodCreateRequestDTO) {
-        PaymentMethodResponseDTO paymentMethod = PaymentMethodResponseDTO.convert(paymentMethodService.createPaymentMethod(paymentMethodCreateRequestDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).body(
-                new SingleResponse<>(
-                        HttpStatus.CREATED.value(),
-                        "Payment method created successfully",
-                        paymentMethod
-                )
-        );
-    }
-
-    @PatchMapping("/")
-    @Operation(
-            summary = "Update payment method",
+            summary = "Get all order payments for a customer with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Payment method updated successfully",
+                            description = "Successfully retrieved customer order payment list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = SingleResponse.class)
+                                    schema = @Schema(implementation = PageResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Payment method not found",
+                            description = "Invalid customer ID format",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -241,38 +268,29 @@ public class PaymentMethodController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<PaymentMethodResponseDTO>> updatePaymentMethod(@RequestBody PaymentMethodUpdateRequestDTO paymentMethodUpdateRequestDTO) {
-        PaymentMethodResponseDTO paymentMethod = PaymentMethodResponseDTO.convert(paymentMethodService.updatePaymentMethod(paymentMethodUpdateRequestDTO));
+    public ResponseEntity<PageResponse<OrderPaymentResponseDTO>> findAllOrderPaymentsByCustomerId(
+            @PathVariable UUID customerId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<OrderPayment> orderPaymentPage = orderPaymentService.findAllOrderPaymentsByCustomerId(customerId, pageable);
+
         return ResponseEntity.ok(
-                new SingleResponse<>(
+                new PageResponse<>(
                         HttpStatus.OK.value(),
-                        "Payment method updated successfully",
-                        paymentMethod
+                        "Customer order payments retrieved successfully",
+                        OrderPaymentResponseDTO.convert(orderPaymentPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                orderPaymentPage.getNumber(),
+                                orderPaymentPage.getSize(),
+                                orderPaymentPage.getTotalElements(),
+                                orderPaymentPage.getTotalPages()
+                        )
                 )
         );
-    }
-
-    @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Delete payment method",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "204",
-                            description = "Payment method deleted successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Payment method not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
-    public ResponseEntity<Void> deletePaymentMethod(@PathVariable UUID id) {
-        paymentMethodService.deletePaymentMethod(id);
-        return ResponseEntity.noContent().build();
     }
 }

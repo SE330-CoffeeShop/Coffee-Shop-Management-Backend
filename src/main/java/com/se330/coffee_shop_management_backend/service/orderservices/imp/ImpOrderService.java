@@ -4,16 +4,19 @@ import com.se330.coffee_shop_management_backend.dto.request.notification.Notific
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.payment.OrderPaymentCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
+import com.se330.coffee_shop_management_backend.service.paymentservices.IOrderPaymentService;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import com.se330.coffee_shop_management_backend.util.CreateTrackingNumber;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,11 +28,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class ImpOrderService implements IOrderService {
 
     private final OrderRepository orderRepository;
     private final EmployeeRepository employeeRepository;
     private final PaymentMethodsRepository paymentMethodsRepository;
+    private final IOrderPaymentService orderPaymentService;
     private final UserRepository userRepository;
     private final ShippingAddressesRepository shippingAddressesRepository;
     private final IOrderDetailService orderDetailService;
@@ -39,31 +44,6 @@ public class ImpOrderService implements IOrderService {
     private final BranchRepository branchRepository;
     private final INotificationService notificationService;
 
-    public ImpOrderService(
-            OrderRepository orderRepository,
-            EmployeeRepository employeeRepository,
-            PaymentMethodsRepository paymentMethodsRepository,
-            UserRepository userRepository,
-            ShippingAddressesRepository shippingAddressesRepository,
-            OrderDetailRepository orderDetailRepository,
-            IOrderDetailService orderDetailService,
-            IDiscountService discountService,
-            BranchRepository branchRepository,
-            CartRepository cartRepository,
-            INotificationService notificationService
-    ) {
-        this.orderRepository = orderRepository;
-        this.employeeRepository = employeeRepository;
-        this.paymentMethodsRepository = paymentMethodsRepository;
-        this.userRepository = userRepository;
-        this.shippingAddressesRepository = shippingAddressesRepository;
-        this.orderDetailService = orderDetailService;
-        this.orderDetailRepository = orderDetailRepository;
-        this.discountService = discountService;
-        this.cartRepository = cartRepository;
-        this.notificationService = notificationService;
-        this.branchRepository = branchRepository;
-    }
 
     @Override
     public Order findByIdOrder(UUID id) {
@@ -142,7 +122,6 @@ public class ImpOrderService implements IOrderService {
                     .employee(existingEmployee)
                     .orderStatus(orderCreateRequestDTO.getOrderStatus())
                     .orderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"))
-                    .paymentMethod(existingPaymentMethod)
                     .user(existingUser)
                     .shippingAddress(existingShippingAddress)
                     .orderTotalCost(BigDecimal.ZERO)
@@ -210,16 +189,25 @@ public class ImpOrderService implements IOrderService {
                             .build());
         }
 
-        return orderRepository.findById(newOrder.getId()).orElseThrow();
+        Order finalOrder = orderRepository.findById(newOrder.getId()).orElseThrow();
+
+        // now create order payment
+        orderPaymentService.createOrderPayment(
+                OrderPaymentCreateRequestDTO.builder()
+                        .orderId(finalOrder.getId())
+                        .paymentMethodId(orderCreateRequestDTO.getPaymentMethodId())
+                        .amount(finalOrder.getOrderTotalCostAfterDiscount())
+                        .build()
+        );
+
+        return finalOrder;
     }
+
 
     @Override
     public Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO) {
         Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id:" + orderUpdateRequestDTO.getOrderId()));
-
-        PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(existingOrder.getPaymentMethod().getId())
-                .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + existingOrder.getPaymentMethod().getId()));
 
         User existingUser = userRepository.findById(orderUpdateRequestDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderUpdateRequestDTO.getUserId()));
@@ -291,7 +279,6 @@ public class ImpOrderService implements IOrderService {
                     .build());
         }
 
-        existingOrder.setPaymentMethod(existingPaymentMethod);
         existingOrder.setUser(existingUser);
         existingOrder.setShippingAddress(existingShippingAddress);
         existingOrder.setOrderStatus(orderUpdateRequestDTO.getOrderStatus());
@@ -312,10 +299,6 @@ public class ImpOrderService implements IOrderService {
 
         if (existingOrder.getShippingAddress() != null) {
             existingOrder.getShippingAddress().getOrders().remove(existingOrder);
-        }
-
-        if (existingOrder.getPaymentMethod() != null) {
-            existingOrder.setPaymentMethod(null);
         }
 
         if (existingOrder.getEmployee() != null) {

@@ -51,15 +51,8 @@ public class Order extends AbstractBaseEntity {
     )
     private Employee employee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "payment_method_id",
-            foreignKey = @ForeignKey(
-                    name = "fk_order_payment_method",
-                    foreignKeyDefinition = "FOREIGN KEY (payment_method_id) REFERENCES payment_methods (payment_method_id) ON DELETE CASCADE"
-            )
-    )
-    private PaymentMethods paymentMethod;
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private OrderPayment orderPayment;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(

@@ -37,6 +37,7 @@ public class Logistics {
     private final SupplierRepository supplierRepository;
     private final FavoriteDrinkRepository favoriteDrinkRepository;
     private final BranchRepository branchRepository;
+    private final OrderPaymentRepository orderPaymentRepository;
 
     @Transactional
     public void create() {
@@ -54,54 +55,24 @@ public class Logistics {
         List<Employee> employees = employeeRepository.findAll();
         List<ProductVariant> productVariants = productVariantRepository.findAll();
         List<ShippingAddresses> shippingAddresses = shippingAddressesRepository.findAll();
-        PaymentMethods cashPaymentMethod = paymentMethodsRepository.findByMethodType("Tiền mặt");
-        List<PaymentMethods> userPaymentMethods = paymentMethodsRepository.findAllByUserIsNotNull();
+        List<PaymentMethods> paymentMethods = paymentMethodsRepository.findAll();
+        List<Branch> branches = branchRepository.findAll();
 
-        if (customers.isEmpty() || employees.isEmpty() || productVariants.isEmpty()) {
+        if (customers.isEmpty() || employees.isEmpty() || productVariants.isEmpty() ||
+                paymentMethods.isEmpty() || branches.isEmpty()) {
             log.error("Cannot create orders: Missing required data");
             return;
         }
 
         Random random = new Random();
         List<Order> orders = new ArrayList<>();
-        int orderCount = 10000;
+        int orderCount = 50; // Reduced for testing
 
         // Create orders
         for (int i = 0; i < orderCount; i++) {
             User customer = customers.get(random.nextInt(customers.size()));
             Employee employee = employees.get(random.nextInt(employees.size()));
-
-            // Select payment method
-            PaymentMethods paymentMethod;
-            boolean isOnline = random.nextBoolean();
-
-            if (isOnline) {
-                // Filter payment methods for this customer
-                List<PaymentMethods> customerPaymentMethods = userPaymentMethods.stream()
-                        .filter(pm -> pm.getUser() != null && pm.getUser().getId().equals(customer.getId()))
-                        .toList();
-
-                if (!customerPaymentMethods.isEmpty()) {
-                    paymentMethod = customerPaymentMethods.get(random.nextInt(customerPaymentMethods.size()));
-                } else {
-                    paymentMethod = cashPaymentMethod;
-                    isOnline = false;
-                }
-            } else {
-                paymentMethod = cashPaymentMethod;
-            }
-
-            // Select shipping address for online orders
-            ShippingAddresses shippingAddress = null;
-            if (isOnline) {
-                List<ShippingAddresses> customerAddresses = shippingAddresses.stream()
-                        .filter(addr -> addr.getUser() != null && addr.getUser().getId().equals(customer.getId()))
-                        .toList();
-
-                if (!customerAddresses.isEmpty()) {
-                    shippingAddress = customerAddresses.get(random.nextInt(customerAddresses.size()));
-                }
-            }
+            Branch branch = branches.get(random.nextInt(branches.size()));
 
             // Generate order status with realistic distribution
             Constants.OrderStatusEnum status;
@@ -116,6 +87,19 @@ public class Logistics {
                 status = Constants.OrderStatusEnum.CANCELLED;
             }
 
+            // Select shipping address for online orders
+            boolean isOnline = random.nextBoolean();
+            ShippingAddresses shippingAddress = null;
+            if (isOnline) {
+                List<ShippingAddresses> customerAddresses = shippingAddresses.stream()
+                        .filter(addr -> addr.getUser() != null && addr.getUser().getId().equals(customer.getId()))
+                        .toList();
+
+                if (!customerAddresses.isEmpty()) {
+                    shippingAddress = customerAddresses.get(random.nextInt(customerAddresses.size()));
+                }
+            }
+
             // Create order
             Order order = Order.builder()
                     .orderStatus(status)
@@ -125,7 +109,7 @@ public class Logistics {
                     .orderTotalCostAfterDiscount(BigDecimal.ZERO)
                     .user(customer)
                     .employee(employee)
-                    .paymentMethod(paymentMethod)
+                    .branch(branch)
                     .shippingAddress(shippingAddress)
                     .build();
 
@@ -135,7 +119,89 @@ public class Logistics {
         orderRepository.saveAll(orders);
         log.info("Created {} orders", orders.size());
 
+        // Create order details first to calculate totals
         createOrderDetails(orders, productVariants);
+
+        // Then create payment records with the calculated totals
+        createOrderPayments(orders, paymentMethods);
+    }
+
+    private void createOrderPayments(List<Order> orders, List<PaymentMethods> allPaymentMethods) {
+        log.info("Creating order payments...");
+
+        Random random = new Random();
+        List<OrderPayment> allPayments = new ArrayList<>();
+
+        // Filter for active payment methods
+        List<PaymentMethods> activePaymentMethods = allPaymentMethods.stream()
+                .filter(PaymentMethods::isActive)
+                .collect(Collectors.toList());
+
+        if (activePaymentMethods.isEmpty()) {
+            activePaymentMethods = allPaymentMethods; // Fallback if no active methods
+        }
+
+        String[] failureReasons = {
+                "Insufficient funds",
+                "Card declined",
+                "Network error during transaction",
+                "Payment gateway timeout",
+                "Invalid payment information"
+        };
+
+        for (Order order : orders) {
+            // Select payment method
+            PaymentMethods paymentMethod = activePaymentMethods.get(random.nextInt(activePaymentMethods.size()));
+
+            // Determine payment status based on order status
+            Constants.PaymentStatusEnum paymentStatus;
+
+            if (order.getOrderStatus() == Constants.OrderStatusEnum.CANCELLED) {
+                // For cancelled orders, payment could be FAILED or REFUNDED
+                paymentStatus = random.nextBoolean() ?
+                        Constants.PaymentStatusEnum.FAILED :
+                        Constants.PaymentStatusEnum.REFUNDED;
+            } else if (order.getOrderStatus() == Constants.OrderStatusEnum.COMPLETED ||
+                    order.getOrderStatus() == Constants.OrderStatusEnum.DELIVERED) {
+                // Completed orders have completed payments
+                paymentStatus = Constants.PaymentStatusEnum.COMPLETED;
+            } else if (order.getOrderStatus() == Constants.OrderStatusEnum.PENDING) {
+                // Pending orders have pending payments
+                paymentStatus = Constants.PaymentStatusEnum.PENDING;
+            } else {
+                // For processing/delivering orders, mostly completed payments with some pending
+                paymentStatus = random.nextInt(10) < 8 ?
+                        Constants.PaymentStatusEnum.COMPLETED :
+                        Constants.PaymentStatusEnum.PENDING;
+            }
+
+            // Create transaction ID for non-pending payments
+            String transactionId = null;
+            if (paymentStatus != Constants.PaymentStatusEnum.PENDING) {
+                transactionId = "TXN" + System.currentTimeMillis() + random.nextInt(10000);
+            }
+
+            // Add failure reason for failed payments
+            String failureReason = null;
+            if (paymentStatus == Constants.PaymentStatusEnum.FAILED) {
+                failureReason = failureReasons[random.nextInt(failureReasons.length)];
+            }
+
+            OrderPayment payment = OrderPayment.builder()
+                    .order(order)
+                    .paymentMethod(paymentMethod)
+                    .amount(order.getOrderTotalCostAfterDiscount())
+                    .status(paymentStatus)
+                    .transactionId(transactionId)
+                    .failureReason(failureReason)
+                    .build();
+
+            allPayments.add(payment);
+        }
+
+        // Save all payment records
+        orderPaymentRepository.saveAll(allPayments);
+        log.info("Created {} order payment records", allPayments.size());
     }
 
     private void createOrderDetails(List<Order> orders, List<ProductVariant> productVariants) {
