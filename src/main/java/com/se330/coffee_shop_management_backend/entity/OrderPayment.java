@@ -28,6 +28,9 @@ public class OrderPayment extends AbstractBaseEntity {
     @Column(name = "transaction_id")
     private String transactionId;
 
+    @Column(name = "paypal_approval_url")
+    private String paypalApprovalUrl;
+
     @Column(name = "failure_reason", columnDefinition = "text")
     private String failureReason;
 

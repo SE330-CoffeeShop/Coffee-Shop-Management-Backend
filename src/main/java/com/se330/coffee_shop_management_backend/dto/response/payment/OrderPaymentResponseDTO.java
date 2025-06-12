@@ -24,6 +24,7 @@ public class OrderPaymentResponseDTO {
     private String failureReason;
     private String orderId;
     private String paymentMethodId;
+    private String paypalApprovalUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -33,6 +34,7 @@ public class OrderPaymentResponseDTO {
                 .amount(orderPayment.getAmount())
                 .status(orderPayment.getStatus())
                 .transactionId(orderPayment.getTransactionId())
+                .paypalApprovalUrl(orderPayment.getPaypalApprovalUrl())
                 .failureReason(orderPayment.getFailureReason())
                 .orderId(orderPayment.getOrder() != null ? orderPayment.getOrder().getId().toString() : null)
                 .paymentMethodId(orderPayment.getPaymentMethod() != null ?

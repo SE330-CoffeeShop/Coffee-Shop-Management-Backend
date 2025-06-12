@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface IOrderPaymentService {
     OrderPayment createOrderPayment(OrderPaymentCreateRequestDTO orderPaymentCreateRequestDTO);
+    OrderPayment executePaypalPayment(String paymentId, String payerId);
     OrderPayment updateOrderPaymentStatus(UUID orderPaymentId, Constants.PaymentStatusEnum newStatus);
     Page<OrderPayment> findAllOrderPayments(Pageable pageable);
     Page<OrderPayment> findAllOrderPaymentsByCustomerId(UUID customerId, Pageable pageable);

@@ -38,6 +38,8 @@ public class Logistics {
     private final FavoriteDrinkRepository favoriteDrinkRepository;
     private final BranchRepository branchRepository;
     private final OrderPaymentRepository orderPaymentRepository;
+    private final CartRepository cartRepository;
+    private final CartDetailRepository cartDetailRepository;
 
     @Transactional
     public void create() {
@@ -45,6 +47,7 @@ public class Logistics {
         createTransfer();
         createInvoice();
         createFavoriteDrink();
+        createCart();
     }
 
     private void createOrders() {
@@ -484,5 +487,104 @@ public class Logistics {
 
         favoriteDrinkRepository.saveAll(favoriteDrinks);
         log.info("Created {} favorite drinks for {} users", favoriteDrinks.size(), customers.size());
+    }
+
+    private void createCart() {
+        log.info("Creating carts...");
+
+        // Get all necessary data
+        List<User> customers = userRepository.findAllByRoleName(Constants.RoleEnum.CUSTOMER);
+        List<ProductVariant> productVariants = productVariantRepository.findAll();
+
+        if (customers.isEmpty() || productVariants.isEmpty()) {
+            log.error("Cannot create carts: Missing required data");
+            return;
+        }
+
+        Random random = new Random();
+        List<Cart> carts = new ArrayList<>();
+
+        // Create one cart per customer (for a subset of customers)
+        for (User customer : customers) {
+
+            Cart cart = Cart.builder()
+                    .user(customer)
+                    .cartTotalCost(BigDecimal.ZERO) // Will be updated after adding items
+                    .cartDiscountCost(BigDecimal.ZERO)
+                    .cartTotalCostAfterDiscount(BigDecimal.ZERO)
+                    .cartDetails(new ArrayList<>())
+                    .build();
+
+            carts.add(cart);
+        }
+
+        cartRepository.saveAll(carts);
+        log.info("Created {} carts", carts.size());
+
+        // Create cart details for each cart
+        createCartDetails(carts, productVariants);
+    }
+
+    private void createCartDetails(List<Cart> carts, List<ProductVariant> productVariants) {
+        log.info("Creating cart details...");
+
+        Random random = new Random();
+        List<CartDetail> allCartDetails = new ArrayList<>();
+
+        for (Cart cart : carts) {
+            // Generate 1-5 items per cart
+            int itemCount = random.nextInt(10) + 1;
+            List<CartDetail> cartDetails = new ArrayList<>();
+            BigDecimal cartTotal = BigDecimal.ZERO;
+            BigDecimal cartDiscount = BigDecimal.ZERO;
+
+            // Create random unique items for this cart
+            List<ProductVariant> availableVariants = new ArrayList<>(productVariants);
+            for (int i = 0; i < itemCount && !availableVariants.isEmpty(); i++) {
+                int variantIndex = random.nextInt(availableVariants.size());
+                ProductVariant variant = availableVariants.get(variantIndex);
+                availableVariants.remove(variantIndex); // Ensure no duplicates
+
+                int quantity = random.nextInt(3) + 1; // 1-3 items
+                BigDecimal unitPrice = variant.getVariantPrice();
+
+                // Apply random discount (0-20%)
+                int discountPercent = random.nextInt(21);
+                BigDecimal discountAmount = unitPrice.multiply(BigDecimal.valueOf(discountPercent))
+                        .divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP);
+                BigDecimal unitPriceAfterDiscount = unitPrice.subtract(discountAmount);
+
+                CartDetail detail = CartDetail.builder()
+                        .cart(cart)
+                        .productVariant(variant)
+                        .cartDetailQuantity(quantity)
+                        .cartDetailUnitPrice(unitPrice)
+                        .cartDetailDiscountCost(discountAmount.multiply(BigDecimal.valueOf(quantity)))
+                        .cartDetailUnitPriceAfterDiscount(unitPriceAfterDiscount)
+                        .build();
+
+                cartDetails.add(detail);
+
+                // Update cart totals
+                BigDecimal itemTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
+                BigDecimal itemDiscount = discountAmount.multiply(BigDecimal.valueOf(quantity));
+
+                cartTotal = cartTotal.add(itemTotal);
+                cartDiscount = cartDiscount.add(itemDiscount);
+            }
+
+            // Update cart with calculated totals
+            cart.setCartTotalCost(cartTotal);
+            cart.setCartDiscountCost(cartDiscount);
+            cart.setCartTotalCostAfterDiscount(cartTotal.subtract(cartDiscount));
+            cart.setCartDetails(cartDetails);
+
+            allCartDetails.addAll(cartDetails);
+        }
+
+        cartDetailRepository.saveAll(allCartDetails);
+        cartRepository.saveAll(carts);
+
+        log.info("Created {} cart details across {} carts", allCartDetails.size(), carts.size());
     }
 }

@@ -129,3 +129,8 @@ firebase:
   credentials:
     file: ${FIREBASE_CREDENTIALS_FILE}
   project-id: ${FIREBASE_PROJECT_ID}
+
+paypal:
+  client-id: ${CLIENT_ID}
+  client-secret: ${SECRET_KEY}
+  mode: ${PAYPAL_MODE}
