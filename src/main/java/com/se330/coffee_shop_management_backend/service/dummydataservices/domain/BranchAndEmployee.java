@@ -93,6 +93,7 @@ public class BranchAndEmployee {
         }
 
         List<Employee> employees = new ArrayList<>();
+        List<User> referenceUsers = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
 
         // Create 5 managers (1 for each branch)
@@ -105,6 +106,9 @@ public class BranchAndEmployee {
                     .user(i < availableManagers.size() ? availableManagers.get(i) : null)
                     .build();
             employees.add(manager);
+            User referenceUser = availableManagers.get(i); // I FUCKING HATE JPA
+            referenceUser.setEmployee(manager);
+            referenceUsers.add(referenceUser);
         }
 
         // Create 30 regular employees distributed across branches
@@ -116,23 +120,28 @@ public class BranchAndEmployee {
                 "Phục vụ", "Thu ngân", "Pha chế", "Bếp", "Hậu cần"
         };
 
-        for (int i = 0; i < 30; i++) {
-            int branchIndex = i % 5;
+        for (int i = 0; i < availableUsers.size(); i++) {
+            int branchIndex = i % branches.size();
             int positionIndex = i % positions.length;
             int departmentIndex = i % departments.length;
-            int userIndex = i + 5;
+
+            User user = availableUsers.get(i);
 
             Employee employee = Employee.builder()
                     .employeePosition(positions[positionIndex])
                     .employeeDepartment(departments[departmentIndex])
                     .employeeHireDate(now.minusMonths((long) (i % 12) + 1))
                     .branch(branches.get(branchIndex))
-                    .user(userIndex < availableUsers.size() ? availableUsers.get(userIndex) : null)
+                    .user(user)
                     .build();
+
             employees.add(employee);
+            user.setEmployee(employee);
+            referenceUsers.add(user);
         }
 
         employeeRepository.saveAll(employees);
+        userRepository.saveAll(referenceUsers);
         log.info("Created {} employees", employees.size());
 
         updateBranchManagers();

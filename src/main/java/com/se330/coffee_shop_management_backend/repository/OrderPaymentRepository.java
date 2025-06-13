@@ -14,4 +14,6 @@ public interface OrderPaymentRepository extends JpaRepository<OrderPayment, UUID
     Page<OrderPayment> findAllByOrder_User_Id(UUID orderUserId, Pageable pageable);
 
     OrderPayment findByTransactionId(String transactionId);
+
+    OrderPayment findByOrder_Id(UUID orderId);
 }

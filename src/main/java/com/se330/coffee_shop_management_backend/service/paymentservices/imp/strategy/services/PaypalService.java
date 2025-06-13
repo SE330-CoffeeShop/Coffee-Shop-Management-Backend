@@ -1,4 +1,4 @@
-package com.se330.coffee_shop_management_backend.service.paymentservices.imp.other;
+package com.se330.coffee_shop_management_backend.service.paymentservices.imp.strategy.services;
 
 import com.paypal.api.payments.*;
 import com.paypal.base.rest.APIContext;

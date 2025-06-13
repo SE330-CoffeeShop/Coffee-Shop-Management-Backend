@@ -533,7 +533,7 @@ public class Logistics {
 
         for (Cart cart : carts) {
             // Generate 1-5 items per cart
-            int itemCount = random.nextInt(10) + 1;
+            int itemCount = random.nextInt(5) + 1;
             List<CartDetail> cartDetails = new ArrayList<>();
             BigDecimal cartTotal = BigDecimal.ZERO;
             BigDecimal cartDiscount = BigDecimal.ZERO;
