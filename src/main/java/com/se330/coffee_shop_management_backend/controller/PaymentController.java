@@ -43,9 +43,9 @@ public class PaymentController {
         this.orderPaymentService = orderPaymentService;
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/payment-method/detail/{id}")
     @Operation(
-            summary = "Get payment detail",
+            summary = "Get payment method detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
@@ -85,9 +85,9 @@ public class PaymentController {
         );
     }
 
-    @GetMapping("/all")
+    @GetMapping("/payment-method/all")
     @Operation(
-            summary = "Get all payments with pagination",
+            summary = "Get all payment methods with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
@@ -121,6 +121,56 @@ public class PaymentController {
                                 paymentMethodPage.getTotalElements(),
                                 paymentMethodPage.getTotalPages()
                         )
+                )
+        );
+    }
+
+    @GetMapping("/order/by-order/{orderId}")
+    @Operation(
+            summary = "Get order payment by order ID",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved order payment",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid order ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Order payment not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<OrderPaymentResponseDTO>> findByOrderId(@PathVariable UUID orderId) {
+        OrderPayment orderPayment = orderPaymentService.findByIdOrder(orderId);
+        if (orderPayment == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new SingleResponse<>(
+                            HttpStatus.NOT_FOUND.value(),
+                            "Order payment not found for order: " + orderId,
+                            null
+                    ));
+        }
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Order payment retrieved successfully",
+                        OrderPaymentResponseDTO.convert(orderPayment)
                 )
         );
     }
@@ -295,7 +345,7 @@ public class PaymentController {
     }
 
 
-    @GetMapping("/cancel")
+    @GetMapping("/paypal/cancel")
     public ResponseEntity<SingleResponse<String>> paypalCancel(String orderId) {
         return ResponseEntity.ok(
                 new SingleResponse<>(
@@ -306,7 +356,7 @@ public class PaymentController {
         );
     }
 
-    @GetMapping("/success")
+    @GetMapping("/paypal/success")
     public ResponseEntity<?> paypalSuccess(
             @RequestParam("paymentId") String paymentId,
             @RequestParam(value = "PayerID", required = false) String payerId) {

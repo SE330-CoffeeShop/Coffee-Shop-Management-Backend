@@ -14,4 +14,5 @@ public interface IOrderPaymentService {
     OrderPayment updateOrderPaymentStatus(UUID orderPaymentId, Constants.PaymentStatusEnum newStatus);
     Page<OrderPayment> findAllOrderPayments(Pageable pageable);
     Page<OrderPayment> findAllOrderPaymentsByCustomerId(UUID customerId, Pageable pageable);
+    OrderPayment findByIdOrder(UUID id);
 }

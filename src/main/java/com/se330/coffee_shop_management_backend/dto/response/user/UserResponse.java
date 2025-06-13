@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.dto.response.user;
 
 import com.se330.coffee_shop_management_backend.entity.User;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -94,13 +95,21 @@ public class UserResponse {
      * @return UserResponse
      */
     public static UserResponse convert(User user) {
+
+        String branchId = null;
+        if (user.getEmployee() == null && user.getRole().getName() == Constants.RoleEnum.EMPLOYEE) {
+            throw new IllegalArgumentException("How the fuck?");
+        }
+        else
+            branchId = user.getEmployee().getBranch().getId().toString();
+
         return UserResponse.builder()
             .id(user.getId().toString())
             .email(user.getEmail())
             .name(user.getName())
             .lastName(user.getLastName())
             .role(String.valueOf(user.getRole().getName()))
-            .branchId(user.getEmployee() != null ? String.valueOf(user.getEmployee().getBranch().getId()) : null)
+            .branchId(branchId)
             .emailVerifiedAt(user.getEmailVerifiedAt())
             .gender(user.getGender())
             .phoneNumber(user.getPhoneNumber())
