@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.payment.OrderPayment
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
+import com.se330.coffee_shop_management_backend.dto.response.payment.MomoIPNRequest;
 import com.se330.coffee_shop_management_backend.dto.response.payment.OrderPaymentResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.payment.PaymentMethodResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.OrderPayment;
@@ -11,6 +12,7 @@ import com.se330.coffee_shop_management_backend.entity.PaymentMethods;
 import com.se330.coffee_shop_management_backend.service.paymentservices.IOrderPaymentService;
 import com.se330.coffee_shop_management_backend.service.paymentservices.IPaymentMethodService;
 import com.se330.coffee_shop_management_backend.util.Constants;
+import feign.Body;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -366,5 +368,14 @@ public class PaymentController {
 
         // Return appropriate response or redirect
         return ResponseEntity.ok("Success");
+    }
+
+    @PostMapping("/momo/ipn")
+    public ResponseEntity<?> momoIpnRequest(@RequestBody MomoIPNRequest momoIPNRequest) {
+        // Process the payment
+        orderPaymentService.executeMomoPayment(momoIPNRequest);
+
+        // Return 204 No Content - no response body
+        return ResponseEntity.noContent().build();
     }
 }

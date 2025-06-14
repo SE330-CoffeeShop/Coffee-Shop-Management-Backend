@@ -5,6 +5,7 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaypalService {
@@ -62,6 +64,14 @@ public class PaypalService {
         payment.setId(paymentId);
         PaymentExecution paymentExecution = new PaymentExecution();
         paymentExecution.setPayerId(payerId);
-        return payment.execute(apiContext, paymentExecution);
+        Payment completePayment = null;
+        try {
+            // Thực hiện giao dịch
+            completePayment = payment.execute(apiContext, paymentExecution);
+        } catch (PayPalRESTException e) {
+            log.warn("Giao dịch Paypal thất bại: " + e.getMessage(), e);
+        }
+
+        return completePayment;
     }
 }

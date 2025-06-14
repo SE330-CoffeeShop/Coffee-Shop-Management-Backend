@@ -134,3 +134,12 @@ paypal:
   client-id: ${CLIENT_ID}
   client-secret: ${SECRET_KEY}
   mode: ${PAYPAL_MODE}
+
+momo:
+  partner-code: MOMO
+  return-url: ${SUCCESS_REDIRECT_URL}
+  end-point: https://test-payment.momo.vn/v2/gateway/api
+  ipn-url: http://localhost:3000/
+  access-key: F8BBA842ECF85
+  secret-key: K95186PE1waDMi640xX08PD3vg6EkVLz
+  request-type: captureWallet
