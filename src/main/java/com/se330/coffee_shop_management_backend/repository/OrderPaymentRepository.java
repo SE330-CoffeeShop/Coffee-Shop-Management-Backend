@@ -16,4 +16,6 @@ public interface OrderPaymentRepository extends JpaRepository<OrderPayment, UUID
     OrderPayment findByTransactionId(String transactionId);
 
     OrderPayment findByOrder_Id(UUID orderId);
+
+    OrderPayment findByPaypalPaymentId(String paypalPaymentId);
 }

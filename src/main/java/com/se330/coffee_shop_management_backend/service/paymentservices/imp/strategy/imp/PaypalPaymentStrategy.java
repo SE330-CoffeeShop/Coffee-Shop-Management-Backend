@@ -4,6 +4,7 @@ import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.RelatedResources;
 import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.PayPalRESTException;
+import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.payment.OrderPaymentCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Order;
 import com.se330.coffee_shop_management_backend.entity.OrderPayment;
@@ -64,7 +65,7 @@ public class PaypalPaymentStrategy implements PaymentStrategy {
                             .order(order)
                             .paypalApprovalUrl(redirectUrl)
                             .status(Constants.PaymentStatusEnum.PENDING)
-                            .transactionId(payment.getId())
+                            .paypalPaymentId(payment.getId())
                             .build()
             );
         } catch (PayPalRESTException e) {
@@ -84,42 +85,53 @@ public class PaypalPaymentStrategy implements PaymentStrategy {
     public OrderPayment executePayment(String paymentId, String payerId) {
         try {
             // Find the payment record by transaction ID
-            OrderPayment orderPayment = orderPaymentRepository.findByTransactionId(paymentId);
+            OrderPayment orderPayment = orderPaymentRepository.findByPaypalPaymentId(paymentId);
 
             if (orderPayment == null) {
-                throw new IllegalArgumentException("Payment not found with transaction ID: " + paymentId);
+                throw new IllegalArgumentException("Payment not found with paypal payment ID: " + paymentId);
             }
 
             // Execute the payment through PayPal
             Payment executedPayment = paypalService.executePayment(paymentId, payerId);
+            // Lấy mã giao dịch từ PayPal
+            String transactionId = null;
+            List<Transaction> transactions = executedPayment.getTransactions();
+
+            if (transactions != null && !transactions.isEmpty()) {
+                Transaction transaction = transactions.get(0); // Lấy giao dịch đầu tiên
+                List<RelatedResources> relatedResources = transaction.getRelatedResources();
+
+                if (relatedResources != null && !relatedResources.isEmpty()) {
+                    for (RelatedResources resource : relatedResources) {
+                        if (resource.getSale() != null) {
+                            transactionId = resource.getSale().getId(); // Lấy ID của sale
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (transactionId == null) {
+                throw new PayPalRESTException("Không tìm thấy transactionId");
+            }
+
+            orderPayment.setTransactionId(transactionId);
 
             // Update payment status based on PayPal response
             if ("approved".equals(executedPayment.getState())) {
                 orderPayment.setStatus(Constants.PaymentStatusEnum.COMPLETED);
-                String transactionId = null;
-                List<Transaction> transactions = executedPayment.getTransactions();
 
-                if (transactions != null && !transactions.isEmpty()) {
-                    Transaction transaction = transactions.get(0); // Lấy giao dịch đầu tiên
-                    List<RelatedResources> relatedResources = transaction.getRelatedResources();
-
-                    if (relatedResources != null && !relatedResources.isEmpty()) {
-                        for (RelatedResources resource : relatedResources) {
-                            if (resource.getSale() != null) {
-                                transactionId = resource.getSale().getId(); // Lấy ID của sale
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (transactionId == null) {
-                    throw new PayPalRESTException("Không tìm thấy transactionId");
-                }
-
-                orderPayment.setTransactionId(transactionId);
 
                 // TODO: send noti here
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.PAYMENT)
+                                .notificationContent("Thanh toán thành công cho đơn hàng " + orderPayment.getOrder().getId())
+                                .senderId(null)
+                                .receiverId(orderPayment.getOrder().getUser().getId())
+                                .isRead(false)
+                                .build()
+                );
             } else {
                 orderPayment.setStatus(Constants.PaymentStatusEnum.FAILED);
                 orderPayment.setFailureReason("Payment not approved: " + executedPayment.getState());
@@ -136,8 +148,17 @@ public class PaypalPaymentStrategy implements PaymentStrategy {
             }
 
             // TODO: send noti here
+            notificationService.createNotification(
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.PAYMENT)
+                            .notificationContent("Thanh toán thất bại cho đơn hàng với mã giao dịch " + paymentId)
+                            .senderId(null)
+                            .receiverId(orderPayment.getOrder().getUser().getId())
+                            .isRead(false)
+                            .build()
+            );
 
-            throw new RuntimeException("Failed to execute PayPal payment", e);
+            return null;
         }
     }
 }

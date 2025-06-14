@@ -219,6 +219,15 @@ public class Notifications {
                     default -> CreateNotiContentHelper.createWarehouseDeletedContentManager(warehouseName);
                 };
             }
+            case PAYMENT -> {
+                int choice = random.nextInt(4);
+                yield switch (choice) {
+                    case 0 -> CreateNotiContentHelper.createPaymentSuccessContent(randomId);
+                    case 1 -> CreateNotiContentHelper.createPaymentFailedContent(randomId, "Insufficient funds");
+                    case 2 -> CreateNotiContentHelper.createPaymentRefundedContent(randomId);
+                    default -> CreateNotiContentHelper.createPaymentPendingContent(randomId);
+                };
+            }
         };
     }
 }

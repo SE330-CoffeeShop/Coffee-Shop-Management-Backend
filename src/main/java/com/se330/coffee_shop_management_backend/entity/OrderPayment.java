@@ -30,6 +30,8 @@ public class OrderPayment extends AbstractBaseEntity {
 
     @Column(name = "paypal_approval_url")
     private String paypalApprovalUrl;
+    @Column(name = "paypal_payment_id")
+    private String paypalPaymentId;
 
     @Column(name = "momo_result_code")
     private int momoResultCode;

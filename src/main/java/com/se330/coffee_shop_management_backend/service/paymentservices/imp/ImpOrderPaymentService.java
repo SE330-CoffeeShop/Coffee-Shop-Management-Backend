@@ -85,7 +85,7 @@ public class ImpOrderPaymentService implements IOrderPaymentService {
     @Override
     @Transactional
     public OrderPayment executePaypalPayment(String paymentId, String payerId) {
-        OrderPayment orderPayment = orderPaymentRepository.findByTransactionId(paymentId);
+        OrderPayment orderPayment = orderPaymentRepository.findByPaypalPaymentId(paymentId);
         if (orderPayment == null) {
             throw new IllegalArgumentException("Payment not found with transaction ID: " + paymentId);
         }
