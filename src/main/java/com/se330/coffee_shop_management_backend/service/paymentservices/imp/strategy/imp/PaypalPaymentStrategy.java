@@ -1,6 +1,8 @@
 package com.se330.coffee_shop_management_backend.service.paymentservices.imp.strategy.imp;
 
 import com.paypal.api.payments.Payment;
+import com.paypal.api.payments.RelatedResources;
+import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.PayPalRESTException;
 import com.se330.coffee_shop_management_backend.dto.request.payment.OrderPaymentCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Order;
@@ -9,11 +11,14 @@ import com.se330.coffee_shop_management_backend.entity.PaymentMethods;
 import com.se330.coffee_shop_management_backend.repository.OrderPaymentRepository;
 import com.se330.coffee_shop_management_backend.repository.OrderRepository;
 import com.se330.coffee_shop_management_backend.repository.PaymentMethodsRepository;
+import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.paymentservices.imp.strategy.services.PaypalService;
 import com.se330.coffee_shop_management_backend.service.paymentservices.imp.strategy.PaymentStrategy;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +28,7 @@ public class PaypalPaymentStrategy implements PaymentStrategy {
     private final OrderRepository orderRepository;
     private final PaymentMethodsRepository paymentMethodsRepository;
     private final OrderPaymentRepository orderPaymentRepository;
+    private final INotificationService notificationService;
 
     // USD conversion rate - 1 VND = 0.0395 USD
     private static final double VND_TO_USD = 0.0395;
@@ -90,6 +96,30 @@ public class PaypalPaymentStrategy implements PaymentStrategy {
             // Update payment status based on PayPal response
             if ("approved".equals(executedPayment.getState())) {
                 orderPayment.setStatus(Constants.PaymentStatusEnum.COMPLETED);
+                String transactionId = null;
+                List<Transaction> transactions = executedPayment.getTransactions();
+
+                if (transactions != null && !transactions.isEmpty()) {
+                    Transaction transaction = transactions.get(0); // Lấy giao dịch đầu tiên
+                    List<RelatedResources> relatedResources = transaction.getRelatedResources();
+
+                    if (relatedResources != null && !relatedResources.isEmpty()) {
+                        for (RelatedResources resource : relatedResources) {
+                            if (resource.getSale() != null) {
+                                transactionId = resource.getSale().getId(); // Lấy ID của sale
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (transactionId == null) {
+                    throw new PayPalRESTException("Không tìm thấy transactionId");
+                }
+
+                orderPayment.setTransactionId(transactionId);
+
+                // TODO: send noti here
             } else {
                 orderPayment.setStatus(Constants.PaymentStatusEnum.FAILED);
                 orderPayment.setFailureReason("Payment not approved: " + executedPayment.getState());
@@ -104,6 +134,9 @@ public class PaypalPaymentStrategy implements PaymentStrategy {
                 orderPayment.setFailureReason(e.getMessage());
                 return orderPaymentRepository.save(orderPayment);
             }
+
+            // TODO: send noti here
+
             throw new RuntimeException("Failed to execute PayPal payment", e);
         }
     }

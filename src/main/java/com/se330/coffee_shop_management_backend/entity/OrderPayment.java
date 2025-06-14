@@ -31,6 +31,13 @@ public class OrderPayment extends AbstractBaseEntity {
     @Column(name = "paypal_approval_url")
     private String paypalApprovalUrl;
 
+    @Column(name = "momo_result_code")
+    private int momoResultCode;
+    @Column(name = "momo_pay_url")
+    private String momoPayUrl;
+    @Column(name = "momo_deep_link")
+    private String momoDeepLink;
+
     @Column(name = "failure_reason", columnDefinition = "text")
     private String failureReason;
 

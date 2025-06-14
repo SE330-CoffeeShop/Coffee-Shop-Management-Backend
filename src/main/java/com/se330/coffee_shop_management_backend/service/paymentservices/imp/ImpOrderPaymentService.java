@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.service.paymentservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.payment.OrderPaymentCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.response.payment.MomoIPNRequest;
 import com.se330.coffee_shop_management_backend.entity.OrderPayment;
 import com.se330.coffee_shop_management_backend.entity.PaymentMethods;
 import com.se330.coffee_shop_management_backend.repository.OrderPaymentRepository;
@@ -97,5 +98,17 @@ public class ImpOrderPaymentService implements IOrderPaymentService {
         }
 
         return strategy.executePayment(paymentId, payerId);
+    }
+
+    @Override
+    public OrderPayment executeMomoPayment(MomoIPNRequest momoIPNRequest) {
+
+        PaymentStrategy strategy = paymentStrategies.get(Constants.PaymentMethodEnum.MOMO);
+
+        if (strategy == null) {
+            throw new IllegalArgumentException("Unsupported payment method: MOMO");
+        }
+
+        return strategy.momoExecutePayment(momoIPNRequest);
     }
 }
