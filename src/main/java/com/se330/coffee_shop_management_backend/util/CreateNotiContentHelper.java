@@ -5,6 +5,22 @@ import java.util.UUID;
 
 public class CreateNotiContentHelper {
 
+    public static String createPaymentSuccessContent(UUID orderId) {
+        return "Thanh toán thành công cho đơn hàng " + orderId;
+    }
+
+    public static String createPaymentFailedContent(UUID orderId, String reason) {
+        return "Thanh toán thất bại cho đơn hàng " + orderId + ": " + reason;
+    }
+
+    public static String createPaymentRefundedContent(UUID orderId) {
+        return "Đã hoàn tiền cho đơn hàng " + orderId;
+    }
+
+    public static String createPaymentPendingContent(UUID orderId) {
+        return "Đang chờ xác nhận thanh toán cho đơn hàng " + orderId;
+    }
+
     public static String createOrderSuccessContentCustomer(UUID orderId) {
         return String.format("Đơn hàng #%s của bạn đã được tạo thành công. Cảm ơn bạn đã sử dụng dịch vụ của BCoffee!",
                 orderId.toString().substring(0, 8));

@@ -359,7 +359,7 @@ public class PaymentController {
     }
 
     @GetMapping("/paypal/success")
-    public ResponseEntity<?> paypalSuccess(
+    public ResponseEntity<SingleResponse<?>> paypalSuccess(
             @RequestParam("paymentId") String paymentId,
             @RequestParam(value = "PayerID", required = false) String payerId) {
 
@@ -367,7 +367,13 @@ public class PaymentController {
         OrderPayment payment = orderPaymentService.executePaypalPayment(paymentId, payerId);
 
         // Return appropriate response or redirect
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Paypal payment executed successfully",
+                        OrderPaymentResponseDTO.convert(payment)
+                )
+        );
     }
 
     @PostMapping("/momo/ipn")

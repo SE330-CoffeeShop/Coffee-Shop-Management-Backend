@@ -80,6 +80,8 @@ public final class Constants {
          */
         ORDER("ĐƠN HÀNG"),
 
+        PAYMENT("THANH TOÁN"),
+
         /**
          * Thông báo về các chương trình khuyến mãi và giảm giá.
          * Ví dụ:
