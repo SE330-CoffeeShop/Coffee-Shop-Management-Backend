@@ -11,5 +11,4 @@ import java.util.UUID;
 public class CartDetailCreateRequestDTO {
     private UUID variantId;
     private int cartDetailQuantity;
-    private BigDecimal cartDetailUnitPrice;
 }

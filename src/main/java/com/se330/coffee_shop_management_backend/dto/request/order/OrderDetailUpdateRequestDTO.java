@@ -11,7 +11,6 @@ import java.util.UUID;
 public class OrderDetailUpdateRequestDTO {
     private UUID orderDetailId;
     private int orderDetailQuantity;
-    private BigDecimal orderDetailUnitPrice;
     private UUID productVariantId;
     private UUID orderId;
 }

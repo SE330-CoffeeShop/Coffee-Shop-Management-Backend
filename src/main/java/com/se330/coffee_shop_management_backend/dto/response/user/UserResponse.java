@@ -99,8 +99,9 @@ public class UserResponse {
         String branchId = null;
         if (user.getEmployee() == null && user.getRole().getName() == Constants.RoleEnum.EMPLOYEE) {
             throw new IllegalArgumentException("How the fuck?");
-        }
-        else
+        } else if (user.getEmployee() == null || user.getEmployee().getBranch() == null) {
+            branchId = null;
+        } else
             branchId = user.getEmployee().getBranch().getId().toString();
 
         return UserResponse.builder()
