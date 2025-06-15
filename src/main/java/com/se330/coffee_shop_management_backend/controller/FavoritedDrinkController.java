@@ -3,6 +3,8 @@ package com.se330.coffee_shop_management_backend.controller;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
+import com.se330.coffee_shop_management_backend.dto.response.product.ProductResponseDTO;
+import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.service.favoritedrinkservices.IFavoriteDrinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,12 +12,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -129,7 +133,7 @@ public class FavoritedDrinkController {
                     )
             }
     )
-    public ResponseEntity<PageResponse<UUID>> getUserFavoriteDrinks(
+    public ResponseEntity<PageResponse<ProductResponseDTO>> getUserFavoriteDrinks(
             @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
@@ -139,18 +143,20 @@ public class FavoritedDrinkController {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
 
-        Page<UUID> productIds = favoriteDrinkService.findAllFavoriteDrinksByUserId(userId, pageable);
+        Page<Product> products = favoriteDrinkService.findAllFavoriteDrinksByUserId(userId, pageable);
+
+        List<ProductResponseDTO> productDTOs = ProductResponseDTO.convert(products.getContent());
 
         return ResponseEntity.ok(
                 new PageResponse<>(
                         HttpStatus.OK.value(),
                         "User's favorite drinks retrieved successfully",
-                        productIds.toList(),
+                        productDTOs,
                         new PageResponse.PagingResponse(
-                                productIds.getNumber(),
-                                productIds.getSize(),
-                                productIds.getTotalElements(),
-                                productIds.getTotalPages()
+                                products.getNumber(),
+                                products.getSize(),
+                                products.getTotalElements(),
+                                products.getTotalPages()
                         )
                 )
         );
@@ -171,27 +177,26 @@ public class FavoritedDrinkController {
                     )
             }
     )
-    public ResponseEntity<PageResponse<UUID>> getMostFavoritedDrinks(
+    public ResponseEntity<PageResponse<ProductResponseDTO>> getMostFavoritedDrinks(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "count") String sortBy) {
+            @RequestParam(defaultValue = "15") int limit) {
 
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        // Create pageable without extra sorting
+        Pageable pageable = PageRequest.of(page - 1, limit);
 
-        Page<UUID> productIds = favoriteDrinkService.findTheMostFavoritedDrink(pageable);
+        Page<Product> products = favoriteDrinkService.findTheMostFavoritedDrink(pageable);
+        List<ProductResponseDTO> productDTOs = ProductResponseDTO.convert(products.getContent());
 
         return ResponseEntity.ok(
                 new PageResponse<>(
                         HttpStatus.OK.value(),
                         "Most favorited drinks retrieved successfully",
-                        productIds.toList(),
+                        productDTOs,
                         new PageResponse.PagingResponse(
-                                productIds.getNumber(),
-                                productIds.getSize(),
-                                productIds.getTotalElements(),
-                                productIds.getTotalPages()
+                                products.getNumber(),
+                                products.getSize(),
+                                products.getTotalElements(),
+                                products.getTotalPages()
                         )
                 )
         );

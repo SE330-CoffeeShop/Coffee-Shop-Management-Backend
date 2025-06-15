@@ -15,7 +15,8 @@ public interface FavoriteDrinkRepository extends JpaRepository<FavoriteDrink, UU
     @Query("SELECT fd.product.id FROM FavoriteDrink fd WHERE fd.user.id = :userId")
     Page<UUID> findProductIdsByUser_Id(@Param("userId") UUID userId, Pageable pageable);
 
-    @Query("SELECT fd.product.id FROM FavoriteDrink fd GROUP BY fd.product.id ORDER BY COUNT(fd) DESC")
+    @Query(value = "SELECT fd.product.id FROM FavoriteDrink fd GROUP BY fd.product.id ORDER BY COUNT(fd) DESC",
+            countQuery = "SELECT COUNT(DISTINCT fd.product.id) FROM FavoriteDrink fd")
     Page<UUID> findMostFavoritedProductIds(Pageable pageable);
 
     Optional<FavoriteDrink> findByUser_IdAndProduct_Id(UUID userId, UUID drinkId);
