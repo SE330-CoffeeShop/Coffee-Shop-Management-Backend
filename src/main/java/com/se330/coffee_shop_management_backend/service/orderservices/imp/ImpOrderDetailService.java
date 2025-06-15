@@ -136,13 +136,15 @@ public class ImpOrderDetailService implements IOrderDetailService {
         // Save the updated inventories
         inventoryRepository.saveAll(updatedInventories);
 
+        BigDecimal unitPrice = existingProductVariant.getVariantPrice();
+
         // Create and return the order detail
         return orderDetailRepository.save(
                 OrderDetail.builder()
                         .orderDetailQuantity(orderDetailCreateRequestDTO.getOrderDetailQuantity())
-                        .orderDetailUnitPrice(orderDetailCreateRequestDTO.getOrderDetailUnitPrice())
+                        .orderDetailUnitPrice(unitPrice)
                         .orderDetailDiscountCost(BigDecimal.ZERO)
-                        .orderDetailUnitPriceAfterDiscount(orderDetailCreateRequestDTO.getOrderDetailUnitPrice())
+                        .orderDetailUnitPriceAfterDiscount(unitPrice)
                         .productVariant(existingProductVariant)
                         .order(existingOrder)
                         .build()
@@ -161,8 +163,10 @@ public class ImpOrderDetailService implements IOrderDetailService {
         Order existingOrder = orderRepository.findById(orderDetailUpdateRequestDTO.getOrderId())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderDetailUpdateRequestDTO.getOrderId()));
 
+        BigDecimal unitPrice = existingProductVariant.getVariantPrice();
+
         existingOrderDetail.setOrderDetailQuantity(orderDetailUpdateRequestDTO.getOrderDetailQuantity());
-        existingOrderDetail.setOrderDetailUnitPrice(orderDetailUpdateRequestDTO.getOrderDetailUnitPrice());
+        existingOrderDetail.setOrderDetailUnitPrice(unitPrice);
         existingOrderDetail.setProductVariant(existingProductVariant);
         existingOrderDetail.setOrder(existingOrder);
 

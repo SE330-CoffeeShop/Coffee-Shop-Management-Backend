@@ -20,5 +20,5 @@ public interface IDiscountService {
     void deleteDiscount(UUID id);
     boolean isDiscountValid(UUID discountId, UUID productVariantId, UUID userId, UUID employeeId);
     void applyMostValuableDiscountOfOrderDetail(UUID orderDetailId, BigDecimal orderTotalValue);
-    Cart applyDiscountToCart(UUID cartId);
+    Cart applyDiscountToCart(UUID cartId, UUID branchId);
 }

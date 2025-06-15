@@ -10,7 +10,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OrderDetailCreateRequestDTO {
     private int orderDetailQuantity;
-    private BigDecimal orderDetailUnitPrice;
     private UUID productVariantId;
     private UUID orderId;
     private UUID branchId;

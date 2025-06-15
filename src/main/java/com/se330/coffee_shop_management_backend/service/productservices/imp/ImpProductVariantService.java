@@ -7,6 +7,7 @@ import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductVariantService;
+import com.se330.coffee_shop_management_backend.util.CreateSlug;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +59,7 @@ public class ImpProductVariantService implements IProductVariantService {
                         .variantDefault(productVariantCreateRequestDTO.getVariantDefault())
                         .variantPrice(productVariantCreateRequestDTO.getVariantPrice())
                         .product(product)
-                        .variantSlug("")
+                        .variantSlug(CreateSlug.createSlug(productVariantCreateRequestDTO.getVariantTierIdx()))
                         .variantSort(0)
                         .variantIsPublished(false)
                         .variantIsDeleted(false)
@@ -84,7 +85,7 @@ public class ImpProductVariantService implements IProductVariantService {
 
         existingVariant.setVariantTierIdx(productVariantUpdateRequestDTO.getVariantTierIdx());
         existingVariant.setVariantDefault(productVariantUpdateRequestDTO.getVariantDefault());
-        existingVariant.setVariantSlug(productVariantUpdateRequestDTO.getVariantSlug());
+        existingVariant.setVariantSlug(CreateSlug.createSlug(productVariantUpdateRequestDTO.getVariantTierIdx()));
         existingVariant.setVariantSort(productVariantUpdateRequestDTO.getVariantSort());
         existingVariant.setVariantPrice(productVariantUpdateRequestDTO.getVariantPrice());
         existingVariant.setVariantIsPublished(productVariantUpdateRequestDTO.getVariantIsPublished());

@@ -6,7 +6,9 @@ import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCre
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.payment.OrderPaymentCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
+import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.*;
+import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
@@ -43,6 +45,7 @@ public class ImpOrderService implements IOrderService {
     private final CartRepository cartRepository;
     private final BranchRepository branchRepository;
     private final INotificationService notificationService;
+    private final ProductVariantRepository productVariantRepository;
 
 
     @Override
@@ -135,7 +138,6 @@ public class ImpOrderService implements IOrderService {
         for (CartDetail cartDetailCreateRequestDTO : existingCart.getCartDetails()) {
             OrderDetailCreateRequestDTO orderDetailCreateRequestDTO = new OrderDetailCreateRequestDTO();
             orderDetailCreateRequestDTO.setOrderDetailQuantity(cartDetailCreateRequestDTO.getCartDetailQuantity());
-            orderDetailCreateRequestDTO.setOrderDetailUnitPrice(cartDetailCreateRequestDTO.getCartDetailUnitPrice());
             orderDetailCreateRequestDTO.setProductVariantId(cartDetailCreateRequestDTO.getProductVariant().getId());
             orderDetailCreateRequestDTO.setOrderId(newOrder.getId());
             orderDetailDtos.add(orderDetailCreateRequestDTO);
@@ -316,8 +318,13 @@ public class ImpOrderService implements IOrderService {
         List<OrderDetail> orderDetails = orderDetailRepository.findAllByOrder_Id(orderId);
 
         for (OrderDetail orderDetail : orderDetails) {
-            BigDecimal itemCost = orderDetail.getOrderDetailUnitPrice().multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
-            totalCost = totalCost.add(itemCost);
+            if (orderDetail.getOrderDetailUnitPrice() == null || orderDetail.getOrderDetailQuantity() <= 0) {
+                BigDecimal itemCost = orderDetail.getProductVariant().getVariantPrice().multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
+                totalCost = totalCost.add(itemCost);
+            } else {
+                BigDecimal itemCost = orderDetail.getOrderDetailUnitPrice().multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
+                totalCost = totalCost.add(itemCost);
+            }
         }
 
         return totalCost;

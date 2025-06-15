@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -69,19 +70,28 @@ public class ImpFavoriteDrinkService implements IFavoriteDrinkService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UUID> findAllFavoriteDrinksByUserId(UUID userId, Pageable pageable) {
+    public Page<Product> findAllFavoriteDrinksByUserId(UUID userId, Pageable pageable) {
         // Check if user exists
         if (!userRepository.existsById(userId)) {
             throw new RuntimeException("User not found with id: " + userId);
         }
 
-        return favoriteDrinkRepository.findProductIdsByUser_Id(userId, pageable);
+        List<UUID> productIds = favoriteDrinkRepository.findProductIdsByUser_Id(userId, pageable).getContent();
+        if (productIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        return productRepository.findAllById(productIds, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UUID> findTheMostFavoritedDrink(Pageable pageable) {
-        return favoriteDrinkRepository.findMostFavoritedProductIds(pageable);
+    public Page<Product> findTheMostFavoritedDrink(Pageable pageable) {
+        List<UUID> productIds = favoriteDrinkRepository.findMostFavoritedProductIds(pageable).getContent();
+        if (productIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+        return productRepository.findAllById(productIds, pageable);
     }
 
     @Override

@@ -55,6 +55,7 @@ public class ImpCartService implements ICartService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<CartDetail> getAllCartDetailsByUserId(UUID userId, Pageable pageable) {
         return cartDetailRepository.findAllByCart_User_Id(userId, pageable);
     }
@@ -136,15 +137,27 @@ public class ImpCartService implements ICartService {
         ProductVariant existingProductVariant = productVariantRepository.findById(cartDetailCreateRequestDTO.getVariantId())
                 .orElseThrow(() -> new IllegalArgumentException("Product variant not found"));
 
-        // Tạo CartDetail mới
-        CartDetail newCartDetail = CartDetail.builder()
-                .cart(existingCart)
-                .productVariant(existingProductVariant)
-                .cartDetailQuantity(cartDetailCreateRequestDTO.getCartDetailQuantity())
-                .cartDetailUnitPrice(cartDetailCreateRequestDTO.getCartDetailUnitPrice())
-                .cartDetailDiscountCost(BigDecimal.ZERO)
-                .cartDetailUnitPriceAfterDiscount(cartDetailCreateRequestDTO.getCartDetailUnitPrice())
-                .build();
+        BigDecimal unitPrice = existingProductVariant.getVariantPrice();
+
+        // Kiểm tra xem CartDetail đã tồn tại trong Cart chưa
+        CartDetail existingCartDetail = cartDetailRepository.findByCart_IdAndProductVariant_Id(existingCart.getId(), existingProductVariant.getId());
+        CartDetail newCartDetail;
+        if (existingCartDetail != null) {
+            existingCartDetail.setCartDetailQuantity(existingCartDetail.getCartDetailQuantity() + cartDetailCreateRequestDTO.getCartDetailQuantity());
+            existingCartDetail.setCartDetailUnitPrice(unitPrice);
+            existingCartDetail.setCartDetailUnitPriceAfterDiscount(unitPrice);
+            existingCartDetail.setCartDetailDiscountCost(BigDecimal.ZERO);
+            newCartDetail = cartDetailRepository.save(existingCartDetail);
+        } else {
+            newCartDetail = CartDetail.builder()
+                    .cart(existingCart)
+                    .productVariant(existingProductVariant)
+                    .cartDetailQuantity(cartDetailCreateRequestDTO.getCartDetailQuantity())
+                    .cartDetailUnitPrice(unitPrice)
+                    .cartDetailDiscountCost(BigDecimal.ZERO)
+                    .cartDetailUnitPriceAfterDiscount(unitPrice)
+                    .build();
+        }
 
         // Lưu CartDetail vào database
         newCartDetail = cartDetailRepository.save(newCartDetail);
@@ -193,12 +206,14 @@ public class ImpCartService implements ICartService {
         ProductVariant existingProductVariant = productVariantRepository.findById(cartDetailCreateRequestDTO.getVariantId())
                 .orElseThrow(() -> new IllegalArgumentException("Product variant not found"));
 
+        BigDecimal unitPrice = existingProductVariant.getVariantPrice();
+
         CartDetail existingCartDetail = cartDetailRepository.findByCart_IdAndProductVariant_Id(existingCart.getId(), existingProductVariant.getId());
 
         if (existingCartDetail != null) {
             existingCartDetail.setCartDetailQuantity(cartDetailCreateRequestDTO.getCartDetailQuantity());
-            existingCartDetail.setCartDetailUnitPrice(cartDetailCreateRequestDTO.getCartDetailUnitPrice());
-            existingCartDetail.setCartDetailUnitPriceAfterDiscount(cartDetailCreateRequestDTO.getCartDetailUnitPrice());
+            existingCartDetail.setCartDetailUnitPrice(unitPrice);
+            existingCartDetail.setCartDetailUnitPriceAfterDiscount(unitPrice);
             cartDetailRepository.save(existingCartDetail);
         } else {
             throw new IllegalArgumentException("Cart detail not found for product variant ID: " + cartDetailCreateRequestDTO.getVariantId());

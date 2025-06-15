@@ -361,7 +361,7 @@ public class ImpDiscountService implements IDiscountService {
 
     @Override
     @Transactional
-    public Cart applyDiscountToCart(UUID cartId) {
+    public Cart applyDiscountToCart(UUID cartId, UUID branchId) {
         Cart existingCart = cartRepository.findById(cartId).orElseThrow(
                 () -> new EntityNotFoundException("Cart not found with id: " + cartId)
         );
@@ -380,6 +380,10 @@ public class ImpDiscountService implements IDiscountService {
                 // Skip inactive discounts or if minimum order value not met
                 if (!discount.isDiscountIsActive() ||
                         totalCartValue.compareTo(discount.getDiscountMinOrderValue()) < 0) {
+                    continue;
+                }
+
+                if (discount.getBranch().getId() != null && !discount.getBranch().getId().equals(branchId)) {
                     continue;
                 }
 

@@ -15,6 +15,9 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     @Override
     Page<Product> findAll(Pageable pageable);
 
+    @Query("SELECT p FROM Product p WHERE p.id IN :ids")
+    Page<Product> findAllById(@Param("ids") Iterable<UUID> ids, Pageable pageable);
+
     // Case 1: Get all best-selling products (no filters)
     @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
             "FROM OrderDetail od " +
