@@ -5,7 +5,9 @@ import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountUpd
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
+import com.se330.coffee_shop_management_backend.dto.response.cart.CartResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.discount.DiscountResponseDTO;
+import com.se330.coffee_shop_management_backend.entity.Cart;
 import com.se330.coffee_shop_management_backend.entity.Discount;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -379,6 +381,61 @@ public class DiscountController {
                                 discountPages.getTotalElements(),
                                 discountPages.getTotalPages()
                         )
+                )
+        );
+    }
+
+    @PutMapping("/apply-to-cart/{cartId}")
+    @Operation(
+            summary = "Apply discounts to cart items",
+            description = "Applies applicable discounts to all items in the cart based on branch-specific rules",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Discounts applied successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Cart or branch not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<CartResponseDTO>> applyDiscountToCart(
+            @PathVariable UUID cartId,
+            @RequestParam UUID branchId) {
+
+        Cart updatedCart = discountService.applyDiscountToCart(cartId, branchId);
+
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Discounts applied to cart successfully",
+                        CartResponseDTO.convert(updatedCart)
                 )
         );
     }
