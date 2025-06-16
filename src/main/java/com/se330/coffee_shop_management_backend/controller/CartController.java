@@ -269,7 +269,7 @@ public class CartController {
         );
     }
 
-    @DeleteMapping("/{userId}/clear")
+    @DeleteMapping("/clear")
     @Operation(
             summary = "Clear user's cart",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
