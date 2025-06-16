@@ -1,6 +1,9 @@
 package com.se330.coffee_shop_management_backend.service.orderservices.imp;
 
+import com.se330.coffee_shop_management_backend.dto.request.cart.CartDetailCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.cart.EmployeeCartRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.order.EmployeeOrderRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderDetailCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
@@ -9,6 +12,7 @@ import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
+import com.se330.coffee_shop_management_backend.service.UserService;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
@@ -38,6 +42,7 @@ public class ImpOrderService implements IOrderService {
     private final PaymentMethodsRepository paymentMethodsRepository;
     private final IOrderPaymentService orderPaymentService;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final ShippingAddressesRepository shippingAddressesRepository;
     private final IOrderDetailService orderDetailService;
     private final IDiscountService discountService;
@@ -45,25 +50,28 @@ public class ImpOrderService implements IOrderService {
     private final CartRepository cartRepository;
     private final BranchRepository branchRepository;
     private final INotificationService notificationService;
-    private final ProductVariantRepository productVariantRepository;
 
 
     @Override
+    @Transactional(readOnly = true)
     public Order findByIdOrder(UUID id) {
         return orderRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Order> findAllOrders(Pageable pageable) {
         return orderRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Order> findAllOrderByCustomerId(UUID customerId, Pageable pageable) {
         return orderRepository.findAllByUser_Id(customerId, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, UUID branchId, Pageable pageable) {
         return orderRepository.findAllByOrderStatusAndBranch_Id(status, branchId, pageable);
     }
@@ -205,8 +213,100 @@ public class ImpOrderService implements IOrderService {
         return finalOrder;
     }
 
+    @Override
+    public Order createOrderForEmployee(EmployeeOrderRequestDTO employeeOrderRequestDTO) {
+        Employee currentEmployee = userService.getUser().getEmployee();
+        Branch currentBranch = currentEmployee.getBranch();
+
+        User customer = null;
+
+        if (employeeOrderRequestDTO.getUserId() != null) {
+            customer = userRepository.findById(employeeOrderRequestDTO.getUserId())
+                    .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + employeeOrderRequestDTO.getUserId()));
+        }
+
+        PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(employeeOrderRequestDTO.getPaymentMethodId())
+                .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id: " + employeeOrderRequestDTO.getPaymentMethodId()));
+
+        // create order first
+        Order newOrder = orderRepository.save(
+                Order.builder()
+                        .employee(currentEmployee)
+                        .orderStatus(Constants.OrderStatusEnum.PROCESSING)
+                        .orderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"))
+                        .user(customer)
+                        .shippingAddress(null)
+                        .orderTotalCost(BigDecimal.ZERO)
+                        .orderDiscountCost(BigDecimal.ZERO)
+                        .orderTotalCostAfterDiscount(BigDecimal.ZERO)
+                        .branch(currentBranch)
+                        .build()
+        );
+
+        List<OrderDetailCreateRequestDTO> orderDetailDtos = new ArrayList<>();
+        for (CartDetailCreateRequestDTO cartDetailCreateRequestDTO : employeeOrderRequestDTO.getCartDetails()) {
+            OrderDetailCreateRequestDTO orderDetailCreateRequestDTO = new OrderDetailCreateRequestDTO();
+            orderDetailCreateRequestDTO.setOrderDetailQuantity(cartDetailCreateRequestDTO.getCartDetailQuantity());
+            orderDetailCreateRequestDTO.setProductVariantId(cartDetailCreateRequestDTO.getVariantId());
+            orderDetailCreateRequestDTO.setOrderId(newOrder.getId());
+            orderDetailDtos.add(orderDetailCreateRequestDTO);
+        }
+
+        // now then add order details
+        for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderDetailDtos) {
+            orderDetailCreateRequestDTO.setOrderId(newOrder.getId());
+            orderDetailCreateRequestDTO.setBranchId(currentBranch.getId());
+            orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
+        }
+
+        // Calculate total cost
+        BigDecimal totalCost = updateTotalCost(newOrder.getId());
+        newOrder.setOrderTotalCost(totalCost);
+
+        // now we loop for each order detail to apply discount for them
+        for (OrderDetail orderDetail : newOrder.getOrderDetails()) {
+            discountService.applyMostValuableDiscountOfOrderDetail(orderDetail.getId(), totalCost);
+        }
+
+        // update again the new total cost since the unit price of some order details have been changed
+        totalCost = updateTotalCost(newOrder.getId());
+        BigDecimal discountCost = newOrder.getOrderTotalCost().subtract(totalCost);
+
+        // set the new total cost
+        newOrder.setOrderDiscountCost(discountCost);
+        newOrder.setOrderTotalCostAfterDiscount(totalCost);
+
+        // save order again to update total cost and payment method
+        orderRepository.save(newOrder);
+
+        Order finalOrder = orderRepository.findById(newOrder.getId()).orElseThrow();
+
+        // now create order payment
+        orderPaymentService.createOrderPayment(
+                OrderPaymentCreateRequestDTO.builder()
+                        .orderId(finalOrder.getId())
+                        .paymentMethodId(employeeOrderRequestDTO.getPaymentMethodId())
+                        .amount(finalOrder.getOrderTotalCostAfterDiscount())
+                        .build()
+        );
+
+        if (customer != null) {
+            notificationService.createNotification(
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .notificationContent(CreateNotiContentHelper.createInStorePurchaseContent(newOrder.getId()))
+                            .senderId(null)
+                            .receiverId(customer.getId())
+                            .isRead(false)
+                            .build());
+        }
+
+        return finalOrder;
+    }
+
 
     @Override
+    @Transactional
     public Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO) {
         Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id:" + orderUpdateRequestDTO.getOrderId()));

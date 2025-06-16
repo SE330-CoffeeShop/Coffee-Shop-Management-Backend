@@ -1,12 +1,17 @@
 package com.se330.coffee_shop_management_backend.service.discountservices.imp;
 
+import com.se330.coffee_shop_management_backend.dto.request.cart.CartDetailCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.cart.EmployeeCartRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.UsedDiscountCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.response.cart.EmployeeViewCartDiscountResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
+import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
+import com.se330.coffee_shop_management_backend.service.UserService;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.useddiscount.IUsedDiscountService;
@@ -33,6 +38,7 @@ public class ImpDiscountService implements IDiscountService {
     private final UsedDiscountRepository usedDiscountRepository;
     private final IUsedDiscountService usedDiscountService;
     private final INotificationService notificationService;
+    private final UserService userService;
     private final CartRepository cartRepository;
 
 
@@ -41,6 +47,7 @@ public class ImpDiscountService implements IDiscountService {
             BranchRepository branchRepository,
             ProductVariantRepository productVariantRepository,
             OrderDetailRepository orderDetailRepository,
+            UserService userService,
             UsedDiscountRepository usedDiscountRepository,
             IUsedDiscountService usedDiscountService,
             INotificationService notificationService,
@@ -54,6 +61,7 @@ public class ImpDiscountService implements IDiscountService {
         this.usedDiscountService = usedDiscountService;
         this.notificationService = notificationService;
         this.cartRepository = cartRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -360,11 +368,85 @@ public class ImpDiscountService implements IDiscountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public EmployeeViewCartDiscountResponseDTO applyDiscountToCart(EmployeeCartRequestDTO employeeCartRequestDTO) {
+        Branch currentBranch = userService.getUser().getEmployee().getBranch();
+        BigDecimal totalCartValue = BigDecimal.ZERO;
+
+        for (CartDetailCreateRequestDTO cartDetailCreateRequestDTO : employeeCartRequestDTO.getCartDetails()) {
+            ProductVariant productVariant = productVariantRepository.findById(cartDetailCreateRequestDTO.getVariantId())
+                    .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + cartDetailCreateRequestDTO.getVariantId()));
+            BigDecimal unitPrice = productVariant.getVariantPrice();
+            totalCartValue = totalCartValue.add(unitPrice.multiply(BigDecimal.valueOf(cartDetailCreateRequestDTO.getCartDetailQuantity())));
+        }
+
+        BigDecimal totalDiscountAmount = BigDecimal.ZERO;
+
+        // Calculate discount for each cart detail
+        for (CartDetailCreateRequestDTO cartDetailRequestDTO : employeeCartRequestDTO.getCartDetails()) {
+            ProductVariant productVariant = productVariantRepository.findById(cartDetailRequestDTO.getVariantId())
+                    .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + cartDetailRequestDTO.getVariantId()));
+
+            BigDecimal lowestUnitPrice = productVariant.getVariantPrice();
+
+            // Find the most valuable discount for this product variant
+            for (Discount discount : productVariant.getDiscounts()) {
+                // Skip inactive discounts or if minimum order value not met
+                if (!discount.isDiscountIsActive() ||
+                        totalCartValue.compareTo(discount.getDiscountMinOrderValue()) < 0 ||
+                        !discount.getBranch().getId().equals(currentBranch.getId())) {
+                    continue;
+                }
+
+                BigDecimal discountedPrice = productVariant.getVariantPrice();
+
+                // Apply discount based on type
+                if (discount.getDiscountType().name().equals(Constants.DiscountTypeEnum.PERCENTAGE.name())) {
+                    BigDecimal discountMultiplier = BigDecimal.valueOf(100)
+                            .subtract(discount.getDiscountValue())
+                            .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+                    discountedPrice = discountedPrice.multiply(discountMultiplier);
+                } else {
+                    discountedPrice = discountedPrice.subtract(discount.getDiscountValue());
+                    if (discountedPrice.compareTo(BigDecimal.ZERO) < 0) {
+                        discountedPrice = BigDecimal.ZERO;
+                    }
+                }
+
+                // Keep track of the best discount
+                if (discountedPrice.compareTo(lowestUnitPrice) < 0) {
+                    lowestUnitPrice = discountedPrice;
+                }
+            }
+
+            // Calculate discount amount for this item
+            BigDecimal originalItemCost = productVariant.getVariantPrice().multiply(BigDecimal.valueOf(cartDetailRequestDTO.getCartDetailQuantity()));
+            BigDecimal discountedItemCost = lowestUnitPrice.multiply(BigDecimal.valueOf(cartDetailRequestDTO.getCartDetailQuantity()));
+            BigDecimal itemDiscountAmount = originalItemCost.subtract(discountedItemCost);
+
+            // Add to total discount
+            totalDiscountAmount = totalDiscountAmount.add(itemDiscountAmount);
+        }
+
+        // Calculate final price after discounts
+        BigDecimal totalAfterDiscount = totalCartValue.subtract(totalDiscountAmount);
+
+        // Return DTO with calculated values
+        return EmployeeViewCartDiscountResponseDTO.builder()
+                .cartTotalCost(totalCartValue)
+                .cartDiscountCost(totalDiscountAmount)
+                .cartTotalCostAfterDiscount(totalAfterDiscount)
+                .build();
+    }
+
+    @Override
     @Transactional
-    public Cart applyDiscountToCart(UUID cartId, UUID branchId) {
-        Cart existingCart = cartRepository.findById(cartId).orElseThrow(
-                () -> new EntityNotFoundException("Cart not found with id: " + cartId)
-        );
+    public Cart applyDiscountToCart(UUID branchId) {
+
+        User user = userService.getUser();
+
+        Cart existingCart = cartRepository.findByUser_Id(user.getId());
 
         // Calculate the total cart value before discounts
         BigDecimal totalCartValue = existingCart.getCartTotalCost();

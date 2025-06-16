@@ -1,5 +1,7 @@
 package com.se330.coffee_shop_management_backend.service.orderservices;
 
+import com.se330.coffee_shop_management_backend.dto.request.cart.EmployeeCartRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.order.EmployeeOrderRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Order;
@@ -15,6 +17,7 @@ public interface IOrderService {
     Page<Order> findAllOrderByCustomerId(UUID customerId, Pageable pageable);
     Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, UUID branchId, Pageable pageable);
     Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO);
+    Order createOrderForEmployee(EmployeeOrderRequestDTO employeeOrderRequestDTO);
     Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO);
     void deleteOrder(UUID id);
 }
