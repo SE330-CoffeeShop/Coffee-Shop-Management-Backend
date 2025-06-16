@@ -14,7 +14,8 @@ public interface ICartService {
     Page<CartDetail> getAllCartDetailsByUserId(Pageable pageable);
     Page<UUID> findBranchesWithSufficientInventory(Pageable pageable);
     Cart addCartDetail(CartDetailCreateRequestDTO cartDetailCreateRequestDTO);
-    Cart removeCartDetail(UUID cartDetailId);
+    Cart removeProductVariantFromCart(UUID variantId);
+    Cart removeAllWithSpecificVariant(UUID variantId);
     Cart updateCartDetail(CartDetailCreateRequestDTO cartDetailCreateRequestDTO);
     Cart clearCart();
 }

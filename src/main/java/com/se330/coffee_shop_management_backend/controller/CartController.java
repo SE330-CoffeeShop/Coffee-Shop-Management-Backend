@@ -367,14 +367,15 @@ public class CartController {
         );
     }
 
-    @DeleteMapping("/detail/{cartDetailId}")
+    @DeleteMapping("/detail/{variantId}")
     @Operation(
-            summary = "Remove a cart detail from user's cart",
+            summary = "Remove one unit of a product variant from user's cart",
+            description = "Decreases the quantity of the product variant by 1, or removes it entirely if quantity is 1",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Cart detail removed successfully",
+                            description = "Cart detail updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = SingleResponse.class)
@@ -399,13 +400,57 @@ public class CartController {
             }
     )
     public ResponseEntity<SingleResponse<CartResponseDTO>> removeCartDetail(
-            @PathVariable UUID cartDetailId
+            @PathVariable UUID variantId
     ) {
-        CartResponseDTO cart = CartResponseDTO.convert(cartService.removeCartDetail(cartDetailId));
+        CartResponseDTO cart = CartResponseDTO.convert(cartService.removeProductVariantFromCart(variantId));
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
-                        "Cart detail removed successfully",
+                        "Cart detail updated successfully",
+                        cart
+                )
+        );
+    }
+
+    @DeleteMapping("/detail/all/{variantId}")
+    @Operation(
+            summary = "Remove all units of a specific product variant from user's cart",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Product variant completely removed from cart",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data or cart detail not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<CartResponseDTO>> removeAllWithSpecificVariant(
+            @PathVariable UUID variantId
+    ) {
+        CartResponseDTO cart = CartResponseDTO.convert(cartService.removeAllWithSpecificVariant(variantId));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Product variant completely removed from cart",
                         cart
                 )
         );

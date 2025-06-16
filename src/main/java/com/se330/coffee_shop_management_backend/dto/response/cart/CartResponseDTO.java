@@ -21,7 +21,6 @@ public class CartResponseDTO {
     )
     private String id;
 
-    private String customerId;
     private BigDecimal cartTotalCost;
     private BigDecimal cartDiscountCost;
     private BigDecimal cartTotalCostAfterDiscount;
@@ -29,7 +28,6 @@ public class CartResponseDTO {
     public static CartResponseDTO convert(Cart cart) {
         return CartResponseDTO.builder()
                 .id(cart.getId().toString())
-                .customerId(cart.getUser().getId().toString())
                 .cartTotalCost(cart.getCartTotalCost())
                 .cartDiscountCost(cart.getCartDiscountCost())
                 .cartTotalCostAfterDiscount(cart.getCartTotalCostAfterDiscount())
