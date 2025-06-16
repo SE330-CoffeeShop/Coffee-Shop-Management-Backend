@@ -31,7 +31,7 @@ public class OrderDetail extends AbstractBaseEntity {
     @Column(name = "order_detail_discount_cost", nullable = false)
     private BigDecimal orderDetailDiscountCost;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "var_id",
             foreignKey = @ForeignKey(
@@ -41,7 +41,7 @@ public class OrderDetail extends AbstractBaseEntity {
     )
     private ProductVariant productVariant;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "order_id",
             foreignKey = @ForeignKey(

@@ -27,7 +27,7 @@ public class Cart extends AbstractBaseEntity {
     @Column(name = "cart_total_cost_after_discount", nullable = false)
     private BigDecimal cartTotalCostAfterDiscount;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(
             name = "user_id",
             foreignKey = @ForeignKey(

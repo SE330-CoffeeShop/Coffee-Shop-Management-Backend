@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 })
 public class Checkin extends AbstractBaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "shift_id",
             foreignKey = @ForeignKey(

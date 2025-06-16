@@ -48,7 +48,7 @@ public class User extends AbstractBaseEntity {
     @Column(name = "birth_date", nullable = false)
     private LocalDateTime birthDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "role_id",
             foreignKey = @ForeignKey(

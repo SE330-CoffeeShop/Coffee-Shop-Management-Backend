@@ -45,7 +45,7 @@ public class Comment {
     @Column(name = "comment_rating", nullable = false, precision = 2, scale = 2)
     private BigDecimal commentRating;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "product_id",
             foreignKey = @ForeignKey(

@@ -27,7 +27,7 @@ public class Transfer extends AbstractBaseEntity {
     @Column(name = "transfer_total_cost", nullable = false)
     private BigDecimal transferTotalCost;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "branch_id",
             foreignKey = @ForeignKey(
@@ -38,7 +38,7 @@ public class Transfer extends AbstractBaseEntity {
     private Branch branch;
 
     // Many transfers belong to one warehouse
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "warehouse_id",
             foreignKey = @ForeignKey(

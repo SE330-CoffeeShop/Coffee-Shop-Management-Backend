@@ -22,7 +22,7 @@ public class UserRecipientToken extends AbstractBaseEntity {
     @Column(name = "recipient_token", nullable = false, columnDefinition = "text")
     private String FCMRecipientToken;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "user_id",
             foreignKey = @ForeignKey(

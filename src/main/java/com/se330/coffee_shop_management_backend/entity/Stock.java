@@ -20,7 +20,7 @@ public class Stock extends AbstractBaseEntity {
     @Column(name = "stock_unit", nullable = false)
     private String stockUnit;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "ingredient_id",
             foreignKey = @ForeignKey(
@@ -30,7 +30,7 @@ public class Stock extends AbstractBaseEntity {
     )
     private Ingredient ingredient;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "warehouse_id",
             foreignKey = @ForeignKey(

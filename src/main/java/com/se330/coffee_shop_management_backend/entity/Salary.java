@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 })
 public class Salary extends AbstractBaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "employee_id",
             foreignKey = @ForeignKey(
