@@ -1,6 +1,5 @@
 package com.se330.coffee_shop_management_backend.entity.product;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.se330.coffee_shop_management_backend.entity.AbstractBaseEntity;
 import com.se330.coffee_shop_management_backend.entity.Comment;
 import com.se330.coffee_shop_management_backend.entity.FavoriteDrink;
@@ -58,7 +57,7 @@ public class Product extends AbstractBaseEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ProductVariant> productVariants = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_product_product-category")
     private ProductCategory productCategory;
 

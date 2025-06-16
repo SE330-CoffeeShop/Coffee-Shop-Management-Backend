@@ -88,11 +88,13 @@ public class ImpUsedDiscountService implements IUsedDiscountService {
 
         discountRepository.save(existingDiscount);
 
-        return usedDiscountRepository.save(UsedDiscount.builder()
+        UsedDiscount usedDiscount = usedDiscountRepository.save(UsedDiscount.builder()
                 .discount(existingDiscount)
                 .orderDetail(orderDetail)
                 .timesUse(usedDiscountCreateRequestDTO.getTimesUse())
                 .build());
+
+        return findByIdUsedDiscount(usedDiscount.getId());
     }
 
     @Override
@@ -111,7 +113,9 @@ public class ImpUsedDiscountService implements IUsedDiscountService {
         existingUsedDiscount.setOrderDetail(orderDetail);
         existingUsedDiscount.setTimesUse(usedDiscountUpdateRequestDTO.getTimesUse());
 
-        return usedDiscountRepository.save(existingUsedDiscount);
+        usedDiscountRepository.save(existingUsedDiscount);
+
+        return findByIdUsedDiscount(existingUsedDiscount.getId());
     }
 
     @Override

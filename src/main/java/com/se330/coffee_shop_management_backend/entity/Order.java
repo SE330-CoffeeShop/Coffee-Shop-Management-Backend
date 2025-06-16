@@ -41,7 +41,7 @@ public class Order extends AbstractBaseEntity {
     @Builder.Default
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "employee_id",
             foreignKey = @ForeignKey(
@@ -51,10 +51,10 @@ public class Order extends AbstractBaseEntity {
     )
     private Employee employee;
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private OrderPayment orderPayment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
             foreignKey = @ForeignKey(
@@ -64,7 +64,7 @@ public class Order extends AbstractBaseEntity {
     )
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "shipping_address_id",
             foreignKey = @ForeignKey(
@@ -74,7 +74,7 @@ public class Order extends AbstractBaseEntity {
     )
     private ShippingAddresses shippingAddress;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "branch_id",
             foreignKey = @ForeignKey(

@@ -31,7 +31,7 @@ public class CartDetail extends AbstractBaseEntity {
     @Column(name = "cart_detail_unit_price_after_discount", nullable = false)
     private BigDecimal cartDetailUnitPriceAfterDiscount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "cart_id",
             foreignKey = @ForeignKey(
@@ -41,7 +41,7 @@ public class CartDetail extends AbstractBaseEntity {
     )
     private Cart cart;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "var_id",
             foreignKey = @ForeignKey(

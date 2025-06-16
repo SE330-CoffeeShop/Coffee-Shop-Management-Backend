@@ -58,7 +58,7 @@ public class Discount extends AbstractBaseEntity {
     @Column(name = "discount_is_active", nullable = false)
     private boolean discountIsActive;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "branch_id",
             foreignKey = @ForeignKey(

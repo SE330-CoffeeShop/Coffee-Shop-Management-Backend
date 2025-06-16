@@ -29,7 +29,7 @@ public class Branch extends AbstractBaseEntity {
     @Column(name = "branch_email", nullable = false)
     private String branchEmail;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "manager_id",
             foreignKey = @ForeignKey(

@@ -155,7 +155,7 @@ public class ImpDiscountService implements IDiscountService {
             );
         }
 
-        return returnDiscount;
+        return findByIdDiscount(returnDiscount.getId());
     }
 
     @Override
@@ -234,7 +234,7 @@ public class ImpDiscountService implements IDiscountService {
                         .build()
         );
 
-        return updatedDiscount;
+        return findByIdDiscount(existingDiscount.getId());
     }
 
     @Override
@@ -511,6 +511,8 @@ public class ImpDiscountService implements IDiscountService {
         existingCart.setCartTotalCostAfterDiscount(totalAfterDiscount);
 
         // Save updated cart
-        return cartRepository.save(existingCart);
+        cartRepository.save(existingCart);
+
+        return cartRepository.findByUser_Id(existingCart.getUser().getId());
     }
 }
