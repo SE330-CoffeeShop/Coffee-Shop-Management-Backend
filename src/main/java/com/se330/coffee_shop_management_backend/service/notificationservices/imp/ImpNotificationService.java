@@ -10,6 +10,7 @@ import com.se330.coffee_shop_management_backend.entity.UserRecipientToken;
 import com.se330.coffee_shop_management_backend.repository.NotificationRepository;
 import com.se330.coffee_shop_management_backend.repository.UserRecipientTokenRepository;
 import com.se330.coffee_shop_management_backend.repository.UserRepository;
+import com.se330.coffee_shop_management_backend.service.UserService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,20 +26,23 @@ import java.util.*;
 public class ImpNotificationService implements INotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final UserRepository userRepository;
     private final UserRecipientTokenRepository userRecipientTokenRepository;
     private final FirebaseMessaging firebaseMessaging;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
     public ImpNotificationService(
             NotificationRepository notificationRepository,
             UserRecipientTokenRepository userRecipientTokenRepository,
-            UserRepository userRepository,
-            FirebaseMessaging firebaseMessaging
+            UserService userService,
+            FirebaseMessaging firebaseMessaging,
+            UserRepository userRepository
     ) {
         this.notificationRepository = notificationRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.userRecipientTokenRepository = userRecipientTokenRepository;
         this.firebaseMessaging = firebaseMessaging;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -55,26 +59,22 @@ public class ImpNotificationService implements INotificationService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Notification> findAllNotificationsByUserId(UUID userId, Pageable pageable) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+    public Page<Notification> findAllNotificationsByUserId(Pageable pageable) {
+        User user = userService.getUser();
         return notificationRepository.findAllByUser(user, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Notification> findAllSentNotificationsByUserId(Pageable pageable, UUID senderId) {
-        User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new RuntimeException("Sender not found"));
+    public Page<Notification> findAllSentNotificationsByUserId(Pageable pageable) {
+        User sender = userService.getUser();
         return notificationRepository.findAllBySender(sender, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Notification> findAllReceivedNotificationsByUserId(Pageable pageable, UUID userId) {
-        User recipient = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Recipient not found"));
+    public Page<Notification> findAllReceivedNotificationsByUserId(Pageable pageable) {
+        User recipient = userService.getUser();
         return notificationRepository.findAllByReceiver(recipient, pageable);
     }
 
@@ -150,11 +150,8 @@ public class ImpNotificationService implements INotificationService {
         List<Notification> returnedNotifications = new ArrayList<>();
 
         List<User> users = userRepository.findAllById(notificationForManyCreateRequestDTO.getReceiverId());
-        User sender = null;
-        if (notificationForManyCreateRequestDTO.getSenderId() != null) {
-            sender = userRepository.findById(notificationForManyCreateRequestDTO.getSenderId())
-                    .orElseThrow(() -> new RuntimeException("Sender not found"));
-        }
+        User sender = userService.getUser();
+
         for (User user : users) {
             Notification notification = Notification.builder()
                     .notificationContent(notificationForManyCreateRequestDTO.getNotificationContent())
@@ -230,7 +227,8 @@ public class ImpNotificationService implements INotificationService {
 
     @Override
     @Transactional
-    public void addTokenToUser(UUID userId, String token) {
+    public void addTokenToUser(String token) {
+        UUID userId = userService.getUser().getId();
         // check if the token already exists for the user
         UserRecipientToken existingToken = userRecipientTokenRepository.findByFCMRecipientTokenAndUser_Id(token, userId);
         if (existingToken != null) {
@@ -247,15 +245,13 @@ public class ImpNotificationService implements INotificationService {
 
     @Override
     @Transactional
-    public void removeTokenFromUser(UUID userId, String token) {
-        UserRecipientToken existingToken = userRecipientTokenRepository.findByFCMRecipientTokenAndUser_Id(token, userId);
+    public void removeTokenFromUser(String token) {
+        User user = userService.getUser();
+        UserRecipientToken existingToken = userRecipientTokenRepository.findByFCMRecipientTokenAndUser_Id(token, user.getId());
         if (existingToken == null) {
             return;
         }
 
-        // Remove the token from the user's recipient tokens
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         user.getRecipientTokens().remove(existingToken);
 

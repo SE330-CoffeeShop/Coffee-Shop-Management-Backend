@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public interface ICartService {
     Page<Cart> getAllCarts(Pageable pageable);
-    Cart getCartByUserId(UUID userId);
-    Page<CartDetail> getAllCartDetailsByUserId(UUID userId, Pageable pageable);
-    Page<UUID> findBranchesWithSufficientInventory(UUID userId, Pageable pageable);
-    Cart addCartDetail(UUID userId, CartDetailCreateRequestDTO cartDetailCreateRequestDTO);
-    Cart removeCartDetail(UUID userId, UUID cartDetailId);
-    Cart updateCartDetail(UUID userId, CartDetailCreateRequestDTO cartDetailCreateRequestDTO);
-    Cart clearCart(UUID userId);
+    Cart getCartByUserId();
+    Page<CartDetail> getAllCartDetailsByUserId(Pageable pageable);
+    Page<UUID> findBranchesWithSufficientInventory(Pageable pageable);
+    Cart addCartDetail(CartDetailCreateRequestDTO cartDetailCreateRequestDTO);
+    Cart removeCartDetail(UUID cartDetailId);
+    Cart updateCartDetail(CartDetailCreateRequestDTO cartDetailCreateRequestDTO);
+    Cart clearCart();
 }

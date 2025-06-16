@@ -37,7 +37,7 @@ public class FavoritedDrinkController {
         this.favoriteDrinkService = favoriteDrinkService;
     }
 
-    @PostMapping("/{userId}/{drinkId}")
+    @PostMapping("/{drinkId}")
     @Operation(
             summary = "Add a drink to user's favorites",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -69,10 +69,9 @@ public class FavoritedDrinkController {
             }
     )
     public ResponseEntity<SingleResponse<Map<String, UUID>>> addFavoriteDrink(
-            @PathVariable UUID userId,
             @PathVariable UUID drinkId) {
 
-        UUID favoriteId = favoriteDrinkService.addFavoriteDrink(userId, drinkId);
+        UUID favoriteId = favoriteDrinkService.addFavoriteDrink(drinkId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new SingleResponse<>(
@@ -83,7 +82,7 @@ public class FavoritedDrinkController {
         );
     }
 
-    @DeleteMapping("/{userId}/{drinkId}")
+    @DeleteMapping("/{drinkId}")
     @Operation(
             summary = "Remove a drink from user's favorites",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -103,14 +102,13 @@ public class FavoritedDrinkController {
             }
     )
     public ResponseEntity<Void> removeFavoriteDrink(
-            @PathVariable UUID userId,
             @PathVariable UUID drinkId) {
 
-        favoriteDrinkService.removeFavoriteDrink(userId, drinkId);
+        favoriteDrinkService.removeFavoriteDrink(drinkId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     @Operation(
             summary = "Get all favorite drinks for a user",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -134,7 +132,6 @@ public class FavoritedDrinkController {
             }
     )
     public ResponseEntity<PageResponse<ProductResponseDTO>> getUserFavoriteDrinks(
-            @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -143,7 +140,7 @@ public class FavoritedDrinkController {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
 
-        Page<Product> products = favoriteDrinkService.findAllFavoriteDrinksByUserId(userId, pageable);
+        Page<Product> products = favoriteDrinkService.findAllFavoriteDrinksByUserId(pageable);
 
         List<ProductResponseDTO> productDTOs = ProductResponseDTO.convert(products.getContent());
 
@@ -202,7 +199,7 @@ public class FavoritedDrinkController {
         );
     }
 
-    @GetMapping("/{userId}/{drinkId}")
+    @GetMapping("/{drinkId}")
     @Operation(
             summary = "Check if a drink is favorited by a user",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -226,14 +223,13 @@ public class FavoritedDrinkController {
             }
     )
     public ResponseEntity<SingleResponse<Boolean>> isDrinkFavoritedByUser(
-            @PathVariable UUID userId,
             @PathVariable UUID drinkId) {
 
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
                         "Favorite status retrieved successfully",
-                        favoriteDrinkService.isDrinkFavoritedByUser(userId, drinkId)
+                        favoriteDrinkService.isDrinkFavoritedByUser(drinkId)
                 )
         );
     }

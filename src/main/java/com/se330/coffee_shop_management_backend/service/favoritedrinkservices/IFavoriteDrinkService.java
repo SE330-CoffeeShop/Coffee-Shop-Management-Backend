@@ -7,9 +7,9 @@ import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 
 public interface IFavoriteDrinkService {
-    UUID addFavoriteDrink(UUID userId, UUID drinkId);
-    void removeFavoriteDrink(UUID userId, UUID drinkId);
-    Page<Product> findAllFavoriteDrinksByUserId(UUID userId, Pageable pageable);
+    UUID addFavoriteDrink(UUID drinkId);
+    void removeFavoriteDrink(UUID drinkId);
+    Page<Product> findAllFavoriteDrinksByUserId(Pageable pageable);
     Page<Product> findTheMostFavoritedDrink(Pageable pageable);
-    boolean isDrinkFavoritedByUser(UUID userId, UUID drinkId);
+    boolean isDrinkFavoritedByUser(UUID drinkId);
 }

@@ -9,7 +9,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ShippingAddressesUpdateRequestDTO {
     private UUID shippingAddressId;
-    private UUID userId;
     private String addressLine;
     private String addressCity;
     private String addressDistrict;

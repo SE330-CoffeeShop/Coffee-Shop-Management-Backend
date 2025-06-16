@@ -6,6 +6,7 @@ import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.repository.FavoriteDrinkRepository;
 import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository;
+import com.se330.coffee_shop_management_backend.service.UserService;
 import com.se330.coffee_shop_management_backend.service.favoritedrinkservices.IFavoriteDrinkService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -22,20 +23,24 @@ public class ImpFavoriteDrinkService implements IFavoriteDrinkService {
 
     private final FavoriteDrinkRepository favoriteDrinkRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final ProductRepository productRepository;
 
     public ImpFavoriteDrinkService(
             FavoriteDrinkRepository favoriteDrinkRepository,
             UserRepository userRepository,
+            UserService userService,
             ProductRepository productRepository) {
         this.favoriteDrinkRepository = favoriteDrinkRepository;
+        this.userService = userService;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
     }
 
     @Override
     @Transactional
-    public UUID addFavoriteDrink(UUID userId, UUID drinkId) {
+    public UUID addFavoriteDrink(UUID drinkId) {
+        UUID userId = userService.getUser().getId();
         Optional<FavoriteDrink> existingFavorite = favoriteDrinkRepository.findByUser_IdAndProduct_Id(userId, drinkId);
         if (existingFavorite.isPresent()) {
             return existingFavorite.get().getId();
@@ -60,7 +65,8 @@ public class ImpFavoriteDrinkService implements IFavoriteDrinkService {
 
     @Override
     @Transactional
-    public void removeFavoriteDrink(UUID userId, UUID drinkId) {
+    public void removeFavoriteDrink(UUID drinkId) {
+        UUID userId = userService.getUser().getId();
         FavoriteDrink favoriteDrink = favoriteDrinkRepository.findByUser_IdAndProduct_Id(userId, drinkId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Favorite drink not found for user id: " + userId + " and product id: " + drinkId));
@@ -70,8 +76,9 @@ public class ImpFavoriteDrinkService implements IFavoriteDrinkService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Product> findAllFavoriteDrinksByUserId(UUID userId, Pageable pageable) {
+    public Page<Product> findAllFavoriteDrinksByUserId(Pageable pageable) {
         // Check if user exists
+        UUID userId = userService.getUser().getId();
         if (!userRepository.existsById(userId)) {
             throw new RuntimeException("User not found with id: " + userId);
         }
@@ -95,7 +102,8 @@ public class ImpFavoriteDrinkService implements IFavoriteDrinkService {
     }
 
     @Override
-    public boolean isDrinkFavoritedByUser(UUID userId, UUID drinkId) {
+    public boolean isDrinkFavoritedByUser(UUID drinkId) {
+        UUID userId = userService.getUser().getId();
         return favoriteDrinkRepository.existsFavoriteDrinkByUser_IdAndProduct_Id(userId, drinkId);
     }
 }
