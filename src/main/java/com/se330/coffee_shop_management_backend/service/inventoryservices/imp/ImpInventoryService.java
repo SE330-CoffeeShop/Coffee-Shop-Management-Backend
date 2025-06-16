@@ -67,7 +67,7 @@ public class ImpInventoryService implements IInventoryService {
         Branch existingBranch = branchRepository.findById(inventoryCreateRequestDTO.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch not found"));
 
-        return inventoryRepository.save(
+        Inventory newInventory = inventoryRepository.save(
                 Inventory.builder()
                         .ingredient(existingIngredient)
                         .branch(existingBranch)
@@ -75,6 +75,8 @@ public class ImpInventoryService implements IInventoryService {
                         .inventoryExpireDate(inventoryCreateRequestDTO.getInventoryExpireDate())
                         .build()
         );
+
+        return findByIdInventory(newInventory.getId());
     }
 
     @Transactional
@@ -104,7 +106,9 @@ public class ImpInventoryService implements IInventoryService {
         existingInventory.setInventoryQuantity(inventoryUpdateRequestDTO.getInventoryQuantity());
         existingInventory.setInventoryExpireDate(inventoryUpdateRequestDTO.getInventoryExpireDate());
 
-        return inventoryRepository.save(existingInventory);
+        inventoryRepository.save(existingInventory);
+
+        return findByIdInventory(existingInventory.getId());
     }
 
     @Transactional

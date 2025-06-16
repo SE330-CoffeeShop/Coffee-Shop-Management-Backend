@@ -1,6 +1,9 @@
 package com.se330.coffee_shop_management_backend.repository;
 
 import com.se330.coffee_shop_management_backend.entity.Salary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -20,6 +24,7 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
         AND EXTRACT(MONTH FROM c.checkinTime) = :month
         AND EXTRACT(YEAR FROM c.checkinTime) = :year
     """)
+    @EntityGraph(attributePaths = {"employee"})
     BigDecimal calculateTotalSalaryForEmployeeInMonthAndYear(
             @Param("employeeId") UUID employeeId,
             @Param("month") int month,
@@ -27,9 +32,22 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
     );
 
     @Query("SELECT s FROM Salary s WHERE s.employee.id = :employeeId AND s.month = :month AND s.year = :year")
+    @EntityGraph(attributePaths = {"employee"})
     Salary findByEmployeeIdAndMonthAndYear(
             @Param("employeeId") UUID employeeId,
             @Param("month") int month,
             @Param("year") int year
     );
+
+    @Override
+    @EntityGraph(attributePaths = {"employee"})
+    Optional<Salary> findById(UUID id);
+
+    @Override
+    @EntityGraph(attributePaths = {"employee"})
+    Page<Salary> findAll(Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"employee"})
+    Salary save(Salary salary);
 }

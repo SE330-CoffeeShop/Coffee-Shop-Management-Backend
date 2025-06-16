@@ -18,6 +18,5 @@ public interface IOrderService {
     Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, UUID branchId, Pageable pageable);
     Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO);
     Order createOrderForEmployee(EmployeeOrderRequestDTO employeeOrderRequestDTO);
-    Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO);
     void deleteOrder(UUID id);
 }

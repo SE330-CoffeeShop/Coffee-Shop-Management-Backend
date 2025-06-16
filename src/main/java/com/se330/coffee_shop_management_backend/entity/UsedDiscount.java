@@ -15,7 +15,7 @@ import lombok.*;
 })
 public class UsedDiscount extends AbstractBaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "discount_id",
             foreignKey = @ForeignKey(
@@ -25,7 +25,7 @@ public class UsedDiscount extends AbstractBaseEntity {
     )
     private Discount discount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "order_detail_id",
             foreignKey = @ForeignKey(
@@ -38,7 +38,7 @@ public class UsedDiscount extends AbstractBaseEntity {
     @Column(name = "times_use", nullable = false)
     private int timesUse;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "cart_detail_id",
             foreignKey = @ForeignKey(

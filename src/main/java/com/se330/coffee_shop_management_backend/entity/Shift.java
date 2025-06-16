@@ -26,7 +26,7 @@ public class Shift extends AbstractBaseEntity {
     @Column(name = "shift_end_time", nullable = false)
     private LocalTime shiftEndTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "employee_id",
             foreignKey = @ForeignKey(

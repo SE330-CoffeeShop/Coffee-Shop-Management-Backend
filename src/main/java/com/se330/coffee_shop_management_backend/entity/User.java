@@ -48,7 +48,7 @@ public class User extends AbstractBaseEntity {
     @Column(name = "birth_date", nullable = false)
     private LocalDateTime birthDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "role_id",
             foreignKey = @ForeignKey(
@@ -71,7 +71,7 @@ public class User extends AbstractBaseEntity {
     private LocalDateTime blockedAt;
 
     // association with employee
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Employee employee;
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -90,7 +90,7 @@ public class User extends AbstractBaseEntity {
     @Builder.Default
     private List<ShippingAddresses> shippingAddresses = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Cart cart;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

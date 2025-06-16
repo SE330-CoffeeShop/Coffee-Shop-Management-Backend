@@ -31,7 +31,7 @@ public class Invoice extends AbstractBaseEntity {
     @Builder.Default
     private List<InvoiceDetail> invoiceDetails = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "supplier_id",
             foreignKey = @ForeignKey(
@@ -41,7 +41,7 @@ public class Invoice extends AbstractBaseEntity {
     )
     private Supplier supplier;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "warehouse_id",
             foreignKey = @ForeignKey(

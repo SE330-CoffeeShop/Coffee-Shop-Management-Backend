@@ -45,6 +45,7 @@ public class BranchResponseDTO {
     private String branchPhone;
     private String branchEmail;
     private String managerId;
+    private String managerName;
 
     public static BranchResponseDTO convert(Branch branch) {
         return BranchResponseDTO.builder()
@@ -56,6 +57,7 @@ public class BranchResponseDTO {
                 .branchPhone(branch.getBranchPhone())
                 .branchEmail(branch.getBranchEmail())
                 .managerId(branch.getManager() != null ? branch.getManager().getId().toString() : null)
+                .managerName(branch.getManager() != null ? branch.getManager().getUser().getFullName() : null)
                 .build();
     }
 

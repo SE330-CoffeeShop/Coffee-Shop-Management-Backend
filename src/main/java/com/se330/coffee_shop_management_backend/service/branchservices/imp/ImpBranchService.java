@@ -6,7 +6,6 @@ import com.se330.coffee_shop_management_backend.dto.request.notification.Notific
 import com.se330.coffee_shop_management_backend.dto.response.branch.BranchIdWithRevenueResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Branch;
 import com.se330.coffee_shop_management_backend.entity.Employee;
-import com.se330.coffee_shop_management_backend.entity.Role;
 import com.se330.coffee_shop_management_backend.repository.BranchRepository;
 import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.service.RoleService;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -82,7 +80,7 @@ public class ImpBranchService implements IBranchService {
                         .build()
         );
 
-        return newBranch;
+        return findByIdBranch(newBranch.getId());
     }
 
     @Override
@@ -117,7 +115,9 @@ public class ImpBranchService implements IBranchService {
         existingBranch.setBranchPhone(branchUpdateRequestDTO.getBranchPhone());
         existingBranch.setBranchEmail(branchUpdateRequestDTO.getBranchEmail());
 
-        return branchRepository.save(existingBranch);
+        branchRepository.save(existingBranch);
+
+        return findByIdBranch(existingBranch.getId());
     }
 
     @Override

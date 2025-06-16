@@ -37,7 +37,7 @@ public class Catalog {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_catalog_id")
     private Catalog parentCatalog;
 

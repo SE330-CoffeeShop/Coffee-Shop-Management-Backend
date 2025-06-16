@@ -100,12 +100,6 @@ public class ImpOrderService implements IOrderService {
     @Transactional
     public Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) {
         Employee existingEmployee = null;
-
-        if (orderCreateRequestDTO.getEmployeeId() != null) {
-            existingEmployee = employeeRepository.findById(orderCreateRequestDTO.getEmployeeId())
-                    .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + orderCreateRequestDTO.getEmployeeId()));
-        }
-
         Branch existingBranch = null;
 
         if (orderCreateRequestDTO.getBranchId() != null) {
@@ -113,8 +107,7 @@ public class ImpOrderService implements IOrderService {
                     .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + orderCreateRequestDTO.getBranchId()));
         }
 
-        User existingUser = userRepository.findById(orderCreateRequestDTO.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderCreateRequestDTO.getUserId()));
+        User existingUser = userService.getUser();
 
         ShippingAddresses existingShippingAddress = null;
         if (orderCreateRequestDTO.getShippingAddressId() != null) {
@@ -125,13 +118,13 @@ public class ImpOrderService implements IOrderService {
         PaymentMethods existingPaymentMethod = paymentMethodsRepository.findById(orderCreateRequestDTO.getPaymentMethodId())
                 .orElseThrow(() -> new EntityNotFoundException("Payment method not found with id:" + orderCreateRequestDTO.getPaymentMethodId()));
         
-        Cart existingCart = cartRepository.findByUser_Id(orderCreateRequestDTO.getUserId());
+        Cart existingCart = cartRepository.findByUser_Id(existingUser.getId());
 
         // create order first
         Order newOrder = orderRepository.save(
             Order.builder()
                     .employee(existingEmployee)
-                    .orderStatus(orderCreateRequestDTO.getOrderStatus())
+                    .orderStatus(Constants.OrderStatusEnum.PENDING)
                     .orderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"))
                     .user(existingUser)
                     .shippingAddress(existingShippingAddress)
@@ -302,91 +295,6 @@ public class ImpOrderService implements IOrderService {
         }
 
         return finalOrder;
-    }
-
-
-    @Override
-    @Transactional
-    public Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO) {
-        Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
-                .orElseThrow(() -> new EntityNotFoundException("Order not found with id:" + orderUpdateRequestDTO.getOrderId()));
-
-        User existingUser = userRepository.findById(orderUpdateRequestDTO.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id:" + orderUpdateRequestDTO.getUserId()));
-
-        ShippingAddresses existingShippingAddress = shippingAddressesRepository.findById(orderUpdateRequestDTO.getShippingAddressId())
-                .orElseThrow(() -> new EntityNotFoundException("Shipping address not found with id:" + orderUpdateRequestDTO.getShippingAddressId()));
-
-        if (orderUpdateRequestDTO.getBranchId() != null) {
-            Branch existingBranch = branchRepository.findById(orderUpdateRequestDTO.getBranchId())
-                    .orElseThrow(() -> new EntityNotFoundException("Branch not found with id:" + orderUpdateRequestDTO.getBranchId()));
-            existingOrder.setBranch(existingBranch);
-        }
-        
-        if (existingOrder.getEmployee() == null) {
-            if (orderUpdateRequestDTO.getEmployeeId() != null) {
-                Employee existingEmployee = employeeRepository.findById(orderUpdateRequestDTO.getEmployeeId())
-                        .orElseThrow(() -> new EntityNotFoundException("Employee not found with id:" + orderUpdateRequestDTO.getEmployeeId()));
-                
-                existingOrder.setEmployee(existingEmployee);
-                existingOrder.setOrderStatus(Constants.OrderStatusEnum.PROCESSING);
-                
-                notificationService.createNotification(NotificationCreateRequestDTO.builder()
-                                .notificationType(Constants.NotificationTypeEnum.ORDER)
-                                .receiverId(existingEmployee.getUser().getId())
-                                .notificationContent(CreateNotiContentHelper.createOrderReceivedContent(existingOrder.getId()))
-                                .senderId(null)
-                                .isRead(false)
-                        .build());
-            }
-        }
-
-        if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.COMPLETED && existingOrder.getOrderStatus() != Constants.OrderStatusEnum.COMPLETED) {
-            notificationService.createNotification(NotificationCreateRequestDTO.builder()
-                            .notificationType(Constants.NotificationTypeEnum.ORDER)
-                            .receiverId(existingUser.getId())
-                            .notificationContent(CreateNotiContentHelper.createOrderCompletedContent(existingOrder.getId()))
-                            .senderId(null)
-                            .isRead(false)
-                    .build());
-        }
-
-        if (existingOrder.getOrderStatus() != Constants.OrderStatusEnum.DELIVERING && orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERING) {
-            notificationService.createNotification(NotificationCreateRequestDTO.builder()
-                    .notificationType(Constants.NotificationTypeEnum.ORDER)
-                    .receiverId(existingUser.getId())
-                    .notificationContent(CreateNotiContentHelper.orderDeliveringContent(existingOrder.getId()))
-                    .senderId(null)
-                    .isRead(false)
-                    .build());
-        }
-
-        if (existingOrder.getOrderStatus() != Constants.OrderStatusEnum.DELIVERED && orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERED) {
-            notificationService.createNotification(NotificationCreateRequestDTO.builder()
-                    .notificationType(Constants.NotificationTypeEnum.ORDER)
-                    .receiverId(existingUser.getId())
-                    .notificationContent(CreateNotiContentHelper.orderDeliveredContent(existingOrder.getId()))
-                    .senderId(null)
-                    .isRead(false)
-                    .build());
-        }
-
-        if (existingOrder.getOrderStatus() != Constants.OrderStatusEnum.CANCELLED && orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.CANCELLED) {
-            notificationService.createNotification(NotificationCreateRequestDTO.builder()
-                            .notificationType(Constants.NotificationTypeEnum.ORDER)
-                            .receiverId(existingUser.getId())
-                            .notificationContent(CreateNotiContentHelper.createOrderCancelledContent(existingOrder.getId()))
-                            .senderId(null)
-                            .isRead(false)
-                    .build());
-        }
-
-        existingOrder.setUser(existingUser);
-        existingOrder.setShippingAddress(existingShippingAddress);
-        existingOrder.setOrderStatus(orderUpdateRequestDTO.getOrderStatus());
-        existingOrder.setOrderTrackingNumber(CreateTrackingNumber.createTrackingNumber("ORDER"));
-        
-        return orderRepository.save(existingOrder);
     }
 
     @Override

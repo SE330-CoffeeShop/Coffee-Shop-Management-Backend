@@ -3,6 +3,7 @@ package com.se330.coffee_shop_management_backend.repository;
 import com.se330.coffee_shop_management_backend.entity.Branch;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,10 +17,15 @@ import java.util.UUID;
 @Repository
 public interface BranchRepository extends JpaRepository<Branch, UUID> {
     @Override
+    @EntityGraph(attributePaths = {"manager", "manager.user"})
     Page<Branch> findAll(Pageable pageable);
 
     @Override
     List<Branch> findAll();
+
+    @Override
+    @EntityGraph(attributePaths = {"manager", "manager.user"})
+    Optional<Branch> findById(UUID id);
 
     // Case 1: Filter by branch and year
     @Query("SELECT COALESCE(SUM(o.orderTotalCost), 0) FROM Order o " +

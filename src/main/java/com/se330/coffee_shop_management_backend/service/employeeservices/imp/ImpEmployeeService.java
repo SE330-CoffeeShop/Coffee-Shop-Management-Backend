@@ -113,7 +113,7 @@ public class ImpEmployeeService implements IEmployeeService {
                         .build()
         );
 
-        return  newEmployee;
+        return findByIdEmployee(newEmployee.getId());
     }
 
     @Transactional
@@ -149,7 +149,9 @@ public class ImpEmployeeService implements IEmployeeService {
                         .build()
         );
 
-        return employeeRepository.save(existingEmployee);
+        employeeRepository.save(existingEmployee);
+
+        return findByIdEmployee(existingEmployee.getId());
     }
 
     @Transactional
