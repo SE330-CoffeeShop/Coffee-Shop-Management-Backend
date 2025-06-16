@@ -1,11 +1,13 @@
 package com.se330.coffee_shop_management_backend.controller;
 
+import com.se330.coffee_shop_management_backend.dto.request.cart.EmployeeCartRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.cart.CartResponseDTO;
+import com.se330.coffee_shop_management_backend.dto.response.cart.EmployeeViewCartDiscountResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.discount.DiscountResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Cart;
 import com.se330.coffee_shop_management_backend.entity.Discount;
@@ -393,7 +395,7 @@ public class DiscountController {
         );
     }
 
-    @PutMapping("/apply-to-cart/{cartId}")
+    @PutMapping("/apply-to-cart")
     @Transactional
     @Operation(
             summary = "Apply discounts to cart items",
@@ -435,16 +437,70 @@ public class DiscountController {
             }
     )
     public ResponseEntity<SingleResponse<CartResponseDTO>> applyDiscountToCart(
-            @PathVariable UUID cartId,
             @RequestParam UUID branchId) {
 
-        Cart updatedCart = discountService.applyDiscountToCart(cartId, branchId);
+        Cart updatedCart = discountService.applyDiscountToCart(branchId);
 
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
                         "Discounts applied to cart successfully",
                         CartResponseDTO.convert(updatedCart)
+                )
+        );
+    }
+
+    @PutMapping("/employee/apply-to-cart")
+    @Transactional
+    @Operation(
+            summary = "Apply discounts to cart for employee",
+            description = "Applies applicable discounts to items in the cart based on employee-specific cart request",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Discounts applied successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Resource not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<EmployeeViewCartDiscountResponseDTO>> applyDiscountToEmployeeCart(
+            @RequestBody EmployeeCartRequestDTO employeeCartRequestDTO) {
+
+        EmployeeViewCartDiscountResponseDTO response = discountService.applyDiscountToCart(employeeCartRequestDTO);
+
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Discounts applied to employee cart successfully",
+                        response
                 )
         );
     }

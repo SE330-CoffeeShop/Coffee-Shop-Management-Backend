@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.controller;
 
+import com.se330.coffee_shop_management_backend.dto.request.order.EmployeeOrderRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
@@ -377,6 +378,53 @@ public class OrderController {
                                 orderPage.getTotalElements(),
                                 orderPage.getTotalPages()
                         )
+                )
+        );
+    }
+
+    @PostMapping("/employee")
+    @PreAuthorize("hasAuthority('EMPLOYEE')")
+    @Operation(
+            summary = "Create order for employee",
+            description = "Creates a new order through an employee",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Order created successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<OrderResponseDTO>> createOrderForEmployee(
+            @RequestBody EmployeeOrderRequestDTO employeeOrderRequestDTO) {
+
+        OrderResponseDTO order = OrderResponseDTO.convert(orderService.createOrderForEmployee(employeeOrderRequestDTO));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Order created by employee successfully",
+                        order
                 )
         );
     }
