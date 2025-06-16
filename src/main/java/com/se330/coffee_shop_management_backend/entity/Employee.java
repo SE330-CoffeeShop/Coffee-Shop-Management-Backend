@@ -31,7 +31,7 @@ public class Employee extends AbstractBaseEntity {
     private Branch managedBranch;
 
     // Many employees can belong to one branch
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "branch_id",
             foreignKey = @ForeignKey(
@@ -42,7 +42,7 @@ public class Employee extends AbstractBaseEntity {
     private Branch branch;
 
     // One employee is associated with exactly one user
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(
             name = "user_id",
             unique = true,

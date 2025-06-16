@@ -20,7 +20,7 @@ public class InvoiceDetail extends AbstractBaseEntity {
     @Column(name = "invoice_detail_unit", nullable = false)
     private String invoiceDetailUnit;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "ingredient_id",
             foreignKey = @ForeignKey(
@@ -30,7 +30,7 @@ public class InvoiceDetail extends AbstractBaseEntity {
     )
     private Ingredient ingredient;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "invoice_id",
             foreignKey = @ForeignKey(

@@ -43,7 +43,7 @@ public class OrderPayment extends AbstractBaseEntity {
     @Column(name = "failure_reason", columnDefinition = "text")
     private String failureReason;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(
             name = "order_id",
             foreignKey = @ForeignKey(
@@ -53,7 +53,7 @@ public class OrderPayment extends AbstractBaseEntity {
     )
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "payment_method_id",
             foreignKey = @ForeignKey(

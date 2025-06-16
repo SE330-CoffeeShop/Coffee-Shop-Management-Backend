@@ -15,7 +15,7 @@ import lombok.*;
         @AttributeOverride(name = "id", column = @Column(name = "favorite_drink_id"))
 })
 public class FavoriteDrink extends AbstractBaseEntity {
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "user_id",
             foreignKey = @ForeignKey(
@@ -25,7 +25,7 @@ public class FavoriteDrink extends AbstractBaseEntity {
     )
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(
             name = "product_id",
             foreignKey = @ForeignKey(
