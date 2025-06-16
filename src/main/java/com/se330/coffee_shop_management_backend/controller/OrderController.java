@@ -181,57 +181,6 @@ public class OrderController {
         );
     }
 
-    @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
-    @Operation(
-            summary = "Update order",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Order updated successfully",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = SingleResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Order not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
-    public ResponseEntity<SingleResponse<OrderResponseDTO>> updateOrder(@RequestBody OrderUpdateRequestDTO orderUpdateRequestDTO) {
-        OrderResponseDTO order = OrderResponseDTO.convert(orderService.updateOrder(orderUpdateRequestDTO));
-        return ResponseEntity.ok(
-                new SingleResponse<>(
-                        HttpStatus.OK.value(),
-                        "Order updated successfully",
-                        order
-                )
-        );
-    }
-
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
