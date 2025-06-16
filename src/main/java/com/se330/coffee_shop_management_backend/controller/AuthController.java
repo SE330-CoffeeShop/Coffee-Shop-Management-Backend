@@ -88,7 +88,7 @@ public class AuthController extends AbstractBaseController {
         TokenResponse tokenResponse = authService.login(request.getEmail(), request.getPassword(), false);
 
         if (request.getFirebaseToken() != null) {
-            notificationService.addTokenToUser(UUID.fromString(tokenResponse.getId()), request.getFirebaseToken());
+            notificationService.addTokenToUser(request.getFirebaseToken());
         }
 
         return ResponseEntity.ok(
@@ -399,7 +399,7 @@ public class AuthController extends AbstractBaseController {
         authService.logout(user);
 
         if (firebaseToken != null) {
-            notificationService.removeTokenFromUser(user.getId(), firebaseToken);
+            notificationService.removeTokenFromUser(firebaseToken);
         }
 
         return ResponseEntity.ok(

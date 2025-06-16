@@ -223,7 +223,7 @@ public class NotificationController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     @Operation(
             summary = "Get all notifications for a user with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -247,7 +247,6 @@ public class NotificationController {
             }
     )
     public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllNotificationsByUserId(
-            @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -255,7 +254,7 @@ public class NotificationController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Notification> notificationPage = notificationService.findAllNotificationsByUserId(userId, pageable);
+        Page<Notification> notificationPage = notificationService.findAllNotificationsByUserId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -272,7 +271,7 @@ public class NotificationController {
         );
     }
 
-    @GetMapping("/sent/user/{userId}")
+    @GetMapping("/sent/user")
     @Operation(
             summary = "Get all sent notifications by a user with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -296,7 +295,6 @@ public class NotificationController {
             }
     )
     public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllSentNotificationsByUserId(
-            @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -304,7 +302,7 @@ public class NotificationController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Notification> notificationPage = notificationService.findAllSentNotificationsByUserId(pageable, userId);
+        Page<Notification> notificationPage = notificationService.findAllSentNotificationsByUserId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -321,7 +319,7 @@ public class NotificationController {
         );
     }
 
-    @GetMapping("/received/user/{userId}")
+    @GetMapping("/received/user")
     @Operation(
             summary = "Get all received notifications by a user with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -345,7 +343,6 @@ public class NotificationController {
             }
     )
     public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllReceivedNotificationsByUserId(
-            @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -353,7 +350,7 @@ public class NotificationController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Notification> notificationPage = notificationService.findAllReceivedNotificationsByUserId(pageable, userId);
+        Page<Notification> notificationPage = notificationService.findAllReceivedNotificationsByUserId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(

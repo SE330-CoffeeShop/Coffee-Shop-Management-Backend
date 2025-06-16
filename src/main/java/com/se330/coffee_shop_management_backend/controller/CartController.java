@@ -85,7 +85,7 @@ public class CartController {
         );
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/userId")
     @Operation(
             summary = "Get cart by user ID",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -116,8 +116,8 @@ public class CartController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<CartResponseDTO>> getCartByUserId(@PathVariable UUID userId) {
-        CartResponseDTO cart = CartResponseDTO.convert(cartService.getCartByUserId(userId));
+    public ResponseEntity<SingleResponse<CartResponseDTO>> getCartByUserId() {
+        CartResponseDTO cart = CartResponseDTO.convert(cartService.getCartByUserId());
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
@@ -127,7 +127,7 @@ public class CartController {
         );
     }
 
-    @GetMapping("/branches/{userId}")
+    @GetMapping("/branches")
     @Operation(
             summary = "Find branches with sufficient inventory for a user's cart",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -159,13 +159,12 @@ public class CartController {
             }
     )
     public ResponseEntity<PageResponse<UUID>> findBranchesWithSufficientInventory(
-            @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, "desc", "id");
-        Page<UUID> branchPages = cartService.findBranchesWithSufficientInventory(userId, pageable);
+        Page<UUID> branchPages = cartService.findBranchesWithSufficientInventory(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -182,7 +181,7 @@ public class CartController {
         );
     }
 
-    @PostMapping("/{userId}/detail")
+    @PostMapping("/detail")
     @Operation(
             summary = "Add a cart detail to user's cart",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -214,10 +213,9 @@ public class CartController {
             }
     )
     public ResponseEntity<SingleResponse<CartResponseDTO>> addCartDetail(
-            @PathVariable UUID userId,
             @RequestBody CartDetailCreateRequestDTO cartDetailCreateRequestDTO
     ) {
-        CartResponseDTO cart = CartResponseDTO.convert(cartService.addCartDetail(userId, cartDetailCreateRequestDTO));
+        CartResponseDTO cart = CartResponseDTO.convert(cartService.addCartDetail(cartDetailCreateRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new SingleResponse<>(
                         HttpStatus.CREATED.value(),
@@ -227,7 +225,7 @@ public class CartController {
         );
     }
 
-    @PutMapping("/{userId}/detail")
+    @PutMapping("/detail")
     @Operation(
             summary = "Update a cart detail in user's cart",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -259,10 +257,9 @@ public class CartController {
             }
     )
     public ResponseEntity<SingleResponse<CartResponseDTO>> updateCartDetail(
-            @PathVariable UUID userId,
             @RequestBody CartDetailCreateRequestDTO cartDetailCreateRequestDTO
     ) {
-        CartResponseDTO cart = CartResponseDTO.convert(cartService.updateCartDetail(userId, cartDetailCreateRequestDTO));
+        CartResponseDTO cart = CartResponseDTO.convert(cartService.updateCartDetail(cartDetailCreateRequestDTO));
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
@@ -303,8 +300,8 @@ public class CartController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<CartResponseDTO>> clearCart(@PathVariable UUID userId) {
-        CartResponseDTO cart = CartResponseDTO.convert(cartService.clearCart(userId));
+    public ResponseEntity<SingleResponse<CartResponseDTO>> clearCart() {
+        CartResponseDTO cart = CartResponseDTO.convert(cartService.clearCart());
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
@@ -314,7 +311,7 @@ public class CartController {
         );
     }
 
-    @GetMapping("/{userId}/details")
+    @GetMapping("/details")
     @Operation(
             summary = "Get all cart details for a specific user with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -346,7 +343,6 @@ public class CartController {
             }
     )
     public ResponseEntity<PageResponse<CartDetailResponseDTO>> getAllCartDetailsByUserId(
-            @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -354,7 +350,7 @@ public class CartController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<CartDetail> cartDetailPages = cartService.getAllCartDetailsByUserId(userId, pageable);
+        Page<CartDetail> cartDetailPages = cartService.getAllCartDetailsByUserId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -371,7 +367,7 @@ public class CartController {
         );
     }
 
-    @DeleteMapping("/{userId}/detail/{cartDetailId}")
+    @DeleteMapping("/detail/{cartDetailId}")
     @Operation(
             summary = "Remove a cart detail from user's cart",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -403,10 +399,9 @@ public class CartController {
             }
     )
     public ResponseEntity<SingleResponse<CartResponseDTO>> removeCartDetail(
-            @PathVariable UUID userId,
             @PathVariable UUID cartDetailId
     ) {
-        CartResponseDTO cart = CartResponseDTO.convert(cartService.removeCartDetail(userId, cartDetailId));
+        CartResponseDTO cart = CartResponseDTO.convert(cartService.removeCartDetail(cartDetailId));
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),

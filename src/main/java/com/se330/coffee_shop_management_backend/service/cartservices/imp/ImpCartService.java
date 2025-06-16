@@ -5,6 +5,7 @@ import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
+import com.se330.coffee_shop_management_backend.service.UserService;
 import com.se330.coffee_shop_management_backend.service.cartservices.ICartService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class ImpCartService implements ICartService {
     private final ProductVariantRepository productVariantRepository;
     private final BranchRepository branchRepository;
     private final InventoryRepository inventoryRepository;
+    private final UserService userService;
 
     @Override
     @Transactional(readOnly = true)
@@ -37,7 +39,8 @@ public class ImpCartService implements ICartService {
 
     @Override
     @Transactional(readOnly = true)
-    public Cart getCartByUserId(UUID userId) {
+    public Cart getCartByUserId() {
+        UUID userId = userService.getUser().getId();
         if (cartRepository.existsByUser_Id(userId)) {
             return cartRepository.findByUser_Id(userId);
         } else {
@@ -56,13 +59,15 @@ public class ImpCartService implements ICartService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<CartDetail> getAllCartDetailsByUserId(UUID userId, Pageable pageable) {
+    public Page<CartDetail> getAllCartDetailsByUserId(Pageable pageable) {
+        UUID userId = userService.getUser().getId();
         return cartDetailRepository.findAllByCart_User_Id(userId, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<UUID> findBranchesWithSufficientInventory(UUID userId, Pageable pageable) {
+    public Page<UUID> findBranchesWithSufficientInventory(Pageable pageable) {
+        UUID userId = userService.getUser().getId();
         Cart existingCart = cartRepository.findByUser_Id(userId);
         if (existingCart == null || existingCart.getCartDetails().isEmpty()) {
             throw new IllegalArgumentException("Cart is empty");
@@ -118,8 +123,9 @@ public class ImpCartService implements ICartService {
 
     @Override
     @Transactional
-    public Cart addCartDetail(UUID userId, CartDetailCreateRequestDTO cartDetailCreateRequestDTO) {
+    public Cart addCartDetail(CartDetailCreateRequestDTO cartDetailCreateRequestDTO) {
         Cart existingCart = null;
+        UUID userId = userService.getUser().getId();
 
         if (!cartRepository.existsByUser_Id(userId))
             existingCart = cartRepository.save(
@@ -173,7 +179,8 @@ public class ImpCartService implements ICartService {
 
     @Override
     @Transactional
-    public Cart removeCartDetail(UUID userId, UUID cartDetailId) {
+    public Cart removeCartDetail(UUID cartDetailId) {
+        UUID userId = userService.getUser().getId();
         Cart existingCart = cartRepository.findByUser_Id(userId);
 
         if (existingCart == null) {
@@ -196,7 +203,8 @@ public class ImpCartService implements ICartService {
 
     @Override
     @Transactional
-    public Cart updateCartDetail(UUID userId, CartDetailCreateRequestDTO cartDetailCreateRequestDTO) {
+    public Cart updateCartDetail(CartDetailCreateRequestDTO cartDetailCreateRequestDTO) {
+        UUID userId = userService.getUser().getId();
         Cart existingCart = cartRepository.findByUser_Id(userId);
 
         if (existingCart == null) {
@@ -227,11 +235,13 @@ public class ImpCartService implements ICartService {
 
 
     @Transactional
-    public Cart clearCart(UUID userId) {
+    @Override
+    public Cart clearCart() {
+        UUID userId = userService.getUser().getId();
         Cart cart = cartRepository.findByUser_Id(userId);
 
         if (cart == null) {
-            return getCartByUserId(userId);
+            return getCartByUserId();
         }
 
         // Xóa tất cả cart details thông qua việc clear collection

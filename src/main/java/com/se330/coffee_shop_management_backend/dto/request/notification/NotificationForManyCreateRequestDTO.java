@@ -15,7 +15,6 @@ import java.util.UUID;
 public class NotificationForManyCreateRequestDTO {
     private Constants.NotificationTypeEnum notificationType;
     private String notificationContent;
-    private UUID senderId;
     private List<UUID> receiverId;
     private boolean isRead;
 }

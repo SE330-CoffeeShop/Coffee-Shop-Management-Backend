@@ -13,15 +13,15 @@ import java.util.UUID;
 public interface INotificationService {
     Notification findByIdNotification(UUID id);
     Page<Notification> findAllNotifications(Pageable pageable);
-    Page<Notification> findAllNotificationsByUserId(UUID userId, Pageable pageable);
-    Page<Notification> findAllSentNotificationsByUserId(Pageable pageable, UUID userId);
-    Page<Notification> findAllReceivedNotificationsByUserId(Pageable pageable, UUID userId);
+    Page<Notification> findAllNotificationsByUserId(Pageable pageable);
+    Page<Notification> findAllSentNotificationsByUserId(Pageable pageable);
+    Page<Notification> findAllReceivedNotificationsByUserId(Pageable pageable);
     Notification createNotification(NotificationCreateRequestDTO notificationCreateRequestDTO);
     Notification updateNotification(NotificationUpdateRequestDTO notificationUpdateRequestDTO);
     Page<Notification> sendNotificationToMany(NotificationForManyCreateRequestDTO notificationForManyCreateRequestDTO);
     Page<Notification> sendNotificationToAllUsers(NotificationCreateRequestDTO notificationCreateRequestDTO);
     void deleteNotification(UUID id);
-    void addTokenToUser(UUID userId, String token);
-    void removeTokenFromUser(UUID userId, String token);
+    void addTokenToUser(String token);
+    void removeTokenFromUser(String token);
     void sendLoginPushNotification(User user);
 }
