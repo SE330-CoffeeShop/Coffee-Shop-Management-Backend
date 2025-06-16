@@ -40,70 +40,78 @@ public class VariantAndIngredient {
     private void createProductVariant() {
         log.info("Creating product variants...");
 
-        // Get products from repository
         List<Product> products = productRepository.findAll();
 
-        // Filter only products from Trà, Cà phê and Freeze categories
-        List<Product> filteredProducts = products.stream()
-                .filter(product -> {
-                    String categoryName = product.getProductCategory().getCategoryName();
-                    return categoryName.equals("Trà") ||
-                            categoryName.equals("Cà phê") ||
-                            categoryName.equals("Freeze");
-                })
-                .toList();
-
-        if (filteredProducts.isEmpty()) {
-            log.error("Cannot create product variants: No products found in Trà, Cà phê, or Freeze categories");
+        if (products.isEmpty()) {
+            log.error("Cannot create product variants: No products found");
             return;
         }
 
         List<ProductVariant> productVariants = new ArrayList<>();
 
-        // For each product, create S, M, L variants
-        for (Product product : filteredProducts) {
-            // Size S variant (smallest)
-            ProductVariant smallVariant = ProductVariant.builder()
-                    .variantTierIdx("small")
-                    .variantDefault(false)
-                    .variantSlug(product.getProductSlug() + "-small")
-                    .variantSort(1)
-                    .variantPrice(BigDecimal.valueOf((product.getProductPrice().doubleValue() * 0.8))) // 80% of base price, converted to VND
-                    .variantIsPublished(true)
-                    .variantIsDeleted(false)
-                    .product(product)
-                    .build();
-            productVariants.add(smallVariant);
+        for (Product product : products) {
+            String categoryName = product.getProductCategory().getCategoryName();
 
-            // Size M variant (default)
-            ProductVariant mediumVariant = ProductVariant.builder()
-                    .variantTierIdx("medium")
-                    .variantDefault(true) // Set as default
-                    .variantSlug(product.getProductSlug() + "-medium")
-                    .variantSort(2)
-                    .variantPrice(BigDecimal.valueOf(product.getProductPrice().longValue())) // Base price, converted to VND
-                    .variantIsPublished(true)
-                    .variantIsDeleted(false)
-                    .product(product)
-                    .build();
-            productVariants.add(mediumVariant);
+            // For beverages (Trà, Cà phê, Freeze), create S, M, L variants
+            if (categoryName.equals("Trà") || categoryName.equals("Cà phê") || categoryName.equals("Freeze")) {
+                // Size S variant (smallest)
+                ProductVariant smallVariant = ProductVariant.builder()
+                        .variantTierIdx("small")
+                        .variantDefault(false)
+                        .variantSlug(product.getProductSlug() + "-small")
+                        .variantSort(1)
+                        .variantPrice(BigDecimal.valueOf((product.getProductPrice().doubleValue() * 0.8)))
+                        .variantIsPublished(true)
+                        .variantIsDeleted(false)
+                        .product(product)
+                        .build();
+                productVariants.add(smallVariant);
 
-            // Size L variant (largest)
-            ProductVariant largeVariant = ProductVariant.builder()
-                    .variantTierIdx("large")
-                    .variantDefault(false)
-                    .variantSlug(product.getProductSlug() + "-large")
-                    .variantSort(3)
-                    .variantPrice(BigDecimal.valueOf((product.getProductPrice().doubleValue() * 1.2))) // 120% of base price, converted to VND
-                    .variantIsPublished(true)
-                    .variantIsDeleted(false)
-                    .product(product)
-                    .build();
-            productVariants.add(largeVariant);
+                // Size M variant (default)
+                ProductVariant mediumVariant = ProductVariant.builder()
+                        .variantTierIdx("medium")
+                        .variantDefault(true)
+                        .variantSlug(product.getProductSlug() + "-medium")
+                        .variantSort(2)
+                        .variantPrice(BigDecimal.valueOf(product.getProductPrice().longValue()))
+                        .variantIsPublished(true)
+                        .variantIsDeleted(false)
+                        .product(product)
+                        .build();
+                productVariants.add(mediumVariant);
+
+                // Size L variant (largest)
+                ProductVariant largeVariant = ProductVariant.builder()
+                        .variantTierIdx("large")
+                        .variantDefault(false)
+                        .variantSlug(product.getProductSlug() + "-large")
+                        .variantSort(3)
+                        .variantPrice(BigDecimal.valueOf((product.getProductPrice().doubleValue() * 1.2)))
+                        .variantIsPublished(true)
+                        .variantIsDeleted(false)
+                        .product(product)
+                        .build();
+                productVariants.add(largeVariant);
+            }
+            // For non-beverages (Đồ ăn, Khác), create one default variant with the same properties as the product
+            else {
+                // Single default variant
+                ProductVariant defaultVariant = ProductVariant.builder()
+                        .variantTierIdx("default")
+                        .variantDefault(true)
+                        .variantSlug(product.getProductSlug() + "-default")
+                        .variantSort(1)
+                        .variantPrice(product.getProductPrice())
+                        .variantIsPublished(product.getProductIsPublished())
+                        .variantIsDeleted(product.getProductIsDeleted())
+                        .product(product)
+                        .build();
+                productVariants.add(defaultVariant);
+            }
         }
 
         productVariantRepository.saveAll(productVariants);
-        log.info("Created {} product variants for {} products", productVariants.size(), filteredProducts.size());
+        log.info("Created {} product variants for {} products", productVariants.size(), products.size());
     }
 
     private void createIngredient() {
