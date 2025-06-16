@@ -179,7 +179,7 @@ public class ImpCartService implements ICartService {
 
     @Override
     @Transactional
-    public Cart removeCartDetail(UUID cartDetailId) {
+    public Cart removeProductVariantFromCart(UUID productVariantId) {
         UUID userId = userService.getUser().getId();
         Cart existingCart = cartRepository.findByUser_Id(userId);
 
@@ -187,12 +187,42 @@ public class ImpCartService implements ICartService {
             throw new IllegalArgumentException("Cart not found for user ID: " + userId);
         }
 
-        CartDetail existingCartDetail = cartDetailRepository.findById(cartDetailId)
-                .orElseThrow(() -> new IllegalArgumentException("Cart detail not found with ID: " + cartDetailId));
+        CartDetail existingCartDetail = cartDetailRepository.findByCart_IdAndProductVariant_Id(existingCart.getId(), productVariantId);
 
-        if (!existingCartDetail.getCart().getId().equals(existingCart.getId())) {
-            throw new IllegalArgumentException("Cart detail does not belong to the user's cart");
+        if (existingCartDetail == null) {
+            throw new IllegalArgumentException("Cart detail not found for product variant ID: " + productVariantId);
         }
+
+        if (existingCartDetail.getCartDetailQuantity() > 1) {
+            existingCartDetail.setCartDetailQuantity(existingCartDetail.getCartDetailQuantity() - 1);
+            cartDetailRepository.save(existingCartDetail);
+        } else {
+            existingCart.getCartDetails().remove(existingCartDetail);
+            cartDetailRepository.delete(existingCartDetail);
+        }
+
+        calculateCartTotalCost(existingCart);
+
+        return cartRepository.findById(existingCart.getId()).orElseThrow();
+    }
+
+    @Override
+    @Transactional
+    public Cart removeAllWithSpecificVariant(UUID variantId) {
+        UUID userId = userService.getUser().getId();
+        Cart existingCart = cartRepository.findByUser_Id(userId);
+
+        if (existingCart == null) {
+            throw new IllegalArgumentException("Cart not found for user ID: " + userId);
+        }
+
+        CartDetail existingCartDetail = cartDetailRepository.findByCart_IdAndProductVariant_Id(existingCart.getId(), variantId);
+
+        if (existingCartDetail == null) {
+            throw new IllegalArgumentException("Cart detail not found for product variant ID: " + variantId);
+        }
+
+        existingCart.getCartDetails().remove(existingCartDetail);
 
         cartDetailRepository.delete(existingCartDetail);
 

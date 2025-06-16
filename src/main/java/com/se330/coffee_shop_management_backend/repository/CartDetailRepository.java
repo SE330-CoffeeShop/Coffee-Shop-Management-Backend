@@ -13,7 +13,6 @@ import java.util.UUID;
 
 @Repository
 public interface CartDetailRepository extends JpaRepository<CartDetail, UUID>, JpaSpecificationExecutor<CartDetail> {
-    @EntityGraph(attributePaths = {"productVariant", "productVariant.product"})
     void deleteAllByCart_Id(UUID cartId);
     @EntityGraph(attributePaths = {"productVariant", "productVariant.product"})
     CartDetail findByCart_IdAndProductVariant_Id(UUID cartId, UUID productVariantId);
