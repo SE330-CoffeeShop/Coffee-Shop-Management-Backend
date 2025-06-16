@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -39,6 +40,7 @@ public class DiscountController {
     }
 
     @GetMapping("/{id}")
+    @Transactional(readOnly = true)
     @Operation(
             summary = "Get discount detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -89,6 +91,7 @@ public class DiscountController {
     }
 
     @GetMapping("/all")
+    @Transactional(readOnly = true)
     @Operation(
             summary = "Get all discounts with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -137,6 +140,7 @@ public class DiscountController {
     }
 
     @GetMapping("/branch/{branchId}")
+    @Transactional(readOnly = true)
     @Operation(
             summary = "Get all discounts for a branch with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -194,6 +198,7 @@ public class DiscountController {
     }
 
     @PostMapping("/")
+    @Transactional
     @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Create new discount",
@@ -245,6 +250,7 @@ public class DiscountController {
     }
 
     @PatchMapping("/")
+    @Transactional
     @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Update discount",
@@ -297,6 +303,7 @@ public class DiscountController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @Transactional
     @Operation(
             summary = "Delete discount",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -329,6 +336,7 @@ public class DiscountController {
     }
 
     @GetMapping("/product-variant/{productVariantId}")
+    @Transactional(readOnly = true)
     @Operation(
             summary = "Get all discounts for a product variant with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -386,6 +394,7 @@ public class DiscountController {
     }
 
     @PutMapping("/apply-to-cart/{cartId}")
+    @Transactional
     @Operation(
             summary = "Apply discounts to cart items",
             description = "Applies applicable discounts to all items in the cart based on branch-specific rules",
