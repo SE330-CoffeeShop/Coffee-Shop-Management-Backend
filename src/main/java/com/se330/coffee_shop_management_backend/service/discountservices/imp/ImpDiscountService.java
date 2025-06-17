@@ -375,6 +375,7 @@ public class ImpDiscountService implements IDiscountService {
             totalCartValue = totalCartValue.add(unitPrice.multiply(BigDecimal.valueOf(cartDetailCreateRequestDTO.getCartDetailQuantity())));
         }
 
+        BigDecimal tmpTotalCartValue = totalCartValue; // for keep track and update the total cart value after applying discounts
         BigDecimal totalDiscountAmount = BigDecimal.ZERO;
 
         // Calculate discount for each cart detail
@@ -422,14 +423,15 @@ public class ImpDiscountService implements IDiscountService {
 
             // Add to total discount
             totalDiscountAmount = totalDiscountAmount.add(itemDiscountAmount);
+            totalCartValue = totalCartValue.subtract(totalDiscountAmount);
         }
 
         // Calculate final price after discounts
-        BigDecimal totalAfterDiscount = totalCartValue.subtract(totalDiscountAmount);
+        BigDecimal totalAfterDiscount = totalCartValue;
 
         // Return DTO with calculated values
         return EmployeeViewCartDiscountResponseDTO.builder()
-                .cartTotalCost(totalCartValue)
+                .cartTotalCost(tmpTotalCartValue)
                 .cartDiscountCost(totalDiscountAmount)
                 .cartTotalCostAfterDiscount(totalAfterDiscount)
                 .build();
