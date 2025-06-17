@@ -252,7 +252,7 @@ public class ImpDiscountService implements IDiscountService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isDiscountValid(UUID discountId, UUID productVariantId, UUID userId, UUID employeeId) {
+    public boolean isDiscountValid(UUID discountId, UUID productVariantId, UUID userId) {
         Discount discount = discountRepository.findById(discountId).orElse(null);
         if (discount == null) {
             return false;
@@ -263,11 +263,6 @@ public class ImpDiscountService implements IDiscountService {
         }
 
         if (discount.getDiscountUserCount() >= discount.getDiscountMaxUsers()) {
-            return false;
-        }
-
-        if (discount.getBranch().getEmployees().stream()
-                .noneMatch(employee -> employee.getId().equals(employeeId))) {
             return false;
         }
 
@@ -321,7 +316,7 @@ public class ImpDiscountService implements IDiscountService {
             for (Discount discount : orderDetail.getProductVariant().getDiscounts()) {
                 BigDecimal currentCost = orderDetail.getOrderDetailUnitPrice();
                 if (orderTotalValue.compareTo(discount.getDiscountMinOrderValue()) >= 0
-                        && isDiscountValid(discount.getId(), orderDetail.getProductVariant().getId(), orderDetail.getOrder().getUser().getId(), orderDetail.getOrder().getEmployee().getId())) {
+                        && isDiscountValid(discount.getId(), orderDetail.getProductVariant().getId(), orderDetail.getOrder().getUser().getId())) {
                     if (discount.getDiscountType().name().equals(Constants.DiscountTypeEnum.PERCENTAGE.name())) {
                         BigDecimal discountMultiplier = BigDecimal.valueOf(100)
                                 .subtract(discount.getDiscountValue())

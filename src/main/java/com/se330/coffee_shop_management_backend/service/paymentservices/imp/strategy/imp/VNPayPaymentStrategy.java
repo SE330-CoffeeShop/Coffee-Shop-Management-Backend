@@ -40,7 +40,7 @@ public class VNPayPaymentStrategy implements PaymentStrategy {
         long amount = paymentRequest.getAmount().longValueExact() * 100;
 
         try {
-            String vnpayUrl = vnPayService.createPaymentUrl(order.getId().toString(), amount, paymentMethod.getPaymentMethodName().name());
+            String vnpayUrl = vnPayService.createPaymentUrl(order.getId().toString(), amount, "1.1.1.1");
             return orderPaymentRepository.save(
                     OrderPayment.builder()
                             .amount(paymentRequest.getAmount())

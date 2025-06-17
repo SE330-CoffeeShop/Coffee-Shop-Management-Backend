@@ -149,7 +149,7 @@ public class ImpOrderService implements IOrderService {
         for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderDetailDtos) {
             orderDetailCreateRequestDTO.setOrderId(newOrder.getId());
             orderDetailCreateRequestDTO.setBranchId(orderCreateRequestDTO.getBranchId() != null ? orderCreateRequestDTO.getBranchId() : existingBranch.getId());
-            orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
+            newOrder.getOrderDetails().add(orderDetailService.createOrderDetail(orderDetailCreateRequestDTO));
         }
 
         // Calculate total cost
@@ -321,21 +321,32 @@ public class ImpOrderService implements IOrderService {
 
 
     private BigDecimal updateTotalCost(UUID orderId) {
-        BigDecimal totalCost = BigDecimal.ZERO;
-
-        // Truy vấn trực tiếp tất cả OrderDetails của Order này
+        BigDecimal totalCostBeforeDiscount = BigDecimal.ZERO;
+        BigDecimal totalCostAfterDiscount = BigDecimal.ZERO;
         List<OrderDetail> orderDetails = orderDetailRepository.findAllByOrder_Id(orderId);
+        Order order = orderRepository.findById(orderId).orElseThrow();
 
         for (OrderDetail orderDetail : orderDetails) {
-            if (orderDetail.getOrderDetailUnitPrice() == null || orderDetail.getOrderDetailQuantity() <= 0) {
-                BigDecimal itemCost = orderDetail.getProductVariant().getVariantPrice().multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
-                totalCost = totalCost.add(itemCost);
-            } else {
-                BigDecimal itemCost = orderDetail.getOrderDetailUnitPrice().multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
-                totalCost = totalCost.add(itemCost);
-            }
+            // Calculate original cost before discount
+            BigDecimal originalUnitPrice = orderDetail.getOrderDetailUnitPrice();
+            totalCostBeforeDiscount = totalCostBeforeDiscount.add(
+                    originalUnitPrice.multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity())));
+
+            // Calculate cost after discount
+            BigDecimal discountedPrice = (orderDetail.getOrderDetailUnitPriceAfterDiscount() != null) ?
+                    orderDetail.getOrderDetailUnitPriceAfterDiscount() : originalUnitPrice;
+
+            totalCostAfterDiscount = totalCostAfterDiscount.add(
+                    discountedPrice.multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity())));
         }
 
-        return totalCost;
+        // Update order with all discount information
+        BigDecimal discountAmount = totalCostBeforeDiscount.subtract(totalCostAfterDiscount);
+        order.setOrderTotalCost(totalCostBeforeDiscount);
+        order.setOrderDiscountCost(discountAmount);
+        order.setOrderTotalCostAfterDiscount(totalCostAfterDiscount);
+        orderRepository.save(order);
+
+        return totalCostAfterDiscount;
     }
 }

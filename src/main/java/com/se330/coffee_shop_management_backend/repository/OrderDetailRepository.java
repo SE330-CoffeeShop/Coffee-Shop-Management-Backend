@@ -18,7 +18,7 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID>,
     List<OrderDetail> findAllByOrder_Id(UUID orderId);
 
     @Override
-    @EntityGraph(attributePaths = {"order", "productVariant"})
+    @EntityGraph(attributePaths = {"order", "productVariant","order.user","order.employee"})
     Optional<OrderDetail> findById(UUID id);
 
     @Override
