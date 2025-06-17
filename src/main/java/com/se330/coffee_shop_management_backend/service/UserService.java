@@ -125,18 +125,9 @@ public class UserService {
      */
     @Transactional(readOnly = true)
     public User findById(UUID id) {
-        User user = userRepository.findById(id)
+        return userRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
                 new String[]{messageSourceService.get("user")})));
-        if (user.getRole() != null) {
-            user.getRole().getName();
-        }
-
-        if (user.getEmployee() != null) {
-            user.getEmployee().getBranch().getBranchName();
-        }
-        
-        return user;
     }
 
     /**

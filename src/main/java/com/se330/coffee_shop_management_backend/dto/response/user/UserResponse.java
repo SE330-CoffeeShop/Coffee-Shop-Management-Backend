@@ -95,22 +95,13 @@ public class UserResponse {
      * @return UserResponse
      */
     public static UserResponse convert(User user) {
-
-        String branchId = null;
-        if (user.getEmployee() == null && user.getRole().getName() == Constants.RoleEnum.EMPLOYEE) {
-            throw new IllegalArgumentException("How the fuck?");
-        } else if (user.getEmployee() == null || user.getEmployee().getBranch() == null) {
-            branchId = null;
-        } else
-            branchId = user.getEmployee().getBranch().getId().toString();
-
         return UserResponse.builder()
             .id(user.getId().toString())
             .email(user.getEmail())
             .name(user.getName())
             .lastName(user.getLastName())
             .role(String.valueOf(user.getRole().getName()))
-            .branchId(branchId)
+            .branchId(user.getEmployee().getBranch().getId().toString())
             .emailVerifiedAt(user.getEmailVerifiedAt())
             .gender(user.getGender())
             .phoneNumber(user.getPhoneNumber())
