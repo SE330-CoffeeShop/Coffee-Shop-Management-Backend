@@ -25,7 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -302,95 +304,33 @@ public class ImpDiscountService implements IDiscountService {
     @Override
     @Transactional
     public void applyMostValuableDiscountOfOrderDetail(UUID orderDetailId, BigDecimal orderTotalValue) {
-        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId).orElseThrow(() -> new EntityNotFoundException("Order Detail not found with id: " + orderDetailId));
+        OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId)
+                .orElseThrow(() -> new EntityNotFoundException("Order Detail not found with id: " + orderDetailId));
 
-        BigDecimal lowestCostOfOrderDetail = BigDecimal.ZERO;
-        int numProductVariant = orderDetail.getOrderDetailQuantity();
+        ProductVariant productVariant = orderDetail.getProductVariant();
+        int quantity = orderDetail.getOrderDetailQuantity();
+        BigDecimal totalDetailCost = BigDecimal.ZERO;
 
-        while (numProductVariant > 0) {
+        // Track which discounts are used and how many times
+        Map<UUID, Integer> appliedDiscounts = new HashMap<>();
 
-            BigDecimal lowestCostOfProductVariant = orderDetail.getOrderDetailUnitPrice();
-            Discount mostValuableDiscountOfProductVariant = null;
-
-            // first find the most valuable discount of that product variant
-            for (Discount discount : orderDetail.getProductVariant().getDiscounts()) {
-                BigDecimal currentCost = orderDetail.getOrderDetailUnitPrice();
-                if (orderTotalValue.compareTo(discount.getDiscountMinOrderValue()) >= 0
-                        && isDiscountValid(discount.getId(), orderDetail.getProductVariant().getId(), orderDetail.getOrder().getUser().getId())) {
-                    if (discount.getDiscountType().name().equals(Constants.DiscountTypeEnum.PERCENTAGE.name())) {
-                        BigDecimal discountMultiplier = BigDecimal.valueOf(100)
-                                .subtract(discount.getDiscountValue())
-                                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
-
-                        currentCost = currentCost.multiply(discountMultiplier);
-                    } else {
-                        currentCost = currentCost.subtract(discount.getDiscountValue());
-                    }
-                }
-
-                if (lowestCostOfProductVariant.compareTo(currentCost) > 0) {
-                    lowestCostOfProductVariant = currentCost;
-                    mostValuableDiscountOfProductVariant = discount;
-                }
-            }
-
-            // after the loop, we got the lowest cost of 1 product variant in that order detail
-            // we first add it to the lowest cost of total order detail, for the later division
-            lowestCostOfOrderDetail = lowestCostOfOrderDetail.add(lowestCostOfProductVariant);
-
-            // then, we create a used discount
-            if (mostValuableDiscountOfProductVariant != null) {
-                usedDiscountService.createUsedDiscount(new UsedDiscountCreateRequestDTO(
-                        orderDetailId,
-                        mostValuableDiscountOfProductVariant.getId(),
-                        1
-                ));
-            }
-
-            // finally, reduce the amount of quantity
-            numProductVariant--;
-        }
-
-        // now we got the new total cost of the order detail,
-        // then we divide to get the new unit price of each variant in the order detail
-        BigDecimal newUnitPrice = lowestCostOfOrderDetail.divide(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()), 2, RoundingMode.HALF_UP);
-        BigDecimal discountCost = orderDetail.getOrderDetailUnitPrice().subtract(newUnitPrice).multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
-
-        // then save the new unit price
-        orderDetail.setOrderDetailDiscountCost(discountCost);
-        orderDetail.setOrderDetailUnitPriceAfterDiscount(newUnitPrice);
-        orderDetailRepository.save(orderDetail);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public EmployeeViewCartDiscountResponseDTO applyDiscountToCart(EmployeeCartRequestDTO employeeCartRequestDTO) {
-        Branch currentBranch = userService.getUser().getEmployee().getBranch();
-        BigDecimal totalCartValue = BigDecimal.ZERO;
-
-        for (CartDetailCreateRequestDTO cartDetailCreateRequestDTO : employeeCartRequestDTO.getCartDetails()) {
-            ProductVariant productVariant = productVariantRepository.findById(cartDetailCreateRequestDTO.getVariantId())
-                    .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + cartDetailCreateRequestDTO.getVariantId()));
-            BigDecimal unitPrice = productVariant.getVariantPrice();
-            totalCartValue = totalCartValue.add(unitPrice.multiply(BigDecimal.valueOf(cartDetailCreateRequestDTO.getCartDetailQuantity())));
-        }
-
-        BigDecimal tmpTotalCartValue = totalCartValue; // for keep track and update the total cart value after applying discounts
-        BigDecimal totalDiscountAmount = BigDecimal.ZERO;
-
-        // Calculate discount for each cart detail
-        for (CartDetailCreateRequestDTO cartDetailRequestDTO : employeeCartRequestDTO.getCartDetails()) {
-            ProductVariant productVariant = productVariantRepository.findById(cartDetailRequestDTO.getVariantId())
-                    .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + cartDetailRequestDTO.getVariantId()));
-
+        // Process each unit individually
+        for (int i = 0; i < quantity; i++) {
             BigDecimal lowestUnitPrice = productVariant.getVariantPrice();
+            Discount bestDiscount = null;
 
-            // Find the most valuable discount for this product variant
+            // Find the most valuable discount for this unit
             for (Discount discount : productVariant.getDiscounts()) {
                 // Skip inactive discounts or if minimum order value not met
                 if (!discount.isDiscountIsActive() ||
-                        totalCartValue.compareTo(discount.getDiscountMinOrderValue()) < 0 ||
-                        !discount.getBranch().getId().equals(currentBranch.getId())) {
+                        orderTotalValue.compareTo(discount.getDiscountMinOrderValue()) < 0 ||
+                        !discount.getBranch().getId().equals(orderDetail.getOrder().getBranch().getId())) {
+                    continue;
+                }
+
+                // Skip if user has reached max uses
+                if (!isDiscountValid(discount.getId(), productVariant.getId(),
+                        orderDetail.getOrder().getUser().getId())) {
                     continue;
                 }
 
@@ -413,25 +353,141 @@ public class ImpDiscountService implements IDiscountService {
                 // Keep track of the best discount
                 if (discountedPrice.compareTo(lowestUnitPrice) < 0) {
                     lowestUnitPrice = discountedPrice;
+                    bestDiscount = discount;
                 }
             }
 
-            // Calculate discount amount for this item
-            BigDecimal originalItemCost = productVariant.getVariantPrice().multiply(BigDecimal.valueOf(cartDetailRequestDTO.getCartDetailQuantity()));
-            BigDecimal discountedItemCost = lowestUnitPrice.multiply(BigDecimal.valueOf(cartDetailRequestDTO.getCartDetailQuantity()));
-            BigDecimal itemDiscountAmount = originalItemCost.subtract(discountedItemCost);
+            // Add this unit's lowest price to the total detail cost
+            totalDetailCost = totalDetailCost.add(lowestUnitPrice);
 
-            // Add to total discount
-            totalDiscountAmount = totalDiscountAmount.add(itemDiscountAmount);
-            totalCartValue = totalCartValue.subtract(totalDiscountAmount);
+            // Track which discount was used
+            if (bestDiscount != null) {
+                appliedDiscounts.put(bestDiscount.getId(),
+                        appliedDiscounts.getOrDefault(bestDiscount.getId(), 0) + 1);
+            }
         }
 
-        // Calculate final price after discounts
-        BigDecimal totalAfterDiscount = totalCartValue;
+        // Calculate the average discounted price per unit
+        BigDecimal averageDiscountedPrice = quantity > 0
+                ? totalDetailCost.divide(BigDecimal.valueOf(quantity), 2, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
+
+        // Calculate total discount for this order detail
+        BigDecimal originalItemCost = productVariant.getVariantPrice().multiply(BigDecimal.valueOf(quantity));
+        BigDecimal discountedItemCost = averageDiscountedPrice.multiply(BigDecimal.valueOf(quantity));
+        BigDecimal itemDiscountAmount = originalItemCost.subtract(discountedItemCost);
+
+        // Update the order detail with the discount information
+        orderDetail.setOrderDetailDiscountCost(itemDiscountAmount);
+        orderDetail.setOrderDetailUnitPriceAfterDiscount(averageDiscountedPrice);
+        orderDetailRepository.save(orderDetail);
+
+        // Create used discount records for each applied discount
+        for (Map.Entry<UUID, Integer> entry : appliedDiscounts.entrySet()) {
+            usedDiscountService.createUsedDiscount(new UsedDiscountCreateRequestDTO(
+                    orderDetailId,
+                    entry.getKey(),
+                    entry.getValue()
+            ));
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public EmployeeViewCartDiscountResponseDTO applyDiscountToCart(EmployeeCartRequestDTO employeeCartRequestDTO) {
+        Branch currentBranch = userService.getUser().getEmployee().getBranch();
+        User targetUser = null;
+
+        // Get the user for whom discounts will be checked (either from request or current employee)
+        if (employeeCartRequestDTO.getUserId() != null) {
+            targetUser = userService.findById(employeeCartRequestDTO.getUserId());
+        }
+        // If no user ID was provided, use the employee as the target
+        if (targetUser == null) {
+            targetUser = userService.getUser();
+        }
+
+        // Calculate initial total cart value first
+        BigDecimal originalTotalValue = BigDecimal.ZERO;
+        for (CartDetailCreateRequestDTO cartDetail : employeeCartRequestDTO.getCartDetails()) {
+            ProductVariant productVariant = productVariantRepository.findById(cartDetail.getVariantId())
+                    .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + cartDetail.getVariantId()));
+            BigDecimal unitPrice = productVariant.getVariantPrice();
+            originalTotalValue = originalTotalValue.add(unitPrice.multiply(BigDecimal.valueOf(cartDetail.getCartDetailQuantity())));
+        }
+
+        BigDecimal totalDiscountAmount = BigDecimal.ZERO;
+
+        // Calculate discount for each cart detail
+        for (CartDetailCreateRequestDTO cartDetail : employeeCartRequestDTO.getCartDetails()) {
+            ProductVariant productVariant = productVariantRepository.findById(cartDetail.getVariantId())
+                    .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + cartDetail.getVariantId()));
+            int quantity = cartDetail.getCartDetailQuantity();
+            BigDecimal totalDetailCost = BigDecimal.ZERO;
+
+            // Process each unit individually
+            for (int i = 0; i < quantity; i++) {
+                BigDecimal lowestUnitPrice = productVariant.getVariantPrice();
+
+                // Find the most valuable discount for this unit
+                for (Discount discount : productVariant.getDiscounts()) {
+                    // Skip inactive discounts or if minimum order value not met
+                    if (!discount.isDiscountIsActive() ||
+                            originalTotalValue.compareTo(discount.getDiscountMinOrderValue()) < 0 ||
+                            !discount.getBranch().getId().equals(currentBranch.getId())) {
+                        continue;
+                    }
+
+                    if (!isDiscountValid(discount.getId(), productVariant.getId(), targetUser.getId())) {
+                        continue;
+                    }
+
+                    BigDecimal discountedPrice = productVariant.getVariantPrice();
+
+                    // Apply discount based on type
+                    if (discount.getDiscountType().name().equals(Constants.DiscountTypeEnum.PERCENTAGE.name())) {
+                        BigDecimal discountMultiplier = BigDecimal.valueOf(100)
+                                .subtract(discount.getDiscountValue())
+                                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+                        discountedPrice = discountedPrice.multiply(discountMultiplier);
+                    } else {
+                        discountedPrice = discountedPrice.subtract(discount.getDiscountValue());
+                        if (discountedPrice.compareTo(BigDecimal.ZERO) < 0) {
+                            discountedPrice = BigDecimal.ZERO;
+                        }
+                    }
+
+                    // Keep track of the best discount
+                    if (discountedPrice.compareTo(lowestUnitPrice) < 0) {
+                        lowestUnitPrice = discountedPrice;
+                    }
+                }
+
+                // Add this unit's lowest price to the total detail cost
+                totalDetailCost = totalDetailCost.add(lowestUnitPrice);
+            }
+
+            // Calculate the average discounted price per unit
+            BigDecimal averageDiscountedPrice = quantity > 0
+                    ? totalDetailCost.divide(BigDecimal.valueOf(quantity), 2, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO;
+
+            // Calculate total discount for this cart detail
+            BigDecimal originalItemCost = productVariant.getVariantPrice().multiply(BigDecimal.valueOf(quantity));
+            BigDecimal discountedItemCost = averageDiscountedPrice.multiply(BigDecimal.valueOf(quantity));
+            BigDecimal itemDiscountAmount = originalItemCost.subtract(discountedItemCost);
+
+            // Add to total discount amount
+            totalDiscountAmount = totalDiscountAmount.add(itemDiscountAmount);
+        }
+
+        // Calculate final price after all discounts
+        BigDecimal totalAfterDiscount = originalTotalValue.subtract(totalDiscountAmount);
 
         // Return DTO with calculated values
         return EmployeeViewCartDiscountResponseDTO.builder()
-                .cartTotalCost(tmpTotalCartValue)
+                .cartTotalCost(originalTotalValue)
                 .cartDiscountCost(totalDiscountAmount)
                 .cartTotalCostAfterDiscount(totalAfterDiscount)
                 .build();
@@ -440,76 +496,99 @@ public class ImpDiscountService implements IDiscountService {
     @Override
     @Transactional
     public Cart applyDiscountToCart(UUID branchId) {
-
         User user = userService.getUser();
-
         Cart existingCart = cartRepository.findByUser_Id(user.getId());
+        Branch currentBranch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchId));
 
-        // Calculate the total cart value before discounts
-        BigDecimal totalCartValue = existingCart.getCartTotalCost();
+        // Calculate the initial total cart value
+        BigDecimal originalTotalValue = BigDecimal.ZERO;
+        for (CartDetail cartDetail : existingCart.getCartDetails()) {
+            BigDecimal unitPrice = cartDetail.getProductVariant().getVariantPrice();
+            originalTotalValue = originalTotalValue.add(unitPrice.multiply(BigDecimal.valueOf(cartDetail.getCartDetailQuantity())));
+        }
 
         BigDecimal totalDiscountAmount = BigDecimal.ZERO;
 
-        // Apply discounts to each cart detail
+        // Calculate discount for each cart detail
         for (CartDetail cartDetail : existingCart.getCartDetails()) {
-            BigDecimal lowestUnitPrice = cartDetail.getCartDetailUnitPrice();
+            ProductVariant productVariant = cartDetail.getProductVariant();
+            int quantity = cartDetail.getCartDetailQuantity();
+            BigDecimal totalDetailCost = BigDecimal.ZERO;
 
-            // Find the most valuable discount for this product variant
-            for (Discount discount : cartDetail.getProductVariant().getDiscounts()) {
-                // Skip inactive discounts or if minimum order value not met
-                if (!discount.isDiscountIsActive() ||
-                        totalCartValue.compareTo(discount.getDiscountMinOrderValue()) < 0) {
-                    continue;
-                }
+            // Process each unit individually
+            for (int i = 0; i < quantity; i++) {
+                BigDecimal lowestUnitPrice = productVariant.getVariantPrice();
+                Discount bestDiscount = null;
 
-                if (discount.getBranch().getId() != null && !discount.getBranch().getId().equals(branchId)) {
-                    continue;
-                }
+                // Find the most valuable discount for this unit
+                for (Discount discount : productVariant.getDiscounts()) {
+                    // Skip inactive discounts or if minimum order value not met
+                    if (!discount.isDiscountIsActive() ||
+                            originalTotalValue.compareTo(discount.getDiscountMinOrderValue()) < 0 ||
+                            !discount.getBranch().getId().equals(currentBranch.getId())) {
+                        continue;
+                    }
 
-                BigDecimal discountedPrice = cartDetail.getCartDetailUnitPrice();
+                    // Check if user has reached max uses - this is the missing validation
+                    if (!isDiscountValid(discount.getId(), productVariant.getId(), user.getId())) {
+                        continue;
+                    }
 
-                // Apply discount based on type
-                if (discount.getDiscountType().name().equals(Constants.DiscountTypeEnum.PERCENTAGE.name())) {
-                    BigDecimal discountMultiplier = BigDecimal.valueOf(100)
-                            .subtract(discount.getDiscountValue())
-                            .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                    BigDecimal discountedPrice = productVariant.getVariantPrice();
 
-                    discountedPrice = discountedPrice.multiply(discountMultiplier);
-                } else {
-                    discountedPrice = discountedPrice.subtract(discount.getDiscountValue());
-                    if (discountedPrice.compareTo(BigDecimal.ZERO) < 0) {
-                        discountedPrice = BigDecimal.ZERO;
+                    // Apply discount based on type
+                    if (discount.getDiscountType().name().equals(Constants.DiscountTypeEnum.PERCENTAGE.name())) {
+                        BigDecimal discountMultiplier = BigDecimal.valueOf(100)
+                                .subtract(discount.getDiscountValue())
+                                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+                        discountedPrice = discountedPrice.multiply(discountMultiplier);
+                    } else {
+                        discountedPrice = discountedPrice.subtract(discount.getDiscountValue());
+                        if (discountedPrice.compareTo(BigDecimal.ZERO) < 0) {
+                            discountedPrice = BigDecimal.ZERO;
+                        }
+                    }
+
+                    // Keep track of the best discount
+                    if (discountedPrice.compareTo(lowestUnitPrice) < 0) {
+                        lowestUnitPrice = discountedPrice;
+                        bestDiscount = discount;
                     }
                 }
 
-                // Keep track of the best discount
-                if (discountedPrice.compareTo(lowestUnitPrice) < 0) {
-                    lowestUnitPrice = discountedPrice;
-                }
+                // Add this unit's lowest price to the total detail cost
+                totalDetailCost = totalDetailCost.add(lowestUnitPrice);
             }
 
-            // Calculate discount amount
-            BigDecimal originalCost = cartDetail.getCartDetailUnitPrice().multiply(BigDecimal.valueOf(cartDetail.getCartDetailQuantity()));
-            BigDecimal discountedCost = lowestUnitPrice.multiply(BigDecimal.valueOf(cartDetail.getCartDetailQuantity()));
-            BigDecimal discountAmount = originalCost.subtract(discountedCost);
+            // Calculate the average discounted price per unit
+            BigDecimal averageDiscountedPrice = quantity > 0
+                    ? totalDetailCost.divide(BigDecimal.valueOf(quantity), 2, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO;
+
+            // Calculate total discount for this cart detail
+            BigDecimal originalItemCost = productVariant.getVariantPrice().multiply(BigDecimal.valueOf(quantity));
+            BigDecimal discountedItemCost = averageDiscountedPrice.multiply(BigDecimal.valueOf(quantity));
+            BigDecimal itemDiscountAmount = originalItemCost.subtract(discountedItemCost);
 
             // Update cart detail with discount information
-            cartDetail.setCartDetailUnitPriceAfterDiscount(lowestUnitPrice);
-            cartDetail.setCartDetailDiscountCost(discountAmount);
+            cartDetail.setCartDetailUnitPriceAfterDiscount(averageDiscountedPrice);
+            cartDetail.setCartDetailDiscountCost(itemDiscountAmount);
 
             // Add to total discount
-            totalDiscountAmount = totalDiscountAmount.add(discountAmount);
+            totalDiscountAmount = totalDiscountAmount.add(itemDiscountAmount);
         }
 
         // Update cart totals
-        BigDecimal totalAfterDiscount = totalCartValue.subtract(totalDiscountAmount);
-        existingCart.setCartTotalCost(totalCartValue);
+        BigDecimal totalAfterDiscount = originalTotalValue.subtract(totalDiscountAmount);
+        existingCart.setCartTotalCost(originalTotalValue);
         existingCart.setCartDiscountCost(totalDiscountAmount);
         existingCart.setCartTotalCostAfterDiscount(totalAfterDiscount);
 
         // Save updated cart
         cartRepository.save(existingCart);
 
-        return cartRepository.findByUser_Id(existingCart.getUser().getId());
+        return cartRepository.findByUser_Id(user.getId());
     }
 }
