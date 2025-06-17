@@ -101,7 +101,7 @@ public class UserResponse {
             .name(user.getName())
             .lastName(user.getLastName())
             .role(String.valueOf(user.getRole().getName()))
-            .branchId(user.getEmployee().getBranch().getId().toString())
+            .branchId(user.getEmployee() != null ? user.getEmployee().getBranch().getId().toString() : null)
             .emailVerifiedAt(user.getEmailVerifiedAt())
             .gender(user.getGender())
             .phoneNumber(user.getPhoneNumber())

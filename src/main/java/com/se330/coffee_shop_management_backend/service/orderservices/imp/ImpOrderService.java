@@ -28,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +99,7 @@ public class ImpOrderService implements IOrderService {
      */
     @Override
     @Transactional
-    public Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) {
+    public Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) throws UnsupportedEncodingException {
         Employee existingEmployee = null;
         Branch existingBranch = null;
 
@@ -207,7 +208,7 @@ public class ImpOrderService implements IOrderService {
     }
 
     @Override
-    public Order createOrderForEmployee(EmployeeOrderRequestDTO employeeOrderRequestDTO) {
+    public Order createOrderForEmployee(EmployeeOrderRequestDTO employeeOrderRequestDTO) throws UnsupportedEncodingException {
         Employee currentEmployee = userService.getUser().getEmployee();
         Branch currentBranch = currentEmployee.getBranch();
 

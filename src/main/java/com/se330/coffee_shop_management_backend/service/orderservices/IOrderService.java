@@ -9,6 +9,7 @@ import com.se330.coffee_shop_management_backend.util.Constants;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 public interface IOrderService {
@@ -16,7 +17,7 @@ public interface IOrderService {
     Page<Order> findAllOrders(Pageable pageable);
     Page<Order> findAllOrderByCustomerId(UUID customerId, Pageable pageable);
     Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, UUID branchId, Pageable pageable);
-    Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO);
-    Order createOrderForEmployee(EmployeeOrderRequestDTO employeeOrderRequestDTO);
+    Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) throws UnsupportedEncodingException;
+    Order createOrderForEmployee(EmployeeOrderRequestDTO employeeOrderRequestDTO) throws UnsupportedEncodingException;
     void deleteOrder(UUID id);
 }

@@ -29,6 +29,7 @@ public class OrderPaymentResponseDTO {
     private String momoPayUrl;
     private String momoDeepLink;
     private int momoResultCode;
+    private String vnpayPayUrl;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -42,6 +43,7 @@ public class OrderPaymentResponseDTO {
                 .paypalApprovalUrl(orderPayment.getPaypalApprovalUrl())
                 .momoPayUrl(orderPayment.getMomoPayUrl())
                 .momoDeepLink(orderPayment.getMomoDeepLink())
+                .vnpayPayUrl(orderPayment.getVnpayPayUrl())
                 .momoResultCode(orderPayment.getMomoResultCode())
                 .failureReason(orderPayment.getFailureReason())
                 .orderId(orderPayment.getOrder() != null ? orderPayment.getOrder().getId().toString() : null)

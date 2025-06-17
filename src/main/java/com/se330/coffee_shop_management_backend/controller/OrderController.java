@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -170,7 +171,7 @@ public class OrderController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<OrderResponseDTO>> createOrder(@RequestBody OrderCreateRequestDTO orderCreateRequestDTO) {
+    public ResponseEntity<SingleResponse<OrderResponseDTO>> createOrder(@RequestBody OrderCreateRequestDTO orderCreateRequestDTO) throws UnsupportedEncodingException {
         OrderResponseDTO order = OrderResponseDTO.convert(orderService.createOrder(orderCreateRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new SingleResponse<>(
@@ -365,7 +366,7 @@ public class OrderController {
             }
     )
     public ResponseEntity<SingleResponse<OrderResponseDTO>> createOrderForEmployee(
-            @RequestBody EmployeeOrderRequestDTO employeeOrderRequestDTO) {
+            @RequestBody EmployeeOrderRequestDTO employeeOrderRequestDTO) throws UnsupportedEncodingException {
 
         OrderResponseDTO order = OrderResponseDTO.convert(orderService.createOrderForEmployee(employeeOrderRequestDTO));
 

@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.service.paymentservices.imp.stra
 import com.se330.coffee_shop_management_backend.service.paymentservices.imp.strategy.imp.CashPaymentStrategy;
 import com.se330.coffee_shop_management_backend.service.paymentservices.imp.strategy.imp.MomoPaymentStrategy;
 import com.se330.coffee_shop_management_backend.service.paymentservices.imp.strategy.imp.PaypalPaymentStrategy;
+import com.se330.coffee_shop_management_backend.service.paymentservices.imp.strategy.imp.VNPayPaymentStrategy;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +19,8 @@ public class PaymentStrategyConfig {
     public Map<Constants.PaymentMethodEnum, PaymentStrategy> paymentStrategies(
             CashPaymentStrategy cashPaymentStrategy,
             PaypalPaymentStrategy paypalPaymentStrategy,
-            MomoPaymentStrategy momoPaymentStrategy
-            // VnPayPaymentStrategy vnpayPaymentStrategy,
+            MomoPaymentStrategy momoPaymentStrategy,
+            VNPayPaymentStrategy vnpayPaymentStrategy
             // ZaloPayPaymentStrategy zaloPayPaymentStrategy,
     ) {
 
@@ -27,7 +28,7 @@ public class PaymentStrategyConfig {
         strategies.put(Constants.PaymentMethodEnum.CASH, cashPaymentStrategy);
         strategies.put(Constants.PaymentMethodEnum.PAYPAL, paypalPaymentStrategy);
         strategies.put(Constants.PaymentMethodEnum.MOMO, momoPaymentStrategy);
-        // strategies.put(Constants.PaymentMethodEnum.VNPAY, vnpayPaymentStrategy);
+        strategies.put(Constants.PaymentMethodEnum.VNPAY, vnpayPaymentStrategy);
         // strategies.put(Constants.PaymentMethodEnum.ZALOPAY, zaloPayPaymentStrategy);
 
         return strategies;

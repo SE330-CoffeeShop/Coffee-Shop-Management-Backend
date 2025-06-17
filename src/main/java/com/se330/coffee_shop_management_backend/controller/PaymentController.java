@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -201,7 +202,7 @@ public class PaymentController {
             }
     )
     public ResponseEntity<SingleResponse<OrderPaymentResponseDTO>> createOrderPayment(
-            @RequestBody OrderPaymentCreateRequestDTO orderPaymentCreateRequestDTO) {
+            @RequestBody OrderPaymentCreateRequestDTO orderPaymentCreateRequestDTO) throws UnsupportedEncodingException {
         OrderPayment orderPayment = orderPaymentService.createOrderPayment(orderPaymentCreateRequestDTO);
         return new ResponseEntity<>(
                 new SingleResponse<>(
@@ -383,5 +384,57 @@ public class PaymentController {
 
         // Return 204 No Content - no response body
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/vnpay/success")
+    @Operation(
+            summary = "Handle VNPay payment success callback",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "VNPay payment executed successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid payment data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<?>> vnpaySuccess(
+            @RequestParam String vnp_BankCode,
+            @RequestParam String vnp_CardType,
+            @RequestParam String vnp_TransactionNo,
+            @RequestParam String vnp_ResponseCode,
+            @RequestParam String vnp_TxnRef,
+            @RequestParam(required = false) String vnp_Amount,
+            @RequestParam(required = false) String vnp_OrderInfo,
+            @RequestParam(required = false) String vnp_PayDate,
+            @RequestParam(required = false) String vnp_TransactionStatus,
+            @RequestParam(required = false) String vnp_TmnCode,
+            @RequestParam(required = false) String vnp_SecureHash
+    ) {
+        OrderPayment payment = orderPaymentService.vnpayExecutePayment(
+                vnp_BankCode,
+                vnp_CardType,
+                vnp_TransactionNo,
+                vnp_ResponseCode,
+                vnp_TxnRef
+        );
+
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "VNPay payment executed successfully",
+                        OrderPaymentResponseDTO.convert(payment)
+                )
+        );
     }
 }
