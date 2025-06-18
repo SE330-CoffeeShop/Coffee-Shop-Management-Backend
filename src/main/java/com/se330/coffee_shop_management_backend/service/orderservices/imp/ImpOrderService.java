@@ -78,7 +78,7 @@ public class ImpOrderService implements IOrderService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO) {
         Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderUpdateRequestDTO.getOrderId()));
