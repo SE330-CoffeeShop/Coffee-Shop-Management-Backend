@@ -2,9 +2,11 @@ package com.se330.coffee_shop_management_backend.service.dummydataservices.domai
 
 import com.se330.coffee_shop_management_backend.entity.Branch;
 import com.se330.coffee_shop_management_backend.entity.Discount;
+import com.se330.coffee_shop_management_backend.entity.product.Product;
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.BranchRepository;
 import com.se330.coffee_shop_management_backend.repository.DiscountRepository;
+import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ public class Discounts {
     private final DiscountRepository discountRepository;
     private final BranchRepository branchRepository;
     private final ProductVariantRepository productVariantRepository;
+    private final ProductRepository productRepository;
 
     @Transactional
     public void create() {
@@ -220,29 +223,51 @@ public class Discounts {
             return;
         }
 
-        List<ProductVariant> productVariants = productVariantRepository.findAll();
-        if (productVariants.isEmpty()) {
+        List<Product> products = productRepository.findAll();
+        if (products.isEmpty()) {
+            log.error("No products found to associate with discounts");
+            return;
+        }
+
+        // Lấy tất cả product variants
+        List<ProductVariant> allVariants = productVariantRepository.findAll();
+        if (allVariants.isEmpty()) {
             log.error("No product variants found to associate with discounts");
             return;
         }
 
         Random random = new Random();
 
-        // Với mỗi discount, gắn 1-5 product variant
+        // Với mỗi discount, gắn 1-5 products
         for (Discount discount : discounts) {
-            int variantCount = 1 + random.nextInt(5);
-            List<ProductVariant> selectedVariants = new ArrayList<>();
+            // Chọn ngẫu nhiên 1-5 products
+            int productCount = 1 + random.nextInt(5);
+            Set<Product> selectedProducts = new HashSet<>();
 
-            // Chọn ngẫu nhiên các variant
-            for (int i = 0; i < variantCount; i++) {
-                ProductVariant variant = productVariants.get(random.nextInt(productVariants.size()));
-                if (!selectedVariants.contains(variant)) {
-                    selectedVariants.add(variant);
+            while (selectedProducts.size() < productCount && selectedProducts.size() < products.size()) {
+                Product product = products.get(random.nextInt(products.size()));
+                selectedProducts.add(product);
+            }
+
+            // Lấy tất cả product variants của các products đã chọn
+            List<ProductVariant> selectedVariants = new ArrayList<>();
+            for (Product product : selectedProducts) {
+                for (ProductVariant variant : allVariants) {
+                    if (variant.getProduct() != null && variant.getProduct().getId().equals(product.getId())) {
+                        selectedVariants.add(variant);
+                    }
                 }
+            }
+
+            if (selectedVariants.isEmpty()) {
+                continue; // Bỏ qua nếu không tìm thấy variant nào
             }
 
             // Thêm discount vào danh sách discounts của mỗi variant đã chọn
             for (ProductVariant variant : selectedVariants) {
+                if (variant.getDiscounts() == null) {
+                    variant.setDiscounts(new ArrayList<>());
+                }
                 variant.getDiscounts().add(discount);
             }
 
@@ -251,9 +276,9 @@ public class Discounts {
         }
 
         // Lưu tất cả các thay đổi
-        productVariantRepository.saveAll(productVariants);
+        productVariantRepository.saveAll(allVariants);
         discountRepository.saveAll(discounts);
 
-        log.info("Associated discounts with product variants");
+        log.info("Associated discounts with product variants: {} discounts with variants", discounts.size());
     }
 }
