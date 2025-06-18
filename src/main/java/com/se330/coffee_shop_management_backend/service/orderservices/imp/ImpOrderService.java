@@ -78,12 +78,12 @@ public class ImpOrderService implements IOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO) {
         Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
                 .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderUpdateRequestDTO.getOrderId()));
 
-        Employee existingEmployee = employeeRepository.findById(orderUpdateRequestDTO.getEmployeeId())
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + orderUpdateRequestDTO.getEmployeeId()));
+        Employee existingEmployee = userService.getUser().getEmployee();
 
         existingOrder.setEmployee(existingEmployee);
 
@@ -133,6 +133,8 @@ public class ImpOrderService implements IOrderService {
                             .isRead(false)
                             .build());
         }
+
+        existingOrder.setOrderStatus(orderUpdateRequestDTO.getOrderStatus());
 
         return orderRepository.save(existingOrder);
     }
