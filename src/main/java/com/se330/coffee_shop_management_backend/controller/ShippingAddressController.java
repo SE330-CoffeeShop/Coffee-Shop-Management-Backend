@@ -220,4 +220,45 @@ public class ShippingAddressController {
         shippingAddressService.deleteShippingAddresses(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE', 'MANAGER')")
+    @Operation(
+            summary = "Get all shipping addresses for current user with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved user's shipping addresses",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<ShippingAddressesResponseDTO>> findAllByMe(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<ShippingAddresses> addressPage = shippingAddressService.findAllShippingAddressesByMe(pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "User shipping addresses retrieved successfully",
+                        ShippingAddressesResponseDTO.convert(addressPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                addressPage.getNumber(),
+                                addressPage.getSize(),
+                                addressPage.getTotalElements(),
+                                addressPage.getTotalPages()
+                        )
+                )
+        );
+    }
 }

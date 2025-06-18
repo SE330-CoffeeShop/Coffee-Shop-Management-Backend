@@ -41,6 +41,13 @@ public class ImpShippingAddressesService implements IShippingAddressesService {
     }
 
     @Override
+    public Page<ShippingAddresses> findAllShippingAddressesByMe(Pageable pageable) {
+        return shippingAddressesRepository.findAllByUser_Id(
+                userService.getUser().getId(), pageable
+        );
+    }
+
+    @Override
     @Transactional
     public ShippingAddresses createShippingAddresses(ShippingAddressesCreateRequestDTO shippingAddressesCreateRequestDTO) {
         User existingUser = userService.getUser();
