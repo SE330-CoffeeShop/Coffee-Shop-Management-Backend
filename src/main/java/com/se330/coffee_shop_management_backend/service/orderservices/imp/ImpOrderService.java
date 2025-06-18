@@ -258,8 +258,10 @@ public class ImpOrderService implements IOrderService {
         newOrder.setOrderTotalCost(totalCost);
 
         // now we loop for each order detail to apply discount for them
-        for (OrderDetail orderDetail : newOrder.getOrderDetails()) {
-            discountService.applyMostValuableDiscountOfOrderDetail(orderDetail.getId(), totalCost);
+        if (employeeOrderRequestDTO.getUserId() != null) {
+            for (OrderDetail orderDetail : newOrder.getOrderDetails()) {
+                discountService.applyMostValuableDiscountOfOrderDetail(orderDetail.getId(), totalCost);
+            }
         }
 
         // update again the new total cost since the unit price of some order details have been changed
