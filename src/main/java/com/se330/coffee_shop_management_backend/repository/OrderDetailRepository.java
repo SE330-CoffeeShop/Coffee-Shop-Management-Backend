@@ -14,27 +14,29 @@ import java.util.UUID;
 
 @Repository
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, UUID>, JpaSpecificationExecutor<OrderDetail> {
-    @EntityGraph(attributePaths = {"order", "productVariant"})
+    @EntityGraph(attributePaths = {"order", "productVariant", "order.user", "order.employee", "productVariant.product"})
     List<OrderDetail> findAllByOrder_Id(UUID orderId);
 
+    @EntityGraph(attributePaths = {"order", "productVariant", "order.user", "order.employee", "productVariant.product"})
+    Page<OrderDetail> findAllByOrder_Id(UUID orderId, Pageable pageable);
+
     @Override
-    @EntityGraph(attributePaths = {"order", "productVariant","order.user","order.employee"})
+    @EntityGraph(attributePaths = {"order", "productVariant", "order.user", "order.employee", "productVariant.product"})
     Optional<OrderDetail> findById(UUID id);
 
     @Override
-    @EntityGraph(attributePaths = {"order", "productVariant"})
+    @EntityGraph(attributePaths = {"order", "productVariant", "order.user", "order.employee", "productVariant.product"})
     Page<OrderDetail> findAll(Pageable pageable);
 
     @Override
-    @EntityGraph(attributePaths = {"order", "productVariant"})
+    @EntityGraph(attributePaths = {"order", "productVariant", "order.user", "order.employee", "productVariant.product"})
     OrderDetail save(OrderDetail orderDetail);
 
-    // Added EntityGraph to additional common repository methods
     @Override
-    @EntityGraph(attributePaths = {"order", "productVariant"})
+    @EntityGraph(attributePaths = {"order", "productVariant", "order.user", "order.employee", "productVariant.product"})
     List<OrderDetail> findAll();
 
     @Override
-    @EntityGraph(attributePaths = {"order", "productVariant"})
+    @EntityGraph(attributePaths = {"order", "productVariant", "order.user", "order.employee", "productVariant.product"})
     List<OrderDetail> findAllById(Iterable<UUID> ids);
 }

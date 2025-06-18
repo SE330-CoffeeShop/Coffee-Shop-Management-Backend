@@ -48,7 +48,9 @@ public class OrderResponseDTO {
     private String orderTrackingNumber;
 
     private String employeeId;
+    private String employeeName;
     private String userId;
+    private String userName;
     private String shippingAddressId;
 
     public static OrderResponseDTO convert(Order order) {
@@ -63,7 +65,9 @@ public class OrderResponseDTO {
                 .orderStatus(order.getOrderStatus().getValue())
                 .orderTrackingNumber(order.getOrderTrackingNumber())
                 .employeeId(order.getEmployee() != null ? order.getEmployee().getId().toString() : null)
+                .employeeName(order.getEmployee() != null ? order.getEmployee().getUser().getFullName() : null)
                 .userId(order.getUser() != null ? order.getUser().getId().toString() : null)
+                .userName(order.getUser() != null ? order.getUser().getFullName() : null)
                 .shippingAddressId(order.getShippingAddress() != null ? order.getShippingAddress().getId().toString() : null)
                 .build();
     }

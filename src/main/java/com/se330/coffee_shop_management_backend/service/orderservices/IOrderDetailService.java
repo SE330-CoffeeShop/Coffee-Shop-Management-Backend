@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface IOrderDetailService {
     OrderDetail findByIdOrderDetail(UUID id);
+    Page<OrderDetail> findAllByIdOrder(UUID orderId, Pageable pageable);
     Page<OrderDetail> findAllOrderDetails(Pageable pageable);
     OrderDetail createOrderDetail(OrderDetailCreateRequestDTO orderDetailCreateRequestDTO);
     OrderDetail updateOrderDetail(OrderDetailUpdateRequestDTO orderDetailUpdateRequestDTO);

@@ -91,7 +91,7 @@ public class OrderController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Get all orders with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

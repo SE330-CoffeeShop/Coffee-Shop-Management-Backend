@@ -80,7 +80,7 @@ public class OrderDetailController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Get all order details with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -221,5 +221,55 @@ public class OrderDetailController {
     public ResponseEntity<Void> deleteOrderDetail(@PathVariable UUID id) {
         orderDetailService.deleteOrderDetail(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/by-order/{orderId}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all order details for a specific order with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved order details for order",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid order ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<OrderDetailResponseDTO>> findAllByIdOrder(
+            @PathVariable UUID orderId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<OrderDetail> detailPages = orderDetailService.findAllByIdOrder(orderId, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Order details retrieved successfully",
+                        OrderDetailResponseDTO.convert(detailPages.getContent()),
+                        new PageResponse.PagingResponse(
+                                detailPages.getNumber(),
+                                detailPages.getSize(),
+                                detailPages.getTotalElements(),
+                                detailPages.getTotalPages()
+                        )
+                )
+        );
     }
 }
