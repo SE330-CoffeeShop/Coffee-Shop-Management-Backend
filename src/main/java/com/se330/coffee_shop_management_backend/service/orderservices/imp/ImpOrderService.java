@@ -87,51 +87,54 @@ public class ImpOrderService implements IOrderService {
 
         existingOrder.setEmployee(existingEmployee);
 
-        if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.CANCELLED) {
-            notificationService.createNotification(
-                    NotificationCreateRequestDTO.builder()
-                            .notificationType(Constants.NotificationTypeEnum.ORDER)
-                            .notificationContent(CreateNotiContentHelper.createOrderCancelledContent(existingOrder.getId()))
-                            .senderId(null)
-                            .receiverId(existingOrder.getUser().getId())
-                            .isRead(false)
-                            .build());
-        } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.COMPLETED) {
-            notificationService.createNotification(
-                    NotificationCreateRequestDTO.builder()
-                            .notificationType(Constants.NotificationTypeEnum.ORDER)
-                            .notificationContent(CreateNotiContentHelper.createInStorePurchaseContent(existingOrder.getId()))
-                            .senderId(null)
-                            .receiverId(existingOrder.getUser().getId())
-                            .isRead(false)
-                            .build());
-        } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.PROCESSING) {
-            notificationService.createNotification(
-                    NotificationCreateRequestDTO.builder()
-                            .notificationType(Constants.NotificationTypeEnum.ORDER)
-                            .notificationContent(CreateNotiContentHelper.createOrderReceivedContent(existingOrder.getId()))
-                            .senderId(null)
-                            .receiverId(existingOrder.getUser().getId())
-                            .isRead(false)
-                            .build());
-        } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERING) {
-            notificationService.createNotification(
-                    NotificationCreateRequestDTO.builder()
-                            .notificationType(Constants.NotificationTypeEnum.ORDER)
-                            .notificationContent(CreateNotiContentHelper.orderDeliveringContent(existingOrder.getId()))
-                            .senderId(null)
-                            .receiverId(existingOrder.getUser().getId())
-                            .isRead(false)
-                            .build());
-        } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERED) {
-            notificationService.createNotification(
-                    NotificationCreateRequestDTO.builder()
-                            .notificationType(Constants.NotificationTypeEnum.ORDER)
-                            .notificationContent(CreateNotiContentHelper.orderDeliveredContent(existingOrder.getId()))
-                            .senderId(null)
-                            .receiverId(existingOrder.getUser().getId())
-                            .isRead(false)
-                            .build());
+        if (existingOrder.getUser() != null) {
+
+            if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.CANCELLED) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .notificationContent(CreateNotiContentHelper.createOrderCancelledContent(existingOrder.getId()))
+                                .senderId(null)
+                                .receiverId(existingOrder.getUser().getId())
+                                .isRead(false)
+                                .build());
+            } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.COMPLETED) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .notificationContent(CreateNotiContentHelper.createInStorePurchaseContent(existingOrder.getId()))
+                                .senderId(null)
+                                .receiverId(existingOrder.getUser().getId())
+                                .isRead(false)
+                                .build());
+            } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.PROCESSING) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .notificationContent(CreateNotiContentHelper.createOrderReceivedContent(existingOrder.getId()))
+                                .senderId(null)
+                                .receiverId(existingOrder.getUser().getId())
+                                .isRead(false)
+                                .build());
+            } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERING) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .notificationContent(CreateNotiContentHelper.orderDeliveringContent(existingOrder.getId()))
+                                .senderId(null)
+                                .receiverId(existingOrder.getUser().getId())
+                                .isRead(false)
+                                .build());
+            } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERED) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .notificationContent(CreateNotiContentHelper.orderDeliveredContent(existingOrder.getId()))
+                                .senderId(null)
+                                .receiverId(existingOrder.getUser().getId())
+                                .isRead(false)
+                                .build());
+            }
         }
 
         existingOrder.setOrderStatus(orderUpdateRequestDTO.getOrderStatus());

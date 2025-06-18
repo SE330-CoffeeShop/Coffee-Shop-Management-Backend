@@ -231,7 +231,7 @@ public class UserBasicInfo {
         methods.add(PaymentMethods.builder()
                 .paymentMethodName(Constants.PaymentMethodEnum.PAYPAL)
                 .paymentMethodDescription("Thanh toán trực tuyến qua cổng PayPal")
-                .isActive(false)
+                .isActive(true)
                 .build());
 
         methods.add(PaymentMethods.builder()
