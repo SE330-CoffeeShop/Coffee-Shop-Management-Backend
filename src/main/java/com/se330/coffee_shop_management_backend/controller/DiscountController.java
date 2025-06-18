@@ -452,6 +452,7 @@ public class DiscountController {
 
     @PutMapping("/employee/apply-to-cart")
     @Transactional
+    @PreAuthorize("hasAnyAuthority('EMPLOYEE')")
     @Operation(
             summary = "Apply discounts to cart for employee",
             description = "Applies applicable discounts to items in the cart based on employee-specific cart request",

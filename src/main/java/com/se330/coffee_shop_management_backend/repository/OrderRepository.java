@@ -14,21 +14,21 @@ import java.util.UUID;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
-    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch"})
+    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails"})
     Page<Order> findAllByUser_Id(UUID userId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch"})
+    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails"})
     Page<Order> findAllByOrderStatusAndBranch_Id(Constants.OrderStatusEnum orderStatus, UUID branchId, Pageable pageable);
 
     @Override
-    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch"})
+    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails"})
     Optional<Order> findById(UUID id);
 
     @Override
-    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch"})
+    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails"})
     Page<Order> findAll(Pageable pageable);
 
     @Override
-    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch"})
+    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails"})
     Order save(Order order);
 }

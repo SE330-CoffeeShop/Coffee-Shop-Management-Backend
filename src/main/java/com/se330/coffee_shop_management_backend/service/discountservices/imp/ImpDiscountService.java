@@ -429,9 +429,14 @@ public class ImpDiscountService implements IDiscountService {
             for (int i = 0; i < quantity; i++) {
                 BigDecimal lowestUnitPrice = productVariant.getVariantPrice();
 
+
+
                 // Find the most valuable discount for this unit
                 for (Discount discount : productVariant.getDiscounts()) {
                     // Skip inactive discounts or if minimum order value not met
+
+                    UUID discountBranchId = discount.getBranch().getId();
+
                     if (!discount.isDiscountIsActive() ||
                             originalTotalValue.compareTo(discount.getDiscountMinOrderValue()) < 0 ||
                             !discount.getBranch().getId().equals(currentBranch.getId())) {
@@ -524,13 +529,15 @@ public class ImpDiscountService implements IDiscountService {
                 // Find the most valuable discount for this unit
                 for (Discount discount : productVariant.getDiscounts()) {
                     // Skip inactive discounts or if minimum order value not met
+
+                    Branch discountBranch = discount.getBranch();
+
                     if (!discount.isDiscountIsActive() ||
                             originalTotalValue.compareTo(discount.getDiscountMinOrderValue()) < 0 ||
-                            !discount.getBranch().getId().equals(currentBranch.getId())) {
+                            !discount.getBranch().getId().equals(branchId)) {
                         continue;
                     }
 
-                    // Check if user has reached max uses - this is the missing validation
                     if (!isDiscountValid(discount.getId(), productVariant.getId(), user.getId())) {
                         continue;
                     }
