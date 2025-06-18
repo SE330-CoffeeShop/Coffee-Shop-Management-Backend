@@ -77,6 +77,66 @@ public class ImpOrderService implements IOrderService {
         return orderRepository.findAllByOrderStatusAndBranch_Id(status, branchId, pageable);
     }
 
+    @Override
+    public Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO) {
+        Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderUpdateRequestDTO.getOrderId()));
+
+        Employee existingEmployee = employeeRepository.findById(orderUpdateRequestDTO.getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + orderUpdateRequestDTO.getEmployeeId()));
+
+        existingOrder.setEmployee(existingEmployee);
+
+        if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.CANCELLED) {
+            notificationService.createNotification(
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .notificationContent(CreateNotiContentHelper.createOrderCancelledContent(existingOrder.getId()))
+                            .senderId(null)
+                            .receiverId(existingOrder.getUser().getId())
+                            .isRead(false)
+                            .build());
+        } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.COMPLETED) {
+            notificationService.createNotification(
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .notificationContent(CreateNotiContentHelper.createInStorePurchaseContent(existingOrder.getId()))
+                            .senderId(null)
+                            .receiverId(existingOrder.getUser().getId())
+                            .isRead(false)
+                            .build());
+        } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.PROCESSING) {
+            notificationService.createNotification(
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .notificationContent(CreateNotiContentHelper.createOrderReceivedContent(existingOrder.getId()))
+                            .senderId(null)
+                            .receiverId(existingOrder.getUser().getId())
+                            .isRead(false)
+                            .build());
+        } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERING) {
+            notificationService.createNotification(
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .notificationContent(CreateNotiContentHelper.orderDeliveringContent(existingOrder.getId()))
+                            .senderId(null)
+                            .receiverId(existingOrder.getUser().getId())
+                            .isRead(false)
+                            .build());
+        } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERED) {
+            notificationService.createNotification(
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .notificationContent(CreateNotiContentHelper.orderDeliveredContent(existingOrder.getId()))
+                            .senderId(null)
+                            .receiverId(existingOrder.getUser().getId())
+                            .isRead(false)
+                            .build());
+        }
+
+        return orderRepository.save(existingOrder);
+    }
+
     /**
      * Creates a new order with associated order details and applies available discounts.
      *
