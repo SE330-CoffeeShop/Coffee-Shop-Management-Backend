@@ -263,13 +263,13 @@ public class ImpOrderService implements IOrderService {
         Order finalOrder = orderRepository.findById(newOrder.getId()).orElseThrow();
 
         // now create order payment
-        orderPaymentService.createOrderPayment(
+        finalOrder.setOrderPayment(orderPaymentService.createOrderPayment(
                 OrderPaymentCreateRequestDTO.builder()
                         .orderId(finalOrder.getId())
                         .paymentMethodId(orderCreateRequestDTO.getPaymentMethodId())
                         .amount(finalOrder.getOrderTotalCostAfterDiscount())
                         .build()
-        );
+        ));
 
         // delete cart
         cartService.clearCart();

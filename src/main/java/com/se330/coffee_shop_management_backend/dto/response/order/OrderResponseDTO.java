@@ -59,6 +59,15 @@ public class OrderResponseDTO {
 
     public static OrderResponseDTO convert(Order order) {
 
+        String approvalLink = null;
+        if (order.getOrderPayment() != null) {
+            if (order.getOrderPayment().getPaypalApprovalUrl() != null) {
+                approvalLink = order.getOrderPayment().getPaypalApprovalUrl();
+            } else if (order.getOrderPayment().getVnpayPayUrl() != null) {
+                approvalLink = order.getOrderPayment().getVnpayPayUrl();
+            }
+        }
+
         return OrderResponseDTO.builder()
                 .id(order.getId().toString())
                 .createdAt(order.getCreatedAt())
@@ -75,8 +84,7 @@ public class OrderResponseDTO {
                 .userPhoneNumber(order.getUser() != null ? order.getUser().getPhoneNumber() : null)
                 .shippingAddressId(order.getShippingAddress() != null ? order.getShippingAddress().getId().toString() : null)
                 .shippingAddressName(order.getShippingAddress() != null ? order.getShippingAddress().toString() : null)
-                .approvalLink(order.getOrderPayment().getPaypalApprovalUrl() != null ? order.getOrderPayment().getPaypalApprovalUrl() : null)
-                .approvalLink(order.getOrderPayment().getVnpayPayUrl() != null ? order.getOrderPayment().getVnpayPayUrl() : null)
+                .approvalLink(approvalLink)
                 .build();
     }
 
