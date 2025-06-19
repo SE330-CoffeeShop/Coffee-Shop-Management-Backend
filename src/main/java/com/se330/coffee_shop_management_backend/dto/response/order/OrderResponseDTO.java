@@ -55,6 +55,8 @@ public class OrderResponseDTO {
     private String shippingAddressId;
     private String shippingAddressName;
 
+    private String approvalLink;
+
     public static OrderResponseDTO convert(Order order) {
 
         return OrderResponseDTO.builder()
@@ -73,6 +75,8 @@ public class OrderResponseDTO {
                 .userPhoneNumber(order.getUser() != null ? order.getUser().getPhoneNumber() : null)
                 .shippingAddressId(order.getShippingAddress() != null ? order.getShippingAddress().getId().toString() : null)
                 .shippingAddressName(order.getShippingAddress() != null ? order.getShippingAddress().toString() : null)
+                .approvalLink(order.getOrderPayment().getPaypalApprovalUrl() != null ? order.getOrderPayment().getPaypalApprovalUrl() : null)
+                .approvalLink(order.getOrderPayment().getVnpayPayUrl() != null ? order.getOrderPayment().getVnpayPayUrl() : null)
                 .build();
     }
 
