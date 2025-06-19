@@ -6,6 +6,7 @@ import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateReq
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
+import com.se330.coffee_shop_management_backend.dto.response.order.OrderAndOrderDetailResponse;
 import com.se330.coffee_shop_management_backend.dto.response.order.OrderResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Order;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
@@ -425,6 +426,60 @@ public class OrderController {
                         HttpStatus.OK.value(),
                         "Order updated successfully",
                         updatedOrder
+                )
+        );
+    }
+
+    @GetMapping("/me/{id}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get order with details by ID",
+            description = "Retrieves an order with its complete details by the order ID",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved order with details",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Order not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<OrderAndOrderDetailResponse>> getMeOrderByOrderId(
+            @PathVariable UUID id
+    ) {
+        OrderAndOrderDetailResponse orderAndOrderDetailResponse = OrderAndOrderDetailResponse.convert(orderService.findByIdOrder(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Order retrieved successfully",
+                        orderAndOrderDetailResponse
                 )
         );
     }

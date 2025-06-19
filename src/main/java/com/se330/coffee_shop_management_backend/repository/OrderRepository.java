@@ -14,21 +14,21 @@ import java.util.UUID;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID>, JpaSpecificationExecutor<Order> {
-    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails"})
+    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails","orderDetails.productVariant", "orderDetails.productVariant", "orderDetails.productVariant.product"})
     Page<Order> findAllByUser_Id(UUID userId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails"})
+    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails","orderDetails.productVariant", "orderDetails.productVariant", "orderDetails.productVariant.product"})
     Page<Order> findAllByOrderStatusAndBranch_Id(Constants.OrderStatusEnum orderStatus, UUID branchId, Pageable pageable);
 
     @Override
-    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails"})
+    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails","orderDetails.productVariant", "orderDetails.productVariant", "orderDetails.productVariant.product"})
     Optional<Order> findById(UUID id);
 
     @Override
-    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails"})
+    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails","orderDetails.productVariant", "orderDetails.productVariant", "orderDetails.productVariant.product"})
     Page<Order> findAll(Pageable pageable);
 
     @Override
-    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails"})
+    @EntityGraph(attributePaths = {"employee", "orderPayment", "user", "shippingAddress", "branch", "employee.user", "orderDetails","orderDetails.productVariant", "orderDetails.productVariant", "orderDetails.productVariant.product"})
     Order save(Order order);
 }
