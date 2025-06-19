@@ -13,6 +13,7 @@ import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.UserService;
+import com.se330.coffee_shop_management_backend.service.cartservices.ICartService;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
@@ -39,7 +40,7 @@ import java.util.UUID;
 public class ImpOrderService implements IOrderService {
 
     private final OrderRepository orderRepository;
-    private final EmployeeRepository employeeRepository;
+    private final ICartService cartService;
     private final PaymentMethodsRepository paymentMethodsRepository;
     private final IOrderPaymentService orderPaymentService;
     private final UserRepository userRepository;
@@ -67,7 +68,8 @@ public class ImpOrderService implements IOrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Order> findAllOrderByCustomerId(UUID customerId, Pageable pageable) {
+    public Page<Order> findAllOrderByCustomerId(Pageable pageable) {
+        UUID customerId = userService.getUser().getId();
         return orderRepository.findAllByUser_Id(customerId, pageable);
     }
 
@@ -268,6 +270,9 @@ public class ImpOrderService implements IOrderService {
                         .amount(finalOrder.getOrderTotalCostAfterDiscount())
                         .build()
         );
+
+        // delete cart
+        cartService.clearCart();
 
         return finalOrder;
     }

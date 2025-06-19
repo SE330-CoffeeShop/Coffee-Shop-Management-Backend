@@ -215,7 +215,7 @@ public class OrderController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/customer/{customerId}")
+    @GetMapping("/customer")
     @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE', 'MANAGER')")
     @Operation(
             summary = "Get all orders by customer ID with pagination",
@@ -248,7 +248,6 @@ public class OrderController {
             }
     )
     public ResponseEntity<PageResponse<OrderResponseDTO>> findAllOrdersByCustomerId(
-            @PathVariable UUID customerId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -256,7 +255,7 @@ public class OrderController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Order> orderPage = orderService.findAllOrderByCustomerId(customerId, pageable);
+        Page<Order> orderPage = orderService.findAllOrderByCustomerId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(

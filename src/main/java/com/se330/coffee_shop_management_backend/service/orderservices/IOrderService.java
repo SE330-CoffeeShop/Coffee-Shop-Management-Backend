@@ -15,7 +15,7 @@ import java.util.UUID;
 public interface IOrderService {
     Order findByIdOrder(UUID id);
     Page<Order> findAllOrders(Pageable pageable);
-    Page<Order> findAllOrderByCustomerId(UUID customerId, Pageable pageable);
+    Page<Order> findAllOrderByCustomerId(Pageable pageable);
     Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, UUID branchId, Pageable pageable);
     Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO);
     Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) throws UnsupportedEncodingException;
