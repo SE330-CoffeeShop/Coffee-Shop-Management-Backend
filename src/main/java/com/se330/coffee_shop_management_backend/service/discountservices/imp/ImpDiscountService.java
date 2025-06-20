@@ -25,10 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ImpDiscountService implements IDiscountService {
@@ -101,6 +98,14 @@ public class ImpDiscountService implements IDiscountService {
 
         Branch existingBranch = manager.getEmployee().getBranch();
 
+        List<ProductVariant> productVariants = new ArrayList<>();
+        if (discountCreateRequestDTO.getProductVariantIds() != null && !discountCreateRequestDTO.getProductVariantIds().isEmpty()) {
+            productVariants = discountCreateRequestDTO.getProductVariantIds().stream()
+                    .map(id -> productVariantRepository.findById(id)
+                            .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id)))
+                    .toList();
+        }
+
         Discount returnDiscount = discountRepository.save(
                 Discount.builder()
                         .discountName(discountCreateRequestDTO.getDiscountName())
@@ -116,15 +121,15 @@ public class ImpDiscountService implements IDiscountService {
                         .discountMinOrderValue(discountCreateRequestDTO.getDiscountMinOrderValue())
                         .discountIsActive(discountCreateRequestDTO.isDiscountIsActive())
                         .branch(existingBranch)
-                        .productVariants(!discountCreateRequestDTO.getProductVariantIds().isEmpty() ?
-                                discountCreateRequestDTO.getProductVariantIds().stream()
-                                        .map(id -> {
-                                            return productVariantRepository.findById(id)
-                                                    .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id));
-                                        }).toList() : List.of())
+                        .productVariants(productVariants)
                         .build()
 
         );
+
+        for (ProductVariant productVariant : productVariants) {
+            productVariant.getDiscounts().add(returnDiscount);
+            productVariantRepository.save(productVariant);
+        }
 
         // send a discount notification to the branch manager
         notificationService.createNotification(
@@ -178,10 +183,11 @@ public class ImpDiscountService implements IDiscountService {
         existingDiscount.setDiscountMaxPerUser(discountUpdateRequestDTO.getDiscountMaxPerUser());
         existingDiscount.setDiscountMinOrderValue(discountUpdateRequestDTO.getDiscountMinOrderValue());
         if (discountUpdateRequestDTO.getProductVariantIds() != null && !discountUpdateRequestDTO.getProductVariantIds().isEmpty()) {
-            existingDiscount.setProductVariants(discountUpdateRequestDTO.getProductVariantIds().stream()
-                    .map(id -> productVariantRepository.findById(id)
-                            .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id)))
-                    .toList());
+            List<ProductVariant> productVariants = new ArrayList<>();
+            discountUpdateRequestDTO.getProductVariantIds().forEach(id -> {
+                productVariants.add(productVariantRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id)));
+            });
+            existingDiscount.setProductVariants(productVariants);
         }
 
         if (existingDiscount.isDiscountIsActive() != discountUpdateRequestDTO.isDiscountIsActive()) {
