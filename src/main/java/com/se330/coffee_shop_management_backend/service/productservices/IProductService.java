@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.service.productservices;
 
+import com.se330.coffee_shop_management_backend.dto.request.product.NewProductCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.product.BestSellingProductResponseDTO;
@@ -16,6 +17,8 @@ public interface IProductService {
     Page<Product> findAllProductsByCategory(UUID categoryId, Pageable pageable);
     Product createProduct(ProductCreateRequestDTO productCreateRequestDTO);
     Product createProductWithImage(ProductCreateRequestDTO productCreateRequestDTO, MultipartFile file) throws Exception;
+    Product createProductNew(NewProductCreateRequestDTO newProductCreateRequestDTO);
+    Product createProductNewWithImage(NewProductCreateRequestDTO newProductCreateRequestDTO, MultipartFile file) throws Exception;
     Product updateProduct(ProductUpdateRequestDTO productUpdateRequestDTORequestDTO);
     void deleteProduct(UUID id);
     Page<BestSellingProductResponseDTO> findAllBestSellingProducts(Pageable pageable);

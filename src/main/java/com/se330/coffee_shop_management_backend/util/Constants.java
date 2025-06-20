@@ -280,4 +280,21 @@ public final class Constants {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid payment status name: %s", name)));
         }
     }
+
+    @Getter
+    @AllArgsConstructor
+    public enum ProductVariantTierIdx {
+        SMALL("small"),
+        MEDIUM("medium"),
+        LARGE("large"),
+        DEFAULT("default"),;
+
+        private final String value;
+        public static ProductVariantTierIdx get(final String name) {
+            return Stream.of(ProductVariantTierIdx.values())
+                .filter(p -> p.name().equals(name.toUpperCase()) || p.getValue().equals(name.toUpperCase()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Invalid product variant tier index name: %s", name)));
+        }
+    }
 }
