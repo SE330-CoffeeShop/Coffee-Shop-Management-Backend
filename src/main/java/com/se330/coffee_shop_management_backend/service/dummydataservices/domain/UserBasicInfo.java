@@ -100,7 +100,7 @@ public class UserBasicInfo {
                 "Đoàn", "Kim", "Quách", "Vương", "Triệu", "Cao", "Lưu", "Hứa",
                 "Phùng", "Tô", "Trịnh", "Tống", "Bạch", "Hồng", "Lục", "Tiêu"
         };
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 10; i++) {
             String gender = customerFirstNames[i].contains("Thị") ? "Female" : "Male";
             User customerUser = userService.create(CreateUserRequest.builder()
                     .email("customer" + (i + 1) + "@example.com")
@@ -122,7 +122,7 @@ public class UserBasicInfo {
         String[] managerFirstNames = {"Phan Văn", "Lý Thị", "Trương Minh", "Mai Thị", "Dương Văn"};
         String[] managerLastNames = {"Quang", "Hòa", "Tâm", "Phương", "Khoa"};
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             String gender = managerFirstNames[i].contains("Thị") ? "Nữ" : "Nam";
             User managerUser = userService.create(CreateUserRequest.builder()
                     .email("manager" + (i + 1) + "@example.com")
@@ -179,7 +179,7 @@ public class UserBasicInfo {
                 "Nhật", "Phú", "Quân", "Tâm", "Thư", "Vũ", "Thành", "Hải", "Nguyên", "Tú"
         };
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 30; i++) {
             String gender = employeeFirstNames[i].contains("Thị") ? "Nữ" : "Nam";
             User employeeUser = userService.create(CreateUserRequest.builder()
                     .email("employee" + (i + 1) + "@example.com")

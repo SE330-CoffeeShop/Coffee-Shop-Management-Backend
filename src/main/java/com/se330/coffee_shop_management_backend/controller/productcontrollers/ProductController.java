@@ -823,4 +823,45 @@ public class ProductController {
                 )
         );
     }
+
+    @GetMapping("/search")
+    @Operation(
+            summary = "Search products by keyword with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved matching products",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<ProductResponseDTO>> searchProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Product> productPage = productService.searchProducts(keyword, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Products matching search criteria retrieved successfully",
+                        ProductResponseDTO.convert(productPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                productPage.getNumber() + 1,
+                                productPage.getSize(),
+                                productPage.getTotalElements(),
+                                productPage.getTotalPages()
+                        )
+                )
+        );
+    }
 }

@@ -21,7 +21,11 @@ import com.se330.coffee_shop_management_backend.util.Constants;
 import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import com.se330.coffee_shop_management_backend.util.CreateSlug;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.session.SearchSession;
+import org.hibernate.search.engine.search.query.SearchResult;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -29,6 +33,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.persistence.EntityManager;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -45,6 +50,9 @@ public class ImpProductService implements IProductService {
     private final INotificationService notificationService;
     private final IProductVariantService productVariantService;
     private final IRecipeService recipeService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public ImpProductService(
             ProductRepository productRepository,
@@ -553,6 +561,31 @@ public class ImpProductService implements IProductService {
         Page<Object[]> productData = productRepository.findBestSellingProductsByBranchAndDayAndMonthAndYear(branchId, day, month, year, pageable);
         List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
         return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Product> searchProducts(String keyword, Pageable pageable) {
+        // Return all products if keyword is empty
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return productRepository.findAll(pageable);
+        }
+
+        // Fix: Use correct method to create search session
+        SearchSession searchSession = Search.session(entityManager);
+
+        // Execute the search using the vietnamese_search analyzer
+        SearchResult<Product> result = searchSession.search(Product.class)
+                .where(f -> f.match()
+                        .fields("productName")
+                        .matching(keyword)
+                        .analyzer("vietnamese_search"))
+                .fetch((int) pageable.getOffset(), pageable.getPageSize());
+
+        List<Product> hits = result.hits();
+        long totalHitCount = result.total().hitCount();
+
+        return new PageImpl<>(hits, pageable, totalHitCount);
     }
 
     @Transactional

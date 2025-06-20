@@ -125,7 +125,7 @@ public class Comment {
             }
             BigDecimal averageRating = totalRating.divide(BigDecimal.valueOf(commentCount), RoundingMode.HALF_UP);
 
-            product.setProductRatingsAverage(averageRating);
+            product.setProductRatingsAverage(averageRating.setScale(1, RoundingMode.HALF_UP));
             product.setProductCommentCount(product.getProductCommentCount() + commentCount);
         }
 

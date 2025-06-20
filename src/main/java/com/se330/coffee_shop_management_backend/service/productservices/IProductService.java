@@ -30,6 +30,8 @@ public interface IProductService {
     Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndMonthAndYear(UUID branchId, int month, int year, Pageable pageable);
     Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndDayAndMonthAndYear(UUID branchId, int day, int month, int year, Pageable pageable);
 
+    Page<Product> searchProducts(String keyword, Pageable pageable);
+
     String uploadProductImage(UUID productId, MultipartFile file) throws Exception;
     String deleteProductImage(UUID productId) throws Exception;
 }

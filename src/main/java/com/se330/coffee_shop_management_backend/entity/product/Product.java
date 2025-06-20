@@ -8,12 +8,15 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import lombok.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Indexed
 @Table(name = "products")
 @Getter
 @Setter
@@ -25,6 +28,7 @@ import java.util.List;
 })
 public class Product extends AbstractBaseEntity {
     @Column(name = "product_name", nullable = false)
+    @FullTextField(analyzer = "vietnamese", searchAnalyzer = "vietnamese_search")
     private String productName = "";
 
     @Column(name = "product_thumb", nullable = false)

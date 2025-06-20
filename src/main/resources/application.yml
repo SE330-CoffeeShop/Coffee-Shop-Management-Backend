@@ -38,6 +38,13 @@ spring:
         show_sql: true
         format_sql: true
         globally_quoted_identifiers: true
+        search:
+          backend:
+            type: lucene
+            directory:
+              root: ./data/index
+            analysis:
+              configurer: com.se330.coffee_shop_management_backend.config.fts.VietnameseAnalysisConfigurer
     open-in-view: false
   datasource:
     url: jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRESQL_DB}
