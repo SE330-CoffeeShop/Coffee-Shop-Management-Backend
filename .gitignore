@@ -42,6 +42,7 @@ build/
 ### Logs ###
 logs
 *.log
+!**/src/main/**/logs/
 
 ### liqibase ###
 liquibase.properties
