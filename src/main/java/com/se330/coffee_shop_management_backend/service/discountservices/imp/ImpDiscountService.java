@@ -232,7 +232,7 @@ public class ImpDiscountService implements IDiscountService {
 
         Discount updatedDiscount = discountRepository.save(existingDiscount);
 
-        // send a notification to the branch manager about the discount update
+        // send a notification to the branch manager about the discount update s
         notificationService.createNotification(
                 NotificationCreateRequestDTO.builder()
                         .notificationType(Constants.NotificationTypeEnum.DISCOUNT)
