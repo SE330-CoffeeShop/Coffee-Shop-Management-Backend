@@ -45,6 +45,7 @@ spring:
               root: ./data/index
             analysis:
               configurer: com.se330.coffee_shop_management_backend.config.fts.VietnameseAnalysisConfigurer
+            create_missing_directories: true
     open-in-view: false
   datasource:
     url: jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRESQL_DB}
