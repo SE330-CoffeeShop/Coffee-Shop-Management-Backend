@@ -43,20 +43,20 @@ public class StockAndInventory {
 
         // Map ingredient types to appropriate units
         Map<String, String> unitsByType = new HashMap<>();
-        unitsByType.put("COFFEE_BEANS", "kg");
-        unitsByType.put("COFFEE_BASE", "l");
-        unitsByType.put("DAIRY", "l");
-        unitsByType.put("SYRUP", "l");
-        unitsByType.put("TEA_LEAVES", "kg");
-        unitsByType.put("TEA_TOPPING", "kg");
-        unitsByType.put("FRUIT", "kg");
-        unitsByType.put("BASE", "kg");
-        unitsByType.put("SWEETENER", "l");
-        unitsByType.put("TOPPING", "kg");
-        unitsByType.put("POWDER", "kg");
-        unitsByType.put("FLOUR", "kg");
-        unitsByType.put("MEAT", "kg");
-        unitsByType.put("CAKE_MIX", "kg");
+        unitsByType.put("COFFEE_BEANS", "grams");
+        unitsByType.put("COFFEE_BASE", "ml");
+        unitsByType.put("DAIRY", "ml");
+        unitsByType.put("SYRUP", "ml");
+        unitsByType.put("TEA_LEAVES", "grams");
+        unitsByType.put("TEA_TOPPING", "grams");
+        unitsByType.put("FRUIT", "grams");
+        unitsByType.put("BASE", "grams");
+        unitsByType.put("SWEETENER", "ml");
+        unitsByType.put("TOPPING", "grams");
+        unitsByType.put("POWDER", "grams");
+        unitsByType.put("FLOUR", "grams");
+        unitsByType.put("MEAT", "grams");
+        unitsByType.put("CAKE_MIX", "grams");
 
         // Define warehouse specializations
         Map<String, List<String>> warehouseSpecializations = new HashMap<>();
@@ -68,7 +68,7 @@ public class StockAndInventory {
         // Create stock for each ingredient in all warehouses
         for (Ingredient ingredient : ingredients) {
             String ingredientType = ingredient.getIngredientType();
-            String unit = unitsByType.getOrDefault(ingredientType, "kg");
+            String unit = unitsByType.getOrDefault(ingredientType, "grams");
 
             for (Warehouse warehouse : warehouses) {
                 // Check if this warehouse specializes in this ingredient type
@@ -100,35 +100,35 @@ public class StockAndInventory {
         // Return appropriate base quantities based on ingredient type
         switch (ingredientType) {
             case "COFFEE_BEANS":
-                return 50; // 50kg of coffee beans
+                return 50000; // 50kg of coffee beans
             case "COFFEE_BASE":
-                return 30; // 30l of coffee base
+                return 30000; // 30l of coffee base
             case "DAIRY":
-                return 40; // 40l of dairy products
+                return 40000; // 40l of dairy products
             case "SYRUP":
-                return 25; // 25l of syrups
+                return 25000; // 25l of syrups
             case "TEA_LEAVES":
-                return 20; // 20kg of tea leaves
+                return 20000; // 20kg of tea leaves
             case "TEA_TOPPING":
-                return 15; // 15kg of tea toppings
+                return 15000; // 15kg of tea toppings
             case "FRUIT":
-                return 25; // 25kg of fruits
+                return 25000; // 25kg of fruits
             case "BASE":
-                return 100; // 100kg of base ingredients (like ice)
+                return 100000; // 100kg of base ingredients (like ice)
             case "SWEETENER":
-                return 35; // 35l of sweeteners
+                return 35000; // 35l of sweeteners
             case "TOPPING":
-                return 15; // 15kg of toppings
+                return 15000; // 15kg of toppings
             case "POWDER":
-                return 10; // 10kg of powders
+                return 10000; // 10kg of powders
             case "FLOUR":
-                return 50; // 50kg of flour
+                return 50000; // 50kg of flour
             case "MEAT":
-                return 20; // 20kg of meat products
+                return 20000; // 20kg of meat products
             case "CAKE_MIX":
-                return 25; // 25kg of cake mixes
+                return 25000; // 25kg of cake mixes
             default:
-                return 15; // Default quantity
+                return 15000; // Default quantity
         }
     }
 
@@ -171,28 +171,44 @@ public class StockAndInventory {
 
                     // Adjust quantity based on branch size with some randomness
                     int quantity = (int) Math.round(branchBaseQuantity * sizeMultiplier *
-                            (0.5 + random.nextDouble() * 0.8)) * 10000;
+                            (0.5 + random.nextDouble() * 0.8));
 
-                    // Determine if this inventory record should be expired (30% chance)
-//                    boolean isExpired = random.nextDouble() < 0.3;
-                    boolean isExpired = false;
-
+                    // Create diverse expiration dates based on probability distribution
+                    int expirationCategory = getExpirationCategory(random);
                     LocalDateTime expireDate;
-                    if (isExpired) {
-                        // Generate an expiration date in the past (1-30 days ago)
-                        expireDate = now.minusDays(1 + random.nextInt(30));
-                    } else {
-                        // Generate an expiration date in the future based on shelf life
-                        expireDate = now.plusDays( 1 +
-                                (long) (ingredient.getShelfLifeDays() * (0.2 + random.nextDouble() * 0.8))
-                        );
+
+                    switch (expirationCategory) {
+                        case 0: // Already expired (20%)
+                            // Expired anywhere from yesterday to 60 days ago
+                            expireDate = now.minusDays(1 + random.nextInt(60));
+                            break;
+                        case 1: // About to expire (25%)
+                            // Will expire in the next 1-7 days
+                            expireDate = now.plusDays(random.nextInt(7) + 1);
+                            break;
+                        case 2: // Mid-term expiration (40%)
+                            // Will expire in 8-30 days
+                            expireDate = now.plusDays(8 + random.nextInt(23));
+                            break;
+                        default: // Long-term expiration (15%)
+                            // Will expire based on ingredient shelf life (50-100% of shelf life)
+                            expireDate = now.plusDays((long) (ingredient.getShelfLifeDays() *
+                                    (0.5 + random.nextDouble() * 0.5)));
+                            break;
                     }
 
                     if (expireDate.isBefore(now)) {
-                        log.warn("FUCK ");
+                        log.debug("Created expired inventory record for {} at {}",
+                                ingredient.getIngredientName(), branch.getBranchName());
                     }
 
-                    // Create inventory record
+                    // Create inventory record with varying quantities
+                    // More expired items tend to have less quantity left
+                    if (expireDate.isBefore(now)) {
+                        // Expired items usually have less quantity left (10-40% of original)
+                        quantity = (int)(quantity * (0.1 + random.nextDouble() * 0.3));
+                    }
+
                     inventories.add(Inventory.builder()
                             .branch(branch)
                             .ingredient(ingredient)
@@ -207,39 +223,47 @@ public class StockAndInventory {
         log.info("Created {} inventory records", inventories.size());
     }
 
+    private int getExpirationCategory(Random random) {
+        int value = random.nextInt(100);
+        if (value < 20) return 0;      // 20% already expired
+        else if (value < 45) return 1;  // 25% about to expire
+        else if (value < 85) return 2;  // 40% mid-term expiration
+        else return 3;                  // 15% long-term expiration
+    }
+
     private int getBranchBaseQuantity(String ingredientType) {
         // Return appropriate base quantities for branches (smaller than warehouse quantities)
         switch (ingredientType) {
             case "COFFEE_BEANS":
-                return 10; // 10kg of coffee beans
+                return 10000; // 10kg of coffee beans
             case "COFFEE_BASE":
-                return 5; // 5L of coffee base
+                return 5000; // 5L of coffee base
             case "DAIRY":
-                return 8; // 8L of dairy products
+                return 8000; // 8L of dairy products
             case "SYRUP":
-                return 3; // 3L of syrups
+                return 3000; // 3L of syrups
             case "TEA_LEAVES":
-                return 4; // 4kg of tea leaves
+                return 4000; // 4kg of tea leaves
             case "TEA_TOPPING":
-                return 3; // 3kg of tea toppings
+                return 3000; // 3kg of tea toppings
             case "FRUIT":
-                return 5; // 5kg of fruits
+                return 5000; // 5kg of fruits
             case "BASE":
-                return 15; // 15kg of base ingredients (like ice)
+                return 15000; // 15kg of base ingredients (like ice)
             case "SWEETENER":
-                return 6; // 6L of sweeteners
+                return 6000; // 6L of sweeteners
             case "TOPPING":
-                return 2; // 2kg of toppings
+                return 2000; // 2kg of toppings
             case "POWDER":
-                return 2; // 2kg of powders
+                return 2000; // 2kg of powders
             case "FLOUR":
-                return 8; // 8kg of flour
+                return 8000; // 8kg of flour
             case "MEAT":
-                return 4; // 4kg of meat products
+                return 4000; // 4kg of meat products
             case "CAKE_MIX":
-                return 5; // 5kg of cake mixes
+                return 5000; // 5kg of cake mixes
             default:
-                return 3; // Default quantity
+                return 3000; // Default quantity
         }
     }
 }
