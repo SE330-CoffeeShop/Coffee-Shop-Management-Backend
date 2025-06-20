@@ -254,6 +254,7 @@ public class ImpDiscountService implements IDiscountService {
 
         for (ProductVariant productVariant : new ArrayList<>(discount.getProductVariants())) {
             productVariant.getDiscounts().remove(discount);
+            productVariantRepository.save(productVariant);
         }
 
         discount.getProductVariants().clear();
