@@ -96,11 +96,10 @@ public class ImpDiscountService implements IDiscountService {
     @Override
     @Transactional
     public Discount createDiscount(DiscountCreateRequestDTO discountCreateRequestDTO) {
-        Branch existingBranch = branchRepository.findById(discountCreateRequestDTO.getBranchId())
-                .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + discountCreateRequestDTO.getBranchId()));
 
-        // TODO: validate the sender employee is a manager of the branch
-        User manager = existingBranch.getManager().getUser();
+        User manager = userService.getUser();
+
+        Branch existingBranch = manager.getEmployee().getBranch();
 
         Discount returnDiscount = discountRepository.save(
                 Discount.builder()

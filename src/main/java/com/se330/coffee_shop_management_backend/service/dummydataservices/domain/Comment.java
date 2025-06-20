@@ -94,7 +94,7 @@ public class Comment {
 
         // Generate 3-5 comments for each product
         for (Product product : products) {
-            int commentCount = random.nextInt(3) + 10; // Generate 3-10 comments
+            int commentCount = random.nextInt(10) + 20; // Generate 10-30 comments
 
             // Get category name
             String categoryName = product.getProductCategory().getCategoryName();
@@ -119,7 +119,7 @@ public class Comment {
                                 .product(product)
                                 .build();
 
-                totalRating.add(rating);
+                totalRating = totalRating.add(rating);
 
                 comments.add(comment);
             }
