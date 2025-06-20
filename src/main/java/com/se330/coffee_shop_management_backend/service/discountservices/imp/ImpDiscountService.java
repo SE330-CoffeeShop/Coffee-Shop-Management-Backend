@@ -191,7 +191,11 @@ public class ImpDiscountService implements IDiscountService {
 
             List<ProductVariant> productVariants = new ArrayList<>();
             discountUpdateRequestDTO.getProductVariantIds().forEach(id -> {
-                productVariants.add(productVariantRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id)));
+                ProductVariant productVariant = productVariantRepository.findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id));
+                productVariants.add(productVariant);
+                productVariant.getDiscounts().add(existingDiscount);
+                productVariantRepository.save(productVariant);
             });
             existingDiscount.setProductVariants(productVariants);
         }
