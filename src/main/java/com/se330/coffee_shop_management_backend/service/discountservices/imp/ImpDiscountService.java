@@ -182,8 +182,12 @@ public class ImpDiscountService implements IDiscountService {
         existingDiscount.setDiscountMaxUsers(discountUpdateRequestDTO.getDiscountMaxUsers());
         existingDiscount.setDiscountMaxPerUser(discountUpdateRequestDTO.getDiscountMaxPerUser());
         existingDiscount.setDiscountMinOrderValue(discountUpdateRequestDTO.getDiscountMinOrderValue());
+        for (ProductVariant variant : new ArrayList<>(existingDiscount.getProductVariants())) {
+            variant.getDiscounts().remove(existingDiscount);
+            productVariantRepository.save(variant);
+        }
+        existingDiscount.getProductVariants().clear();
         if (discountUpdateRequestDTO.getProductVariantIds() != null && !discountUpdateRequestDTO.getProductVariantIds().isEmpty()) {
-            existingDiscount.getProductVariants().clear();
 
             List<ProductVariant> productVariants = new ArrayList<>();
             discountUpdateRequestDTO.getProductVariantIds().forEach(id -> {
