@@ -166,10 +166,7 @@ public class ImpDiscountService implements IDiscountService {
         Discount existingDiscount = discountRepository.findById(discountUpdateRequestDTO.getDiscountId())
                 .orElseThrow(() -> new EntityNotFoundException("Discount not found with id: " + discountUpdateRequestDTO.getDiscountId()));
 
-        Branch existingBranch = branchRepository.findById(discountUpdateRequestDTO.getBranchId())
-                .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + discountUpdateRequestDTO.getBranchId()));
-
-        User manager = existingBranch.getManager().getUser();
+        User manager = userService.getUser();
 
         existingDiscount.setDiscountName(discountUpdateRequestDTO.getDiscountName());
         existingDiscount.setDiscountDescription(discountUpdateRequestDTO.getDiscountDescription());
@@ -181,13 +178,12 @@ public class ImpDiscountService implements IDiscountService {
         existingDiscount.setDiscountMaxUsers(discountUpdateRequestDTO.getDiscountMaxUsers());
         existingDiscount.setDiscountMaxPerUser(discountUpdateRequestDTO.getDiscountMaxPerUser());
         existingDiscount.setDiscountMinOrderValue(discountUpdateRequestDTO.getDiscountMinOrderValue());
-        existingDiscount.setBranch(existingBranch);
-        existingDiscount.setProductVariants(!discountUpdateRequestDTO.getProductVariantIds().isEmpty() ?
-                discountUpdateRequestDTO.getProductVariantIds().stream()
-                        .map(id -> {
-                            return productVariantRepository.findById(id)
-                                    .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id));
-                        }).toList() : List.of());
+        if (discountUpdateRequestDTO.getProductVariantIds() != null && !discountUpdateRequestDTO.getProductVariantIds().isEmpty()) {
+            existingDiscount.setProductVariants(discountUpdateRequestDTO.getProductVariantIds().stream()
+                    .map(id -> productVariantRepository.findById(id)
+                            .orElseThrow(() -> new EntityNotFoundException("Product Variant not found with id: " + id)))
+                    .toList());
+        }
 
         if (existingDiscount.isDiscountIsActive() != discountUpdateRequestDTO.isDiscountIsActive()) {
             if (discountUpdateRequestDTO.isDiscountIsActive()) {
