@@ -182,6 +182,11 @@ public class ImpDiscountService implements IDiscountService {
         existingDiscount.setDiscountMaxUsers(discountUpdateRequestDTO.getDiscountMaxUsers());
         existingDiscount.setDiscountMaxPerUser(discountUpdateRequestDTO.getDiscountMaxPerUser());
         existingDiscount.setDiscountMinOrderValue(discountUpdateRequestDTO.getDiscountMinOrderValue());
+        for (ProductVariant variant : new ArrayList<>(existingDiscount.getProductVariants())) {
+            variant.getDiscounts().remove(existingDiscount);
+            productVariantRepository.save(variant);
+        }
+        existingDiscount.getProductVariants().clear();
         if (discountUpdateRequestDTO.getProductVariantIds() != null && !discountUpdateRequestDTO.getProductVariantIds().isEmpty()) {
             List<ProductVariant> productVariants = new ArrayList<>();
             discountUpdateRequestDTO.getProductVariantIds().forEach(id -> {
@@ -245,6 +250,11 @@ public class ImpDiscountService implements IDiscountService {
     public void deleteDiscount(UUID id) {
         Discount existingDiscount = discountRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Discount not found with id: " + id));
+
+
+        for (ProductVariant productVariant : new ArrayList<>(discount.getProductVariants())) {
+            productVariant.getDiscounts().remove(discount);
+            productVariantRepository.save(productVariant);
 
         if (existingDiscount.getBranch() != null) {
             existingDiscount.getBranch().getDiscounts().remove(existingDiscount);
