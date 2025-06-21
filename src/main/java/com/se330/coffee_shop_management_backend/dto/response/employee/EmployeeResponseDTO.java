@@ -45,9 +45,17 @@ public class EmployeeResponseDTO {
     private LocalDateTime employeeHireDate;
 
     // Related entities
+    //Trả id, fullname, dob, phone, gender, email, role, hireDate, branchName nha em
     private String branchId;
+    private String branchName;
     private String userId;
     private String userFullName;
+    private String userAvatarUrl;
+    private LocalDateTime userDoB;
+    private String userPhone;
+    private String userGender;
+    private String userEmail;
+    private String userRole;
     private String managedBranchId;
 
     public static EmployeeResponseDTO convert(Employee employee) {
@@ -62,6 +70,13 @@ public class EmployeeResponseDTO {
                 .branchId(employee.getBranch() != null ? employee.getBranch().getId().toString() : null)
                 .userId(employee.getUser() != null ? employee.getUser().getId().toString() : null)
                 .userFullName(employee.getUser() != null ? employee.getUser().getFullName() : null)
+                .userAvatarUrl(employee.getUser() != null ? employee.getUser().getAvatar() : null)
+                .userDoB(employee.getUser() != null ? employee.getUser().getBirthDate() : null)
+                .userPhone(employee.getUser() != null ? employee.getUser().getPhoneNumber() : null)
+                .userGender(employee.getUser() != null ? employee.getUser().getGender() : null)
+                .userEmail(employee.getUser() != null ? employee.getUser().getEmail() : null)
+                .userRole(employee.getUser() != null && employee.getUser().getRole() != null ? employee.getUser().getRole().getName().getValue() : null)
+                .branchName(employee.getBranch() != null ? employee.getBranch().getBranchName() : null)
                 .build();
     }
 

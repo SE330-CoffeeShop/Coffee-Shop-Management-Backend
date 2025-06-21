@@ -15,13 +15,13 @@ import java.util.UUID;
 public interface EmployeeRepository extends JpaRepository<Employee, UUID>, JpaSpecificationExecutor<Employee> {
 
     @Override
-    @EntityGraph(attributePaths = {"user", "branch"})
+    @EntityGraph(attributePaths = {"user", "branch", "user.role"})
     Optional<Employee> findById(UUID id);
 
     @Override
-    @EntityGraph(attributePaths = {"user", "branch"})
+    @EntityGraph(attributePaths = {"user", "branch", "user.role"})
     Page<Employee> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"user", "branch"})
+    @EntityGraph(attributePaths = {"user", "branch", "user.role"})
     Page<Employee> findAllByBranch_Id(UUID branchId, Pageable pageable);
 }
