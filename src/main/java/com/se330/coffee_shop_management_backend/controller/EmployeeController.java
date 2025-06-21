@@ -128,7 +128,7 @@ public class EmployeeController {
         );
     }
 
-    @GetMapping("/branch/{branchId}")
+    @GetMapping("/branch")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all employees for a branch with pagination",
@@ -153,7 +153,6 @@ public class EmployeeController {
             }
     )
     public ResponseEntity<PageResponse<EmployeeResponseDTO>> findAllEmployeesByBranchId(
-            @PathVariable UUID branchId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -161,7 +160,7 @@ public class EmployeeController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Employee> employeePages = employeeService.findAllEmployeesByBranchId(branchId, pageable);
+        Page<Employee> employeePages = employeeService.findAllEmployeesByBranchId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(

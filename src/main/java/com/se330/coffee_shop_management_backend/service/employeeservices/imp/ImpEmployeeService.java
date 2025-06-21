@@ -10,6 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.repository.BranchRepository;
 import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.service.RoleService;
+import com.se330.coffee_shop_management_backend.service.UserService;
 import com.se330.coffee_shop_management_backend.service.employeeservices.IEmployeeService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.util.Constants;
@@ -28,12 +29,14 @@ public class ImpEmployeeService implements IEmployeeService {
     private final EmployeeRepository employeeRepository;
     private final BranchRepository branchRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
     private final RoleService roleService;
     private final INotificationService notificationService;
 
     public ImpEmployeeService(
             EmployeeRepository employeeRepository,
             BranchRepository branchRepository,
+            UserService userService,
             UserRepository userRepository,
             RoleService roleService,
             INotificationService notificationService
@@ -42,6 +45,7 @@ public class ImpEmployeeService implements IEmployeeService {
         this.branchRepository = branchRepository;
         this.userRepository = userRepository;
         this.roleService = roleService;
+        this.userService = userService;
         this.notificationService = notificationService;
     }
 
@@ -59,8 +63,10 @@ public class ImpEmployeeService implements IEmployeeService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Employee> findAllEmployeesByBranchId(UUID branchId, Pageable pageable) {
-        return employeeRepository.findAllByBranch_Id(branchId, pageable);
+    public Page<Employee> findAllEmployeesByBranchId(Pageable pageable) {
+        User currentUser = userService.getUser();
+
+        return employeeRepository.findAllByBranch_Id(currentUser.getEmployee().getBranch().getId(), pageable);
     }
 
     @Override

@@ -37,7 +37,6 @@ public class OrderDetailController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Get order detail by id",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -224,7 +223,6 @@ public class OrderDetailController {
     }
 
     @GetMapping("/by-order/{orderId}")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all order details for a specific order with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface IEmployeeService {
     Employee findByIdEmployee(UUID id);
     Page<Employee> findAllEmployees(Pageable pageable);
-    Page<Employee> findAllEmployeesByBranchId(UUID branchId, Pageable pageable);
+    Page<Employee> findAllEmployeesByBranchId(Pageable pageable);
     Employee createEmployee(EmployeeCreateRequestDTO employeeCreateRequestDTO);
     Employee updateEmployee(EmployeeUpdateRequestDTO employeeUpdateRequestDTO);
     void deleteEmployee(UUID id);
