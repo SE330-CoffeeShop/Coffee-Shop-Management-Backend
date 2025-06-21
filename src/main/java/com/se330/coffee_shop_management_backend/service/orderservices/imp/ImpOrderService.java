@@ -75,8 +75,9 @@ public class ImpOrderService implements IOrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, UUID branchId, Pageable pageable) {
-        return orderRepository.findAllByOrderStatusAndBranch_Id(status, branchId, pageable);
+    public Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, Pageable pageable) {
+        User currentManager = userService.getUser();
+        return orderRepository.findAllByOrderStatusAndBranch_Id(status, currentManager.getEmployee().getBranch().getId(), pageable);
     }
 
     @Override

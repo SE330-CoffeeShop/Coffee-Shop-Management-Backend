@@ -273,7 +273,7 @@ public class OrderController {
         );
     }
 
-    @GetMapping("/branch/{branchId}/status/{status}")
+    @GetMapping("/branch/status/{status}")
     @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'MANAGER')")
     @Operation(
             summary = "Get all orders by branch ID and status with pagination",
@@ -306,7 +306,6 @@ public class OrderController {
             }
     )
     public ResponseEntity<PageResponse<OrderResponseDTO>> findAllOrdersByBranchAndStatus(
-            @PathVariable UUID branchId,
             @PathVariable Constants.OrderStatusEnum status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
@@ -315,7 +314,7 @@ public class OrderController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Order> orderPage = orderService.findAllOrderByStatusAndBranchId(status, branchId, pageable);
+        Page<Order> orderPage = orderService.findAllOrderByStatusAndBranchId(status, pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
