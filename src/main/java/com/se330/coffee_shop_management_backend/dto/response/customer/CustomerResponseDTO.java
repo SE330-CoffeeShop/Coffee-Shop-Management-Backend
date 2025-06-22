@@ -59,6 +59,7 @@ public class CustomerResponseDTO {
         if (user.getOrders() == null || user.getOrders().isEmpty())
             return null;
 
+
         LocalDateTime lastBuyAt = user.getOrders().stream()
                 .map(Order::getCreatedAt)
                 .max(LocalDateTime::compareTo)

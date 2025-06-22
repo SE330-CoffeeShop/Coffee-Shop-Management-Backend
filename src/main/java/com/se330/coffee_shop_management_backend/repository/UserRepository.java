@@ -22,15 +22,23 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     Optional<User> findByEmail(@Param("email") String email);
 
     @Override
-    @EntityGraph(attributePaths = {"role", "employee", "employee.branch"})
+    @EntityGraph(attributePaths = {"role", "employee", "employee.branch", "orders"})
     Optional<User> findById(UUID id);
 
     boolean existsByEmailAndIdNot(String email, UUID id);
 
-    @EntityGraph(attributePaths = {"role", "employee", "employee.branch"})
+    @EntityGraph(attributePaths = {"role", "employee", "employee.branch", "orders"})
     List<User> findAllByRoleName(Constants.RoleEnum roleName);
 
     @Override
-    @EntityGraph(attributePaths = {"role", "employee", "employee.branch"})
+    @EntityGraph(attributePaths = {"role", "employee", "employee.branch", "orders"})
     Page<User> findAll(Specification<User> spec, Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"role", "employee", "employee.branch", "orders"})
+    Page<User> findAll(Pageable pageable);
+
+    @Query("SELECT DISTINCT u FROM User u JOIN u.orders o WHERE o.branch.id = :branchId")
+    @EntityGraph(attributePaths = {"role", "employee", "employee.branch", "orders"})
+    Page<User> findAllByOrdersBranchId(@Param("branchId") UUID branchId, Pageable pageable);
 }
