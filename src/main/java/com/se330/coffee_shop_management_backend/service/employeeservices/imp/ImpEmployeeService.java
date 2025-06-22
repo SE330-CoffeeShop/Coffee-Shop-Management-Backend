@@ -167,6 +167,10 @@ public class ImpEmployeeService implements IEmployeeService {
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + id));
 
+        User user = employee.getUser();
+
+        String userId = user != null ? user.getId().toString() : "null";
+
         if (employee.getBranch() != null) {
             employee.getBranch().getEmployees().remove(employee);
             employee.setBranch(null);
@@ -177,6 +181,7 @@ public class ImpEmployeeService implements IEmployeeService {
             employee.setUser(null);
         }
 
+        userService.delete(userId);
         employeeRepository.deleteById(id);
     }
 
