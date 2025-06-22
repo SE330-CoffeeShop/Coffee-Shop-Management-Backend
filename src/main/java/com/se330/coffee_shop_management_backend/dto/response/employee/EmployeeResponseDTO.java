@@ -45,7 +45,6 @@ public class EmployeeResponseDTO {
     private LocalDateTime employeeHireDate;
 
     // Related entities
-    //Trả id, fullname, dob, phone, gender, email, role, hireDate, branchName nha em
     private String branchId;
     private String branchName;
     private String userId;
