@@ -39,9 +39,6 @@ public class EmployeeResponseDTO {
             example = "2022-09-29T22:37:31"
     )
     private LocalDateTime updatedAt;
-
-    private String employeePosition;
-    private String employeeDepartment;
     private LocalDateTime employeeHireDate;
 
     // Related entities
@@ -62,8 +59,6 @@ public class EmployeeResponseDTO {
                 .id(employee.getId().toString())
                 .createdAt(employee.getCreatedAt())
                 .updatedAt(employee.getUpdatedAt())
-                .employeePosition(employee.getEmployeePosition())
-                .employeeDepartment(employee.getEmployeeDepartment())
                 .employeeHireDate(employee.getEmployeeHireDate())
                 .managedBranchId(employee.getManagedBranch() != null ? employee.getManagedBranch().getId().toString() : null)
                 .branchId(employee.getBranch() != null ? employee.getBranch().getId().toString() : null)

@@ -39,6 +39,7 @@ public class CheckinResponseDTO {
     private LocalDateTime updatedAt;
 
     private String shiftId;
+    private String employeeFullName;
     private LocalDateTime checkinTime;
 
     public static CheckinResponseDTO convert(Checkin checkin) {

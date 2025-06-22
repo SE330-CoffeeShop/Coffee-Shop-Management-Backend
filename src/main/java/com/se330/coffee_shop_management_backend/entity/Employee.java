@@ -18,12 +18,6 @@ import java.util.List;
         @AttributeOverride(name = "id", column = @Column(name = "employee_id"))
 })
 public class Employee extends AbstractBaseEntity {
-    @Column(name = "employee_position", nullable = false)
-    private String employeePosition = "";
-
-    @Column(name = "employee_department", nullable = false)
-    private String employeeDepartment = "";
-
     @Column(name = "employee_hire_date", nullable = false)
     private LocalDateTime employeeHireDate;
 
@@ -60,6 +54,10 @@ public class Employee extends AbstractBaseEntity {
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Shift> shifts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<SubCheckin> subCheckins = new ArrayList<>();
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default

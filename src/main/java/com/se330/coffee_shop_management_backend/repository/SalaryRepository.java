@@ -31,6 +31,21 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
             @Param("year") int year
     );
 
+    @Query("""
+        SELECT COALESCE(SUM(s.shiftSalary), 0)
+        FROM SubCheckin sc
+        JOIN sc.shift s
+        WHERE sc.employee.id = :employeeId
+        AND EXTRACT(MONTH FROM sc.checkinTime) = :month
+        AND EXTRACT(YEAR FROM sc.checkinTime) = :year
+    """)
+    @EntityGraph(attributePaths = {"employee"})
+    BigDecimal calculateTotalSalaryForEmployeeInMonthAndYearForSubCheckins(
+            @Param("employeeId") UUID employeeId,
+            @Param("month") int month,
+            @Param("year") int year
+    );
+
     @Query("SELECT s FROM Salary s WHERE s.employee.id = :employeeId AND s.month = :month AND s.year = :year")
     @EntityGraph(attributePaths = {"employee"})
     Salary findByEmployeeIdAndMonthAndYear(

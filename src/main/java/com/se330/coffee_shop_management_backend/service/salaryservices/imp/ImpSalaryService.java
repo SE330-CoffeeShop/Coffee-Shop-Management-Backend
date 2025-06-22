@@ -105,6 +105,10 @@ public class ImpSalaryService implements ISalaryService {
                     employee.getId(), month, year
             );
 
+            totalSalary = totalSalary.add(salaryRepository.calculateTotalSalaryForEmployeeInMonthAndYearForSubCheckins(
+                    employee.getId(), month, year
+            ));
+
             // if the salary for the month and year and employee already exists, update it
             Salary existingSalary = salaryRepository.findByEmployeeIdAndMonthAndYear(employee.getId(), month, year);
 

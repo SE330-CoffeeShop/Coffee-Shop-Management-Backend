@@ -2,12 +2,14 @@ package com.se330.coffee_shop_management_backend.service.checkinservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.checkin.CheckinCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.checkin.CheckinUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.checkin.SubCheckinCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.checkin.SubCheckinUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
-import com.se330.coffee_shop_management_backend.entity.Checkin;
-import com.se330.coffee_shop_management_backend.entity.Shift;
-import com.se330.coffee_shop_management_backend.entity.User;
+import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.CheckinRepository;
+import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.repository.ShiftRepository;
+import com.se330.coffee_shop_management_backend.repository.SubCheckinRepository;
 import com.se330.coffee_shop_management_backend.service.checkinservices.ICheckinService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.util.Constants;
@@ -25,16 +27,22 @@ public class ImpCheckinService implements ICheckinService {
 
     private final CheckinRepository checkinRepository;
     private final ShiftRepository shiftRepository;
+    private final EmployeeRepository employeeRepository;
     private final INotificationService notificationService;
+    private final SubCheckinRepository subCheckinRepository;
 
     public ImpCheckinService(
             CheckinRepository checkinRepository,
             ShiftRepository shiftRepository,
+            EmployeeRepository employeeRepository,
+            SubCheckinRepository subCheckinRepository,
             INotificationService notificationService
     ) {
         this.checkinRepository = checkinRepository;
         this.shiftRepository = shiftRepository;
+        this.employeeRepository = employeeRepository;
         this.notificationService = notificationService;
+        this.subCheckinRepository = subCheckinRepository;
     }
 
     @Override
@@ -59,6 +67,46 @@ public class ImpCheckinService implements ICheckinService {
     @Transactional(readOnly = true)
     public Page<Checkin> findAllByEmployeeId(UUID employeeId, Pageable pageable) {
         return checkinRepository.findAllByEmployeeId(employeeId, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<SubCheckin> findAllSubCheckinsByShiftId(UUID shiftId, Pageable pageable) {
+        return subCheckinRepository.findAllByShift_Id(shiftId, pageable);
+    }
+
+    @Override
+    @Transactional
+    public SubCheckin createSubCheckin(SubCheckinCreateRequestDTO subCheckinCreateRequestDTO) {
+
+        Shift shift = shiftRepository.findById(subCheckinCreateRequestDTO.getShiftId())
+                .orElseThrow(() -> new EntityNotFoundException("Shift not found with id: " + subCheckinCreateRequestDTO.getShiftId()));
+
+        Employee employee = employeeRepository.findById(subCheckinCreateRequestDTO.getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + subCheckinCreateRequestDTO.getEmployeeId()));
+
+        return subCheckinRepository.save(
+                SubCheckin.builder()
+                        .shift(shift)
+                        .employee(employee)
+                        .checkinTime(subCheckinCreateRequestDTO.getCheckinTime())
+                        .build()
+        );
+    }
+
+    @Override
+    @Transactional
+    public SubCheckin updateSubCheckin(SubCheckinUpdateRequestDTO subCheckinUpdateRequestDTO) {
+        SubCheckin existingSubCheckin = subCheckinRepository.findById(subCheckinUpdateRequestDTO.getSubCheckinId())
+                .orElseThrow(() -> new EntityNotFoundException("SubCheckin not found with id: " + subCheckinUpdateRequestDTO.getSubCheckinId()));
+
+        Employee employee = employeeRepository.findById(subCheckinUpdateRequestDTO.getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + subCheckinUpdateRequestDTO.getEmployeeId()));
+
+        existingSubCheckin.setEmployee(employee);
+        existingSubCheckin.setCheckinTime(subCheckinUpdateRequestDTO.getCheckinTime());
+
+        return subCheckinRepository.save(existingSubCheckin);
     }
 
     @Override

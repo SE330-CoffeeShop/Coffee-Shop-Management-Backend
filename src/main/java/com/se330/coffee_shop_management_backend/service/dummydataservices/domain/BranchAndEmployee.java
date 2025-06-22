@@ -99,8 +99,6 @@ public class BranchAndEmployee {
         // Create 5 managers (1 for each branch)
         for (int i = 0; i < 5; i++) {
             Employee manager = Employee.builder()
-                    .employeePosition("Quản lý")
-                    .employeeDepartment("Quản lý")
                     .employeeHireDate(now.minusMonths((long) (i + 1) * 3))
                     .branch(branches.get(i))
                     .user(i < availableManagers.size() ? availableManagers.get(i) : null)
@@ -111,25 +109,12 @@ public class BranchAndEmployee {
             referenceUsers.add(referenceUser);
         }
 
-        // Create 30 regular employees distributed across branches
-        String[] positions = {
-                "Barista", "Thu ngân", "Phục vụ", "Pha chế", "Bếp", "Kho vận"
-        };
-
-        String[] departments = {
-                "Phục vụ", "Thu ngân", "Pha chế", "Bếp", "Hậu cần"
-        };
-
         for (int i = 0; i < availableUsers.size(); i++) {
             int branchIndex = i % branches.size();
-            int positionIndex = i % positions.length;
-            int departmentIndex = i % departments.length;
 
             User user = availableUsers.get(i);
 
             Employee employee = Employee.builder()
-                    .employeePosition(positions[positionIndex])
-                    .employeeDepartment(departments[departmentIndex])
                     .employeeHireDate(now.minusMonths((long) (i % 12) + 1))
                     .branch(branches.get(branchIndex))
                     .user(user)
@@ -156,9 +141,15 @@ public class BranchAndEmployee {
             return;
         }
 
-        List<Employee> managers = employeeRepository.findAll().stream()
-                .filter(e -> "Quản lý".equals(e.getEmployeePosition()))
-                .toList();
+        List<User> managerUsers = userRepository.findAllByRoleName(Constants.RoleEnum.MANAGER);
+
+        List<Employee> managers = new ArrayList<>();
+        for (User user : managerUsers) {
+            Employee manager = user.getEmployee();
+            if (manager != null && manager.getBranch() != null) {
+                managers.add(manager);
+            }
+        }
 
         if (managers.size() < branches.size()) {
             log.error("Not enough managers found for all branches.");

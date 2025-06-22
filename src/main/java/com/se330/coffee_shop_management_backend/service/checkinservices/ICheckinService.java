@@ -2,7 +2,10 @@ package com.se330.coffee_shop_management_backend.service.checkinservices;
 
 import com.se330.coffee_shop_management_backend.dto.request.checkin.CheckinCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.checkin.CheckinUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.checkin.SubCheckinCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.checkin.SubCheckinUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.entity.Checkin;
+import com.se330.coffee_shop_management_backend.entity.SubCheckin;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,6 +16,9 @@ public interface ICheckinService {
     Page<Checkin> findAll(Pageable pageable);
     Page<Checkin> findAllByShiftId(UUID shiftId, Pageable pageable);
     Page<Checkin> findAllByEmployeeId(UUID employeeId, Pageable pageable);
+    Page<SubCheckin> findAllSubCheckinsByShiftId(UUID shiftId, Pageable pageable);
+    SubCheckin createSubCheckin(SubCheckinCreateRequestDTO subCheckinCreateRequestDTO);
+    SubCheckin updateSubCheckin(SubCheckinUpdateRequestDTO subCheckinUpdateRequestDTO);
     Page<Checkin> findAllByBranchId(UUID branchId, Pageable pageable);
     Page<Checkin> findAllByShiftIdAndYear(UUID shiftId, int year, Pageable pageable);
     Page<Checkin> findAllByShiftIdAndYearAndMonth(UUID shiftId, int year, int month, Pageable pageable);
