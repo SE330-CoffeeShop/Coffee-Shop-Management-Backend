@@ -580,7 +580,7 @@ public class CheckinController {
     }
 
     // BranchId with date components
-    @GetMapping("/branch/{branchId}/year/{year}")
+    @GetMapping("/branch/year/{year}")
     @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Get checkins by branch and year",
@@ -605,7 +605,7 @@ public class CheckinController {
             }
     )
     public ResponseEntity<PageResponse<CheckinResponseDTO>> findAllByBranchIdAndYear(
-            @PathVariable UUID branchId,
+            
             @PathVariable int year,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
@@ -614,7 +614,7 @@ public class CheckinController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Checkin> checkinPages = checkinService.findAllByBranchIdAndYear(branchId, year, pageable);
+        Page<Checkin> checkinPages = checkinService.findAllByBranchIdAndYear(year, pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -631,7 +631,7 @@ public class CheckinController {
         );
     }
 
-    @GetMapping("/branch/{branchId}/year/{year}/month/{month}")
+    @GetMapping("/branch/year/{year}/month/{month}")
     @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Get checkins by branch, year and month",
@@ -656,7 +656,7 @@ public class CheckinController {
             }
     )
     public ResponseEntity<PageResponse<CheckinResponseDTO>> findAllByBranchIdAndYearAndMonth(
-            @PathVariable UUID branchId,
+            
             @PathVariable int year,
             @PathVariable int month,
             @RequestParam(defaultValue = "1") int page,
@@ -666,7 +666,7 @@ public class CheckinController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Checkin> checkinPages = checkinService.findAllByBranchIdAndYearAndMonth(branchId, year, month, pageable);
+        Page<Checkin> checkinPages = checkinService.findAllByBranchIdAndYearAndMonth(year, month, pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -683,7 +683,7 @@ public class CheckinController {
         );
     }
 
-    @GetMapping("/branch/{branchId}/year/{year}/month/{month}/day/{day}")
+    @GetMapping("/branch/year/{year}/month/{month}/day/{day}")
     @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Get checkins by branch, year, month and day",
@@ -708,7 +708,7 @@ public class CheckinController {
             }
     )
     public ResponseEntity<PageResponse<CheckinResponseDTO>> findAllByBranchIdAndYearAndMonthAndDay(
-            @PathVariable UUID branchId,
+            
             @PathVariable int year,
             @PathVariable int month,
             @PathVariable int day,
@@ -719,7 +719,7 @@ public class CheckinController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Checkin> checkinPages = checkinService.findAllByBranchIdAndYearAndMonthAndDay(branchId, year, month, day, pageable);
+        Page<Checkin> checkinPages = checkinService.findAllByBranchIdAndYearAndMonthAndDay(year, month, day, pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -836,7 +836,7 @@ public class CheckinController {
         );
     }
 
-    @GetMapping("/checkins/branch/{branchId}")
+    @GetMapping("/checkins/branch")
     @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
             summary = "Get all checkins for a specific branch",
@@ -861,7 +861,7 @@ public class CheckinController {
             }
     )
     public ResponseEntity<PageResponse<CheckinResponseDTO>> findAllCheckinsByBranchId(
-            @PathVariable UUID branchId,
+            
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -869,7 +869,7 @@ public class CheckinController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Checkin> checkinPage = checkinService.findAllByBranchId(branchId, pageable);
+        Page<Checkin> checkinPage = checkinService.findAllByBranchId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(

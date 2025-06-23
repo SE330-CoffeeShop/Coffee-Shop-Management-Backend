@@ -48,12 +48,12 @@ public class Product extends AbstractBaseEntity {
 
     @DecimalMin(value = "0.0", inclusive = true)
     @DecimalMax(value = "5.0", inclusive = true)
-    @Digits(integer = 1, fraction = 1)
-    @Column(name = "product_ratings_average", nullable = false, precision = 2, scale = 1)
-    private BigDecimal productRatingsAverage = BigDecimal.valueOf(0.0);
+    @Digits(integer = 1, fraction = 2)
+    @Column(name = "product_ratings_average", nullable = false, precision = 3, scale = 2)
+    private BigDecimal productRatingsAverage;
 
     @Column(name = "product_is_published", nullable = false)
-    private Boolean productIsPublished = false;
+    private Boolean productIsPublished;
 
     @Column(name = "product_is_deleted", nullable = false)
     private Boolean productIsDeleted = false;

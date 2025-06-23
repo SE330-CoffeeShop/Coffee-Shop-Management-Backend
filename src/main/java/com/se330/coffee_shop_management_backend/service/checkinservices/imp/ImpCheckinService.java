@@ -10,6 +10,7 @@ import com.se330.coffee_shop_management_backend.repository.CheckinRepository;
 import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.repository.ShiftRepository;
 import com.se330.coffee_shop_management_backend.repository.SubCheckinRepository;
+import com.se330.coffee_shop_management_backend.service.UserService;
 import com.se330.coffee_shop_management_backend.service.checkinservices.ICheckinService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.util.Constants;
@@ -30,16 +31,19 @@ public class ImpCheckinService implements ICheckinService {
     private final EmployeeRepository employeeRepository;
     private final INotificationService notificationService;
     private final SubCheckinRepository subCheckinRepository;
+    private final UserService userService;
 
     public ImpCheckinService(
             CheckinRepository checkinRepository,
             ShiftRepository shiftRepository,
             EmployeeRepository employeeRepository,
             SubCheckinRepository subCheckinRepository,
+            UserService userService,
             INotificationService notificationService
     ) {
         this.checkinRepository = checkinRepository;
         this.shiftRepository = shiftRepository;
+        this.userService = userService;
         this.employeeRepository = employeeRepository;
         this.notificationService = notificationService;
         this.subCheckinRepository = subCheckinRepository;
@@ -111,7 +115,8 @@ public class ImpCheckinService implements ICheckinService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Checkin> findAllByBranchId(UUID branchId, Pageable pageable) {
+    public Page<Checkin> findAllByBranchId(Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
         return checkinRepository.findAllByBranchId(branchId, pageable);
     }
 
@@ -153,21 +158,26 @@ public class ImpCheckinService implements ICheckinService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Checkin> findAllByBranchIdAndYear(UUID branchId, int year, Pageable pageable) {
+    public Page<Checkin> findAllByBranchIdAndYear(int year, Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
+
         return checkinRepository.findAllByBranchIdAndYear(branchId, year, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Checkin> findAllByBranchIdAndYearAndMonth(UUID branchId, int year, int month, Pageable pageable) {
+    public Page<Checkin> findAllByBranchIdAndYearAndMonth(int year, int month, Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
         return checkinRepository.findAllByBranchIdAndYearAndMonth(branchId, year, month, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Checkin> findAllByBranchIdAndYearAndMonthAndDay(UUID branchId, int year, int month, int day, Pageable pageable) {
+    public Page<Checkin> findAllByBranchIdAndYearAndMonthAndDay(int year, int month, int day, Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
         return checkinRepository.findAllByBranchIdAndYearAndMonthAndDay(branchId, year, month, day, pageable);
     }
+
 
     @Override
     @Transactional
@@ -281,6 +291,14 @@ public class ImpCheckinService implements ICheckinService {
                         .receiverId(employee.getId())
                         .isRead(false)
                         .build()
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isCheckin(UUID shiftId, int day, int month, int year) {
+        return checkinRepository.existsCheckinByShift_IdAndDayAndMonthAndYear(
+                shiftId, day, month, year
         );
     }
 }

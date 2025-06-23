@@ -14,16 +14,16 @@ import java.util.UUID;
 @Repository
 public interface ShiftRepository extends JpaRepository<Shift, UUID>, JpaSpecificationExecutor<Shift> {
     @Override
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.user"})
     Page<Shift> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.user"})
     Page<Shift> findByEmployee_Branch_Id(UUID branchId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.user"})
     Page<Shift> findAllByEmployee_Id(UUID employeeId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.user"})
     Page<Shift> findByEmployee_Branch_IdAndDayOfWeekAndMonthAndYear(
             UUID branchId,
             Constants.DayOfWeekEnum dayOfWeek,
@@ -33,10 +33,13 @@ public interface ShiftRepository extends JpaRepository<Shift, UUID>, JpaSpecific
     );
 
     @Override
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.user"})
     Shift save(Shift shift);
 
     @Override
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.user"})
     java.util.Optional<Shift> findById(UUID id);
+
+    @EntityGraph(attributePaths = {"employee", "employee.user"})
+    Page<Shift> findAllByEmployee_Branch_IdAndDayOfWeekAndMonthAndYear(UUID employeeBranchId, Constants.DayOfWeekEnum dayOfWeek, int month, int year, Pageable pageable);
 }

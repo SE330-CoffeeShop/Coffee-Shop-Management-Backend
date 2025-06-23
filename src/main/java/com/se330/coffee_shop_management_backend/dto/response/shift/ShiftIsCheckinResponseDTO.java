@@ -9,15 +9,13 @@ import lombok.experimental.SuperBuilder;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class ShiftResponseDTO {
-
+public class ShiftIsCheckinResponseDTO {
     @Schema(
             name = "id",
             description = "UUID",
@@ -55,31 +53,33 @@ public class ShiftResponseDTO {
     private String employeeId;
     private String employeeFullName;
     private String employeeAvatarUrl;
+    private boolean isCheckin;
 
-
-    public static ShiftResponseDTO convert(Shift shift) {
-        return ShiftResponseDTO.builder()
-                .id(shift.getId().toString())
+    public static ShiftIsCheckinResponseDTO convert(Shift shift, boolean isCheckin) {
+        return ShiftIsCheckinResponseDTO.builder()
+                .id(String.valueOf(shift.getId()))
                 .createdAt(shift.getCreatedAt())
                 .updatedAt(shift.getUpdatedAt())
-                .month(shift.getMonth())
-                .year(shift.getYear())
                 .shiftStartTime(shift.getShiftStartTime())
                 .shiftEndTime(shift.getShiftEndTime())
                 .dayOfWeek(shift.getDayOfWeek().getValue())
-                .employeeId(shift.getEmployee() != null ? shift.getEmployee().getId().toString() : null)
-                .employeeFullName(shift.getEmployee() != null ? shift.getEmployee().getUser().getFullName() : null)
-                .employeeAvatarUrl(shift.getEmployee() != null ? shift.getEmployee().getUser().getAvatar() : null)
+                .month(shift.getMonth())
+                .year(shift.getYear())
+                .shiftSalary(shift.getShiftSalary())
+                .employeeId(shift.getEmployee().getId().toString())
+                .employeeFullName(shift.getEmployee().getUser().getFullName())
+                .employeeAvatarUrl(shift.getEmployee().getUser().getAvatar())
+                .isCheckin(isCheckin)
                 .build();
     }
 
-    public static List<ShiftResponseDTO> convert(List<Shift> shifts) {
-        if (shifts == null || shifts.isEmpty()) {
-            return Collections.emptyList();
+    public static List<ShiftIsCheckinResponseDTO> convert(Map<Shift, Boolean> shiftAndCheckin) {
+        if (shiftAndCheckin == null || shiftAndCheckin.isEmpty()) {
+            return List.of();
         }
 
-        return shifts.stream()
-                .map(ShiftResponseDTO::convert)
-                .collect(Collectors.toList());
+        return shiftAndCheckin.entrySet().stream()
+                .map(entry -> convert(entry.getKey(), entry.getValue()))
+                .toList();
     }
 }

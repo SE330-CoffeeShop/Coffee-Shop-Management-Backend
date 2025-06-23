@@ -64,4 +64,12 @@ public interface CheckinRepository extends JpaRepository<Checkin, UUID>, JpaSpec
     @EntityGraph(attributePaths = {"shift", "shift.employee", "shift.employee.user"})
     @Query("SELECT c FROM Checkin c WHERE c.shift.employee.branch.id = :branchId AND EXTRACT(YEAR FROM c.checkinTime) = :year AND EXTRACT(MONTH FROM c.checkinTime) = :month AND EXTRACT(DAY FROM c.checkinTime) = :day")
     Page<Checkin> findAllByBranchIdAndYearAndMonthAndDay(@Param("branchId") UUID branchId, @Param("year") int year, @Param("month") int month, @Param("day") int day, Pageable pageable);
+
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Checkin c WHERE c.shift.id = :shiftId AND EXTRACT(YEAR FROM c.checkinTime) = :year AND EXTRACT(MONTH FROM c.checkinTime) = :month AND EXTRACT(DAY FROM c.checkinTime) = :day")
+    boolean existsCheckinByShift_IdAndDayAndMonthAndYear(
+            @Param("shiftId") UUID shiftId,
+            @Param("day") int day,
+            @Param("month") int month,
+            @Param("year") int year
+    );
 }
