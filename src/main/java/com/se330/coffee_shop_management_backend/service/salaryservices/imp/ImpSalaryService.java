@@ -4,6 +4,8 @@ import com.se330.coffee_shop_management_backend.dto.request.notification.Notific
 import com.se330.coffee_shop_management_backend.dto.request.salary.SalaryCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.salary.SalaryUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.salary.SalaryDetailResponseDTO;
+import com.se330.coffee_shop_management_backend.dto.response.salary.ShiftDetail;
+import com.se330.coffee_shop_management_backend.dto.response.salary.SubShiftDetail;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.service.UserService;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,11 +33,13 @@ public class ImpSalaryService implements ISalaryService {
     private final UserService userService;
     private final CheckinRepository checkinRepository;
     private final ShiftRepository shiftRepository;
+    private final SubCheckinRepository subCheckinRepository;
 
     public ImpSalaryService(
             SalaryRepository salaryRepository,
             EmployeeRepository employeeRepository,
             UserService userService,
+            SubCheckinRepository subCheckinRepository,
             ShiftRepository shiftRepository,
             CheckinRepository checkinRepository,
             INotificationService notificationService
@@ -42,6 +47,7 @@ public class ImpSalaryService implements ISalaryService {
         this.salaryRepository = salaryRepository;
         this.employeeRepository = employeeRepository;
         this.userService = userService;
+        this.subCheckinRepository = subCheckinRepository;
         this.shiftRepository = shiftRepository;
         this.notificationService = notificationService;
         this.checkinRepository = checkinRepository;
@@ -131,6 +137,18 @@ class ShiftDetail {
     private int totalShiftCheckins;
     private BigDecimal totalShiftSalary;
 }
+*
+* public class SubShiftDetail {
+    private String subShiftId;
+    private String absentEmployeeId;
+    private String absentEmployeeName;
+    private LocalTime startTime;
+    private LocalTime endTime;
+    private BigDecimal subShiftSalary;
+    private int totalSubShiftCheckins;
+    private BigDecimal totalSubShiftSalary;
+}
+
 
     * */
 
@@ -147,9 +165,48 @@ class ShiftDetail {
         salaryDetailResponseDTO.setRole(salary.getEmployee().getUser().getRole().getName().getValue());
         salaryDetailResponseDTO.setTotalCheckins(checkinRepository.countAllByShift_Employee_IdAndMonthAndYear(salary.getEmployee().getId(), salary.getMonth(), salary.getYear()));
         salaryDetailResponseDTO.setTotalSalary(salary.getMonthSalary());
+        salaryDetailResponseDTO.setTotalSubCheckins(subCheckinRepository.countAllByShift_Employee_IdAndMonthAndYear(salary.getEmployee().getId(), salary.getMonth(), salary.getYear()));
 
-        //List<>
-        return null;
+        List<ShiftDetail> shiftDetails = new ArrayList<>();
+        List<Shift> shifts = shiftRepository.findAllByEmployee_IdAndMonthAndYear(
+                salary.getEmployee().getId(), salary.getMonth(), salary.getYear()
+        );
+
+        for (Shift shift : shifts) {
+            ShiftDetail shiftDetail = new ShiftDetail();
+            shiftDetail.setShiftId(shift.getId().toString());
+            shiftDetail.setStartTime(shift.getShiftStartTime());
+            shiftDetail.setEndTime(shift.getShiftEndTime());
+            shiftDetail.setShiftSalary(shift.getShiftSalary());
+            shiftDetail.setTotalShiftCheckins(checkinRepository.countAllByShift_IdAndMonthAndYear(shift.getId(), salary.getMonth(), salary.getYear()));
+            shiftDetail.setTotalShiftSalary(shift.getShiftSalary().multiply(BigDecimal.valueOf(shiftDetail.getTotalShiftCheckins())));
+            shiftDetails.add(shiftDetail);
+        }
+
+        List<SubShiftDetail> subShiftDetails = new ArrayList<>();
+        List<SubCheckin> subCheckins = subCheckinRepository.findAllByEmployee_IdAndMonthAndYear(
+                salary.getEmployee().getId(), salary.getMonth(), salary.getYear()
+        );
+
+        for (SubCheckin subCheckin : subCheckins) {
+            SubShiftDetail subShiftDetail = new SubShiftDetail();
+            subShiftDetail.setSubShiftId(subCheckin.getId().toString());
+            subShiftDetail.setAbsentEmployeeId(subCheckin.getShift().getEmployee().getId().toString());
+            subShiftDetail.setAbsentEmployeeName(subCheckin.getShift().getEmployee().getUser().getFullName());
+            subShiftDetail.setStartTime(subCheckin.getShift().getShiftStartTime());
+            subShiftDetail.setEndTime(subCheckin.getShift().getShiftEndTime());
+            subShiftDetail.setSubShiftSalary(subCheckin.getShift().getShiftSalary());
+            subShiftDetail.setTotalSubShiftCheckins(subCheckinRepository.countAllByShift_IdAndMonthAndYear(
+                    subCheckin.getShift().getId(), salary.getMonth(), salary.getYear()
+            ));
+            subShiftDetail.setTotalSubShiftSalary(subCheckin.getShift().getShiftSalary());
+            subShiftDetails.add(subShiftDetail);
+        }
+
+        salaryDetailResponseDTO.setShiftDetails(shiftDetails);
+        salaryDetailResponseDTO.setSubShiftDetails(subShiftDetails);
+
+        return salaryDetailResponseDTO;
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.se330.coffee_shop_management_backend.dto.request.salary.SalaryUpdateR
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
+import com.se330.coffee_shop_management_backend.dto.response.salary.SalaryDetailResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.salary.SalaryResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Salary;
 import com.se330.coffee_shop_management_backend.service.salaryservices.ISalaryService;
@@ -223,10 +224,45 @@ public class SalaryController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/detail/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get detailed salary information",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved salary detail",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Salary not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<SalaryDetailResponseDTO>> findSalaryDetailById(@PathVariable UUID id) {
+        SalaryDetailResponseDTO salaryDetail = salaryService.findSalaryDetailById(id);
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Salary detail retrieved successfully",
+                        salaryDetail
+                )
+        );
+    }
+
     @PostMapping("/update-all/month/{month}/year/{year}")
     @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
-            summary = "Update salaries for all employees in a specific month and year",
+            summary = "Update salaries for all employees in branch for a specific month and year",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
@@ -255,7 +291,48 @@ public class SalaryController {
             throw new IllegalArgumentException("Year must be between 1900 and 2100");
         }
 
-        salaryService.updateSalaryForAllEmployeesInMonthAndYear(month, year);
+        salaryService.updateSalaryForAllEmployeesInBranchInMonthAndYear(month, year);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/branch")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @Operation(
+            summary = "Get all salaries in current branch with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch salaries",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<SalaryResponseDTO>> findAllByBranch(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Salary> salaryPage = salaryService.findAllByBranch(pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch salaries retrieved successfully",
+                        SalaryResponseDTO.convert(salaryPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                salaryPage.getNumber(),
+                                salaryPage.getSize(),
+                                salaryPage.getTotalElements(),
+                                salaryPage.getTotalPages()
+                        )
+                )
+        );
     }
 }

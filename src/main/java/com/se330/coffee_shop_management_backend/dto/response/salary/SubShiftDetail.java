@@ -6,15 +6,16 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
-
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class ShiftDetail {
-    private String shiftId;
+public class SubShiftDetail {
+    private String subShiftId;
+    private String absentEmployeeId;
+    private String absentEmployeeName;
     private LocalTime startTime;
     private LocalTime endTime;
-    private BigDecimal shiftSalary;
-    private int totalShiftCheckins;
-    private BigDecimal totalShiftSalary;
+    private BigDecimal subShiftSalary;
+    private int totalSubShiftCheckins;
+    private BigDecimal totalSubShiftSalary;
 }

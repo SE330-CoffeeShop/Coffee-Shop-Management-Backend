@@ -18,8 +18,10 @@ public class SalaryDetailResponseDTO {
     private String monthAndYear;
     private String role;
     private int totalCheckins;
+    private int totalSubCheckins;
     private BigDecimal totalSalary;
 
     List<ShiftDetail> shiftDetails;
+    List<SubShiftDetail> subShiftDetails;
 }
 
