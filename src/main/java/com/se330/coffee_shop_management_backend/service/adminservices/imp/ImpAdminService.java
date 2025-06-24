@@ -79,45 +79,216 @@ public class ImpAdminService implements IAdminService {
     @Transactional
     public void updateDatabase() {
         deleteAll();
-        createBranch();
-        createCart();
-        createCartDetail();
-        createCatalog();
-        createCheckin();
-        createComment();
-        createDiscount();
-        createDiscountProductVariant();
-        createEmployee();
-        createInventory();
-        createInvoice();
-        createInvoiceDetail();
-        createPaymentMethod();
+
+        try {
+            createBranch();
+        } catch (Exception e) {
+            System.err.println("Error creating branch PDF: " + e.getMessage());
+        }
+
+        try {
+            createCart();
+        } catch (Exception e) {
+            System.err.println("Error creating cart PDF: " + e.getMessage());
+        }
+
+        try {
+            createCartDetail();
+        } catch (Exception e) {
+            System.err.println("Error creating cart detail PDF: " + e.getMessage());
+        }
+
+        try {
+            createCatalog();
+        } catch (Exception e) {
+            System.err.println("Error creating catalog PDF: " + e.getMessage());
+        }
+
+        try {
+            createCheckin();
+        } catch (Exception e) {
+            System.err.println("Error creating checkin PDF: " + e.getMessage());
+        }
+
+        try {
+            createComment();
+        } catch (Exception e) {
+            System.err.println("Error creating comment PDF: " + e.getMessage());
+        }
+
+        try {
+            createDiscount();
+        } catch (Exception e) {
+            System.err.println("Error creating discount PDF: " + e.getMessage());
+        }
+
+        try {
+            createDiscountProductVariant();
+        } catch (Exception e) {
+            System.err.println("Error creating discount product variant PDF: " + e.getMessage());
+        }
+
+        try {
+            createEmployee();
+        } catch (Exception e) {
+            System.err.println("Error creating employee PDF: " + e.getMessage());
+        }
+
+        try {
+            createInventory();
+        } catch (Exception e) {
+            System.err.println("Error creating inventory PDF: " + e.getMessage());
+        }
+
+        try {
+            createInvoice();
+        } catch (Exception e) {
+            System.err.println("Error creating invoice PDF: " + e.getMessage());
+        }
+
+        try {
+            createInvoiceDetail();
+        } catch (Exception e) {
+            System.err.println("Error creating invoice detail PDF: " + e.getMessage());
+        }
+
+        try {
+            createPaymentMethod();
+        } catch (Exception e) {
+            System.err.println("Error creating payment method PDF: " + e.getMessage());
+        }
+
         try {
             createNotification();
         } catch (Exception e) {
             System.err.println("Error creating notification PDF: " + e.getMessage());
         }
-        createOrder();
-        createOrderDetail();
-        createOrderPayment();
-        createRecipe();
-        createRole();
-        createSalary();
-        createShift();
-        createUser();
-        createShippingAddresses();
-        createWarehouse();
-        createStock();
-        createSubCheckin();
-        createSupplier();
-        createTransfer();
-        createTransferDetail();
-        createUsedDiscount();
-        createProductCategory();
-        createProduct();
-        createFavoriteDrink();
-        createIngredient();
-        createProductVariant();
+
+        try {
+            createOrder();
+        } catch (Exception e) {
+            System.err.println("Error creating order PDF: " + e.getMessage());
+        }
+
+        try {
+            createOrderDetail();
+        } catch (Exception e) {
+            System.err.println("Error creating order detail PDF: " + e.getMessage());
+        }
+
+        try {
+            createOrderPayment();
+        } catch (Exception e) {
+            System.err.println("Error creating order payment PDF: " + e.getMessage());
+        }
+
+        try {
+            createRecipe();
+        } catch (Exception e) {
+            System.err.println("Error creating recipe PDF: " + e.getMessage());
+        }
+
+        try {
+            createRole();
+        } catch (Exception e) {
+            System.err.println("Error creating role PDF: " + e.getMessage());
+        }
+
+        try {
+            createSalary();
+        } catch (Exception e) {
+            System.err.println("Error creating salary PDF: " + e.getMessage());
+        }
+
+        try {
+            createShift();
+        } catch (Exception e) {
+            System.err.println("Error creating shift PDF: " + e.getMessage());
+        }
+
+        try {
+            createUser();
+        } catch (Exception e) {
+            System.err.println("Error creating user PDF: " + e.getMessage());
+        }
+
+        try {
+            createShippingAddresses();
+        } catch (Exception e) {
+            System.err.println("Error creating shipping addresses PDF: " + e.getMessage());
+        }
+
+        try {
+            createWarehouse();
+        } catch (Exception e) {
+            System.err.println("Error creating warehouse PDF: " + e.getMessage());
+        }
+
+        try {
+            createStock();
+        } catch (Exception e) {
+            System.err.println("Error creating stock PDF: " + e.getMessage());
+        }
+
+        try {
+            createSubCheckin();
+        } catch (Exception e) {
+            System.err.println("Error creating sub-checkin PDF: " + e.getMessage());
+        }
+
+        try {
+            createSupplier();
+        } catch (Exception e) {
+            System.err.println("Error creating supplier PDF: " + e.getMessage());
+        }
+
+        try {
+            createTransfer();
+        } catch (Exception e) {
+            System.err.println("Error creating transfer PDF: " + e.getMessage());
+        }
+
+        try {
+            createTransferDetail();
+        } catch (Exception e) {
+            System.err.println("Error creating transfer detail PDF: " + e.getMessage());
+        }
+
+        try {
+            createUsedDiscount();
+        } catch (Exception e) {
+            System.err.println("Error creating used discount PDF: " + e.getMessage());
+        }
+
+        try {
+            createProductCategory();
+        } catch (Exception e) {
+            System.err.println("Error creating product category PDF: " + e.getMessage());
+        }
+
+        try {
+            createProduct();
+        } catch (Exception e) {
+            System.err.println("Error creating product PDF: " + e.getMessage());
+        }
+
+        try {
+            createFavoriteDrink();
+        } catch (Exception e) {
+            System.err.println("Error creating favorite drink PDF: " + e.getMessage());
+        }
+
+        try {
+            createIngredient();
+        } catch (Exception e) {
+            System.err.println("Error creating ingredient PDF: " + e.getMessage());
+        }
+
+        try {
+            createProductVariant();
+        } catch (Exception e) {
+            System.err.println("Error creating product variant PDF: " + e.getMessage());
+        }
     }
 
     private void deleteAll() {
