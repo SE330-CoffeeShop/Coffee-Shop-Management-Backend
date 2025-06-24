@@ -148,7 +148,7 @@ class ShiftDetail {
         salaryDetailResponseDTO.setTotalCheckins(checkinRepository.countAllByShift_Employee_IdAndMonthAndYear(salary.getEmployee().getId(), salary.getMonth(), salary.getYear()));
         salaryDetailResponseDTO.setTotalSalary(salary.getMonthSalary());
 
-        List<>
+        //List<>
         return null;
     }
 
