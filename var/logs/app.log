@@ -2011,3 +2011,545 @@ Identify and stop the process that's listening on port 8081 or configure this ap
 2025-06-24 12:30:19.243 [http-nio-8081-exec-1] WARN  o.a.p.p.PDAbstractContentStream - You did not call endText(), some viewers won't display your text
 2025-06-24 12:30:19.618 [http-nio-8081-exec-1] WARN  o.a.p.p.PDAbstractContentStream - You did not call endText(), some viewers won't display your text
 2025-06-24 12:30:20.147 [http-nio-8081-exec-1] WARN  o.a.p.p.PDAbstractContentStream - You did not call endText(), some viewers won't display your text
+2025-06-24 12:30:27.913 [restartedMain] INFO  c.s.c.MainApplication - Starting MainApplication using Java 17.0.9 with PID 35732 (D:\bcoffee_android\Coffee-Shop-Management-Backend\target\classes started by Admin in D:\bcoffee_android\Coffee-Shop-Management-Backend)
+2025-06-24 12:30:27.917 [restartedMain] INFO  c.s.c.MainApplication - No active profile set, falling back to 1 default profile: "default"
+2025-06-24 12:30:27.981 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-06-24 12:30:27.982 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-06-24 12:30:29.893 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-24 12:30:29.895 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-24 12:30:30.142 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.JwtTokenRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2025-06-24 12:30:30.388 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 484 ms. Found 38 JPA repository interfaces.
+2025-06-24 12:30:30.407 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-24 12:30:30.408 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-06-24 12:30:30.436 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.BranchRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.437 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CartDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.437 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CartRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.437 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CatalogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.438 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CheckinRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.438 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.CommentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.438 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.DiscountRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.439 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.EmailVerificationTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.439 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.EmployeeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.439 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.FavoriteDrinkRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.440 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.IngredientRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.440 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.InventoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.440 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.InvoiceDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.440 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.InvoiceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.441 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.NotificationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.445 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.OrderDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.446 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.OrderPaymentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.447 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.448 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.PasswordResetTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.449 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.PaymentMethodsRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.450 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.productrepositories.ProductCategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.452 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.452 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.453 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.RecipeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.454 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.RoleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.454 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.SalaryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.454 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.SettingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.455 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.ShiftRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.455 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.ShippingAddressesRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.455 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.StockRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.455 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.SubCheckinRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.456 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.SupplierRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.456 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.TransferDetailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.456 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.TransferRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.457 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.UsedDiscountRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.457 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.UserRecipientTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.457 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.457 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.se330.coffee_shop_management_backend.repository.WarehouseRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-06-24 12:30:30.484 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 67 ms. Found 1 Redis repository interface.
+2025-06-24 12:30:30.863 [restartedMain] INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=e948ec52-8a6b-3015-9e15-1293581f5014
+2025-06-24 12:30:31.848 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2025-06-24 12:30:31.859 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-06-24 12:30:31.860 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-06-24 12:30:31.938 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-06-24 12:30:31.938 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3940 ms
+2025-06-24 12:30:32.265 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-06-24 12:30:32.379 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5cc273
+2025-06-24 12:30:32.382 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-06-24 12:30:32.568 [restartedMain] INFO  liquibase.database - Set default schema name to public
+2025-06-24 12:30:32.656 [restartedMain] WARN  liquibase.configuration - 
+
+Liquibase detected the following invalid LIQUIBASE_* environment variables:
+
+- LIQUIBASE_ENABLED
+
+Find the list of valid environment variables at https://docs.liquibase.com/environment-variables
+
+2025-06-24 12:30:32.763 [restartedMain] INFO  liquibase.lockservice - Successfully acquired change log lock
+2025-06-24 12:30:33.220 [restartedMain] INFO  liquibase.changelog - Reading from public.databasechangelog
+2025-06-24 12:30:33.257 [restartedMain] INFO  liquibase.changelog - Reading from public.databasechangelog
+2025-06-24 12:30:33.264 [restartedMain] INFO  liquibase.util - UPDATE SUMMARY
+2025-06-24 12:30:33.265 [restartedMain] INFO  liquibase.util - Run:                          0
+2025-06-24 12:30:33.265 [restartedMain] INFO  liquibase.util - Previously run:               1
+2025-06-24 12:30:33.266 [restartedMain] INFO  liquibase.util - Filtered out:                 0
+2025-06-24 12:30:33.266 [restartedMain] INFO  liquibase.util - -------------------------------
+2025-06-24 12:30:33.266 [restartedMain] INFO  liquibase.util - Total change sets:            1
+
+2025-06-24 12:30:33.267 [restartedMain] INFO  liquibase.util - Update summary generated
+2025-06-24 12:30:33.277 [restartedMain] INFO  liquibase.lockservice - Successfully released change log lock
+2025-06-24 12:30:33.292 [restartedMain] INFO  liquibase.lockservice - Successfully released change log lock
+2025-06-24 12:30:33.295 [restartedMain] INFO  liquibase.command - Command execution complete
+2025-06-24 12:30:33.445 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-24 12:30:33.521 [restartedMain] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 5.6.15.Final
+2025-06-24 12:30:33.741 [restartedMain] INFO  o.h.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2025-06-24 12:30:33.849 [restartedMain] INFO  org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.PostgreSQLDialect
+2025-06-24 12:30:34.135 [restartedMain] INFO  o.h.s.m.o.b.i.HibernateSearchPreIntegrationService - HSEARCH000034: Hibernate Search version 6.2.1.Final
+2025-06-24 12:30:36.705 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2025-06-24 12:30:37.265 [restartedMain] WARN  o.h.s.b.l.impl.LuceneBackendFactory - HSEARCH000075: Missing value for configuration property 'hibernate.search.backend.lucene_version': using LATEST (currently '8.11.2'). Context: default backend
+2025-06-24 12:30:37.610 [restartedMain] WARN  o.h.s.e.c.s.ConfigurationPropertyChecker - HSEARCH000568: Invalid configuration passed to Hibernate Search: some properties in the given configuration are not used. There might be misspelled property keys in your configuration. Unused properties: [hibernate.search.backend.create_missing_directories]. To disable this warning, set the property 'hibernate.search.configuration_property_checking.strategy' to 'ignore'.
+2025-06-24 12:30:37.626 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-24 12:30:38.097 [restartedMain] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-24 12:30:39.302 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2025-06-24 12:30:41.974 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+2025-06-24 12:30:44.094 [restartedMain] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@3b128a08, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4c63dd3b, org.springframework.security.web.context.SecurityContextHolderFilter@1d8d9afa, org.springframework.security.web.header.HeaderWriterFilter@54ed6b8e, org.springframework.web.filter.CorsFilter@42e51500, org.springframework.security.web.authentication.logout.LogoutFilter@6936c305, com.se330.coffee_shop_management_backend.security.JwtAuthenticationFilter@287a6d4f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@74d6620d, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5ed64df0, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@545b1959, org.springframework.security.web.session.SessionManagementFilter@75ef741c, org.springframework.security.web.access.ExceptionTranslationFilter@6092e499, org.springframework.security.web.access.intercept.AuthorizationFilter@b85cac]
+2025-06-24 12:30:45.446 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path ''
+2025-06-24 12:30:45.450 [restartedMain] INFO  c.s.c.MainApplication - Started MainApplication in 18.534 seconds (process running for 20.216)
+2025-06-24 12:30:45.507 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Start creating dummy data...
+2025-06-24 12:30:45.508 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating user basic info...
+2025-06-24 12:30:45.542 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng quản trị viên (1 ADMIN)...
+2025-06-24 12:30:45.545 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: admin@example.com
+2025-06-24 12:30:45.725 [restartedMain] INFO  c.s.c.service.UserService - User created with email: admin@example.com, d66c7cf6-b0e1-4ebb-83b5-b1181ef82351
+2025-06-24 12:30:45.730 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng khách hàng (10 CUSTOMER)...
+2025-06-24 12:30:45.731 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer1@example.com
+2025-06-24 12:30:45.851 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer1@example.com, 6280df70-1001-4890-b49d-84f8b71360ff
+2025-06-24 12:30:45.852 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer2@example.com
+2025-06-24 12:30:45.962 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer2@example.com, 7016cf94-0671-4360-ab81-9ab9a00a0717
+2025-06-24 12:30:45.963 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer3@example.com
+2025-06-24 12:30:46.078 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer3@example.com, 20e7edca-feb0-4d4e-8497-67797008043c
+2025-06-24 12:30:46.078 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer4@example.com
+2025-06-24 12:30:46.192 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer4@example.com, 62a9403e-9bd4-4c88-9ff1-b2cd44d9e13d
+2025-06-24 12:30:46.193 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer5@example.com
+2025-06-24 12:30:46.306 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer5@example.com, f8a2a04e-2ce4-44f6-a5ac-7fe309378ab7
+2025-06-24 12:30:46.306 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer6@example.com
+2025-06-24 12:30:46.407 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer6@example.com, 522d1e53-e00b-4c0e-8883-ea2277bd3860
+2025-06-24 12:30:46.407 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer7@example.com
+2025-06-24 12:30:46.506 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer7@example.com, 32c1b84e-0e9c-4c6b-9a36-750e5bc317b6
+2025-06-24 12:30:46.507 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer8@example.com
+2025-06-24 12:30:46.610 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer8@example.com, 9385bce0-22f0-4630-9b13-55344e9e7b30
+2025-06-24 12:30:46.611 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer9@example.com
+2025-06-24 12:30:46.709 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer9@example.com, c4714304-72d8-4efb-babd-a5a0f45c463b
+2025-06-24 12:30:46.710 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: customer10@example.com
+2025-06-24 12:30:46.809 [restartedMain] INFO  c.s.c.service.UserService - User created with email: customer10@example.com, b83358d0-2c21-41ae-875f-09eb0a22ae80
+2025-06-24 12:30:46.810 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng quản lý (10 MANAGER)...
+2025-06-24 12:30:46.811 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager1@example.com
+2025-06-24 12:30:46.908 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager1@example.com, 72f3b0e8-0adb-4954-890d-7c3181b86664
+2025-06-24 12:30:46.909 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager2@example.com
+2025-06-24 12:30:47.007 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager2@example.com, a8bf722c-7738-4213-9b9b-820a0cc815b5
+2025-06-24 12:30:47.008 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager3@example.com
+2025-06-24 12:30:47.108 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager3@example.com, a1dc6f19-123b-42e7-b504-534b5291512d
+2025-06-24 12:30:47.108 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager4@example.com
+2025-06-24 12:30:47.207 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager4@example.com, fea29670-9a87-4aa9-80dd-f25c018b489f
+2025-06-24 12:30:47.207 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: manager5@example.com
+2025-06-24 12:30:47.308 [restartedMain] INFO  c.s.c.service.UserService - User created with email: manager5@example.com, 43191dd0-5490-4390-bc41-059d5110524f
+2025-06-24 12:30:47.309 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Tạo người dùng nhân viên (30 EMPLOYEE)...
+2025-06-24 12:30:47.309 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee1@example.com
+2025-06-24 12:30:47.415 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee1@example.com, 9afcad03-53c5-4dc9-b7e4-37a93d373c96
+2025-06-24 12:30:47.415 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee2@example.com
+2025-06-24 12:30:47.519 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee2@example.com, be20bac0-18c1-4a32-8367-cb18ea71f34c
+2025-06-24 12:30:47.520 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee3@example.com
+2025-06-24 12:30:47.624 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee3@example.com, 74404cf4-0507-4276-bb2f-303564779d7c
+2025-06-24 12:30:47.625 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee4@example.com
+2025-06-24 12:30:47.727 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee4@example.com, 2a46ed94-3a13-4b64-8406-6c5dab50c4d9
+2025-06-24 12:30:47.727 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee5@example.com
+2025-06-24 12:30:47.828 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee5@example.com, e415ae43-084f-4064-aa3d-5a8c694e8912
+2025-06-24 12:30:47.828 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee6@example.com
+2025-06-24 12:30:47.928 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee6@example.com, 0580201e-05bc-430c-999a-c22458d7ecee
+2025-06-24 12:30:47.929 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee7@example.com
+2025-06-24 12:30:48.033 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee7@example.com, 5390bd5e-7691-4235-bb59-61f46442707f
+2025-06-24 12:30:48.034 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee8@example.com
+2025-06-24 12:30:48.136 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee8@example.com, 6424200a-24c1-4e2c-8979-3c7cf7d4e64f
+2025-06-24 12:30:48.137 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee9@example.com
+2025-06-24 12:30:48.237 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee9@example.com, 47e9a677-1c03-42cf-9be1-4daed075e487
+2025-06-24 12:30:48.237 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee10@example.com
+2025-06-24 12:30:48.333 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee10@example.com, 3b208ae7-9bd3-4b71-a758-73904797a05b
+2025-06-24 12:30:48.334 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee11@example.com
+2025-06-24 12:30:48.429 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee11@example.com, ad273cde-0099-4940-b205-a825b7aa702a
+2025-06-24 12:30:48.429 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee12@example.com
+2025-06-24 12:30:48.527 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee12@example.com, beb7703e-c94f-4fca-9321-bb25322d6460
+2025-06-24 12:30:48.527 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee13@example.com
+2025-06-24 12:30:48.627 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee13@example.com, 7bfd5e1f-368e-4ecc-9e44-44cb7dd0be2f
+2025-06-24 12:30:48.628 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee14@example.com
+2025-06-24 12:30:48.726 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee14@example.com, bb49c967-37f8-443e-9e7e-dfadde219d56
+2025-06-24 12:30:48.727 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee15@example.com
+2025-06-24 12:30:48.820 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee15@example.com, 264571b4-70cb-4efd-9d07-f54ad8b9eb15
+2025-06-24 12:30:48.821 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee16@example.com
+2025-06-24 12:30:48.918 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee16@example.com, 6d05a79a-6e38-4114-8149-c4a7b9dc24da
+2025-06-24 12:30:48.920 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee17@example.com
+2025-06-24 12:30:49.020 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee17@example.com, 5b710eb4-b784-44ea-a475-0dd6bf9810ef
+2025-06-24 12:30:49.020 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee18@example.com
+2025-06-24 12:30:49.118 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee18@example.com, 110a96c2-0dab-43e7-b4ba-074c78420f67
+2025-06-24 12:30:49.118 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee19@example.com
+2025-06-24 12:30:49.213 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee19@example.com, 293a7596-bd7f-4b47-9e0b-8ed1754aa9c1
+2025-06-24 12:30:49.213 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee20@example.com
+2025-06-24 12:30:49.306 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee20@example.com, 2dded88d-e3fd-47cb-b316-45fb0551e99c
+2025-06-24 12:30:49.307 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee21@example.com
+2025-06-24 12:30:49.400 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee21@example.com, 02cd0a78-adce-451f-8e09-fd5a304068d3
+2025-06-24 12:30:49.400 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee22@example.com
+2025-06-24 12:30:49.494 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee22@example.com, b4dc1fc2-6a42-435f-8bb4-e12ddbe8eff2
+2025-06-24 12:30:49.494 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee23@example.com
+2025-06-24 12:30:49.589 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee23@example.com, 4f3530d4-40ad-4228-860b-fb22cdaa3787
+2025-06-24 12:30:49.589 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee24@example.com
+2025-06-24 12:30:49.684 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee24@example.com, ef1bd306-9e31-489e-9b9c-e78901dcab6f
+2025-06-24 12:30:49.684 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee25@example.com
+2025-06-24 12:30:49.780 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee25@example.com, 96251e2a-cfc6-463f-9458-64fb1c4b6c4f
+2025-06-24 12:30:49.781 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee26@example.com
+2025-06-24 12:30:49.873 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee26@example.com, 7f8ac4d3-b94e-4889-8451-9a7e2edc465e
+2025-06-24 12:30:49.873 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee27@example.com
+2025-06-24 12:30:49.974 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee27@example.com, 03568449-75e9-46d4-a09b-03aad3e3825b
+2025-06-24 12:30:49.975 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee28@example.com
+2025-06-24 12:30:50.071 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee28@example.com, cd03c8ed-142e-4045-a095-5814bf477e8d
+2025-06-24 12:30:50.071 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee29@example.com
+2025-06-24 12:30:50.166 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee29@example.com, 35a2c0bd-d217-4a09-bff3-33a97d5f1bba
+2025-06-24 12:30:50.166 [restartedMain] INFO  c.s.c.service.UserService - Creating user with email: employee30@example.com
+2025-06-24 12:30:50.261 [restartedMain] INFO  c.s.c.service.UserService - User created with email: employee30@example.com, 7248c8cf-e121-44ff-af20-0ebe96602920
+2025-06-24 12:30:50.261 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Creating shipping addresses...
+2025-06-24 12:30:50.288 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Created 10 shipping addresses
+2025-06-24 12:30:50.288 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Creating payment methods...
+2025-06-24 12:30:50.289 [restartedMain] INFO  c.s.c.s.d.domain.UserBasicInfo - Created 5 payment methods
+2025-06-24 12:30:50.289 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-24 12:30:50.290 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating parent product..
+2025-06-24 12:30:50.314 [restartedMain] INFO  c.s.c.s.d.domain.ParentProduct - Creating products...
+2025-06-24 12:30:50.333 [restartedMain] INFO  c.s.c.s.d.domain.ParentProduct - Created 33 products
+2025-06-24 12:30:50.333 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-24 12:30:50.333 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating variant and ingredient...
+2025-06-24 12:30:50.333 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Creating product variants...
+2025-06-24 12:30:50.418 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Created 75 product variants for 33 products
+2025-06-24 12:30:50.418 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Creating ingredients...
+2025-06-24 12:30:50.421 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Created 30 ingredients
+2025-06-24 12:30:50.421 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Creating recipes...
+2025-06-24 12:30:50.573 [restartedMain] INFO  c.s.c.s.d.d.VariantAndIngredient - Created 254 recipes
+2025-06-24 12:30:50.574 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-24 12:30:50.574 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating branch and employee...
+2025-06-24 12:30:50.574 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Creating branches...
+2025-06-24 12:30:50.576 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Created 5 branches
+2025-06-24 12:30:50.576 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Creating employees...
+2025-06-24 12:30:50.833 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Created 35 employees
+2025-06-24 12:30:50.833 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Updating branch managers...
+2025-06-24 12:30:50.847 [restartedMain] INFO  c.s.c.s.d.domain.BranchAndEmployee - Updated managers for 5 branches
+2025-06-24 12:30:50.847 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-24 12:30:50.847 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating warehouse and supplier...
+2025-06-24 12:30:50.847 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Creating warehouses...
+2025-06-24 12:30:50.848 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Created 4 warehouses
+2025-06-24 12:30:50.848 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Creating suppliers...
+2025-06-24 12:30:50.849 [restartedMain] INFO  c.s.c.s.d.d.WarehouseAndSupplier - Created 10 suppliers
+2025-06-24 12:30:50.849 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-24 12:30:50.849 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating stock and inventory...
+2025-06-24 12:30:50.849 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Creating stock records...
+2025-06-24 12:30:50.914 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Created 120 stock records
+2025-06-24 12:30:50.914 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Creating inventory records...
+2025-06-24 12:30:50.944 [restartedMain] INFO  c.s.c.s.d.domain.StockAndInventory - Created 1154 inventory records
+2025-06-24 12:30:50.944 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-24 12:30:50.944 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating comments...
+2025-06-24 12:30:50.944 [restartedMain] INFO  c.s.c.s.d.domain.Comment - Creating dummy comments...
+2025-06-24 12:30:53.501 [restartedMain] INFO  c.s.c.s.d.domain.Comment - Created 797 comments for 33 products
+2025-06-24 12:30:53.501 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-24 12:30:53.501 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating discounts...
+2025-06-24 12:30:53.501 [restartedMain] INFO  c.s.c.s.d.domain.Discounts - Creating discount dummy data...
+2025-06-24 12:30:53.736 [restartedMain] INFO  c.s.c.s.d.domain.Discounts - Associated discounts with product variants: 101 discounts with variants
+2025-06-24 12:30:53.736 [restartedMain] INFO  c.s.c.s.d.domain.Discounts - Created 101 discounts
+2025-06-24 12:30:53.736 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-24 12:30:53.736 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating logistics...
+2025-06-24 12:30:53.736 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Creating orders...
+2025-06-24 12:30:53.858 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Created 1000 orders
+2025-06-24 12:30:53.859 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Creating order details...
+2025-06-24 12:30:53.978 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Created 5450 order details across 1000 orders
+2025-06-24 12:30:53.978 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Creating order payments...
+2025-06-24 12:30:53.997 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Created 1000 order payment records
+2025-06-24 12:30:53.997 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Creating transfers...
+2025-06-24 12:30:54.195 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Created 100 transfers
+2025-06-24 12:30:54.195 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Creating transfer details...
+2025-06-24 12:30:54.203 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Created 541 transfer details across 100 transfers
+2025-06-24 12:30:54.203 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Creating invoices...
+2025-06-24 12:30:54.396 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Created 100 invoices
+2025-06-24 12:30:54.396 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Creating invoice details...
+2025-06-24 12:30:54.404 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Created 546 invoice details across 100 invoices
+2025-06-24 12:30:54.404 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Creating favorite drinks...
+2025-06-24 12:30:54.547 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Created 64 favorite drinks for 10 users
+2025-06-24 12:30:54.547 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Creating carts...
+2025-06-24 12:30:54.684 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Created 10 carts
+2025-06-24 12:30:54.684 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Creating cart details...
+2025-06-24 12:30:54.686 [restartedMain] INFO  c.s.c.s.d.domain.Logistics - Created 31 cart details across 10 carts
+2025-06-24 12:30:54.687 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-24 12:30:54.687 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating notifications...
+2025-06-24 12:30:54.687 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Creating dummy notifications...
+2025-06-24 12:30:54.831 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 500 notifications so far
+2025-06-24 12:30:54.843 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 1000 notifications so far
+2025-06-24 12:30:54.852 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 1500 notifications so far
+2025-06-24 12:30:54.859 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 2000 notifications so far
+2025-06-24 12:30:54.866 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 2500 notifications so far
+2025-06-24 12:30:54.875 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 3000 notifications so far
+2025-06-24 12:30:54.882 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 3500 notifications so far
+2025-06-24 12:30:54.890 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 4000 notifications so far
+2025-06-24 12:30:54.897 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 4500 notifications so far
+2025-06-24 12:30:54.904 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 5000 notifications so far
+2025-06-24 12:30:54.912 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 5500 notifications so far
+2025-06-24 12:30:54.919 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 6000 notifications so far
+2025-06-24 12:30:54.926 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 6500 notifications so far
+2025-06-24 12:30:54.932 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 7000 notifications so far
+2025-06-24 12:30:54.940 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 7500 notifications so far
+2025-06-24 12:30:54.947 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 8000 notifications so far
+2025-06-24 12:30:54.953 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 8500 notifications so far
+2025-06-24 12:30:54.961 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 9000 notifications so far
+2025-06-24 12:30:54.968 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 9500 notifications so far
+2025-06-24 12:30:54.974 [restartedMain] INFO  c.s.c.s.d.domain.Notifications - Created 10,000 dummy notifications successfully
+2025-06-24 12:30:54.975 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Dummy data creation completed.
+2025-06-24 12:30:54.975 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - Creating KPI data...
+2025-06-24 12:30:54.975 [restartedMain] INFO  c.s.c.s.d.domain.KpiData - Creating shifts...
+2025-06-24 12:30:55.159 [restartedMain] INFO  c.s.c.s.d.domain.KpiData - Created 420 shifts
+2025-06-24 12:30:55.160 [restartedMain] INFO  c.s.c.s.d.domain.KpiData - Creating checkins...
+2025-06-24 12:31:15.185 [restartedMain] INFO  c.s.c.s.d.domain.KpiData - Created 1181 checkins
+2025-06-24 12:31:15.185 [restartedMain] INFO  c.s.c.s.d.domain.KpiData - Creating salaries...
+2025-06-24 12:31:15.287 [restartedMain] INFO  c.s.c.s.d.domain.KpiData - Created 0 salary records
+2025-06-24 12:31:15.287 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - KPI data creation completed.
+2025-06-24 12:31:15.287 [restartedMain] INFO  c.s.c.s.d.MainDummyDataService - All dummy data creation completed successfully.
+2025-06-24 12:31:18.107 [Hibernate Search - Mass indexing - Product - ID loading - 0] INFO  o.h.s.m.p.m.i.PojoMassIndexingLoggingMonitor - HSEARCH000027: Mass indexing is going to index 33 entities.
+2025-06-24 12:31:18.604 [RMI TCP Connection(10)-10.45.209.82] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-24 12:31:18.604 [RMI TCP Connection(10)-10.45.209.82] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-06-24 12:31:18.610 [RMI TCP Connection(10)-10.45.209.82] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 6 ms
+2025-06-24 12:31:18.679 [RMI TCP Connection(9)-10.45.209.82] WARN  o.s.b.a.mail.MailHealthIndicator - Mail health check failed
+org.eclipse.angus.mail.util.MailConnectException: Couldn't connect to host, port: localhost, 1025; timeout -1
+	at org.eclipse.angus.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:2243)
+	at org.eclipse.angus.mail.smtp.SMTPTransport.protocolConnect(SMTPTransport.java:729)
+	at jakarta.mail.Service.connect(Service.java:345)
+	at org.springframework.mail.javamail.JavaMailSenderImpl.connectTransport(JavaMailSenderImpl.java:480)
+	at org.springframework.mail.javamail.JavaMailSenderImpl.testConnection(JavaMailSenderImpl.java:360)
+	at org.springframework.boot.actuate.mail.MailHealthIndicator.doHealthCheck(MailHealthIndicator.java:52)
+	at org.springframework.boot.actuate.health.AbstractHealthIndicator.health(AbstractHealthIndicator.java:82)
+	at org.springframework.boot.actuate.health.HealthIndicator.getHealth(HealthIndicator.java:37)
+	at org.springframework.boot.actuate.health.HealthEndpoint.getHealth(HealthEndpoint.java:82)
+	at org.springframework.boot.actuate.health.HealthEndpoint.getHealth(HealthEndpoint.java:41)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getLoggedHealth(HealthEndpointSupport.java:172)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getContribution(HealthEndpointSupport.java:145)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getAggregateContribution(HealthEndpointSupport.java:156)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getContribution(HealthEndpointSupport.java:141)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getHealth(HealthEndpointSupport.java:110)
+	at org.springframework.boot.actuate.health.HealthEndpointSupport.getHealth(HealthEndpointSupport.java:81)
+	at org.springframework.boot.actuate.health.HealthEndpoint.health(HealthEndpoint.java:76)
+	at org.springframework.boot.actuate.health.HealthEndpoint.health(HealthEndpoint.java:66)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:281)
+	at org.springframework.boot.actuate.endpoint.invoke.reflect.ReflectiveOperationInvoker.invoke(ReflectiveOperationInvoker.java:74)
+	at org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation.invoke(AbstractDiscoveredOperation.java:60)
+	at org.springframework.boot.actuate.endpoint.jmx.EndpointMBean.invoke(EndpointMBean.java:124)
+	at org.springframework.boot.actuate.endpoint.jmx.EndpointMBean.invoke(EndpointMBean.java:97)
+	at java.management/com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.invoke(DefaultMBeanServerInterceptor.java:814)
+	at java.management/com.sun.jmx.mbeanserver.JmxMBeanServer.invoke(JmxMBeanServer.java:802)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.doOperation(RMIConnectionImpl.java:1472)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl$PrivilegedOperation.run(RMIConnectionImpl.java:1310)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.doPrivilegedOperation(RMIConnectionImpl.java:1405)
+	at java.management.rmi/javax.management.remote.rmi.RMIConnectionImpl.invoke(RMIConnectionImpl.java:829)
+	at java.base/jdk.internal.reflect.GeneratedMethodAccessor117.invoke(Unknown Source)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:712)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:587)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:828)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:705)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:704)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+Caused by: java.net.ConnectException: Connection refused: connect
+	at java.base/sun.nio.ch.Net.connect0(Native Method)
+	at java.base/sun.nio.ch.Net.connect(Net.java:579)
+	at java.base/sun.nio.ch.Net.connect(Net.java:568)
+	at java.base/sun.nio.ch.NioSocketImpl.connect(NioSocketImpl.java:593)
+	at java.base/java.net.SocksSocketImpl.connect(SocksSocketImpl.java:327)
+	at java.base/java.net.Socket.connect(Socket.java:633)
+	at java.base/java.net.Socket.connect(Socket.java:583)
+	at org.eclipse.angus.mail.util.SocketFetcher.createSocket(SocketFetcher.java:360)
+	at org.eclipse.angus.mail.util.SocketFetcher.getSocket(SocketFetcher.java:235)
+	at org.eclipse.angus.mail.smtp.SMTPTransport.openServer(SMTPTransport.java:2193)
+	... 48 common frames omitted
+2025-06-24 12:31:19.461 [SimpleAsyncTaskExecutor-54] INFO  o.h.s.m.p.m.i.PojoMassIndexingLoggingMonitor - HSEARCH000028: Mass indexing complete. Indexed 33 entities.
+2025-06-24 12:38:35.636 [http-nio-8081-exec-1] ERROR c.s.c.exception.AppExceptionHandler - Exception: java.lang.NullPointerException: Cannot invoke "com.se330.coffee_shop_management_backend.entity.Catalog.getId()" because the return value of "com.se330.coffee_shop_management_backend.entity.product.ProductCategory.getCatalog()" is null
+	at com.se330.coffee_shop_management_backend.dto.response.admin.ProductCategoryAdminResponse.convert(ProductCategoryAdminResponse.java:34)
+	at java.base/java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:197)
+	at java.base/java.util.ArrayList$ArrayListSpliterator.forEachRemaining(ArrayList.java:1625)
+	at java.base/java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:509)
+	at java.base/java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:499)
+	at java.base/java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:575)
+	at java.base/java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260)
+	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:616)
+	at java.base/java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:622)
+	at java.base/java.util.stream.ReferencePipeline.toList(ReferencePipeline.java:627)
+	at com.se330.coffee_shop_management_backend.dto.response.admin.ProductCategoryAdminResponse.convert(ProductCategoryAdminResponse.java:47)
+	at com.se330.coffee_shop_management_backend.service.adminservices.imp.ImpAdminService.createProductCategory(ImpAdminService.java:429)
+	at com.se330.coffee_shop_management_backend.service.adminservices.imp.ImpAdminService.updateDatabase(ImpAdminService.java:116)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:351)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.transaction.interceptor.TransactionInterceptor$1.proceedWithInvocation(TransactionInterceptor.java:123)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:385)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:119)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:765)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:717)
+	at com.se330.coffee_shop_management_backend.service.adminservices.imp.ImpAdminService$$SpringCGLIB$$0.updateDatabase(<generated>)
+	at com.se330.coffee_shop_management_backend.controller.admin.AdminController.updateDatabase(AdminController.java:22)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:259)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:192)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:920)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:830)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:205)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:66)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:340)
+	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapSecured$0(ObservationFilterChainDecorator.java:82)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:128)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at com.se330.coffee_shop_management_backend.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:49)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$0(ObservationFilterChainDecorator.java:323)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:224)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:109)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:101)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:174)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:149)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:391)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1744)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:842)
+
+2025-06-24 12:38:35.675 [http-nio-8081-exec-1] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [java.lang.NullPointerException: Cannot invoke "com.se330.coffee_shop_management_backend.entity.Catalog.getId()" because the return value of "com.se330.coffee_shop_management_backend.entity.product.ProductCategory.getCatalog()" is null]
+2025-06-24 12:38:35.677 [http-nio-8081-exec-1] INFO  c.s.c.s.JwtAuthenticationFilter - 0:0:0:0:0:0:0:1
+2025-06-24 12:39:10.070 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-06-24 12:39:10.081 [SpringApplicationShutdownHook] INFO  o.h.t.s.i.SchemaDropperImpl$DelayedDropActionImpl - HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2025-06-24 12:39:10.513 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-06-24 12:39:10.518 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

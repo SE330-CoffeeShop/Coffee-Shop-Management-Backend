@@ -31,7 +31,7 @@ public class ProductCategoryAdminResponse {
                 .categoryId(productCategory.getId().toString())
                 .categoryName(productCategory.getCategoryName())
                 .categoryDescription(productCategory.getCategoryDescription())
-                .catalogId(productCategory.getCatalog().getId().toString())
+                .catalogId(productCategory.getCatalog() != null ? productCategory.getCatalog().getId().toString() : null)
                 .createdAt(productCategory.getCreatedAt())
                 .updatedAt(productCategory.getUpdatedAt())
                 .build();
