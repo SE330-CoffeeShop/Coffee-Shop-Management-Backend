@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +25,10 @@ public interface StockRepository extends JpaRepository<Stock, UUID>, JpaSpecific
     @Override
     @EntityGraph(attributePaths = {"ingredient", "warehouse"})
     Page<Stock> findAll(Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"ingredient", "warehouse"})
+    List<Stock> findAll();
 
     @Override
     @EntityGraph(attributePaths = {"ingredient", "warehouse"})

@@ -1,5 +1,6 @@
 package com.se330.coffee_shop_management_backend.controller.productcontrollers;
 
+import com.se330.coffee_shop_management_backend.dto.request.product.NewProductCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.product.ProductUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
@@ -745,6 +746,120 @@ public class ProductController {
                                 productsPage.getSize(),
                                 productsPage.getTotalElements(),
                                 productsPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @PostMapping("/new")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @Operation(
+            summary = "Create new product with variants and recipes",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Product created successfully with variants",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<ProductResponseDTO>> createNew(@RequestBody NewProductCreateRequestDTO dto) {
+        ProductResponseDTO product = ProductResponseDTO.convert(productService.createProductNew(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Product created successfully with variants",
+                        product
+                )
+        );
+    }
+
+    @PostMapping(value = "/new-with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @Operation(
+            summary = "Create new product with variants, recipes and image",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Product created successfully with variants and image",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<ProductResponseDTO>> createNewWithImage(
+            @RequestPart("product") NewProductCreateRequestDTO dto,
+            @RequestPart(value = "image", required = false) MultipartFile file
+    ) throws Exception {
+        ProductResponseDTO product = ProductResponseDTO.convert(productService.createProductNewWithImage(dto, file));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Product created successfully with variants and image",
+                        product
+                )
+        );
+    }
+
+    @GetMapping("/search")
+    @Operation(
+            summary = "Search products by keyword with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved matching products",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<ProductResponseDTO>> searchProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Product> productPage = productService.searchProducts(keyword, pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Products matching search criteria retrieved successfully",
+                        ProductResponseDTO.convert(productPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                productPage.getNumber() + 1,
+                                productPage.getSize(),
+                                productPage.getTotalElements(),
+                                productPage.getTotalPages()
                         )
                 )
         );

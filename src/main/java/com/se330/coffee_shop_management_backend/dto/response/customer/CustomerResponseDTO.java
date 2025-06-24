@@ -23,30 +23,12 @@ public class CustomerResponseDTO {
             example = "91b2999d-d327-4dc8-9956-2fadc0dc8778"
     )
     private String id;
-
-    @Schema(
-            name = "email",
-            description = "E-mail of the customer",
-            type = "String",
-            example = "customer@example.com"
-    )
-    private String email;
-
-    @Schema(
-            name = "name",
-            description = "Name of the customer",
-            type = "String",
-            example = "John"
-    )
-    private String name;
-
-    @Schema(
-            name = "lastName",
-            description = "Lastname of the customer",
-            type = "String",
-            example = "DOE"
-    )
-    private String lastName;
+    private String userFullName;
+    private String userAvatarUrl;
+    private LocalDateTime userDoB;
+    private String userPhone;
+    private String userGender;
+    private String userEmail;
     private LocalDateTime lastBuyAt;
 
     /**
@@ -59,6 +41,7 @@ public class CustomerResponseDTO {
         if (user.getOrders() == null || user.getOrders().isEmpty())
             return null;
 
+
         LocalDateTime lastBuyAt = user.getOrders().stream()
                 .map(Order::getCreatedAt)
                 .max(LocalDateTime::compareTo)
@@ -66,9 +49,12 @@ public class CustomerResponseDTO {
 
         return CustomerResponseDTO.builder()
                 .id(user.getId().toString())
-                .email(user.getEmail())
-                .name(user.getName())
-                .lastName(user.getLastName())
+                .userEmail(user.getEmail())
+                .userFullName(user.getFullName())
+                .userAvatarUrl(user.getAvatar())
+                .userDoB(user.getBirthDate())
+                .userPhone(user.getPhoneNumber())
+                .userGender(user.getGender())
                 .lastBuyAt(lastBuyAt)
                 .build();
     }

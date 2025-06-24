@@ -8,6 +8,8 @@ import com.se330.coffee_shop_management_backend.entity.Shift;
 import com.se330.coffee_shop_management_backend.entity.User;
 import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.repository.ShiftRepository;
+import com.se330.coffee_shop_management_backend.service.UserService;
+import com.se330.coffee_shop_management_backend.service.checkinservices.ICheckinService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.shiftservices.IShiftService;
 import com.se330.coffee_shop_management_backend.util.Constants;
@@ -17,21 +19,29 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class ImpShiftService implements IShiftService {
 
     private final ShiftRepository shiftRepository;
+    private final ICheckinService checkinService;
+    private final UserService userService;
     private final EmployeeRepository employeeRepository;
     private final INotificationService notificationService;
 
     public ImpShiftService(
             ShiftRepository shiftRepository,
             EmployeeRepository employeeRepository,
+            UserService userService,
+            ICheckinService checkinService,
             INotificationService notificationService
     ) {
         this.shiftRepository = shiftRepository;
+        this.userService = userService;
+        this.checkinService = checkinService;
         this.employeeRepository = employeeRepository;
         this.notificationService = notificationService;
     }
@@ -49,18 +59,49 @@ public class ImpShiftService implements IShiftService {
     }
 
     @Override
-    public Page<Shift> findAllShiftsByBranch(UUID branchId, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<Shift> findAllShiftsByBranch(Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
         return shiftRepository.findByEmployee_Branch_Id(branchId, pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Shift> findAllShiftsByEmployee(UUID employeeId, Pageable pageable) {
         return shiftRepository.findAllByEmployee_Id(employeeId, pageable);
     }
 
     @Override
-    public Page<Shift> findAllShiftsByBranchAndDayOfWeekAndMonthAndYear(UUID branchId, Constants.DayOfWeekEnum dayOfWeek, int month, int year, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<Shift> findAllShiftsByBranchAndDayOfWeekAndMonthAndYear(Constants.DayOfWeekEnum dayOfWeek, int month, int year, Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
         return shiftRepository.findByEmployee_Branch_IdAndDayOfWeekAndMonthAndYear(branchId, dayOfWeek, month, year, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Map<Shift, Boolean>> findAllShiftsBySpecificDateOfBranch(int year, int month, int day, Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
+        LocalDate localDate = LocalDate.of(year, month, day);
+        Constants.DayOfWeekEnum dayOfWeek = Constants.DayOfWeekEnum.valueOf(localDate.getDayOfWeek().name());
+
+        Page<Shift> shiftPage = shiftRepository.findAllByEmployee_Branch_IdAndDayOfWeekAndMonthAndYear(
+                branchId,
+                dayOfWeek,
+                month,
+                year,
+                pageable
+        );
+
+        return shiftPage.map(shift -> {
+            boolean hasCheckin = checkinService.isCheckin(
+                    shift.getId(),
+                    day,
+                    month,
+                    year
+            );
+            return Map.of(shift, hasCheckin);
+        });
     }
 
     @Override

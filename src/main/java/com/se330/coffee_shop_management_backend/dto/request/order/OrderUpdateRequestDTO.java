@@ -11,5 +11,4 @@ import java.util.UUID;
 public class OrderUpdateRequestDTO {
     private UUID orderId;
     private Constants.OrderStatusEnum orderStatus;
-    private UUID employeeId;
 }

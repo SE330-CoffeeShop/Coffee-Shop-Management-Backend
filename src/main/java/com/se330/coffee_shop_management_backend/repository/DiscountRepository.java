@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,16 +19,20 @@ import java.util.UUID;
 public interface DiscountRepository extends JpaRepository<Discount, UUID>, JpaSpecificationExecutor<Discount> {
 
     @Override
-    @EntityGraph(attributePaths = {"branch", "productVariants"})
+    @EntityGraph(attributePaths = {"branch", "productVariants", "productVariants.product"})
     Page<Discount> findAll(Pageable pageable);
 
     @Override
-    @EntityGraph(attributePaths = {"branch", "productVariants"})
+    @EntityGraph(attributePaths = {"branch", "productVariants", "productVariants.product"})
     Optional<Discount> findById(UUID id);
 
-    @EntityGraph(attributePaths = {"branch", "productVariants"})
+    @EntityGraph(attributePaths = {"branch", "productVariants", "productVariants.product"})
     Page<Discount> findAllByBranch(Branch existingBranch, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"branch", "productVariants"})
+    @EntityGraph(attributePaths = {"branch", "productVariants", "productVariants.product"})
     Page<Discount> findAllByProductVariants_Id(UUID productVariantId, Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"branch", "productVariants"})
+    List<Discount> findAll();
 }

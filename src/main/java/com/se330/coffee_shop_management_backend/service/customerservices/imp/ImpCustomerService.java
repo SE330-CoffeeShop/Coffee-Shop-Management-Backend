@@ -26,14 +26,16 @@ public class ImpCustomerService implements ICustomerService {
 
     @Override
     @Transactional(readOnly = true)
-    public CustomerResponseDTO findByIdCustomer(UUID id, UUID branchId) {
-        return CustomerResponseDTO.convert(userService.findById(id));
+    public Page<CustomerResponseDTO> findAllCustomerOfMyBranch(Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
+        Page<User> userPage = userRepository.findAllByOrdersBranchId(branchId, pageable);
+        return userPage.map(CustomerResponseDTO::convert);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<CustomerResponseDTO> findAllCustomerOfBranch(Pageable pageable, UUID branchId) {
-        Page<User> userPage = userRepository.findAll(pageable);
+        Page<User> userPage = userRepository.findAllByOrdersBranchId(branchId, pageable);
         return userPage.map(CustomerResponseDTO::convert);
     }
 }

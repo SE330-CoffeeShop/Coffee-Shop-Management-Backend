@@ -33,26 +33,18 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'EMPLOYEE', 'MANAGER')")
+    @GetMapping("/my-branch")
+    @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'MANAGER')")
     @Operation(
-            summary = "Get customer of specific branch details sorted by the most recent order",
+            summary = "Get all customers of the current employee's/manager's branch with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved customer",
+                            description = "Successfully retrieved customer list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = CustomerResponseDTO.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid ID format",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
+                                    schema = @Schema(implementation = PageResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -64,8 +56,8 @@ public class CustomerController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "404",
-                            description = "Customer not found",
+                            responseCode = "403",
+                            description = "Forbidden",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -73,21 +65,34 @@ public class CustomerController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<CustomerResponseDTO>> getCustomerById(
-            @PathVariable UUID id,
-            @RequestParam UUID branchId
+    public ResponseEntity<PageResponse<CustomerResponseDTO>> getAllCustomersOfMyBranch(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<CustomerResponseDTO> customerPage = customerService.findAllCustomerOfMyBranch(pageable);
+
         return ResponseEntity.ok(
-                new SingleResponse<>(
+                new PageResponse<>(
                         HttpStatus.OK.value(),
                         "Customer retrieved successfully",
-                        customerService.findByIdCustomer(id, branchId)
+                        customerPage.toList(),
+                        new PageResponse.PagingResponse(
+                                customerPage.getNumber(),
+                                customerPage.getSize(),
+                                customerPage.getTotalElements(),
+                                customerPage.getTotalPages()
+                        )
                 )
         );
     }
 
+
     @GetMapping("/branch/{branchId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'EMPLOYEE', 'MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Get all customers of a branch with pagination, sorted by the most recent order",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

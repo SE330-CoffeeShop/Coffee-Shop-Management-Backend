@@ -5,7 +5,6 @@ import com.se330.coffee_shop_management_backend.dto.response.payment.MomoIPNRequ
 import com.se330.coffee_shop_management_backend.entity.OrderPayment;
 import com.se330.coffee_shop_management_backend.entity.PaymentMethods;
 import com.se330.coffee_shop_management_backend.repository.OrderPaymentRepository;
-import com.se330.coffee_shop_management_backend.repository.OrderRepository;
 import com.se330.coffee_shop_management_backend.repository.PaymentMethodsRepository;
 import com.se330.coffee_shop_management_backend.service.paymentservices.IOrderPaymentService;
 import com.se330.coffee_shop_management_backend.service.paymentservices.imp.strategy.PaymentStrategy;
@@ -16,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,14 +23,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ImpOrderPaymentService implements IOrderPaymentService {
 
-    private final OrderRepository orderRepository;
     private final PaymentMethodsRepository paymentMethodsRepository;
     private final OrderPaymentRepository orderPaymentRepository;
     private final Map<Constants.PaymentMethodEnum, PaymentStrategy> paymentStrategies;
 
     @Override
     @Transactional
-    public OrderPayment createOrderPayment(OrderPaymentCreateRequestDTO orderPaymentCreateRequestDTO) {
+    public OrderPayment createOrderPayment(OrderPaymentCreateRequestDTO orderPaymentCreateRequestDTO) throws UnsupportedEncodingException {
         PaymentMethods paymentMethod = paymentMethodsRepository.findById(orderPaymentCreateRequestDTO.getPaymentMethodId())
                 .orElseThrow(() -> new IllegalArgumentException("Payment method not found with id: " + orderPaymentCreateRequestDTO.getPaymentMethodId()));
 
@@ -110,5 +109,16 @@ public class ImpOrderPaymentService implements IOrderPaymentService {
         }
 
         return strategy.momoExecutePayment(momoIPNRequest);
+    }
+
+    @Override
+    public OrderPayment vnpayExecutePayment(String vnp_BankCode, String vnp_CardType, String vnp_TransactionNo, String vnp_ResponseCode, String vnp_TxnRef) {
+        PaymentStrategy strategy = paymentStrategies.get(Constants.PaymentMethodEnum.VNPAY);
+
+        if (strategy == null) {
+            throw new IllegalArgumentException("Unsupported payment method: VNPAY");
+        }
+
+        return strategy.vnpayExecutePayment(vnp_BankCode, vnp_CardType, vnp_TransactionNo, vnp_ResponseCode, vnp_TxnRef);
     }
 }

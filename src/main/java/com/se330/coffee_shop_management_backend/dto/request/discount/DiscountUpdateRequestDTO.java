@@ -24,6 +24,5 @@ public class DiscountUpdateRequestDTO {
     private int discountMaxPerUser;
     private BigDecimal discountMinOrderValue;
     private boolean discountIsActive;
-    private UUID branchId;
     private List<UUID> productVariantIds;
 }

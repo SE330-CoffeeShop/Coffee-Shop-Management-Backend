@@ -51,6 +51,13 @@ public class ImpOrderDetailService implements IOrderDetailService {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<OrderDetail> findAllByIdOrder(UUID orderId, Pageable pageable) {
+        return orderDetailRepository.findAllByOrder_Id(orderId, pageable);
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<OrderDetail> findAllOrderDetails(Pageable pageable) {
         return orderDetailRepository.findAll(pageable);
     }

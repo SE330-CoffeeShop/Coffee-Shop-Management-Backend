@@ -20,7 +20,7 @@ public interface IDiscountService {
     Discount createDiscount(DiscountCreateRequestDTO discountCreateRequestDTO);
     Discount updateDiscount(DiscountUpdateRequestDTO discountUpdateRequestDTO);
     void deleteDiscount(UUID id);
-    boolean isDiscountValid(UUID discountId, UUID productVariantId, UUID userId, UUID employeeId);
+    boolean isDiscountValid(UUID discountId, UUID productVariantId, UUID userId);
     void applyMostValuableDiscountOfOrderDetail(UUID orderDetailId, BigDecimal orderTotalValue);
     Cart applyDiscountToCart(UUID branchId);
     EmployeeViewCartDiscountResponseDTO applyDiscountToCart(EmployeeCartRequestDTO employeeCartRequestDTO);

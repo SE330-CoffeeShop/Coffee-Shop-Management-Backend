@@ -1,16 +1,17 @@
 package com.se330.coffee_shop_management_backend.dto.response.discount;
 
 import com.se330.coffee_shop_management_backend.entity.Discount;
+import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.Hibernate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -55,11 +56,17 @@ public class DiscountResponseDTO {
     private BigDecimal discountMinOrderValue;
     private boolean discountIsActive;
     private String branchId;
-    private List<String> productVariantIds;
+    private Set<ProductResponseDTO> products;
 
     public static DiscountResponseDTO convert(Discount discount) {
         if (discount == null) {
             return null;
+        }
+
+        Set<ProductResponseDTO> products = new HashSet<>();
+
+        for (ProductVariant productVariant : discount.getProductVariants()) {
+            products.add(new ProductResponseDTO(productVariant));
         }
 
         return DiscountResponseDTO.builder()
@@ -79,9 +86,7 @@ public class DiscountResponseDTO {
                 .discountMinOrderValue(discount.getDiscountMinOrderValue())
                 .discountIsActive(discount.isDiscountIsActive())
                 .branchId(discount.getBranch() != null ? discount.getBranch().getId().toString() : null)
-                .productVariantIds(discount.getProductVariants() != null ? discount.getProductVariants().stream()
-                        .map(productVariant -> productVariant.getId().toString())
-                        .collect(Collectors.toList()) : Collections.emptyList())
+                .products(products)
                 .build();
     }
 
@@ -93,5 +98,34 @@ public class DiscountResponseDTO {
         return discounts.stream()
                 .map(DiscountResponseDTO::convert)
                 .collect(Collectors.toList());
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProductResponseDTO {
+        private String id;
+        private String name;
+        private String thumb;
+
+        public ProductResponseDTO(ProductVariant productVariant) {
+            this.id = productVariant.getProduct().getId().toString();
+            this.name = productVariant.getProduct().getProductName();
+            this.thumb = productVariant.getProduct().getProductThumb();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ProductResponseDTO that = (ProductResponseDTO) o;
+            return Objects.equals(name, that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name);
+        }
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -29,4 +30,8 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
     @Override
     @EntityGraph(attributePaths = {"sender", "receiver"})
     Notification save(Notification notification);
+
+    @Override
+    @EntityGraph(attributePaths = {"sender", "receiver"})
+    List<Notification> findAll();
 }

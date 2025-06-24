@@ -94,7 +94,7 @@ public class Comment {
 
         // Generate 3-5 comments for each product
         for (Product product : products) {
-            int commentCount = random.nextInt(3) + 10; // Generate 3-10 comments
+            int commentCount = random.nextInt(10) + 20; // Generate 10-30 comments
 
             // Get category name
             String categoryName = product.getProductCategory().getCategoryName();
@@ -106,7 +106,7 @@ public class Comment {
                 // Select random comment from appropriate category
                 String content = relevantComments.get(random.nextInt(relevantComments.size()));
 
-                BigDecimal rating = BigDecimal.valueOf(random.nextInt(100)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                BigDecimal rating = BigDecimal.valueOf(random.nextInt(501)).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
                 // Create comment
                 com.se330.coffee_shop_management_backend.entity.Comment comment =
@@ -119,13 +119,13 @@ public class Comment {
                                 .product(product)
                                 .build();
 
-                totalRating.add(rating);
+                totalRating = totalRating.add(rating);
 
                 comments.add(comment);
             }
             BigDecimal averageRating = totalRating.divide(BigDecimal.valueOf(commentCount), RoundingMode.HALF_UP);
 
-            product.setProductRatingsAverage(averageRating);
+            product.setProductRatingsAverage(averageRating.setScale(1, RoundingMode.HALF_UP));
             product.setProductCommentCount(product.getProductCommentCount() + commentCount);
         }
 

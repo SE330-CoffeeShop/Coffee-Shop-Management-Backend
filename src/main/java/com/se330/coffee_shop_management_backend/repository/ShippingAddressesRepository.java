@@ -24,9 +24,15 @@ public interface ShippingAddressesRepository extends JpaRepository<ShippingAddre
 
     @Override
     @EntityGraph(attributePaths = {"user"})
+    List<ShippingAddresses> findAll();
+
+    @Override
+    @EntityGraph(attributePaths = {"user"})
     ShippingAddresses save(ShippingAddresses shippingAddresses);
 
     @EntityGraph(attributePaths = {"user"})
     @Override
     Optional<ShippingAddresses> findById(UUID id);
+    @EntityGraph(attributePaths = {"user"})
+    Page<ShippingAddresses> findAllByUser_Id(UUID userId, Pageable pageable);
 }

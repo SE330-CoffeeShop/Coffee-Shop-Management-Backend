@@ -42,4 +42,9 @@ public class ShippingAddresses extends AbstractBaseEntity {
             )
     )
     private User user;
+
+    @Override
+    public String toString() {
+        return this.addressDistrict + ", " + this.addressCity + ", " + this.addressLine;
+    }
 }

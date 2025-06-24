@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -39,6 +40,9 @@ public class CheckinResponseDTO {
     private LocalDateTime updatedAt;
 
     private String shiftId;
+    private String employeeFullName;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private LocalDateTime checkinTime;
 
     public static CheckinResponseDTO convert(Checkin checkin) {
@@ -47,7 +51,10 @@ public class CheckinResponseDTO {
                 .createdAt(checkin.getCreatedAt())
                 .updatedAt(checkin.getUpdatedAt())
                 .shiftId(checkin.getShift() != null ? checkin.getShift().getId().toString() : null)
+                .employeeFullName(checkin.getShift().getEmployee() != null ? checkin.getShift().getEmployee().getUser().getFullName() : null)
                 .checkinTime(checkin.getCheckinTime())
+                .startTime(checkin.getShift().getShiftStartTime())
+                .endTime(checkin.getShift().getShiftEndTime())
                 .build();
     }
 

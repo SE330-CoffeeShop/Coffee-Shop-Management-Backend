@@ -53,6 +53,9 @@ public class ShiftResponseDTO {
 
     // Related entities
     private String employeeId;
+    private String employeeFullName;
+    private String employeeAvatarUrl;
+
 
     public static ShiftResponseDTO convert(Shift shift) {
         return ShiftResponseDTO.builder()
@@ -65,6 +68,8 @@ public class ShiftResponseDTO {
                 .shiftEndTime(shift.getShiftEndTime())
                 .dayOfWeek(shift.getDayOfWeek().getValue())
                 .employeeId(shift.getEmployee() != null ? shift.getEmployee().getId().toString() : null)
+                .employeeFullName(shift.getEmployee() != null ? shift.getEmployee().getUser().getFullName() : null)
+                .employeeAvatarUrl(shift.getEmployee() != null ? shift.getEmployee().getUser().getAvatar() : null)
                 .build();
     }
 

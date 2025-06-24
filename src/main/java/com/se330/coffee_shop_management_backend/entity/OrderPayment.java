@@ -28,17 +28,27 @@ public class OrderPayment extends AbstractBaseEntity {
     @Column(name = "transaction_id")
     private String transactionId;
 
+    // Paypal
     @Column(name = "paypal_approval_url")
     private String paypalApprovalUrl;
     @Column(name = "paypal_payment_id")
     private String paypalPaymentId;
 
+    // MoMo
     @Column(name = "momo_result_code")
     private int momoResultCode;
     @Column(name = "momo_pay_url")
     private String momoPayUrl;
     @Column(name = "momo_deep_link")
     private String momoDeepLink;
+
+    // VNPay
+    @Column(name = "vnpay_pay_url", length = 1050)
+    private String vnpayPayUrl;
+    @Column(name = "vnp_bank_code")
+    private String vnpBankCode;
+    @Column(name = "vnp_card_type")
+    private String vnpCardType;
 
     @Column(name = "failure_reason", columnDefinition = "text")
     private String failureReason;

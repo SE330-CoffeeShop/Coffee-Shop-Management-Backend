@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.UUID;
 
 public interface ICustomerService {
-    CustomerResponseDTO findByIdCustomer(UUID id, UUID branchId);
+    Page<CustomerResponseDTO> findAllCustomerOfMyBranch(Pageable pageable);
     Page<CustomerResponseDTO> findAllCustomerOfBranch(Pageable pageable, UUID branchId);
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,4 +25,8 @@ public interface InvoiceDetailRepository extends JpaRepository<InvoiceDetail, UU
     @Override
     @EntityGraph(attributePaths = {"invoice", "ingredient"})
     InvoiceDetail save(InvoiceDetail invoiceDetail);
+
+    @Override
+    @EntityGraph(attributePaths = {"invoice", "ingredient"})
+    List<InvoiceDetail> findAll();
 }

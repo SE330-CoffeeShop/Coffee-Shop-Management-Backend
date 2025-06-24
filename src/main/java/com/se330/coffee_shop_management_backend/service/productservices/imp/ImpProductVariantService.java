@@ -60,7 +60,7 @@ public class ImpProductVariantService implements IProductVariantService {
                         .variantPrice(productVariantCreateRequestDTO.getVariantPrice())
                         .product(product)
                         .variantSlug(CreateSlug.createSlug(productVariantCreateRequestDTO.getVariantTierIdx()))
-                        .variantSort(0)
+                        .variantSort(productVariantCreateRequestDTO.getVariantSort())
                         .variantIsPublished(false)
                         .variantIsDeleted(false)
                         .build()

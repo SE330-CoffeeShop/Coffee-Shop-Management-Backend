@@ -74,9 +74,32 @@ public class UserBasicInfo {
         userRepository.save(adminUser);
 
         log.info("Tạo người dùng khách hàng (10 CUSTOMER)...");
-        String[] customerFirstNames = {"Trần Thị", "Lê Văn", "Phạm Minh", "Hoàng Thị", "Ngô Đức", "Vũ Thị", "Đặng Văn", "Bùi Thị", "Đỗ Minh", "Hồ Thị"};
-        String[] customerLastNames = {"Hương", "Thành", "Linh", "Đạt", "Mai", "Tuấn", "Hà", "Dũng", "Thảo", "Nam"};
+        String[] customerFirstNames = {
+                // Nam
+                "Văn Anh", "Đức Anh", "Mạnh Cường", "Hữu Đạt", "Quang Dũng",
+                "Thế Duy", "Bảo Đại", "Minh Đạo", "Tuấn Hải", "Ngọc Hà",
+                "Trung Hiếu", "Gia Huy", "Anh Khôi", "Thành Long", "Hải Nam",
+                "Quốc Phong", "Hồng Quân", "Đình Sang", "Hoàng Sơn", "Minh Tâm",
+                "Nhật Tân", "Anh Tuấn", "Quang Vinh", "Tiến Vũ", "Đăng Khoa",
 
+                // Nữ
+                "Thị Ánh", "Ngọc Anh", "Mỹ Duyên", "Thu Hiền", "Thanh Hà",
+                "Phương Hoa", "Thúy Hồng", "Diễm Hương", "Mai Linh", "Kim Ngân",
+                "Như Quỳnh", "Minh Thư", "Kiều Trang", "Khánh Vy", "Hồng Vân",
+                "Thảo Ngọc", "Bảo Trâm", "Nhật Lệ", "Thanh Mai", "Hải Yến",
+                "Lan Phương", "Minh Châu", "Diệu Linh", "Thu Thủy", "Tuyết Trinh",
+
+                // Unisex
+                "Bảo Châu", "Gia Hân", "Kim Khánh", "Minh Ngọc", "Nhật Minh",
+                "Phương Thảo", "Quỳnh Chi", "Thanh Thảo", "Tuệ Lâm", "Xuân Mai"
+        };
+        String[] customerLastNames = {
+                "Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Huỳnh", "Phan", "Vũ", "Võ",
+                "Đặng", "Bùi", "Đỗ", "Hồ", "Ngô", "Dương", "Lý", "Đào", "Đinh",
+                "Mai", "Lâm", "Trương", "Chu", "La", "Tạ", "Hà", "Thạch", "Giáp",
+                "Đoàn", "Kim", "Quách", "Vương", "Triệu", "Cao", "Lưu", "Hứa",
+                "Phùng", "Tô", "Trịnh", "Tống", "Bạch", "Hồng", "Lục", "Tiêu"
+        };
         for (int i = 0; i < 10; i++) {
             String gender = customerFirstNames[i].contains("Thị") ? "Female" : "Male";
             User customerUser = userService.create(CreateUserRequest.builder()
@@ -95,7 +118,7 @@ public class UserBasicInfo {
             userRepository.save(customerUser);
         }
 
-        log.info("Tạo người dùng quản lý (5 MANAGER)...");
+        log.info("Tạo người dùng quản lý (10 MANAGER)...");
         String[] managerFirstNames = {"Phan Văn", "Lý Thị", "Trương Minh", "Mai Thị", "Dương Văn"};
         String[] managerLastNames = {"Quang", "Hòa", "Tâm", "Phương", "Khoa"};
 
@@ -119,21 +142,41 @@ public class UserBasicInfo {
 
         log.info("Tạo người dùng nhân viên (30 EMPLOYEE)...");
         String[] employeeFirstNames = {
-                "Nguyễn Thị", "Trần Văn", "Lê Thị", "Phạm Văn", "Hoàng Thị",
-                "Huỳnh Minh", "Võ Thị", "Đặng Văn", "Bùi Minh", "Đỗ Thị",
-                "Hồ Văn", "Ngô Thị", "Dương Văn", "Lý Thị", "Trương Văn",
-                "Mai Thị", "Phan Văn", "Vũ Minh", "Tô Thị", "Đinh Văn",
-                "Trinh Thị", "Chu Văn", "Lương Thị", "Chung Minh", "Thái Thị",
-                "Diệp Văn", "Tạ Thị", "Hà Văn", "Thạch Thị", "Kim Văn"
+                // Nam
+                "Nguyễn Văn", "Trần Đức", "Lê Hoàng", "Phạm Quốc", "Hoàng Minh",
+                "Huỳnh Thanh", "Võ Ngọc", "Đặng Trường", "Bùi Gia", "Đỗ Xuân",
+                "Hồ Hữu", "Ngô Bá", "Dương Vĩnh", "Lý Vũ", "Trương Sĩ",
+                "Mai Thanh", "Phan Đình", "Vũ Đăng", "Tô Thế", "Đinh Tiến",
+                "Trịnh Quang", "Chu Bảo", "Lương Đình", "Chung Hải", "Thái Duy",
+                "Diệp Anh", "Tạ Vĩnh", "Hà Trọng", "Thạch Tuấn", "Kim Nhật",
+
+                // Nữ
+                "Nguyễn Thị", "Trần Thị", "Lê Thị", "Phạm Thị", "Hoàng Thị",
+                "Huỳnh Thị", "Võ Thị", "Đặng Thị", "Bùi Thị", "Đỗ Thị",
+                "Hồ Thị", "Ngô Thị", "Dương Thị", "Lý Thị", "Trương Thị",
+                "Mai Thị", "Phan Thị", "Vũ Thị", "Tô Thị", "Đinh Thị",
+                "Trịnh Thị", "Chu Thị", "Lương Thị", "Chung Thị", "Thái Thị",
+                "Diệp Thị", "Tạ Thị", "Hà Thị", "Thạch Thị", "Kim Thị",
+
+                // Unisex
+                "Nguyễn Minh", "Trần Anh", "Lê Bảo", "Phạm Khánh", "Hoàng Gia",
+                "Huỳnh Ngọc", "Võ Nhật", "Đặng Phương", "Bùi Tuệ", "Đỗ Thiên"
         };
 
         String[] employeeLastNames = {
-                "Anh", "Bình", "Cường", "Dung", "Em",
-                "Giang", "Hải", "Khánh", "Lâm", "Minh",
-                "Ngọc", "Oanh", "Phúc", "Quân", "Sơn",
-                "Tuyết", "Uyên", "Vân", "Xuân", "Yến",
-                "Thắng", "Hùng", "Nhung", "Trung", "Thúy",
-                "Phong", "Hạnh", "Tiến", "Trang", "Long"
+                // Nam
+                "Anh", "Bảo", "Cảnh", "Dũng", "Đạt", "Hiếu", "Huy", "Khải", "Long", "Mạnh",
+                "Nam", "Phúc", "Quang", "Sơn", "Thái", "Trí", "Tuấn", "Vinh", "Xuân", "Ý",
+                "Bình", "Chiến", "Đức", "Hào", "Kiên", "Lộc", "Nghĩa", "Phong", "Tài", "Thắng",
+
+                // Nữ
+                "Ánh", "Bích", "Châu", "Diễm", "Giang", "Hà", "Hương", "Khanh", "Lan", "My",
+                "Nga", "Oanh", "Phương", "Quỳnh", "Trinh", "Uyên", "Vy", "Xuyến", "Yến", "Hạnh",
+                "Cẩm", "Duyên", "Hằng", "Linh", "Mai", "Ngân", "Như", "Phượng", "Thanh", "Thảo",
+
+                // Unisex
+                "An", "Bình", "Chi", "Duy", "Gia", "Hân", "Khuê", "Lâm", "Minh", "Ngọc",
+                "Nhật", "Phú", "Quân", "Tâm", "Thư", "Vũ", "Thành", "Hải", "Nguyên", "Tú"
         };
 
         for (int i = 0; i < 30; i++) {
@@ -186,7 +229,7 @@ public class UserBasicInfo {
         };
 
         // Create exactly 10 shipping addresses (1 per customer, if we have 10 customers)
-        int addressCount = Math.min(10, customerUsers.size());
+        int addressCount = customerUsers.size();
 
         for (int i = 0; i < addressCount; i++) {
             User customer = customerUsers.get(i % customerUsers.size());
@@ -231,7 +274,7 @@ public class UserBasicInfo {
         methods.add(PaymentMethods.builder()
                 .paymentMethodName(Constants.PaymentMethodEnum.PAYPAL)
                 .paymentMethodDescription("Thanh toán trực tuyến qua cổng PayPal")
-                .isActive(false)
+                .isActive(true)
                 .build());
 
         methods.add(PaymentMethods.builder()

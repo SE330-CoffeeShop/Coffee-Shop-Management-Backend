@@ -2,12 +2,15 @@ package com.se330.coffee_shop_management_backend.service.checkinservices.imp;
 
 import com.se330.coffee_shop_management_backend.dto.request.checkin.CheckinCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.checkin.CheckinUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.checkin.SubCheckinCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.checkin.SubCheckinUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
-import com.se330.coffee_shop_management_backend.entity.Checkin;
-import com.se330.coffee_shop_management_backend.entity.Shift;
-import com.se330.coffee_shop_management_backend.entity.User;
+import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.repository.CheckinRepository;
+import com.se330.coffee_shop_management_backend.repository.EmployeeRepository;
 import com.se330.coffee_shop_management_backend.repository.ShiftRepository;
+import com.se330.coffee_shop_management_backend.repository.SubCheckinRepository;
+import com.se330.coffee_shop_management_backend.service.UserService;
 import com.se330.coffee_shop_management_backend.service.checkinservices.ICheckinService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.util.Constants;
@@ -25,16 +28,25 @@ public class ImpCheckinService implements ICheckinService {
 
     private final CheckinRepository checkinRepository;
     private final ShiftRepository shiftRepository;
+    private final EmployeeRepository employeeRepository;
     private final INotificationService notificationService;
+    private final SubCheckinRepository subCheckinRepository;
+    private final UserService userService;
 
     public ImpCheckinService(
             CheckinRepository checkinRepository,
             ShiftRepository shiftRepository,
+            EmployeeRepository employeeRepository,
+            SubCheckinRepository subCheckinRepository,
+            UserService userService,
             INotificationService notificationService
     ) {
         this.checkinRepository = checkinRepository;
         this.shiftRepository = shiftRepository;
+        this.userService = userService;
+        this.employeeRepository = employeeRepository;
         this.notificationService = notificationService;
+        this.subCheckinRepository = subCheckinRepository;
     }
 
     @Override
@@ -63,7 +75,48 @@ public class ImpCheckinService implements ICheckinService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Checkin> findAllByBranchId(UUID branchId, Pageable pageable) {
+    public Page<SubCheckin> findAllSubCheckinsByShiftId(UUID shiftId, Pageable pageable) {
+        return subCheckinRepository.findAllByShift_Id(shiftId, pageable);
+    }
+
+    @Override
+    @Transactional
+    public SubCheckin createSubCheckin(SubCheckinCreateRequestDTO subCheckinCreateRequestDTO) {
+
+        Shift shift = shiftRepository.findById(subCheckinCreateRequestDTO.getShiftId())
+                .orElseThrow(() -> new EntityNotFoundException("Shift not found with id: " + subCheckinCreateRequestDTO.getShiftId()));
+
+        Employee employee = employeeRepository.findById(subCheckinCreateRequestDTO.getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + subCheckinCreateRequestDTO.getEmployeeId()));
+
+        return subCheckinRepository.save(
+                SubCheckin.builder()
+                        .shift(shift)
+                        .employee(employee)
+                        .checkinTime(subCheckinCreateRequestDTO.getCheckinTime())
+                        .build()
+        );
+    }
+
+    @Override
+    @Transactional
+    public SubCheckin updateSubCheckin(SubCheckinUpdateRequestDTO subCheckinUpdateRequestDTO) {
+        SubCheckin existingSubCheckin = subCheckinRepository.findById(subCheckinUpdateRequestDTO.getSubCheckinId())
+                .orElseThrow(() -> new EntityNotFoundException("SubCheckin not found with id: " + subCheckinUpdateRequestDTO.getSubCheckinId()));
+
+        Employee employee = employeeRepository.findById(subCheckinUpdateRequestDTO.getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + subCheckinUpdateRequestDTO.getEmployeeId()));
+
+        existingSubCheckin.setEmployee(employee);
+        existingSubCheckin.setCheckinTime(subCheckinUpdateRequestDTO.getCheckinTime());
+
+        return subCheckinRepository.save(existingSubCheckin);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Checkin> findAllByBranchId(Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
         return checkinRepository.findAllByBranchId(branchId, pageable);
     }
 
@@ -105,21 +158,26 @@ public class ImpCheckinService implements ICheckinService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Checkin> findAllByBranchIdAndYear(UUID branchId, int year, Pageable pageable) {
+    public Page<Checkin> findAllByBranchIdAndYear(int year, Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
+
         return checkinRepository.findAllByBranchIdAndYear(branchId, year, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Checkin> findAllByBranchIdAndYearAndMonth(UUID branchId, int year, int month, Pageable pageable) {
+    public Page<Checkin> findAllByBranchIdAndYearAndMonth(int year, int month, Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
         return checkinRepository.findAllByBranchIdAndYearAndMonth(branchId, year, month, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Checkin> findAllByBranchIdAndYearAndMonthAndDay(UUID branchId, int year, int month, int day, Pageable pageable) {
+    public Page<Checkin> findAllByBranchIdAndYearAndMonthAndDay(int year, int month, int day, Pageable pageable) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
         return checkinRepository.findAllByBranchIdAndYearAndMonthAndDay(branchId, year, month, day, pageable);
     }
+
 
     @Override
     @Transactional
@@ -233,6 +291,14 @@ public class ImpCheckinService implements ICheckinService {
                         .receiverId(employee.getId())
                         .isRead(false)
                         .build()
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isCheckin(UUID shiftId, int day, int month, int year) {
+        return checkinRepository.existsCheckinByShift_IdAndDayAndMonthAndYear(
+                shiftId, day, month, year
         );
     }
 }

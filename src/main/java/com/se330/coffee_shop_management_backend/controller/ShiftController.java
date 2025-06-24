@@ -5,6 +5,7 @@ import com.se330.coffee_shop_management_backend.dto.request.shift.ShiftUpdateReq
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
+import com.se330.coffee_shop_management_backend.dto.response.shift.ShiftIsCheckinResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.shift.ShiftResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Shift;
 import com.se330.coffee_shop_management_backend.service.shiftservices.IShiftService;
@@ -22,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -224,7 +227,7 @@ public class ShiftController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/branch/{branchId}")
+    @GetMapping("/branch")
     @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all shifts for a specific branch",
@@ -249,7 +252,6 @@ public class ShiftController {
             }
     )
     public ResponseEntity<PageResponse<ShiftResponseDTO>> findAllShiftsByBranch(
-            @PathVariable UUID branchId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -257,7 +259,7 @@ public class ShiftController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Shift> shiftPage = shiftService.findAllShiftsByBranch(branchId, pageable);
+        Page<Shift> shiftPage = shiftService.findAllShiftsByBranch(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -324,7 +326,7 @@ public class ShiftController {
         );
     }
 
-    @GetMapping("/branch/{branchId}/filter")
+    @GetMapping("/branch/filter")
     @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all shifts for a branch filtered by day of week, month, and year",
@@ -349,7 +351,6 @@ public class ShiftController {
             }
     )
     public ResponseEntity<PageResponse<ShiftResponseDTO>> findAllShiftsByBranchAndDayOfWeekAndMonthAndYear(
-            @PathVariable UUID branchId,
             @RequestParam Constants.DayOfWeekEnum dayOfWeek,
             @RequestParam int month,
             @RequestParam int year,
@@ -360,14 +361,69 @@ public class ShiftController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Shift> shiftPage = shiftService.findAllShiftsByBranchAndDayOfWeekAndMonthAndYear(
-                branchId, dayOfWeek, month, year, pageable);
+        Page<Shift> shiftPage = shiftService.findAllShiftsByBranchAndDayOfWeekAndMonthAndYear(dayOfWeek, month, year, pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
                         HttpStatus.OK.value(),
                         "Filtered branch shifts retrieved successfully",
                         ShiftResponseDTO.convert(shiftPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                shiftPage.getNumber(),
+                                shiftPage.getSize(),
+                                shiftPage.getTotalElements(),
+                                shiftPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/branch/specific-date")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get all shifts for a branch on a specific date with check-in status",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved shifts with check-in status",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid date parameters",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<ShiftIsCheckinResponseDTO>> findAllShiftsBySpecificDateOfBranch(
+            @RequestParam int year,
+            @RequestParam int month,
+            @RequestParam int day,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Map<Shift, Boolean>> shiftPage = shiftService.findAllShiftsBySpecificDateOfBranch(year, month, day, pageable);
+
+        List<ShiftIsCheckinResponseDTO> responseList = shiftPage.getContent().stream()
+                .flatMap(map -> ShiftIsCheckinResponseDTO.convert(map).stream())
+                .toList();
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Shifts with check-in status retrieved successfully",
+                        responseList,
                         new PageResponse.PagingResponse(
                                 shiftPage.getNumber(),
                                 shiftPage.getSize(),

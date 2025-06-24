@@ -1,7 +1,8 @@
 package com.se330.coffee_shop_management_backend.controller;
 
-import com.se330.coffee_shop_management_backend.dto.request.employee.EmployeeCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.auth.RegisterRequest;
 import com.se330.coffee_shop_management_backend.dto.request.employee.EmployeeUpdateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.user.CreateUserRequest;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -128,7 +130,7 @@ public class EmployeeController {
         );
     }
 
-    @GetMapping("/branch/{branchId}")
+    @GetMapping("/branch")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all employees for a branch with pagination",
@@ -153,7 +155,6 @@ public class EmployeeController {
             }
     )
     public ResponseEntity<PageResponse<EmployeeResponseDTO>> findAllEmployeesByBranchId(
-            @PathVariable UUID branchId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -161,7 +162,7 @@ public class EmployeeController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Employee> employeePages = employeeService.findAllEmployeesByBranchId(branchId, pageable);
+        Page<Employee> employeePages = employeeService.findAllEmployeesByBranchId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -210,8 +211,8 @@ public class EmployeeController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<EmployeeResponseDTO>> createEmployee(@RequestBody EmployeeCreateRequestDTO employeeCreateRequestDTO) {
-        EmployeeResponseDTO employee = EmployeeResponseDTO.convert(employeeService.createEmployee(employeeCreateRequestDTO));
+    public ResponseEntity<SingleResponse<EmployeeResponseDTO>> createEmployee(@RequestBody RegisterRequest request ) throws BindException {
+        EmployeeResponseDTO employee = EmployeeResponseDTO.convert(employeeService.createEmployee(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new SingleResponse<>(
                         HttpStatus.CREATED.value(),

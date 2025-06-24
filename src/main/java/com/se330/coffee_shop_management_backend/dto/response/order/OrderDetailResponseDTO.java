@@ -45,6 +45,9 @@ public class OrderDetailResponseDTO {
     private BigDecimal orderDetailUnitPrice;
     private String productVariantId;
     private String orderId;
+    private String productName;
+    private String productThumb;
+    private String variantTierId;
 
     public static OrderDetailResponseDTO convert(OrderDetail orderDetail) {
         return OrderDetailResponseDTO.builder()
@@ -57,6 +60,12 @@ public class OrderDetailResponseDTO {
                         orderDetail.getProductVariant().getId().toString() : null)
                 .orderId(orderDetail.getOrder() != null ?
                         orderDetail.getOrder().getId().toString() : null)
+                .productName(orderDetail.getProductVariant() != null ?
+                        orderDetail.getProductVariant().getProduct().getProductName() : null)
+                .productThumb(orderDetail.getProductVariant() != null ?
+                        orderDetail.getProductVariant().getProduct().getProductThumb() : null)
+                .variantTierId(orderDetail.getProductVariant() != null ?
+                        orderDetail.getProductVariant().getVariantTierIdx() : null)
                 .build();
     }
 

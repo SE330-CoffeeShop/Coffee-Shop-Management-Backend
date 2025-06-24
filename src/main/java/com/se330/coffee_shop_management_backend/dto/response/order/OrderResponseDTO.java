@@ -48,10 +48,25 @@ public class OrderResponseDTO {
     private String orderTrackingNumber;
 
     private String employeeId;
+    private String employeeName;
     private String userId;
+    private String userName;
+    private String userPhoneNumber;
     private String shippingAddressId;
+    private String shippingAddressName;
+
+    private String approvalLink;
 
     public static OrderResponseDTO convert(Order order) {
+
+        String approvalLink = null;
+        if (order.getOrderPayment() != null) {
+            if (order.getOrderPayment().getPaypalApprovalUrl() != null) {
+                approvalLink = order.getOrderPayment().getPaypalApprovalUrl();
+            } else if (order.getOrderPayment().getVnpayPayUrl() != null) {
+                approvalLink = order.getOrderPayment().getVnpayPayUrl();
+            }
+        }
 
         return OrderResponseDTO.builder()
                 .id(order.getId().toString())
@@ -63,8 +78,13 @@ public class OrderResponseDTO {
                 .orderStatus(order.getOrderStatus().getValue())
                 .orderTrackingNumber(order.getOrderTrackingNumber())
                 .employeeId(order.getEmployee() != null ? order.getEmployee().getId().toString() : null)
+                .employeeName(order.getEmployee() != null ? order.getEmployee().getUser().getFullName() : null)
                 .userId(order.getUser() != null ? order.getUser().getId().toString() : null)
+                .userName(order.getUser() != null ? order.getUser().getFullName() : null)
+                .userPhoneNumber(order.getUser() != null ? order.getUser().getPhoneNumber() : null)
                 .shippingAddressId(order.getShippingAddress() != null ? order.getShippingAddress().getId().toString() : null)
+                .shippingAddressName(order.getShippingAddress() != null ? order.getShippingAddress().toString() : null)
+                .approvalLink(approvalLink)
                 .build();
     }
 

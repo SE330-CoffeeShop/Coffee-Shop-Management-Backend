@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,6 +32,21 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
             @Param("year") int year
     );
 
+    @Query("""
+        SELECT COALESCE(SUM(s.shiftSalary), 0)
+        FROM SubCheckin sc
+        JOIN sc.shift s
+        WHERE sc.employee.id = :employeeId
+        AND EXTRACT(MONTH FROM sc.checkinTime) = :month
+        AND EXTRACT(YEAR FROM sc.checkinTime) = :year
+    """)
+    @EntityGraph(attributePaths = {"employee"})
+    BigDecimal calculateTotalSalaryForEmployeeInMonthAndYearForSubCheckins(
+            @Param("employeeId") UUID employeeId,
+            @Param("month") int month,
+            @Param("year") int year
+    );
+
     @Query("SELECT s FROM Salary s WHERE s.employee.id = :employeeId AND s.month = :month AND s.year = :year")
     @EntityGraph(attributePaths = {"employee"})
     Salary findByEmployeeIdAndMonthAndYear(
@@ -46,6 +62,10 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
     @Override
     @EntityGraph(attributePaths = {"employee"})
     Page<Salary> findAll(Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"employee"})
+    List<Salary> findAll();
 
     @Override
     @EntityGraph(attributePaths = {"employee"})

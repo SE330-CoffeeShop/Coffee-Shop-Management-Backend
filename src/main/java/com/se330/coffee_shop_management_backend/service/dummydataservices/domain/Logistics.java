@@ -69,7 +69,7 @@ public class Logistics {
 
         Random random = new Random();
         List<Order> orders = new ArrayList<>();
-        int orderCount = 50; // Reduced for testing
+        int orderCount = 1000; // Reduced for testing
 
         // Create orders
         for (int i = 0; i < orderCount; i++) {

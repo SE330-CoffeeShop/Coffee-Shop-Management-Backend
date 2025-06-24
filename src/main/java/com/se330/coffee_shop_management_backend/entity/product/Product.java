@@ -8,12 +8,15 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import lombok.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Indexed
 @Table(name = "products")
 @Getter
 @Setter
@@ -25,6 +28,7 @@ import java.util.List;
 })
 public class Product extends AbstractBaseEntity {
     @Column(name = "product_name", nullable = false)
+    @FullTextField(analyzer = "vietnamese", searchAnalyzer = "vietnamese_search")
     private String productName = "";
 
     @Column(name = "product_thumb", nullable = false)
@@ -44,12 +48,12 @@ public class Product extends AbstractBaseEntity {
 
     @DecimalMin(value = "0.0", inclusive = true)
     @DecimalMax(value = "5.0", inclusive = true)
-    @Digits(integer = 1, fraction = 1)
-    @Column(name = "product_ratings_average", nullable = false, precision = 2, scale = 1)
-    private BigDecimal productRatingsAverage = BigDecimal.valueOf(0.0);
+    @Digits(integer = 1, fraction = 2)
+    @Column(name = "product_ratings_average", nullable = false, precision = 3, scale = 2)
+    private BigDecimal productRatingsAverage;
 
     @Column(name = "product_is_published", nullable = false)
-    private Boolean productIsPublished = false;
+    private Boolean productIsPublished;
 
     @Column(name = "product_is_deleted", nullable = false)
     private Boolean productIsDeleted = false;

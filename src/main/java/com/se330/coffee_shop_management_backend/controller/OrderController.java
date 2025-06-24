@@ -6,6 +6,7 @@ import com.se330.coffee_shop_management_backend.dto.request.order.OrderUpdateReq
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
+import com.se330.coffee_shop_management_backend.dto.response.order.OrderAndOrderDetailResponse;
 import com.se330.coffee_shop_management_backend.dto.response.order.OrderResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Order;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderService;
@@ -23,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -90,7 +92,7 @@ public class OrderController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Get all orders with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -170,7 +172,7 @@ public class OrderController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<OrderResponseDTO>> createOrder(@RequestBody OrderCreateRequestDTO orderCreateRequestDTO) {
+    public ResponseEntity<SingleResponse<OrderResponseDTO>> createOrder(@RequestBody OrderCreateRequestDTO orderCreateRequestDTO) throws UnsupportedEncodingException {
         OrderResponseDTO order = OrderResponseDTO.convert(orderService.createOrder(orderCreateRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new SingleResponse<>(
@@ -214,7 +216,7 @@ public class OrderController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/customer/{customerId}")
+    @GetMapping("/customer")
     @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE', 'MANAGER')")
     @Operation(
             summary = "Get all orders by customer ID with pagination",
@@ -247,7 +249,6 @@ public class OrderController {
             }
     )
     public ResponseEntity<PageResponse<OrderResponseDTO>> findAllOrdersByCustomerId(
-            @PathVariable UUID customerId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
@@ -255,7 +256,7 @@ public class OrderController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Order> orderPage = orderService.findAllOrderByCustomerId(customerId, pageable);
+        Page<Order> orderPage = orderService.findAllOrderByCustomerId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -272,7 +273,7 @@ public class OrderController {
         );
     }
 
-    @GetMapping("/branch/{branchId}/status/{status}")
+    @GetMapping("/branch/status/{status}")
     @PreAuthorize("hasAnyAuthority('EMPLOYEE', 'MANAGER')")
     @Operation(
             summary = "Get all orders by branch ID and status with pagination",
@@ -305,7 +306,6 @@ public class OrderController {
             }
     )
     public ResponseEntity<PageResponse<OrderResponseDTO>> findAllOrdersByBranchAndStatus(
-            @PathVariable UUID branchId,
             @PathVariable Constants.OrderStatusEnum status,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
@@ -314,7 +314,7 @@ public class OrderController {
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Order> orderPage = orderService.findAllOrderByStatusAndBranchId(status, branchId, pageable);
+        Page<Order> orderPage = orderService.findAllOrderByStatusAndBranchId(status, pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
@@ -365,7 +365,7 @@ public class OrderController {
             }
     )
     public ResponseEntity<SingleResponse<OrderResponseDTO>> createOrderForEmployee(
-            @RequestBody EmployeeOrderRequestDTO employeeOrderRequestDTO) {
+            @RequestBody EmployeeOrderRequestDTO employeeOrderRequestDTO) throws UnsupportedEncodingException {
 
         OrderResponseDTO order = OrderResponseDTO.convert(orderService.createOrderForEmployee(employeeOrderRequestDTO));
 
@@ -374,6 +374,111 @@ public class OrderController {
                         HttpStatus.CREATED.value(),
                         "Order created by employee successfully",
                         order
+                )
+        );
+    }
+
+    @PutMapping("/")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Update existing order",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Order updated successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Order not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<OrderResponseDTO>> updateOrder(@RequestBody OrderUpdateRequestDTO orderUpdateRequestDTO) {
+        OrderResponseDTO updatedOrder = OrderResponseDTO.convert(orderService.updateOrder(orderUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Order updated successfully",
+                        updatedOrder
+                )
+        );
+    }
+
+    @GetMapping("/me/{id}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get order with details by ID",
+            description = "Retrieves an order with its complete details by the order ID",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved order with details",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Order not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<OrderAndOrderDetailResponse>> getMeOrderByOrderId(
+            @PathVariable UUID id
+    ) {
+        OrderAndOrderDetailResponse orderAndOrderDetailResponse = OrderAndOrderDetailResponse.convert(orderService.findByIdOrder(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Order retrieved successfully",
+                        orderAndOrderDetailResponse
                 )
         );
     }

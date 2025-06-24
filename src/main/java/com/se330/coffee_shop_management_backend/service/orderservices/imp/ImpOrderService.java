@@ -13,6 +13,7 @@ import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.UserService;
+import com.se330.coffee_shop_management_backend.service.cartservices.ICartService;
 import com.se330.coffee_shop_management_backend.service.discountservices.IDiscountService;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import com.se330.coffee_shop_management_backend.service.orderservices.IOrderDetailService;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,7 @@ import java.util.UUID;
 public class ImpOrderService implements IOrderService {
 
     private final OrderRepository orderRepository;
-    private final EmployeeRepository employeeRepository;
+    private final ICartService cartService;
     private final PaymentMethodsRepository paymentMethodsRepository;
     private final IOrderPaymentService orderPaymentService;
     private final UserRepository userRepository;
@@ -66,14 +68,81 @@ public class ImpOrderService implements IOrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Order> findAllOrderByCustomerId(UUID customerId, Pageable pageable) {
+    public Page<Order> findAllOrderByCustomerId(Pageable pageable) {
+        UUID customerId = userService.getUser().getId();
         return orderRepository.findAllByUser_Id(customerId, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, UUID branchId, Pageable pageable) {
-        return orderRepository.findAllByOrderStatusAndBranch_Id(status, branchId, pageable);
+    public Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, Pageable pageable) {
+        User currentManager = userService.getUser();
+        return orderRepository.findAllByOrderStatusAndBranch_Id(status, currentManager.getEmployee().getBranch().getId(), pageable);
+    }
+
+    @Override
+    @Transactional
+    public Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO) {
+        Order existingOrder = orderRepository.findById(orderUpdateRequestDTO.getOrderId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderUpdateRequestDTO.getOrderId()));
+
+        Employee existingEmployee = userService.getUser().getEmployee();
+
+        existingOrder.setEmployee(existingEmployee);
+
+        if (existingOrder.getUser() != null) {
+
+            if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.CANCELLED) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .notificationContent(CreateNotiContentHelper.createOrderCancelledContent(existingOrder.getId()))
+                                .senderId(null)
+                                .receiverId(existingOrder.getUser().getId())
+                                .isRead(false)
+                                .build());
+            } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.COMPLETED) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .notificationContent(CreateNotiContentHelper.createInStorePurchaseContent(existingOrder.getId()))
+                                .senderId(null)
+                                .receiverId(existingOrder.getUser().getId())
+                                .isRead(false)
+                                .build());
+            } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.PROCESSING) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .notificationContent(CreateNotiContentHelper.createOrderReceivedContent(existingOrder.getId()))
+                                .senderId(null)
+                                .receiverId(existingOrder.getUser().getId())
+                                .isRead(false)
+                                .build());
+            } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERING) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .notificationContent(CreateNotiContentHelper.orderDeliveringContent(existingOrder.getId()))
+                                .senderId(null)
+                                .receiverId(existingOrder.getUser().getId())
+                                .isRead(false)
+                                .build());
+            } else if (orderUpdateRequestDTO.getOrderStatus() == Constants.OrderStatusEnum.DELIVERED) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.ORDER)
+                                .notificationContent(CreateNotiContentHelper.orderDeliveredContent(existingOrder.getId()))
+                                .senderId(null)
+                                .receiverId(existingOrder.getUser().getId())
+                                .isRead(false)
+                                .build());
+            }
+        }
+
+        existingOrder.setOrderStatus(orderUpdateRequestDTO.getOrderStatus());
+
+        return orderRepository.save(existingOrder);
     }
 
     /**
@@ -98,7 +167,7 @@ public class ImpOrderService implements IOrderService {
      */
     @Override
     @Transactional
-    public Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) {
+    public Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) throws UnsupportedEncodingException {
         Employee existingEmployee = null;
         Branch existingBranch = null;
 
@@ -148,7 +217,7 @@ public class ImpOrderService implements IOrderService {
         for (OrderDetailCreateRequestDTO orderDetailCreateRequestDTO : orderDetailDtos) {
             orderDetailCreateRequestDTO.setOrderId(newOrder.getId());
             orderDetailCreateRequestDTO.setBranchId(orderCreateRequestDTO.getBranchId() != null ? orderCreateRequestDTO.getBranchId() : existingBranch.getId());
-            orderDetailService.createOrderDetail(orderDetailCreateRequestDTO);
+            newOrder.getOrderDetails().add(orderDetailService.createOrderDetail(orderDetailCreateRequestDTO));
         }
 
         // Calculate total cost
@@ -195,19 +264,22 @@ public class ImpOrderService implements IOrderService {
         Order finalOrder = orderRepository.findById(newOrder.getId()).orElseThrow();
 
         // now create order payment
-        orderPaymentService.createOrderPayment(
+        finalOrder.setOrderPayment(orderPaymentService.createOrderPayment(
                 OrderPaymentCreateRequestDTO.builder()
                         .orderId(finalOrder.getId())
                         .paymentMethodId(orderCreateRequestDTO.getPaymentMethodId())
                         .amount(finalOrder.getOrderTotalCostAfterDiscount())
                         .build()
-        );
+        ));
+
+        // delete cart
+        cartService.clearCart();
 
         return finalOrder;
     }
 
     @Override
-    public Order createOrderForEmployee(EmployeeOrderRequestDTO employeeOrderRequestDTO) {
+    public Order createOrderForEmployee(EmployeeOrderRequestDTO employeeOrderRequestDTO) throws UnsupportedEncodingException {
         Employee currentEmployee = userService.getUser().getEmployee();
         Branch currentBranch = currentEmployee.getBranch();
 
@@ -257,8 +329,10 @@ public class ImpOrderService implements IOrderService {
         newOrder.setOrderTotalCost(totalCost);
 
         // now we loop for each order detail to apply discount for them
-        for (OrderDetail orderDetail : newOrder.getOrderDetails()) {
-            discountService.applyMostValuableDiscountOfOrderDetail(orderDetail.getId(), totalCost);
+        if (employeeOrderRequestDTO.getUserId() != null) {
+            for (OrderDetail orderDetail : newOrder.getOrderDetails()) {
+                discountService.applyMostValuableDiscountOfOrderDetail(orderDetail.getId(), totalCost);
+            }
         }
 
         // update again the new total cost since the unit price of some order details have been changed
@@ -320,21 +394,32 @@ public class ImpOrderService implements IOrderService {
 
 
     private BigDecimal updateTotalCost(UUID orderId) {
-        BigDecimal totalCost = BigDecimal.ZERO;
-
-        // Truy vấn trực tiếp tất cả OrderDetails của Order này
+        BigDecimal totalCostBeforeDiscount = BigDecimal.ZERO;
+        BigDecimal totalCostAfterDiscount = BigDecimal.ZERO;
         List<OrderDetail> orderDetails = orderDetailRepository.findAllByOrder_Id(orderId);
+        Order order = orderRepository.findById(orderId).orElseThrow();
 
         for (OrderDetail orderDetail : orderDetails) {
-            if (orderDetail.getOrderDetailUnitPrice() == null || orderDetail.getOrderDetailQuantity() <= 0) {
-                BigDecimal itemCost = orderDetail.getProductVariant().getVariantPrice().multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
-                totalCost = totalCost.add(itemCost);
-            } else {
-                BigDecimal itemCost = orderDetail.getOrderDetailUnitPrice().multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity()));
-                totalCost = totalCost.add(itemCost);
-            }
+            // Calculate original cost before discount
+            BigDecimal originalUnitPrice = orderDetail.getOrderDetailUnitPrice();
+            totalCostBeforeDiscount = totalCostBeforeDiscount.add(
+                    originalUnitPrice.multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity())));
+
+            // Calculate cost after discount
+            BigDecimal discountedPrice = (orderDetail.getOrderDetailUnitPriceAfterDiscount() != null) ?
+                    orderDetail.getOrderDetailUnitPriceAfterDiscount() : originalUnitPrice;
+
+            totalCostAfterDiscount = totalCostAfterDiscount.add(
+                    discountedPrice.multiply(BigDecimal.valueOf(orderDetail.getOrderDetailQuantity())));
         }
 
-        return totalCost;
+        // Update order with all discount information
+        BigDecimal discountAmount = totalCostBeforeDiscount.subtract(totalCostAfterDiscount);
+        order.setOrderTotalCost(totalCostBeforeDiscount);
+        order.setOrderDiscountCost(discountAmount);
+        order.setOrderTotalCostAfterDiscount(totalCostAfterDiscount);
+        orderRepository.save(order);
+
+        return totalCostAfterDiscount;
     }
 }
