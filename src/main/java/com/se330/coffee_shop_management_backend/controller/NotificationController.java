@@ -452,4 +452,38 @@ public class NotificationController {
                 )
         );
     }
+
+    @PatchMapping("/read/{id}")
+    @Operation(
+            summary = "Mark notification as read",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Notification marked as read successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Notification not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<NotificationResponseDTO>> readNotification(@PathVariable UUID id) {
+        NotificationResponseDTO notification = NotificationResponseDTO.convert(notificationService.readNotification(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Notification marked as read successfully",
+                        notification
+                )
+        );
+    }
 }

@@ -59,8 +59,7 @@ public class WebSecurityConfig {
                     "/payment/paypal/**",
                     "/payment/vnpay/**",
                     "/payment/success/**",
-                    "/payment/cancel/**",
-                        "/adminn/**"
+                    "/payment/cancel/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasAuthority(Constants.RoleEnum.ADMIN.name())
                 .anyRequest().authenticated()

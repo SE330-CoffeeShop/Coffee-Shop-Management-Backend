@@ -83,4 +83,10 @@ public interface CheckinRepository extends JpaRepository<Checkin, UUID>, JpaSpec
     @Override
     @EntityGraph(attributePaths = {"shift"})
     Optional<Checkin> findById(UUID id);
+
+    @Query("SELECT COUNT(c) FROM Checkin c WHERE c.shift.id = :shiftId AND EXTRACT(MONTH FROM c.checkinTime) = :month AND EXTRACT(YEAR FROM c.checkinTime) = :year")
+    Integer countAllByShift_IdAndMonthAndYear(@Param("shiftId") UUID shiftId, @Param("month") int month, @Param("year") int year);
+
+    @Query("SELECT COUNT(c) FROM Checkin c WHERE c.shift.employee.id = :employeeId AND EXTRACT(MONTH FROM c.checkinTime) = :month AND EXTRACT(YEAR FROM c.checkinTime) = :year")
+    Integer countAllByShift_Employee_IdAndMonthAndYear(@Param("employeeId") UUID employeeId, @Param("month") int month, @Param("year") int year);
 }
