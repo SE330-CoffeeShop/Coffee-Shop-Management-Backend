@@ -23,14 +23,3 @@ public class SalaryDetailResponseDTO {
     List<ShiftDetail> shiftDetails;
 }
 
-@Data
-@NoArgsConstructor
-@SuperBuilder
-class ShiftDetail {
-    private String shiftId;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private BigDecimal shiftSalary;
-    private int totalShiftCheckins;
-    private BigDecimal totalShiftSalary;
-}

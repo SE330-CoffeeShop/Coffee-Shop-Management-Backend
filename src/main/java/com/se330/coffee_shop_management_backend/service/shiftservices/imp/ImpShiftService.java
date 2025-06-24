@@ -216,9 +216,6 @@ public class ImpShiftService implements IShiftService {
         User employeeUser = employee.getUser();
         User manager = employee.getBranch().getManager().getUser();
 
-        existingShift.getEmployee().getShifts().remove(existingShift);
-        existingShift.setEmployee(null);
-
         notificationService.createNotification(
                 NotificationCreateRequestDTO.builder()
                         .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)
@@ -241,6 +238,9 @@ public class ImpShiftService implements IShiftService {
                         .isRead(false)
                         .build()
         );
+
+        existingShift.getEmployee().getShifts().remove(existingShift);
+        existingShift.setEmployee(null);
 
         shiftRepository.deleteById(id);
     }
