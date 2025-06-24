@@ -27,7 +27,9 @@ public class NotificationResponseDTO {
     private String notificationType;
     private String notificationContent;
     private String senderId;
+    private String senderName;
     private String receiverId;
+    private String receiverName;
     private boolean isRead;
 
     @Schema(
@@ -54,7 +56,9 @@ public class NotificationResponseDTO {
                 .notificationType(notification.getNotificationType().getValue())
                 .notificationContent(notification.getNotificationContent())
                 .senderId(notification.getSender() != null ? notification.getSender().getId().toString() : null)
+                .senderName(notification.getSender() != null ? notification.getSender().getFullName() : null)
                 .receiverId(notification.getReceiver() != null ? notification.getReceiver().getId().toString() : null)
+                .receiverName(notification.getReceiver() != null ? notification.getReceiver().getFullName() : null)
                 .isRead(notification.isRead())
                 .build();
     }
