@@ -265,11 +265,6 @@ public class ImpCheckinService implements ICheckinService {
         User employee = checkin.getShift().getEmployee().getUser();
         User manager = userService.getUser();
 
-        checkin.getShift().getCheckins().remove(checkin);
-        checkin.setShift(null);
-
-
-
         notificationService.createNotification(
                 NotificationCreateRequestDTO.builder()
                         .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)
@@ -293,6 +288,8 @@ public class ImpCheckinService implements ICheckinService {
                         .build()
         );
 
+        checkin.getShift().getCheckins().remove(checkin);
+        checkin.setShift(null);
         checkinRepository.delete(checkin);
     }
 
