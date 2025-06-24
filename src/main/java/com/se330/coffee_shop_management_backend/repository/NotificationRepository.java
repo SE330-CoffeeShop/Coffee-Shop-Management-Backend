@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -34,4 +35,8 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
     @Override
     @EntityGraph(attributePaths = {"sender", "receiver"})
     List<Notification> findAll();
+
+    @Override
+    @EntityGraph(attributePaths = {"sender", "receiver"})
+    Optional<Notification> findById(UUID id);
 }
