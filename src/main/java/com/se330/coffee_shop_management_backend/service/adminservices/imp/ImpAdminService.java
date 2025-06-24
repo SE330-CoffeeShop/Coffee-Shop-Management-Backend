@@ -982,6 +982,12 @@ public class ImpAdminService implements IAdminService {
                     yPosition -= 15;
                 }
 
+                contentStream.beginText();
+                contentStream.newLineAtOffset(margin, yPosition);
+                contentStream.showText("Số lượng bản ghi trong bảng: " + data.size() );
+                contentStream.endText();
+                yPosition -= 15;
+
                 // Write data
                 yPosition -= 10;
                 contentStream.setFont(unicodeFont, 8);

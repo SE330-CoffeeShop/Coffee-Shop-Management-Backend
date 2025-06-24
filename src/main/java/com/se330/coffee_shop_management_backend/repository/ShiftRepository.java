@@ -45,6 +45,9 @@ public interface ShiftRepository extends JpaRepository<Shift, UUID>, JpaSpecific
     @EntityGraph(attributePaths = {"employee"})
     List<Shift> findAll();
 
+    @EntityGraph(attributePaths = {"employee"})
+    List<Shift> findAllByEmployee_IdAndMonthAndYear(UUID employeeId, int month, int year);
+
     @EntityGraph(attributePaths = {"employee", "employee.user"})
     Page<Shift> findAllByEmployee_Branch_IdAndDayOfWeekAndMonthAndYear(UUID employeeBranchId, Constants.DayOfWeekEnum dayOfWeek, int month, int year, Pageable pageable);
 }

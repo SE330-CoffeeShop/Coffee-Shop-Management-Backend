@@ -56,18 +56,20 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
     );
 
     @Override
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user", "employee.user.role"})
     Optional<Salary> findById(UUID id);
 
     @Override
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user.role"})
     Page<Salary> findAll(Pageable pageable);
 
     @Override
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user", "employee.user.role"})
     List<Salary> findAll();
 
     @Override
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user.role"})
     Salary save(Salary salary);
+
+    Page<Salary> findAllByEmployee_Branch_Id(UUID employeeBranchId, Pageable pageable);
 }
