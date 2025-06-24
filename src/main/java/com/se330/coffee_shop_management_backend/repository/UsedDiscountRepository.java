@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,4 +29,8 @@ public interface UsedDiscountRepository extends JpaRepository<UsedDiscount, UUID
     @Override
     @EntityGraph(attributePaths = {"discount", "orderDetail"})
     Page<UsedDiscount> findAll(Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"discount", "orderDetail"})
+    List<UsedDiscount> findAll();
 }

@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -61,6 +62,10 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
     @Override
     @EntityGraph(attributePaths = {"employee"})
     Page<Salary> findAll(Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"employee"})
+    List<Salary> findAll();
 
     @Override
     @EntityGraph(attributePaths = {"employee"})

@@ -24,6 +24,10 @@ public interface ShippingAddressesRepository extends JpaRepository<ShippingAddre
 
     @Override
     @EntityGraph(attributePaths = {"user"})
+    List<ShippingAddresses> findAll();
+
+    @Override
+    @EntityGraph(attributePaths = {"user"})
     ShippingAddresses save(ShippingAddresses shippingAddresses);
 
     @EntityGraph(attributePaths = {"user"})

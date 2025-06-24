@@ -18,4 +18,8 @@ public interface CartDetailRepository extends JpaRepository<CartDetail, UUID>, J
     CartDetail findByCart_IdAndProductVariant_Id(UUID cartId, UUID productVariantId);
     @EntityGraph(attributePaths = {"productVariant", "productVariant.product"})
     Page<CartDetail> findAllByCart_User_Id(UUID cartUserId, Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"productVariant", "productVariant.product", "cart"})
+    List<CartDetail> findAll();
 }

@@ -40,4 +40,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, UUID>, Jpa
     @Override
     @EntityGraph(attributePaths = {"ingredient", "branch"})
     Page<Inventory> findAll(Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"ingredient", "branch"})
+    List<Inventory> findAll();
 }

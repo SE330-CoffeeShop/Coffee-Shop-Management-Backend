@@ -21,6 +21,7 @@ public interface BranchRepository extends JpaRepository<Branch, UUID> {
     Page<Branch> findAll(Pageable pageable);
 
     @Override
+    @EntityGraph(attributePaths = {"manager", "manager.user"})
     List<Branch> findAll();
 
     @Override

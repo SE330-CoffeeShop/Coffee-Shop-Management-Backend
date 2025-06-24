@@ -38,6 +38,10 @@ public interface UserRepository extends JpaRepository<User, UUID>, JpaSpecificat
     @EntityGraph(attributePaths = {"role", "employee", "employee.branch", "orders"})
     Page<User> findAll(Pageable pageable);
 
+    @Override
+    @EntityGraph(attributePaths = {"role"})
+    List<User> findAll();
+
     @Query("SELECT DISTINCT u FROM User u JOIN u.orders o WHERE o.branch.id = :branchId")
     @EntityGraph(attributePaths = {"role", "employee", "employee.branch", "orders"})
     Page<User> findAllByOrdersBranchId(@Param("branchId") UUID branchId, Pageable pageable);

@@ -52,3 +52,6 @@ bcoffee-backend-pushnoti-firebase-adminsdk-fbsvc-7143009951.json
 
 ### Full text search ###
 data/index/Product/
+
+### Database for RAG ###
+knowledge/

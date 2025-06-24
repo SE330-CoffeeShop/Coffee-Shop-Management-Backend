@@ -84,7 +84,7 @@ public class CreateNotiContentHelper {
     }
 
     public static String createDiscountAddedContent(String discountName, String discountValue, String startDate, String endDate, String branchName) {
-        return String.format("🎉 Ưu đãi mới! '%s' với giá trị %s tại chi nhánh %s! Áp dụng từ %s đến %s. Đừng bỏ lỡ!",
+        return String.format("Ưu đãi mới! '%s' với giá trị %s tại chi nhánh %s! Áp dụng từ %s đến %s. Đừng bỏ lỡ!",
                 discountName, discountValue, branchName, startDate, endDate);
     }
 
@@ -94,12 +94,12 @@ public class CreateNotiContentHelper {
     }
 
     public static String createDiscountUpdatedContent(String discountName, String branchName) {
-        return String.format("⚠️ Chú ý! Thông tin khuyến mãi '%s' tại chi nhánh %s vừa được cập nhật. Vui lòng kiểm tra chi tiết mới nhất!",
+        return String.format("Chú ý! Thông tin khuyến mãi '%s' tại chi nhánh %s vừa được cập nhật. Vui lòng kiểm tra chi tiết mới nhất!",
                 discountName, branchName);
     }
 
     public static String createDiscountExpiringContent(String discountName, int daysRemaining, String branchName) {
-        return String.format("⏰ Sắp kết thúc! Chỉ còn %d ngày để tận hưởng ưu đãi '%s' tại chi nhánh %s. Hãy ghé BCoffee ngay hôm nay!",
+        return String.format("Sắp kết thúc! Chỉ còn %d ngày để tận hưởng ưu đãi '%s' tại chi nhánh %s. Hãy ghé BCoffee ngay hôm nay!",
                 daysRemaining, discountName, branchName);
     }
 
@@ -231,7 +231,7 @@ public class CreateNotiContentHelper {
 
     // BRANCH notification content methods for branch creation
     public static String createBranchAddedContent(String branchName, String address) {
-        return String.format("🎉 Khai trương chi nhánh mới! BCoffee vui mừng thông báo chi nhánh %s tại địa chỉ %s đã chính thức đi vào hoạt động. Hãy ghé thăm chúng tôi!",
+        return String.format("Khai trương chi nhánh mới! BCoffee vui mừng thông báo chi nhánh %s tại địa chỉ %s đã chính thức đi vào hoạt động. Hãy ghé thăm chúng tôi!",
                 branchName, address);
     }
 
@@ -332,7 +332,7 @@ public class CreateNotiContentHelper {
     }
 
     public static String createProductAddedContentAll(String productName) {
-        return String.format("🆕 BCoffee vừa ra mắt sản phẩm mới: '%s'. Hãy thử ngay hôm nay!", productName);
+        return String.format("BCoffee vừa ra mắt sản phẩm mới: '%s'. Hãy thử ngay hôm nay!", productName);
     }
 
     public static String createProductUpdatedContentManager(String productName) {

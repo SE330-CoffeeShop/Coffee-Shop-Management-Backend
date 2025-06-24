@@ -2,6 +2,9 @@ server:
   port: ${SERVER_PORT}
   servlet:
     context-path: ${SERVER_SERVLET_CONTEXT_PATH}
+    encoding:
+      enabled: true
+      charset: UTF-8
   forward-headers-strategy: framework
 
 app:
@@ -67,8 +70,14 @@ spring:
       max-request-size: ${MULTIPART_MAX_REQUEST_SIZE}
   messages:
     basename: locales.messages
-    encoding: UTF-8
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force-encoding: true
     cache-duration: ${MESSAGES_CACHE_DURATION}
+  http:
+    encoding:
+      force-encoding: true
   jackson:
     mapper:
       accept-case-insensitive-enums: true

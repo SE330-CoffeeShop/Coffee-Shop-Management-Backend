@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,4 +25,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID>, JpaSp
 
     @EntityGraph(attributePaths = {"user", "branch", "user.role"})
     Page<Employee> findAllByBranch_Id(UUID branchId, Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"user", "branch", "managedBranch"})
+    List<Employee> findAll();
 }

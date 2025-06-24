@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -35,4 +36,8 @@ public interface OrderPaymentRepository extends JpaRepository<OrderPayment, UUID
     @Override
     @EntityGraph(attributePaths = {"order", "paymentMethod"})
     OrderPayment save(OrderPayment orderPayment);
+
+    @Override
+    @EntityGraph(attributePaths = {"order", "paymentMethod"})
+    List<OrderPayment> findAll();
 }
