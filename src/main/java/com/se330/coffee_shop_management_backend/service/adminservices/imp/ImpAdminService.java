@@ -928,6 +928,8 @@ public class ImpAdminService implements IAdminService {
                 PDFont unicodeFont = PDType0Font.load(document, fontStream);
 
                 float margin = 50;
+                float pageWidth = PDRectangle.A4.getWidth();
+                float maxTextWidth = pageWidth - 2 * margin;
                 float yPosition = 0;
                 PDPage currentPage = null;
                 PDPageContentStream contentStream = null;
@@ -969,7 +971,7 @@ public class ImpAdminService implements IAdminService {
                         currentPage = new PDPage(PDRectangle.A4);
                         document.addPage(currentPage);
                         contentStream = new PDPageContentStream(document, currentPage);
-                        contentStream.setFont(unicodeFont, 8);  // Set font for new page
+                        contentStream.setFont(unicodeFont, 8);
                         yPosition = currentPage.getMediaBox().getHeight() - margin;
                     }
 
@@ -982,7 +984,7 @@ public class ImpAdminService implements IAdminService {
 
                 // Write data
                 yPosition -= 10;
-                contentStream.setFont(unicodeFont, 8);  // Make sure font is set
+                contentStream.setFont(unicodeFont, 8);
                 contentStream.beginText();
                 contentStream.newLineAtOffset(margin, yPosition);
                 contentStream.showText("Dữ liệu:");
@@ -1002,18 +1004,34 @@ public class ImpAdminService implements IAdminService {
                         currentPage = new PDPage(PDRectangle.A4);
                         document.addPage(currentPage);
                         contentStream = new PDPageContentStream(document, currentPage);
-                        contentStream.setFont(unicodeFont, 8);  // Set font for new page
+                        contentStream.setFont(unicodeFont, 8);
                         yPosition = currentPage.getMediaBox().getHeight() - margin;
                     }
 
                     // Write each line of the JSON representation
                     for (String line : jsonLines) {
                         try {
-                            contentStream.beginText();
-                            contentStream.newLineAtOffset(margin + 10, yPosition);
-                            contentStream.showText(line.trim());
-                            contentStream.endText();
-                            yPosition -= 15;
+                            line = line.trim();
+                            // Handle long lines by wrapping text
+                            if (line.length() > 0) {
+                                List<String> wrappedLines = wrapText(line, unicodeFont, 8, maxTextWidth - 10);
+                                for (String wrappedLine : wrappedLines) {
+                                    if (yPosition < margin) {
+                                        contentStream.close();
+                                        currentPage = new PDPage(PDRectangle.A4);
+                                        document.addPage(currentPage);
+                                        contentStream = new PDPageContentStream(document, currentPage);
+                                        contentStream.setFont(unicodeFont, 8);
+                                        yPosition = currentPage.getMediaBox().getHeight() - margin;
+                                    }
+
+                                    contentStream.beginText();
+                                    contentStream.newLineAtOffset(margin + 10, yPosition);
+                                    contentStream.showText(wrappedLine);
+                                    contentStream.endText();
+                                    yPosition -= 15;
+                                }
+                            }
                         } catch (Exception e) {
                             System.err.println("Error writing line: " + line);
                             e.printStackTrace();
@@ -1032,6 +1050,54 @@ public class ImpAdminService implements IAdminService {
             e.printStackTrace();
             System.err.println("Error creating PDF: " + e.getMessage());
         }
+    }
+
+    /**
+     * Wrap text to fit within a specified width
+     */
+    private List<String> wrapText(String text, PDFont font, float fontSize, float maxWidth) throws IOException {
+        List<String> lines = new ArrayList<>();
+        int lastSpace = -1;
+        float stringWidth = 0;
+
+        StringBuilder currentLine = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            float charWidth = font.getStringWidth(String.valueOf(c)) / 1000 * fontSize;
+
+            if (c == ' ') {
+                lastSpace = i;
+            }
+
+            if (stringWidth + charWidth > maxWidth) {
+                if (lastSpace != -1) {
+                    // Cut at the last space
+                    currentLine.setLength(lastSpace - (i - currentLine.length()));
+                    i = lastSpace;
+                } else if (currentLine.length() > 0) {
+                    // If no space, just cut at the current position
+                    i--;
+                } else {
+                    // If the line is empty, force add the current character
+                    currentLine.append(c);
+                    i++;
+                }
+
+                lines.add(currentLine.toString());
+                currentLine = new StringBuilder();
+                stringWidth = 0;
+                lastSpace = -1;
+            } else {
+                currentLine.append(c);
+                stringWidth += charWidth;
+            }
+        }
+
+        if (currentLine.length() > 0) {
+            lines.add(currentLine.toString());
+        }
+
+        return lines;
     }
 
     /**

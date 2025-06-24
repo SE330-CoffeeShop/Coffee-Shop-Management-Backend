@@ -263,18 +263,13 @@ public class ImpCheckinService implements ICheckinService {
                 .orElseThrow(() -> new EntityNotFoundException("Checkin not found with id: " + id));
 
         User employee = checkin.getShift().getEmployee().getUser();
-        User manager = checkin.getShift().getEmployee().getBranch().getManager().getUser();
-
-        checkin.getShift().getCheckins().remove(checkin);
-        checkin.setShift(null);
-
-        checkinRepository.delete(checkin);
+        User manager = userService.getUser();
 
         notificationService.createNotification(
                 NotificationCreateRequestDTO.builder()
                         .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)
                         .notificationContent(CreateNotiContentHelper.createCheckinDeletedContentForManager(
-                                checkin.getShift().getEmployee().getUser().getFullName(),
+                                employee.getFullName(),
                                 checkin.getCheckinTime().toString()
                         ))
                         .senderId(null)
@@ -292,6 +287,10 @@ public class ImpCheckinService implements ICheckinService {
                         .isRead(false)
                         .build()
         );
+
+        checkin.getShift().getCheckins().remove(checkin);
+        checkin.setShift(null);
+        checkinRepository.delete(checkin);
     }
 
     @Override
