@@ -145,7 +145,7 @@ public class ImpNotificationService implements INotificationService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Notification readNotification(UUID id) {
         Notification notification = notificationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Notification not found"));

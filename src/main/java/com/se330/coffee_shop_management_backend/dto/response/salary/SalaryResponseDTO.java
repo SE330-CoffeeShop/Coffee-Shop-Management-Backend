@@ -40,6 +40,8 @@ public class SalaryResponseDTO {
     private LocalDateTime updatedAt;
 
     private String employeeId;
+    private String employeeName;
+    private String role;
     private int month;
     private int year;
     private BigDecimal monthSalary;
@@ -50,6 +52,8 @@ public class SalaryResponseDTO {
                 .createdAt(salary.getCreatedAt())
                 .updatedAt(salary.getUpdatedAt())
                 .employeeId(salary.getEmployee() != null ? salary.getEmployee().getId().toString() : null)
+                .employeeName(salary.getEmployee() != null ? salary.getEmployee().getUser().getFullName() : null)
+                .role(salary.getEmployee().getUser().getRole().getName().getValue())
                 .month(salary.getMonth())
                 .year(salary.getYear())
                 .monthSalary(salary.getMonthSalary())
