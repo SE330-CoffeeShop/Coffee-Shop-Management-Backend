@@ -25,7 +25,7 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
         AND EXTRACT(MONTH FROM c.checkinTime) = :month
         AND EXTRACT(YEAR FROM c.checkinTime) = :year
     """)
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user", "employee.user.role"})
     BigDecimal calculateTotalSalaryForEmployeeInMonthAndYear(
             @Param("employeeId") UUID employeeId,
             @Param("month") int month,
@@ -40,7 +40,7 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
         AND EXTRACT(MONTH FROM sc.checkinTime) = :month
         AND EXTRACT(YEAR FROM sc.checkinTime) = :year
     """)
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user", "employee.user.role"})
     BigDecimal calculateTotalSalaryForEmployeeInMonthAndYearForSubCheckins(
             @Param("employeeId") UUID employeeId,
             @Param("month") int month,
@@ -48,7 +48,7 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
     );
 
     @Query("SELECT s FROM Salary s WHERE s.employee.id = :employeeId AND s.month = :month AND s.year = :year")
-    @EntityGraph(attributePaths = {"employee"})
+    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user", "employee.user.role"})
     Salary findByEmployeeIdAndMonthAndYear(
             @Param("employeeId") UUID employeeId,
             @Param("month") int month,
@@ -60,7 +60,7 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
     Optional<Salary> findById(UUID id);
 
     @Override
-    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user.role"})
+    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user", "employee.user.role"})
     Page<Salary> findAll(Pageable pageable);
 
     @Override
@@ -71,5 +71,6 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
     @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user.role"})
     Salary save(Salary salary);
 
+    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user", "employee.user.role"})
     Page<Salary> findAllByEmployee_Branch_Id(UUID employeeBranchId, Pageable pageable);
 }
