@@ -17,6 +17,7 @@ public interface ISalaryService {
     Salary create(SalaryCreateRequestDTO salaryCreateRequestDTO);
     Salary update(SalaryUpdateRequestDTO salaryUpdateRequestDTO);
     SalaryDetailResponseDTO findSalaryDetailById(UUID id);
+    SalaryDetailResponseDTO findMySalaryDetailByMonthAndYear(int month, int year);
     void updateSalaryForAllEmployeesInBranchInMonthAndYear(int month, int year);
     void delete(UUID id);
 }

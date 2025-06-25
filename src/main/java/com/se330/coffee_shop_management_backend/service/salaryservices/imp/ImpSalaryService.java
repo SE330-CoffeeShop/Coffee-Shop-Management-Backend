@@ -216,6 +216,17 @@ class ShiftDetail {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public SalaryDetailResponseDTO findMySalaryDetailByMonthAndYear(int month, int year) {
+        Employee currentEmployee = userService.getUser().getEmployee();
+        Salary salary = salaryRepository.findByEmployeeIdAndMonthAndYear(
+                currentEmployee.getId(), month, year
+        );
+
+        return findSalaryDetailById(salary != null ? salary.getId() : null);
+    }
+
+    @Override
     @Transactional
     public void updateSalaryForAllEmployeesInBranchInMonthAndYear(int month, int year) {
         Branch existingBranch = userService.getUser().getEmployee().getBranch();

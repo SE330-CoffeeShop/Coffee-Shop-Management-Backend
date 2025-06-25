@@ -259,6 +259,60 @@ public class SalaryController {
         );
     }
 
+    @GetMapping("/my/month/{month}/year/{year}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
+    @Operation(
+            summary = "Get me salary detail for specific month and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved personal salary detail",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid month or year",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Salary detail not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<SalaryDetailResponseDTO>> findMySalaryDetailByMonthAndYear(
+            @PathVariable int month,
+            @PathVariable int year
+    ) {
+        if (month < 1 || month > 12) {
+            throw new IllegalArgumentException("Month must be between 1 and 12");
+        }
+
+        if (year < 1900 || year > 2100) {
+            throw new IllegalArgumentException("Year must be between 1900 and 2100");
+        }
+
+        SalaryDetailResponseDTO salaryDetail = salaryService.findMySalaryDetailByMonthAndYear(month, year);
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Personal salary detail retrieved successfully",
+                        salaryDetail
+                )
+        );
+    }
+
     @PostMapping("/update-all/month/{month}/year/{year}")
     @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
