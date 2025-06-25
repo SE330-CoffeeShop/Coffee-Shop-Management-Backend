@@ -51,6 +51,7 @@ public class ProductResponseDTO {
     private Boolean productIsPublished;
     private Boolean productIsDeleted;
     private String productCategoryId;
+    private boolean isFavorite;
 
     public static ProductResponseDTO convert(Product product) {
         return ProductResponseDTO.builder()
@@ -65,6 +66,24 @@ public class ProductResponseDTO {
                 .productRatingsAverage(product.getProductRatingsAverage())
                 .productIsPublished(product.getProductIsPublished())
                 .productIsDeleted(product.getProductIsDeleted())
+                .productCategoryId(product.getProductCategory().getId().toString())
+                .build();
+    }
+
+    public static ProductResponseDTO convert(Product product, boolean isFavorite) {
+        return ProductResponseDTO.builder()
+                .id(product.getId().toString())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
+                .productName(product.getProductName())
+                .productThumb(product.getProductThumb())
+                .productDescription(product.getProductDescription())
+                .productPrice(product.getProductPrice())
+                .productSlug(product.getProductSlug())
+                .productRatingsAverage(product.getProductRatingsAverage())
+                .productIsPublished(product.getProductIsPublished())
+                .productIsDeleted(product.getProductIsDeleted())
+                .isFavorite(isFavorite)
                 .productCategoryId(product.getProductCategory().getId().toString())
                 .build();
     }

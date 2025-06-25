@@ -68,16 +68,16 @@ public class FavoritedDrinkController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<Map<String, UUID>>> addFavoriteDrink(
+    public ResponseEntity<SingleResponse<Void>> addFavoriteDrink(
             @PathVariable UUID drinkId) {
 
-        UUID favoriteId = favoriteDrinkService.addFavoriteDrink(drinkId);
+        favoriteDrinkService.addFavoriteDrink(drinkId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new SingleResponse<>(
                         HttpStatus.CREATED.value(),
                         "Drink added to favorites successfully",
-                        Map.of("favoriteId", favoriteId)
+                        null
                 )
         );
     }
