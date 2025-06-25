@@ -73,4 +73,7 @@ public interface SalaryRepository extends JpaRepository<Salary, UUID>, JpaSpecif
 
     @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user", "employee.user.role"})
     Page<Salary> findAllByEmployee_Branch_Id(UUID employeeBranchId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"employee", "employee.shifts", "employee.user", "employee.user.role"})
+    Page<Salary> findAllByEmployee_Branch_IdAndMonthAndYear(UUID branchId, int month, int year, Pageable pageable);
 }

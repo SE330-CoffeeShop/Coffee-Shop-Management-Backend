@@ -72,6 +72,12 @@ public class ImpSalaryService implements ISalaryService {
     }
 
     @Override
+    public Page<Salary> findAllByBranchAndMonthAndYear(Pageable pageable, int month, int year) {
+        UUID branchId = userService.getUser().getEmployee().getBranch().getId();
+        return salaryRepository.findAllByEmployee_Branch_IdAndMonthAndYear(branchId, month, year, pageable);
+    }
+
+    @Override
     @Transactional
     public Salary create(SalaryCreateRequestDTO salaryCreateRequestDTO) {
         Employee employee = employeeRepository.findById(salaryCreateRequestDTO.getEmployeeId())

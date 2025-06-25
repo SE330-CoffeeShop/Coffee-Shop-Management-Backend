@@ -335,4 +335,63 @@ public class SalaryController {
                 )
         );
     }
+
+    @GetMapping("/branch/month/{month}/year/{year}")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @Operation(
+            summary = "Get all salaries in current branch for specific month and year with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved branch salaries for month and year",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid month or year",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<SalaryResponseDTO>> findAllByBranchAndMonthAndYear(
+            @PathVariable int month,
+            @PathVariable int year,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        if (month < 1 || month > 12) {
+            throw new IllegalArgumentException("Month must be between 1 and 12");
+        }
+
+        if (year < 1900 || year > 2100) {
+            throw new IllegalArgumentException("Year must be between 1900 and 2100");
+        }
+
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Salary> salaryPage = salaryService.findAllByBranchAndMonthAndYear(pageable, month, year);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Branch salaries for month and year retrieved successfully",
+                        SalaryResponseDTO.convert(salaryPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                salaryPage.getNumber(),
+                                salaryPage.getSize(),
+                                salaryPage.getTotalElements(),
+                                salaryPage.getTotalPages()
+                        )
+                )
+        );
+    }
 }

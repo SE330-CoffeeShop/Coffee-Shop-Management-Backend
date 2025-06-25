@@ -13,6 +13,7 @@ public interface ISalaryService {
     Salary findById(UUID id);
     Page<Salary> findAll(Pageable pageable);
     Page<Salary> findAllByBranch(Pageable pageable);
+    Page<Salary> findAllByBranchAndMonthAndYear(Pageable pageable, int month, int year);
     Salary create(SalaryCreateRequestDTO salaryCreateRequestDTO);
     Salary update(SalaryUpdateRequestDTO salaryUpdateRequestDTO);
     SalaryDetailResponseDTO findSalaryDetailById(UUID id);
