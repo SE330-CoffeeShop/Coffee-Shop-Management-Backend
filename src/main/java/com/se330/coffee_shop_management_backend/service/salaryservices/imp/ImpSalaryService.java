@@ -183,6 +183,7 @@ class ShiftDetail {
             shiftDetail.setShiftId(shift.getId().toString());
             shiftDetail.setStartTime(shift.getShiftStartTime());
             shiftDetail.setEndTime(shift.getShiftEndTime());
+            shiftDetail.setDaysOfWeek(shift.getDayOfWeek().toString());
             shiftDetail.setShiftSalary(shift.getShiftSalary());
             shiftDetail.setTotalShiftCheckins(checkinRepository.countAllByShift_IdAndMonthAndYear(shift.getId(), salary.getMonth(), salary.getYear()));
             shiftDetail.setTotalShiftSalary(shift.getShiftSalary().multiply(BigDecimal.valueOf(shiftDetail.getTotalShiftCheckins())));
@@ -199,6 +200,7 @@ class ShiftDetail {
             subShiftDetail.setSubShiftId(subCheckin.getId().toString());
             subShiftDetail.setAbsentEmployeeId(subCheckin.getShift().getEmployee().getId().toString());
             subShiftDetail.setAbsentEmployeeName(subCheckin.getShift().getEmployee().getUser().getFullName());
+            subShiftDetail.setDaysOfWeek(subCheckin.getShift().getDayOfWeek().toString());
             subShiftDetail.setStartTime(subCheckin.getShift().getShiftStartTime());
             subShiftDetail.setEndTime(subCheckin.getShift().getShiftEndTime());
             subShiftDetail.setSubShiftSalary(subCheckin.getShift().getShiftSalary());

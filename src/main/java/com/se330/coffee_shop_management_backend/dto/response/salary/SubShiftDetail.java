@@ -13,6 +13,7 @@ public class SubShiftDetail {
     private String subShiftId;
     private String absentEmployeeId;
     private String absentEmployeeName;
+    private String daysOfWeek;
     private LocalTime startTime;
     private LocalTime endTime;
     private BigDecimal subShiftSalary;
