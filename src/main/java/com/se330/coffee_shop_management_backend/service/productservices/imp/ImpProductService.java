@@ -171,7 +171,7 @@ public class ImpProductService implements IProductService {
                         .productName(newProductCreateRequestDTO.getProductName())
                         .productThumb(cloudinaryService.getProductDefault())
                         .productIsDeleted(false)
-                        .productIsPublished(false)
+                        .productIsPublished(true)
                         .productSlug(CreateSlug.createSlug(newProductCreateRequestDTO.getProductName()))
                         .productCommentCount(0)
                         .productRatingsAverage(BigDecimal.valueOf(0))
@@ -307,7 +307,7 @@ public class ImpProductService implements IProductService {
                         .productName(newProductCreateRequestDTO.getProductName())
                         .productThumb(cloudinaryService.getProductDefault()) // Default image initially
                         .productIsDeleted(false)
-                        .productIsPublished(false)
+                        .productIsPublished(true)
                         .productSlug(CreateSlug.createSlug(newProductCreateRequestDTO.getProductName()))
                         .productCommentCount(0)
                         .productRatingsAverage(BigDecimal.valueOf(0))
