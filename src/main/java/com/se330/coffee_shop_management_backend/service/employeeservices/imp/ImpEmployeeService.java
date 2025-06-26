@@ -134,6 +134,15 @@ public class ImpEmployeeService implements IEmployeeService {
         user.setRole(roleService.findByName(Constants.RoleEnum.MANAGER));
         userRepository.save(user);
 
+        // find old manager acount and remove it from branch
+        if (branch.getManager() != null) {
+            User oldManager = branch.getManager().getUser();
+            branch.setManager(null);
+            branchRepository.save(branch);
+
+            userService.delete(oldManager.getId().toString());
+        }
+
         Employee manger = employeeRepository.save(
                 Employee.builder()
                         .employeeHireDate(LocalDateTime.now())
