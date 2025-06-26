@@ -52,6 +52,7 @@ public class ProductResponseDTO {
     private Boolean productIsDeleted;
     private String productCategoryId;
     private boolean isFavorite;
+    private int productCommentCount;
 
     public static ProductResponseDTO convert(Product product) {
         return ProductResponseDTO.builder()
@@ -67,6 +68,7 @@ public class ProductResponseDTO {
                 .productIsPublished(product.getProductIsPublished())
                 .productIsDeleted(product.getProductIsDeleted())
                 .productCategoryId(product.getProductCategory().getId().toString())
+                .productCommentCount(product.getProductCommentCount())
                 .build();
     }
 
