@@ -222,7 +222,7 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Create new product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -270,7 +270,7 @@ public class ProductController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Update product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -799,7 +799,7 @@ public class ProductController {
     }
 
     @PostMapping("/new")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Create new product with variants and recipes",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -834,7 +834,7 @@ public class ProductController {
     }
 
     @PostMapping(value = "/new-with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Create new product with variants, recipes and image",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
