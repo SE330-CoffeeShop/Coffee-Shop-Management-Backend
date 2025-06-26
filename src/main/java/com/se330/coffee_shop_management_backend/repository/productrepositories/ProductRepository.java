@@ -26,12 +26,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     Page<Product> findAllById(@Param("ids") Iterable<UUID> ids, Pageable pageable);
 
     // Case 1: Get all best-selling products (no filters)
-    @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
-            "FROM OrderDetail od " +
-            "JOIN od.productVariant pv " +
-            "GROUP BY pv.product " +
-            "ORDER BY totalQuantity DESC")
-    Page<Object[]> findAllBestSellingProducts(Pageable pageable);
+    @Query("SELECT p FROM Product p ORDER BY COALESCE((SELECT SUM(od.orderDetailQuantity) FROM OrderDetail od WHERE od.productVariant.product = p), 0) DESC")
+    List<Product> findAllBestSellingProductsList();
 
     // Case 2: Filter by year
     @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
@@ -41,7 +37,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "WHERE EXTRACT(YEAR FROM o.createdAt) = :year " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByYear(
+    Page<Product> findBestSellingProductsByYear(
             @Param("year") int year,
             Pageable pageable);
 
@@ -54,7 +50,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByMonthAndYear(
+    Page<Product> findBestSellingProductsByMonthAndYear(
             @Param("month") int month,
             @Param("year") int year,
             Pageable pageable);
@@ -69,7 +65,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "AND EXTRACT(DAY FROM o.createdAt) = :day " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByDayAndMonthAndYear(
+    Page<Product> findBestSellingProductsByDayAndMonthAndYear(
             @Param("day") int day,
             @Param("month") int month,
             @Param("year") int year,
@@ -85,7 +81,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "WHERE b.id = :branchId " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByBranch(
+    Page<Product> findBestSellingProductsByBranch(
             @Param("branchId") UUID branchId,
             Pageable pageable);
 
@@ -100,7 +96,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "AND EXTRACT(YEAR FROM o.createdAt) = :year " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByBranchAndYear(
+    Page<Product> findBestSellingProductsByBranchAndYear(
             @Param("branchId") UUID branchId,
             @Param("year") int year,
             Pageable pageable);
@@ -117,7 +113,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByBranchAndMonthAndYear(
+    Page<Product> findBestSellingProductsByBranchAndMonthAndYear(
             @Param("branchId") UUID branchId,
             @Param("month") int month,
             @Param("year") int year,
@@ -136,7 +132,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
             "AND EXTRACT(DAY FROM o.createdAt) = :day " +
             "GROUP BY pv.product " +
             "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByBranchAndDayAndMonthAndYear(
+    Page<Product> findBestSellingProductsByBranchAndDayAndMonthAndYear(
             @Param("branchId") UUID branchId,
             @Param("day") int day,
             @Param("month") int month,

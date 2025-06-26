@@ -36,12 +36,14 @@ public class CartDetailResponseDTO {
     private String productThumb;
     private String productName;
     private String variantTierIdx;
+    private String productId;
 
     public static CartDetailResponseDTO convert(CartDetail cartDetail) {
 
         Product product = cartDetail.getProductVariant().getProduct();
         String productThumb = product.getProductThumb() != null ? product.getProductThumb() : null;
         String productName = product.getProductName();
+        String productId = product.getId() != null ? product.getId().toString() : null;
         String variantTierIdx = cartDetail.getProductVariant().getVariantTierIdx() != null ? cartDetail.getProductVariant().getVariantTierIdx() : "";
         
         return CartDetailResponseDTO.builder()
@@ -52,6 +54,7 @@ public class CartDetailResponseDTO {
                 .productName(productName)
                 .variantTierIdx(variantTierIdx)
                 .cartDetailQuantity(cartDetail.getCartDetailQuantity())
+                .productId(productId)
                 .cartDetailUnitPrice(cartDetail.getCartDetailUnitPrice())
                 .cartDetailTotalPrice(cartDetail.getCartDetailUnitPrice().multiply(BigDecimal.valueOf(cartDetail.getCartDetailQuantity())))
                 .cartDetailDiscountCost(cartDetail.getCartDetailDiscountCost())

@@ -799,7 +799,7 @@ public class ProductController {
     }
 
     @PostMapping("/new")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Create new product with variants and recipes",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -834,7 +834,7 @@ public class ProductController {
     }
 
     @PostMapping(value = "/new-with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Create new product with variants, recipes and image",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

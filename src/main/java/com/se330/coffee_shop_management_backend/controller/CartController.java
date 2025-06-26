@@ -412,6 +412,50 @@ public class CartController {
         );
     }
 
+    @PostMapping("/variant/{variantId}")
+    @Operation(
+            summary = "Add one unit of a product variant to user's cart",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Product variant added to cart successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid variant ID or variant not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<CartResponseDTO>> addProductVariantToCart(
+            @PathVariable UUID variantId
+    ) {
+        CartResponseDTO cart = CartResponseDTO.convert(cartService.addProductVariantToCart(variantId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Product variant added to cart successfully",
+                        cart
+                )
+        );
+    }
+
     @DeleteMapping("/detail/all/{variantId}")
     @Operation(
             summary = "Remove all units of a specific product variant from user's cart",
