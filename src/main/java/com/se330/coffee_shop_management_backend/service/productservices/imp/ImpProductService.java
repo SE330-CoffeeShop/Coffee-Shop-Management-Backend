@@ -504,63 +504,88 @@ public class ImpProductService implements IProductService {
     public Page<BestSellingProductResponseDTO> findAllBestSellingProducts(Pageable pageable) {
         List<Product> productData = productRepository.findAllBestSellingProductsList();
         List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData);
-        return new PageImpl<>(bestSellingProducts, pageable, bestSellingProducts.size());
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), bestSellingProducts.size());
+        List<BestSellingProductResponseDTO> pagedList = bestSellingProducts.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, bestSellingProducts.size());
     }
+
 
     @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByYear(int year, Pageable pageable) {
-        Page<Product> productData = productRepository.findBestSellingProductsByYear(year, pageable);
-        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
-        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+        List<Product> products = productRepository.findBestSellingProductsByYear(year);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(products);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), bestSellingProducts.size());
+        List<BestSellingProductResponseDTO> pagedList = bestSellingProducts.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, bestSellingProducts.size());
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByMonthAndYear(int month, int year, Pageable pageable) {
-        Page<Product> productData = productRepository.findBestSellingProductsByMonthAndYear(month, year, pageable);
-        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
-        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+        List<Product> products = productRepository.findBestSellingProductsByMonthAndYear(month, year);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(products);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), bestSellingProducts.size());
+        List<BestSellingProductResponseDTO> pagedList = bestSellingProducts.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, bestSellingProducts.size());
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByDayAndMonthAndYear(int day, int month, int year, Pageable pageable) {
-        Page<Product> productData = productRepository.findBestSellingProductsByDayAndMonthAndYear(day, month, year, pageable);
-        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
-        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+        List<Product> products = productRepository.findBestSellingProductsByDayAndMonthAndYear(day, month, year);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(products);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), bestSellingProducts.size());
+        List<BestSellingProductResponseDTO> pagedList = bestSellingProducts.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, bestSellingProducts.size());
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranch(UUID branchId, Pageable pageable) {
-        Page<Product> productData = productRepository.findBestSellingProductsByBranch(branchId, pageable);
-        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
-        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+        List<Product> products = productRepository.findBestSellingProductsByBranch(branchId);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(products);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), bestSellingProducts.size());
+        List<BestSellingProductResponseDTO> pagedList = bestSellingProducts.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, bestSellingProducts.size());
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndYear(UUID branchId, int year, Pageable pageable) {
-        Page<Product> productData = productRepository.findBestSellingProductsByBranchAndYear(branchId, year, pageable);
-        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
-        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+        List<Product> products = productRepository.findBestSellingProductsByBranchAndYear(branchId, year);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(products);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), bestSellingProducts.size());
+        List<BestSellingProductResponseDTO> pagedList = bestSellingProducts.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, bestSellingProducts.size());
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndMonthAndYear(UUID branchId, int month, int year, Pageable pageable) {
-        Page<Product> productData = productRepository.findBestSellingProductsByBranchAndMonthAndYear(branchId, month, year, pageable);
-        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
-        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+        List<Product> products = productRepository.findBestSellingProductsByBranchAndMonthAndYear(branchId, month, year);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(products);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), bestSellingProducts.size());
+        List<BestSellingProductResponseDTO> pagedList = bestSellingProducts.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, bestSellingProducts.size());
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<BestSellingProductResponseDTO> findBestSellingProductsByBranchAndDayAndMonthAndYear(UUID branchId, int day, int month, int year, Pageable pageable) {
-        Page<Product> productData = productRepository.findBestSellingProductsByBranchAndDayAndMonthAndYear(branchId, day, month, year, pageable);
-        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(productData.getContent());
-        return new PageImpl<>(bestSellingProducts, pageable, productData.getTotalElements());
+        List<Product> products = productRepository.findBestSellingProductsByBranchAndDayAndMonthAndYear(branchId, day, month, year);
+        List<BestSellingProductResponseDTO> bestSellingProducts = BestSellingProductResponseDTO.convert(products);
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), bestSellingProducts.size());
+        List<BestSellingProductResponseDTO> pagedList = bestSellingProducts.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, bestSellingProducts.size());
     }
 
     @Override
