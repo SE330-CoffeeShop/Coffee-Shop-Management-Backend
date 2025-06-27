@@ -190,6 +190,7 @@ public class ImpBranchService implements IBranchService {
             dto.setId(branch.getId().toString());
             dto.setCreatedAt(branch.getCreatedAt());
             dto.setUpdatedAt(branch.getUpdatedAt());
+            dto.setBranchName(branch.getBranchName());
 
             // Calculate revenue for this branch
             BigDecimal revenue = branchRepository.calculateTotalOrderCostByBranchAndYear(branch.getId(), year)
@@ -210,6 +211,8 @@ public class ImpBranchService implements IBranchService {
             dto.setId(branch.getId().toString());
             dto.setCreatedAt(branch.getCreatedAt());
             dto.setUpdatedAt(branch.getUpdatedAt());
+            dto.setBranchName(branch.getBranchName());
+
 
             // Calculate revenue for this branch
             BigDecimal revenue = branchRepository.calculateTotalOrderCostByBranchAndMonthAndYear(branch.getId(), month, year)
@@ -230,6 +233,7 @@ public class ImpBranchService implements IBranchService {
             dto.setId(branch.getId().toString());
             dto.setCreatedAt(branch.getCreatedAt());
             dto.setUpdatedAt(branch.getUpdatedAt());
+            dto.setBranchName(branch.getBranchName());
 
             // Calculate revenue for this branch
             BigDecimal revenue = branchRepository.calculateTotalOrderCostByBranchAndDayAndMonthAndYear(branch.getId(), day, month, year)

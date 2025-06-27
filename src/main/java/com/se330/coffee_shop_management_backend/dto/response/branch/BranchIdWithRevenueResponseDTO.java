@@ -23,6 +23,8 @@ public class BranchIdWithRevenueResponseDTO {
     )
     private String id;
 
+    private String branchName;
+
     @Schema(
             name = "createdAt",
             description = "Date time field of branch creation",

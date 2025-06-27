@@ -56,6 +56,7 @@ public class DiscountResponseDTO {
     private BigDecimal discountMinOrderValue;
     private boolean discountIsActive;
     private String branchId;
+    private String branchName;
     private Set<ProductResponseDTO> products;
 
     public static DiscountResponseDTO convert(Discount discount) {
@@ -86,6 +87,7 @@ public class DiscountResponseDTO {
                 .discountMinOrderValue(discount.getDiscountMinOrderValue())
                 .discountIsActive(discount.isDiscountIsActive())
                 .branchId(discount.getBranch() != null ? discount.getBranch().getId().toString() : null)
+                .branchName(discount.getBranch() != null ? discount.getBranch().getBranchName() : null)
                 .products(products)
                 .build();
     }
