@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,4 +36,7 @@ public interface DiscountRepository extends JpaRepository<Discount, UUID>, JpaSp
     @Override
     @EntityGraph(attributePaths = {"branch", "productVariants"})
     List<Discount> findAll();
+
+    @EntityGraph(attributePaths = {"branch", "productVariants"})
+    Page<Discount> findAllByIdIn(Collection<UUID> ids, Pageable pageable);
 }

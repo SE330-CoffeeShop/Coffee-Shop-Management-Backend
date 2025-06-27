@@ -152,6 +152,9 @@ public class ImpEmployeeService implements IEmployeeService {
                         .build()
         );
 
+        branch.setManager(manger);
+        branchRepository.save(branch);
+
         notificationService.createNotification(
                 NotificationCreateRequestDTO.builder()
                         .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)

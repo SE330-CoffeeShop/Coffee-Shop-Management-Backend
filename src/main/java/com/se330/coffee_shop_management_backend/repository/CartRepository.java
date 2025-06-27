@@ -13,10 +13,10 @@ import java.util.UUID;
 public interface CartRepository  extends JpaRepository<Cart, UUID>, JpaSpecificationExecutor<Cart> {
     boolean existsByUser_Id(UUID userId);
 
-    @EntityGraph(attributePaths = "user")
+    @EntityGraph(attributePaths = {"user", "cartDetails"})
     Cart findByUser_Id(UUID userId);
 
     @Override
-    @EntityGraph(attributePaths = "user")
+    @EntityGraph(attributePaths = {"user", "cartDetails"})
     List<Cart> findAll();
 }

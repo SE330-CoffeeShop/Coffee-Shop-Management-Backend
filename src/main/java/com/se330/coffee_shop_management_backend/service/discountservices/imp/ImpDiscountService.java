@@ -6,6 +6,7 @@ import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountCre
 import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.discount.UsedDiscountCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.response.cart.CartAndUsedDiscountResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.cart.EmployeeViewCartDiscountResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.*;
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
@@ -82,6 +83,14 @@ public class ImpDiscountService implements IDiscountService {
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchId));
 
         return discountRepository.findAllByBranch(existingBranch, pageable);
+    }
+
+    @Override
+    public Page<Discount> findAllDiscounts(Pageable pageable, List<UUID> discountIds) {
+        if (discountIds == null || discountIds.isEmpty()) {
+            return discountRepository.findAll(pageable);
+        }
+        return discountRepository.findAllByIdIn(discountIds, pageable);
     }
 
     @Override
@@ -516,11 +525,11 @@ public class ImpDiscountService implements IDiscountService {
 
     @Override
     @Transactional
-    public Cart applyDiscountToCart(UUID branchId) {
+    public CartAndUsedDiscountResponseDTO applyDiscountToCart(UUID branchId) {
         User user = userService.getUser();
         Cart existingCart = cartRepository.findByUser_Id(user.getId());
-        Branch currentBranch = branchRepository.findById(branchId)
-                .orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchId));
+
+        List<UUID> appliedDiscounts = new ArrayList<>();
 
         // Calculate the initial total cart value
         BigDecimal originalTotalValue = BigDecimal.ZERO;
@@ -581,6 +590,10 @@ public class ImpDiscountService implements IDiscountService {
                     }
                 }
 
+                if (bestDiscount != null) {
+                    appliedDiscounts.add(bestDiscount.getId());
+                }
+
                 // Add this unit's lowest price to the total detail cost
                 totalDetailCost = totalDetailCost.add(lowestUnitPrice);
             }
@@ -612,6 +625,8 @@ public class ImpDiscountService implements IDiscountService {
         // Save updated cart
         cartRepository.save(existingCart);
 
-        return cartRepository.findByUser_Id(user.getId());
+        Cart cart = cartRepository.findByUser_Id(user.getId());
+
+        return CartAndUsedDiscountResponseDTO.convert(cart, appliedDiscounts);
     }
 }
