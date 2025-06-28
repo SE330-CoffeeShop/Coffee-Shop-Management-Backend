@@ -23,6 +23,9 @@ public interface DiscountRepository extends JpaRepository<Discount, UUID>, JpaSp
     @EntityGraph(attributePaths = {"branch", "productVariants", "productVariants.product"})
     Page<Discount> findAll(Pageable pageable);
 
+    @Query("SELECT d FROM Discount d WHERE d.discountEndDate > CURRENT_TIMESTAMP AND d.discountStartDate <= CURRENT_TIMESTAMP AND d.discountIsActive = true")
+    List<Discount> findAllActiveAndNotExpired();
+
     @Override
     @EntityGraph(attributePaths = {"branch", "productVariants", "productVariants.product"})
     Optional<Discount> findById(UUID id);

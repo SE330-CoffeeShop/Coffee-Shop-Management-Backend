@@ -110,11 +110,15 @@ public class DiscountResponseDTO {
         private String id;
         private String name;
         private String thumb;
+        private BigDecimal price;
+        private BigDecimal ratingsAverage;
 
         public ProductResponseDTO(ProductVariant productVariant) {
             this.id = productVariant.getProduct().getId().toString();
             this.name = productVariant.getProduct().getProductName();
             this.thumb = productVariant.getProduct().getProductThumb();
+            this.price = productVariant.getProduct().getProductPrice();
+            this.ratingsAverage = productVariant.getProduct().getProductRatingsAverage();
         }
 
         @Override

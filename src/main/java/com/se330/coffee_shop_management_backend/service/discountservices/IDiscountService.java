@@ -18,7 +18,8 @@ public interface IDiscountService {
     Discount findByIdDiscount(UUID id);
     Page<Discount> findAllDiscounts(Pageable pageable);
     Page<Discount> findAllDiscountsByBranchId(Pageable pageable, UUID branchId);
-    Page<Discount> findAllDiscounts(Pageable pageable, List<UUID> discountIds);
+    Page<Discount> findAllDiscounts(Pageable pageable, List<String> discountIds);
+    Page<Discount> findAllDiscountsWithBeforeExpiredDate(Pageable pageable);
     Page<Discount> findAllDiscountsByProductVariantId(Pageable pageable, UUID productVariantId);
     Discount createDiscount(DiscountCreateRequestDTO discountCreateRequestDTO);
     Discount updateDiscount(DiscountUpdateRequestDTO discountUpdateRequestDTO);

@@ -20,6 +20,7 @@ import com.se330.coffee_shop_management_backend.util.Constants;
 import com.se330.coffee_shop_management_backend.util.CreateNotiContentHelper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,11 +87,28 @@ public class ImpDiscountService implements IDiscountService {
     }
 
     @Override
-    public Page<Discount> findAllDiscounts(Pageable pageable, List<UUID> discountIds) {
+    public Page<Discount> findAllDiscounts(Pageable pageable, List<String> discountIds) {
         if (discountIds == null || discountIds.isEmpty()) {
             return discountRepository.findAll(pageable);
         }
-        return discountRepository.findAllByIdIn(discountIds, pageable);
+        List<UUID> discountIdUUIDs = new ArrayList<>();
+        for (String id : discountIds) {
+            try {
+                discountIdUUIDs.add(UUID.fromString(id));
+            } catch (IllegalArgumentException e) {
+            }
+        }
+        return discountRepository.findAllByIdIn(discountIdUUIDs, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Discount> findAllDiscountsWithBeforeExpiredDate(Pageable pageable) {
+        List<Discount> discounts = discountRepository.findAllActiveAndNotExpired();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), discounts.size());
+        List<Discount> pagedList = discounts.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, discounts.size());
     }
 
     @Override
