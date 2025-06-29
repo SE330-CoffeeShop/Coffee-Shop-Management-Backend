@@ -76,7 +76,7 @@ public class Logistics {
 
         Random random = new Random();
         List<Order> orders = new ArrayList<>();
-        int orderCount = 5000; // Reduced for testing
+        int orderCount = 3000; // Reduced for testing
 
         // Create orders
         for (int i = 0; i < orderCount; i++) {
@@ -110,6 +110,15 @@ public class Logistics {
                 }
             }
 
+            LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+            LocalDateTime endDate = LocalDateTime.of(2025, 6, 30, 23, 59);
+            ZoneId zone = ZoneId.systemDefault();
+            long startEpoch = startDate.atZone(zone).toEpochSecond();
+            long endEpoch = endDate.atZone(zone).toEpochSecond();
+
+            long randomEpoch = startEpoch + (long) (random.nextDouble() * (endEpoch - startEpoch));
+            LocalDateTime randomCreatedAt = LocalDateTime.ofInstant(Instant.ofEpochSecond(randomEpoch), zone);
+
             // Create order
             Order order = Order.builder()
                     .orderStatus(status)
@@ -121,17 +130,8 @@ public class Logistics {
                     .employee(employee)
                     .branch(branch)
                     .shippingAddress(shippingAddress)
+                    .oCreatedAt(randomCreatedAt)
                     .build();
-
-            LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
-            LocalDateTime endDate = LocalDateTime.of(2025, 6, 30, 23, 59);
-            ZoneId zone = ZoneId.systemDefault();
-            long startEpoch = startDate.atZone(zone).toEpochSecond();
-            long endEpoch = endDate.atZone(zone).toEpochSecond();
-
-            long randomEpoch = startEpoch + (long) (random.nextDouble() * (endEpoch - startEpoch));
-            LocalDateTime randomCreatedAt = LocalDateTime.ofInstant(Instant.ofEpochSecond(randomEpoch), zone);
-            order.setCreatedAt(randomCreatedAt);
 
             entityManager.persist(order);
 
@@ -145,6 +145,8 @@ public class Logistics {
         entityManager.clear();
 
         orderRepository.saveAll(orders);
+
+
         log.info("Created {} orders", orders.size());
 
         // Create order details first to calculate totals

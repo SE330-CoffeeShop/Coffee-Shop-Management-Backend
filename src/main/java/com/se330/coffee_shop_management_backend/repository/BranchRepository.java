@@ -33,7 +33,7 @@ public interface BranchRepository extends JpaRepository<Branch, UUID> {
             "JOIN o.employee e " +
             "JOIN e.branch b " +
             "WHERE b.id = :branchId " +
-            "AND EXTRACT(YEAR FROM o.createdAt) = :year")
+            "AND EXTRACT(YEAR FROM o.oCreatedAt) = :year")
     Optional<BigDecimal> calculateTotalOrderCostByBranchAndYear(
             @Param("branchId") UUID branchId,
             @Param("year") int year);
@@ -43,8 +43,8 @@ public interface BranchRepository extends JpaRepository<Branch, UUID> {
             "JOIN o.employee e " +
             "JOIN e.branch b " +
             "WHERE b.id = :branchId " +
-            "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
-            "AND EXTRACT(YEAR FROM o.createdAt) = :year")
+            "AND EXTRACT(MONTH FROM o.oCreatedAt) = :month " +
+            "AND EXTRACT(YEAR FROM o.oCreatedAt) = :year")
     Optional<BigDecimal> calculateTotalOrderCostByBranchAndMonthAndYear(
             @Param("branchId") UUID branchId,
             @Param("month") int month,
@@ -55,9 +55,9 @@ public interface BranchRepository extends JpaRepository<Branch, UUID> {
             "JOIN o.employee e " +
             "JOIN e.branch b " +
             "WHERE b.id = :branchId " +
-            "AND EXTRACT(DAY FROM o.createdAt) = :day " +
-            "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
-            "AND EXTRACT(YEAR FROM o.createdAt) = :year")
+            "AND EXTRACT(DAY FROM o.oCreatedAt) = :day " +
+            "AND EXTRACT(MONTH FROM o.oCreatedAt) = :month " +
+            "AND EXTRACT(YEAR FROM o.oCreatedAt) = :year")
     Optional<BigDecimal> calculateTotalOrderCostByBranchAndDayAndMonthAndYear(
             @Param("branchId") UUID branchId,
             @Param("day") int day,

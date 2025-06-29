@@ -6,6 +6,8 @@ import lombok.*;
 import org.hibernate.annotations.NaturalId;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,9 @@ public class Order extends AbstractBaseEntity {
 
     @Column(name = "order_tracking_number", nullable = false)
     private String orderTrackingNumber;
+
+    @Column(name = "o_created_at", nullable = true)
+    private LocalDateTime oCreatedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
