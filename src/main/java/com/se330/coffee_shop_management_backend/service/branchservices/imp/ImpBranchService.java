@@ -21,6 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -152,12 +155,25 @@ public class ImpBranchService implements IBranchService {
 
     @Override
     @Transactional(readOnly = true)
-    public BigDecimal getTotalOrderCostByBranchAndYear(UUID branchId, int year) {
+    public BranchIdWithRevenueResponseDTO getTotalOrderCostByBranchAndYear(UUID branchId, int year) {
         Branch branch = branchRepository.findById(branchId)
                 .orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
 
-        return branchRepository.calculateTotalOrderCostByBranchAndYear(branchId, year)
+        BigDecimal totalRevenue = branchRepository.calculateTotalOrderCostByBranchAndYear(branchId, year)
                 .orElse(BigDecimal.ZERO);
+        BranchIdWithRevenueResponseDTO responseDTO = new BranchIdWithRevenueResponseDTO();
+        responseDTO.setId(branch.getId().toString());
+        responseDTO.setCreatedAt(branch.getCreatedAt());
+        responseDTO.setUpdatedAt(branch.getUpdatedAt());
+        responseDTO.setBranchName(branch.getBranchName());
+        responseDTO.setBranchRevenue(totalRevenue);
+        responseDTO.setRevenueByMonth(new ArrayList<>());
+        for (Integer i = 1; i <= 12; i++) {
+            BigDecimal monthlyRevenue = branchRepository.calculateTotalOrderCostByBranchAndMonthAndYear(branchId, i, year)
+                    .orElse(BigDecimal.ZERO);
+            responseDTO.getRevenueByMonth().add(Map.of(i, monthlyRevenue));
+        }
+        return responseDTO;
     }
 
     @Override
@@ -196,6 +212,16 @@ public class ImpBranchService implements IBranchService {
             BigDecimal revenue = branchRepository.calculateTotalOrderCostByBranchAndYear(branch.getId(), year)
                     .orElse(BigDecimal.ZERO);
             dto.setBranchRevenue(revenue);
+
+            List<Map<Integer, BigDecimal>> revenueByMonth = new ArrayList<>();
+
+            for (Integer i = 1; i <= 12; i++) {
+                BigDecimal monthlyRevenue = branchRepository.calculateTotalOrderCostByBranchAndMonthAndYear(branch.getId(), i, year)
+                        .orElse(BigDecimal.ZERO);
+                revenueByMonth.add(Map.of(i, monthlyRevenue));
+            }
+
+            dto.setRevenueByMonth(revenueByMonth);
 
             return dto;
         });

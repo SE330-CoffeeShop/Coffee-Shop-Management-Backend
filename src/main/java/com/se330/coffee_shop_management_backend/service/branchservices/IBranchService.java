@@ -16,7 +16,7 @@ public interface IBranchService {
     Branch createBranch(BranchCreateRequestDTO branchCreateRequestDTO);
     Branch updateBranch(BranchUpdateRequestDTO branchUpdateRequestDTO);
     void deleteBranch(UUID id);
-    BigDecimal getTotalOrderCostByBranchAndYear (UUID branchId, int year);
+    BranchIdWithRevenueResponseDTO getTotalOrderCostByBranchAndYear (UUID branchId, int year);
     BigDecimal getTotalOrderCostByBranchAndMonthAndYear (UUID branchId, int month, int year);
     BigDecimal getTotalOrderCostByBranchAndDayAndMonthAndYear (UUID branchId, int day, int month, int year);
     Page<BranchIdWithRevenueResponseDTO> findAllBranchesWithRevenueWithYear(Pageable pageable, int year);

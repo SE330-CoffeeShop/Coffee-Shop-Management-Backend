@@ -9,6 +9,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -48,4 +50,12 @@ public class BranchIdWithRevenueResponseDTO {
             example = "1000.000"
     )
     private BigDecimal branchRevenue;
+
+    @Schema(
+            name = "revenueByMonth",
+            description = "Revenue of the branch by month",
+            type = "List<Map<Integer, BigDecimal>>",
+            example = "[{\"1\": 100.00}, {\"2\": 200.00}, {\"3\": 300.00}]"
+    )
+    private List<Map<Integer, BigDecimal>> revenueByMonth;
 }

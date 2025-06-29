@@ -273,7 +273,7 @@ public class BranchController {
     }
 
     @GetMapping("/revenue/year")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Get branch total revenue by year",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -304,11 +304,11 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<BigDecimal>> getBranchRevenueByYear(
+    public ResponseEntity<SingleResponse<BranchIdWithRevenueResponseDTO>> getcreatedAtByYear(
             @RequestParam UUID branchId,
             @RequestParam int year
     ) {
-        BigDecimal revenue = branchService.getTotalOrderCostByBranchAndYear(branchId, year);
+        BranchIdWithRevenueResponseDTO revenue = branchService.getTotalOrderCostByBranchAndYear(branchId, year);
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
@@ -350,7 +350,7 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<BigDecimal>> getBranchRevenueByMonthAndYear(
+    public ResponseEntity<SingleResponse<BigDecimal>> getcreatedAtByMonthAndYear(
             @RequestParam UUID branchId,
             @RequestParam int month,
             @RequestParam int year
@@ -397,7 +397,7 @@ public class BranchController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<BigDecimal>> getBranchRevenueByDayMonthAndYear(
+    public ResponseEntity<SingleResponse<BigDecimal>> getcreatedAtByDayMonthAndYear(
             @RequestParam UUID branchId,
             @RequestParam int day,
             @RequestParam int month,
@@ -423,7 +423,7 @@ public class BranchController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "branchRevenue") String sortBy,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam int year
     ) {
         Integer offset = (page - 1) * limit;
@@ -455,7 +455,7 @@ public class BranchController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "branchRevenue") String sortBy,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam int month,
             @RequestParam int year
     ) {
@@ -488,7 +488,7 @@ public class BranchController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
             @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "branchRevenue") String sortBy,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam int day,
             @RequestParam int month,
             @RequestParam int year
