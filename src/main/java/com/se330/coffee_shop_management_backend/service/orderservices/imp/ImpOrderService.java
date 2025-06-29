@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -233,6 +234,7 @@ public class ImpOrderService implements IOrderService {
                     .orderDiscountCost(BigDecimal.ZERO)
                     .orderTotalCostAfterDiscount(BigDecimal.ZERO)
                     .branch(existingBranch)
+                    .oCreatedAt(LocalDateTime.now())
                     .build()
         );
 
@@ -337,6 +339,7 @@ public class ImpOrderService implements IOrderService {
                         .orderDiscountCost(BigDecimal.ZERO)
                         .orderTotalCostAfterDiscount(BigDecimal.ZERO)
                         .branch(currentBranch)
+                        .oCreatedAt(LocalDateTime.now())
                         .build()
         );
 
