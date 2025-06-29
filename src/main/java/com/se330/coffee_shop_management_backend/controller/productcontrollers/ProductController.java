@@ -9,6 +9,7 @@ import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.product.BestSellingProductResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.product.ProductResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.product.Product;
+import com.se330.coffee_shop_management_backend.service.favoritedrinkservices.IFavoriteDrinkService;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,9 +39,11 @@ public class ProductController {
 
     private static final Logger log = LoggerFactory.getLogger(ProductController.class);
     private final IProductService productService;
+    private final IFavoriteDrinkService favoriteDrinkService;
 
-    public ProductController(IProductService productService) {
+    public ProductController(IProductService productService, IFavoriteDrinkService favoriteDrinkService) {
         this.productService = productService;
+        this.favoriteDrinkService = favoriteDrinkService;
     }
 
     @GetMapping("/{id}")
@@ -81,6 +84,50 @@ public class ProductController {
                         HttpStatus.OK.value(),
                         "Product retrieved successfully",
                         product
+                )
+        );
+    }
+
+    @GetMapping("/user/{id}")
+    @Operation(
+            summary = "Get product detail with favorite status for user",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved product with favorite status",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid ID format",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Product not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<ProductResponseDTO>> userFindById(@PathVariable UUID id) {
+        Product product = productService.findByIdProduct(id);
+        boolean isFavorite = favoriteDrinkService.isDrinkFavoritedByUser(id);
+        ProductResponseDTO productResponseDTO = ProductResponseDTO.convert(product, isFavorite);
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Product retrieved successfully",
+                        productResponseDTO
                 )
         );
     }
@@ -175,7 +222,7 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Create new product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -223,7 +270,7 @@ public class ProductController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Update product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -266,7 +313,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Delete product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -291,7 +338,7 @@ public class ProductController {
     }
 
     @PostMapping("/image/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Upload product image",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -345,7 +392,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/image/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Delete product image",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -752,7 +799,7 @@ public class ProductController {
     }
 
     @PostMapping("/new")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Create new product with variants and recipes",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -787,7 +834,7 @@ public class ProductController {
     }
 
     @PostMapping(value = "/new-with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Create new product with variants, recipes and image",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

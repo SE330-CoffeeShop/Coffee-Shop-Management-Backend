@@ -14,6 +14,7 @@ public interface IEmployeeService {
     Page<Employee> findAllEmployees(Pageable pageable);
     Page<Employee> findAllEmployeesByBranchId(Pageable pageable);
     Employee createEmployee(RegisterRequest request) throws BindException;
+    Employee createBranchManager(RegisterRequest request, UUID branchId) throws BindException;
     Employee updateEmployee(EmployeeUpdateRequestDTO employeeUpdateRequestDTO);
     void deleteEmployee(UUID id);
 }

@@ -123,15 +123,17 @@ public class PaypalPaymentStrategy implements PaymentStrategy {
 
 
                 // TODO: send noti here
-                notificationService.createNotification(
-                        NotificationCreateRequestDTO.builder()
-                                .notificationType(Constants.NotificationTypeEnum.PAYMENT)
-                                .notificationContent("Thanh toán thành công cho đơn hàng " + orderPayment.getOrder().getId())
-                                .senderId(null)
-                                .receiverId(orderPayment.getOrder().getUser().getId())
-                                .isRead(false)
-                                .build()
-                );
+                if (orderPayment.getOrder().getUser() != null) {
+                    notificationService.createNotification(
+                            NotificationCreateRequestDTO.builder()
+                                    .notificationType(Constants.NotificationTypeEnum.PAYMENT)
+                                    .notificationContent("Thanh toán thành công cho đơn hàng " + orderPayment.getOrder().getId())
+                                    .senderId(null)
+                                    .receiverId(orderPayment.getOrder().getUser().getId())
+                                    .isRead(false)
+                                    .build()
+                    );
+                }
             } else {
                 orderPayment.setStatus(Constants.PaymentStatusEnum.FAILED);
                 orderPayment.setFailureReason("Payment not approved: " + executedPayment.getState());
@@ -146,17 +148,6 @@ public class PaypalPaymentStrategy implements PaymentStrategy {
                 orderPayment.setFailureReason(e.getMessage());
                 return orderPaymentRepository.save(orderPayment);
             }
-
-            // TODO: send noti here
-            notificationService.createNotification(
-                    NotificationCreateRequestDTO.builder()
-                            .notificationType(Constants.NotificationTypeEnum.PAYMENT)
-                            .notificationContent("Thanh toán thất bại cho đơn hàng với mã giao dịch " + paymentId)
-                            .senderId(null)
-                            .receiverId(orderPayment.getOrder().getUser().getId())
-                            .isRead(false)
-                            .build()
-            );
 
             return null;
         }

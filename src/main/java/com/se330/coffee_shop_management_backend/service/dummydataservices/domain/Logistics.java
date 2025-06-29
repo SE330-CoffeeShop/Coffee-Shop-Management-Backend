@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -69,7 +72,7 @@ public class Logistics {
 
         Random random = new Random();
         List<Order> orders = new ArrayList<>();
-        int orderCount = 1000; // Reduced for testing
+        int orderCount = 1000000; // Reduced for testing
 
         // Create orders
         for (int i = 0; i < orderCount; i++) {
@@ -115,6 +118,16 @@ public class Logistics {
                     .branch(branch)
                     .shippingAddress(shippingAddress)
                     .build();
+
+            LocalDateTime startDate = LocalDateTime.of(2023, 1, 1, 0, 0);
+            LocalDateTime endDate = LocalDateTime.of(2025, 6, 30, 23, 59);
+            ZoneId zone = ZoneId.systemDefault();
+            long startEpoch = startDate.atZone(zone).toEpochSecond();
+            long endEpoch = endDate.atZone(zone).toEpochSecond();
+
+            long randomEpoch = startEpoch + (long) (random.nextDouble() * (endEpoch - startEpoch));
+            LocalDateTime randomCreatedAt = LocalDateTime.ofInstant(Instant.ofEpochSecond(randomEpoch), zone);
+            order.setCreatedAt(randomCreatedAt);
 
             orders.add(order);
         }

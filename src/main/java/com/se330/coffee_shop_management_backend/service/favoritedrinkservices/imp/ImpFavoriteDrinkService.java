@@ -39,13 +39,14 @@ public class ImpFavoriteDrinkService implements IFavoriteDrinkService {
 
     @Override
     @Transactional
-    public UUID addFavoriteDrink(UUID drinkId) {
+    public void addFavoriteDrink(UUID drinkId) {
         UUID userId = userService.getUser().getId();
         Optional<FavoriteDrink> existingFavorite = favoriteDrinkRepository.findByUser_IdAndProduct_Id(userId, drinkId);
-        if (existingFavorite.isPresent()) {
-            return existingFavorite.get().getId();
-        }
 
+        if (existingFavorite.isPresent()) {
+            existingFavorite.ifPresent(favoriteDrinkRepository::delete);
+            return;
+        }
         // Find user and product
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
@@ -59,8 +60,7 @@ public class ImpFavoriteDrinkService implements IFavoriteDrinkService {
                 .product(product)
                 .build();
 
-        FavoriteDrink savedFavoriteDrink = favoriteDrinkRepository.save(favoriteDrink);
-        return savedFavoriteDrink.getId();
+        favoriteDrinkRepository.save(favoriteDrink);
     }
 
     @Override

@@ -56,6 +56,7 @@ public class DiscountResponseDTO {
     private BigDecimal discountMinOrderValue;
     private boolean discountIsActive;
     private String branchId;
+    private String branchName;
     private Set<ProductResponseDTO> products;
 
     public static DiscountResponseDTO convert(Discount discount) {
@@ -86,6 +87,7 @@ public class DiscountResponseDTO {
                 .discountMinOrderValue(discount.getDiscountMinOrderValue())
                 .discountIsActive(discount.isDiscountIsActive())
                 .branchId(discount.getBranch() != null ? discount.getBranch().getId().toString() : null)
+                .branchName(discount.getBranch() != null ? discount.getBranch().getBranchName() : null)
                 .products(products)
                 .build();
     }
@@ -108,11 +110,15 @@ public class DiscountResponseDTO {
         private String id;
         private String name;
         private String thumb;
+        private BigDecimal price;
+        private BigDecimal ratingsAverage;
 
         public ProductResponseDTO(ProductVariant productVariant) {
             this.id = productVariant.getProduct().getId().toString();
             this.name = productVariant.getProduct().getProductName();
             this.thumb = productVariant.getProduct().getProductThumb();
+            this.price = productVariant.getProduct().getProductPrice();
+            this.ratingsAverage = productVariant.getProduct().getProductRatingsAverage();
         }
 
         @Override

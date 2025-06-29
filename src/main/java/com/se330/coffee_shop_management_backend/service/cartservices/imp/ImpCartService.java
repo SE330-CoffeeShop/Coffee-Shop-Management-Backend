@@ -179,6 +179,17 @@ public class ImpCartService implements ICartService {
 
     @Override
     @Transactional
+    public Cart addProductVariantToCart(UUID variantId) {
+        return addCartDetail(
+                CartDetailCreateRequestDTO.builder()
+                        .variantId(variantId)
+                        .cartDetailQuantity(1)
+                        .build()
+        );
+    }
+
+    @Override
+    @Transactional
     public Cart removeProductVariantFromCart(UUID productVariantId) {
         UUID userId = userService.getUser().getId();
         Cart existingCart = cartRepository.findByUser_Id(userId);

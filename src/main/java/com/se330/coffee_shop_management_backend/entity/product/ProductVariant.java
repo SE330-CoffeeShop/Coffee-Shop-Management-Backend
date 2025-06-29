@@ -40,7 +40,7 @@ public class ProductVariant extends AbstractBaseEntity {
     @Column(name = "variant_is_deleted", nullable = false)
     private Boolean variantIsDeleted = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_product-variant_product")
     private Product product;
 

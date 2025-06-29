@@ -145,6 +145,38 @@ public class ImpOrderService implements IOrderService {
         return orderRepository.save(existingOrder);
     }
 
+    @Override
+    @Transactional
+    public Order updateOrderStatus(UUID id, Constants.OrderStatusEnum status) throws UnsupportedEncodingException {
+        Order existingOrder = orderRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + id));
+
+        User customer = existingOrder.getUser();
+
+        if (customer != null) {
+            NotificationCreateRequestDTO.NotificationCreateRequestDTOBuilder notiBuilder =
+                    NotificationCreateRequestDTO.builder()
+                            .notificationType(Constants.NotificationTypeEnum.ORDER)
+                            .senderId(null)
+                            .receiverId(customer.getId())
+                            .isRead(false);
+
+            switch (status) {
+                case CANCELLED -> notiBuilder.notificationContent(CreateNotiContentHelper.createOrderCancelledContent(existingOrder.getId()));
+                case COMPLETED -> notiBuilder.notificationContent(CreateNotiContentHelper.createInStorePurchaseContent(existingOrder.getId()));
+                case PROCESSING -> notiBuilder.notificationContent(CreateNotiContentHelper.createOrderReceivedContent(existingOrder.getId()));
+                case DELIVERING -> notiBuilder.notificationContent(CreateNotiContentHelper.orderDeliveringContent(existingOrder.getId()));
+                case DELIVERED -> notiBuilder.notificationContent(CreateNotiContentHelper.orderDeliveredContent(existingOrder.getId()));
+                default -> notiBuilder.notificationContent("Order status updated.");
+            }
+
+            notificationService.createNotification(notiBuilder.build());
+        }
+
+        existingOrder.setOrderStatus(status);
+        return orderRepository.save(existingOrder);
+    }
+
     /**
      * Creates a new order with associated order details and applies available discounts.
      *

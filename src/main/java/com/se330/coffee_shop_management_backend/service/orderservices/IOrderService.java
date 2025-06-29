@@ -18,6 +18,7 @@ public interface IOrderService {
     Page<Order> findAllOrderByCustomerId(Pageable pageable);
     Page<Order> findAllOrderByStatusAndBranchId(Constants.OrderStatusEnum status, Pageable pageable);
     Order updateOrder(OrderUpdateRequestDTO orderUpdateRequestDTO);
+    Order updateOrderStatus(UUID id, Constants.OrderStatusEnum status) throws UnsupportedEncodingException;
     Order createOrder(OrderCreateRequestDTO orderCreateRequestDTO) throws UnsupportedEncodingException;
     Order createOrderForEmployee(EmployeeOrderRequestDTO employeeOrderRequestDTO) throws UnsupportedEncodingException;
     void deleteOrder(UUID id);

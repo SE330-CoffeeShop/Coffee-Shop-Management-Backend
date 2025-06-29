@@ -26,122 +26,102 @@ public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpec
     Page<Product> findAllById(@Param("ids") Iterable<UUID> ids, Pageable pageable);
 
     // Case 1: Get all best-selling products (no filters)
-    @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
-            "FROM OrderDetail od " +
-            "JOIN od.productVariant pv " +
-            "GROUP BY pv.product " +
-            "ORDER BY totalQuantity DESC")
-    Page<Object[]> findAllBestSellingProducts(Pageable pageable);
+    @Query("SELECT p FROM Product p ORDER BY COALESCE((SELECT SUM(od.orderDetailQuantity) FROM OrderDetail od WHERE od.productVariant.product = p), 0) DESC")
+    List<Product> findAllBestSellingProductsList();
 
     // Case 2: Filter by year
-    @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
+    @Query("SELECT p FROM Product p ORDER BY COALESCE((" +
+            "SELECT SUM(od.orderDetailQuantity) " +
             "FROM OrderDetail od " +
-            "JOIN od.productVariant pv " +
             "JOIN od.order o " +
-            "WHERE EXTRACT(YEAR FROM o.createdAt) = :year " +
-            "GROUP BY pv.product " +
-            "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByYear(
-            @Param("year") int year,
-            Pageable pageable);
+            "WHERE od.productVariant.product = p " +
+            "AND EXTRACT(YEAR FROM o.createdAt) = :year), 0) DESC")
+    List<Product> findBestSellingProductsByYear(@Param("year") int year);
 
     // Case 3: Filter by month and year
-    @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
+    @Query("SELECT p FROM Product p ORDER BY COALESCE((" +
+            "SELECT SUM(od.orderDetailQuantity) " +
             "FROM OrderDetail od " +
-            "JOIN od.productVariant pv " +
             "JOIN od.order o " +
-            "WHERE EXTRACT(YEAR FROM o.createdAt) = :year " +
-            "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
-            "GROUP BY pv.product " +
-            "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByMonthAndYear(
+            "WHERE od.productVariant.product = p " +
+            "AND EXTRACT(YEAR FROM o.createdAt) = :year " +
+            "AND EXTRACT(MONTH FROM o.createdAt) = :month), 0) DESC")
+    List<Product> findBestSellingProductsByMonthAndYear(
             @Param("month") int month,
-            @Param("year") int year,
-            Pageable pageable);
+            @Param("year") int year);
 
     // Case 4: Filter by day, month and year
-    @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
+    @Query("SELECT p FROM Product p ORDER BY COALESCE((" +
+            "SELECT SUM(od.orderDetailQuantity) " +
             "FROM OrderDetail od " +
-            "JOIN od.productVariant pv " +
             "JOIN od.order o " +
-            "WHERE EXTRACT(YEAR FROM o.createdAt) = :year " +
+            "WHERE od.productVariant.product = p " +
+            "AND EXTRACT(YEAR FROM o.createdAt) = :year " +
             "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
-            "AND EXTRACT(DAY FROM o.createdAt) = :day " +
-            "GROUP BY pv.product " +
-            "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByDayAndMonthAndYear(
+            "AND EXTRACT(DAY FROM o.createdAt) = :day), 0) DESC")
+    List<Product> findBestSellingProductsByDayAndMonthAndYear(
             @Param("day") int day,
             @Param("month") int month,
-            @Param("year") int year,
-            Pageable pageable);
+            @Param("year") int year);
 
     // Case 1.2: Filter by branch
-    @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
+    @Query("SELECT p FROM Product p ORDER BY COALESCE((" +
+            "SELECT SUM(od.orderDetailQuantity) " +
             "FROM OrderDetail od " +
-            "JOIN od.productVariant pv " +
             "JOIN od.order o " +
             "JOIN o.employee e " +
             "JOIN e.branch b " +
-            "WHERE b.id = :branchId " +
-            "GROUP BY pv.product " +
-            "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByBranch(
-            @Param("branchId") UUID branchId,
-            Pageable pageable);
+            "WHERE od.productVariant.product = p " +
+            "AND b.id = :branchId), 0) DESC")
+    List<Product> findBestSellingProductsByBranch(@Param("branchId") UUID branchId);
 
     // Case 2.2: Filter by branch and year
-    @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
+    @Query("SELECT p FROM Product p ORDER BY COALESCE((" +
+            "SELECT SUM(od.orderDetailQuantity) " +
             "FROM OrderDetail od " +
-            "JOIN od.productVariant pv " +
             "JOIN od.order o " +
             "JOIN o.employee e " +
             "JOIN e.branch b " +
-            "WHERE b.id = :branchId " +
-            "AND EXTRACT(YEAR FROM o.createdAt) = :year " +
-            "GROUP BY pv.product " +
-            "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByBranchAndYear(
+            "WHERE od.productVariant.product = p " +
+            "AND b.id = :branchId " +
+            "AND EXTRACT(YEAR FROM o.createdAt) = :year), 0) DESC")
+    List<Product> findBestSellingProductsByBranchAndYear(
             @Param("branchId") UUID branchId,
-            @Param("year") int year,
-            Pageable pageable);
+            @Param("year") int year);
 
     // Case 3.2: Filter by branch, month and year
-    @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
+    @Query("SELECT p FROM Product p ORDER BY COALESCE((" +
+            "SELECT SUM(od.orderDetailQuantity) " +
             "FROM OrderDetail od " +
-            "JOIN od.productVariant pv " +
             "JOIN od.order o " +
             "JOIN o.employee e " +
             "JOIN e.branch b " +
-            "WHERE b.id = :branchId " +
+            "WHERE od.productVariant.product = p " +
+            "AND b.id = :branchId " +
             "AND EXTRACT(YEAR FROM o.createdAt) = :year " +
-            "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
-            "GROUP BY pv.product " +
-            "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByBranchAndMonthAndYear(
+            "AND EXTRACT(MONTH FROM o.createdAt) = :month), 0) DESC")
+    List<Product> findBestSellingProductsByBranchAndMonthAndYear(
             @Param("branchId") UUID branchId,
             @Param("month") int month,
-            @Param("year") int year,
-            Pageable pageable);
+            @Param("year") int year);
 
     // Case 4.2: Filter by branch, day, month and year
-    @Query("SELECT pv.product, SUM(od.orderDetailQuantity) as totalQuantity " +
+    @Query("SELECT p FROM Product p ORDER BY COALESCE((" +
+            "SELECT SUM(od.orderDetailQuantity) " +
             "FROM OrderDetail od " +
-            "JOIN od.productVariant pv " +
             "JOIN od.order o " +
             "JOIN o.employee e " +
             "JOIN e.branch b " +
-            "WHERE b.id = :branchId " +
+            "WHERE od.productVariant.product = p " +
+            "AND b.id = :branchId " +
             "AND EXTRACT(YEAR FROM o.createdAt) = :year " +
             "AND EXTRACT(MONTH FROM o.createdAt) = :month " +
-            "AND EXTRACT(DAY FROM o.createdAt) = :day " +
-            "GROUP BY pv.product " +
-            "ORDER BY totalQuantity DESC")
-    Page<Object[]> findBestSellingProductsByBranchAndDayAndMonthAndYear(
+            "AND EXTRACT(DAY FROM o.createdAt) = :day), 0) DESC")
+    List<Product> findBestSellingProductsByBranchAndDayAndMonthAndYear(
             @Param("branchId") UUID branchId,
             @Param("day") int day,
             @Param("month") int month,
-            @Param("year") int year,
-            Pageable pageable);
+            @Param("year") int year);
 
     Page<Product> findAllByProductCategory_Id(UUID productCategoryId, Pageable pageable);
 }

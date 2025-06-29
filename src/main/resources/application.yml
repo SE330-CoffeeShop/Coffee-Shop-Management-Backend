@@ -6,6 +6,7 @@ server:
       enabled: true
       charset: UTF-8
   forward-headers-strategy: framework
+  address: ${SERVER_ADDRESS}
 
 app:
   secret: ${APP_SECRET}

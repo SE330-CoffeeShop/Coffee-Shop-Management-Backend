@@ -51,9 +51,7 @@ public class BestSellingProductResponseDTO {
     private Boolean productIsDeleted;
     private String productCategoryId;
 
-    private int productSoldCount;
-
-    public static BestSellingProductResponseDTO convert(Product product, int productSoldCount) {
+    public static BestSellingProductResponseDTO convert(Product product) {
         return BestSellingProductResponseDTO.builder()
                 .id(product.getId().toString())
                 .createdAt(product.getCreatedAt())
@@ -67,21 +65,16 @@ public class BestSellingProductResponseDTO {
                 .productIsPublished(product.getProductIsPublished())
                 .productIsDeleted(product.getProductIsDeleted())
                 .productCategoryId(product.getProductCategory().getId().toString())
-                .productSoldCount(productSoldCount)
                 .build();
     }
 
-    public static List<BestSellingProductResponseDTO> convert(List<Object[]> productData) {
+    public static List<BestSellingProductResponseDTO> convert(List<Product> productData) {
         if (productData == null || productData.isEmpty()) {
             return Collections.emptyList();
         }
 
         return productData.stream()
-                .map(data -> {
-                    Product product = (Product) data[0];
-                    int totalQuantity = ((Number) data[1]).intValue();
-                    return convert(product, totalQuantity);
-                })
+                .map(BestSellingProductResponseDTO::convert)
                 .collect(Collectors.toList());
     }
 

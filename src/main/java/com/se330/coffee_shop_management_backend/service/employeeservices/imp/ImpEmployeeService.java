@@ -125,6 +125,49 @@ public class ImpEmployeeService implements IEmployeeService {
         return findByIdEmployee(newEmployee.getId());
     }
 
+    @Override
+    @Transactional
+    public Employee createBranchManager(RegisterRequest request, UUID branchId) throws BindException {
+        Branch branch = branchRepository.findById(branchId).orElseThrow(() -> new EntityNotFoundException("Branch not found with ID: " + branchId));
+        User user = userService.register(request);
+        user.getRole().getUsers().remove(user);
+        user.setRole(roleService.findByName(Constants.RoleEnum.MANAGER));
+        userRepository.save(user);
+
+        // find old manager acount and remove it from branch
+        if (branch.getManager() != null) {
+            User oldManager = branch.getManager().getUser();
+            branch.setManager(null);
+            branchRepository.save(branch);
+
+            userService.delete(oldManager.getId().toString());
+        }
+
+        Employee manger = employeeRepository.save(
+                Employee.builder()
+                        .employeeHireDate(LocalDateTime.now())
+                        .branch(branch)
+                        .user(user)
+                        .managedBranch(branch)
+                        .build()
+        );
+
+        branch.setManager(manger);
+        branchRepository.save(branch);
+
+        notificationService.createNotification(
+                NotificationCreateRequestDTO.builder()
+                        .notificationType(Constants.NotificationTypeEnum.EMPLOYEE)
+                        .notificationContent(CreateNotiContentHelper.createWelcomeBranchContent(branch.getBranchName()))
+                        .senderId(null)
+                        .receiverId(manger.getUser().getId())
+                        .isRead(false)
+                        .build()
+        );
+
+        return findByIdEmployee(manger.getId());
+    }
+
     @Transactional
     @Override
     public Employee updateEmployee(EmployeeUpdateRequestDTO employeeUpdateRequestDTO) {

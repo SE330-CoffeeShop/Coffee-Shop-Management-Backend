@@ -6,6 +6,7 @@ import com.se330.coffee_shop_management_backend.dto.request.discount.DiscountUpd
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
 import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
+import com.se330.coffee_shop_management_backend.dto.response.cart.CartAndUsedDiscountResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.cart.CartResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.cart.EmployeeViewCartDiscountResponseDTO;
 import com.se330.coffee_shop_management_backend.dto.response.discount.DiscountResponseDTO;
@@ -26,6 +27,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -395,7 +397,7 @@ public class DiscountController {
         );
     }
 
-    @PutMapping("/apply-to-cart")
+    @GetMapping("/apply-to-cart")
     @Transactional
     @Operation(
             summary = "Apply discounts to cart items",
@@ -436,16 +438,16 @@ public class DiscountController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<CartResponseDTO>> applyDiscountToCart(
+    public ResponseEntity<SingleResponse<CartAndUsedDiscountResponseDTO>> applyDiscountToCart(
             @RequestParam UUID branchId) {
 
-        Cart updatedCart = discountService.applyDiscountToCart(branchId);
+        CartAndUsedDiscountResponseDTO updatedCart = discountService.applyDiscountToCart(branchId);
 
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
                         "Discounts applied to cart successfully",
-                        CartResponseDTO.convert(updatedCart)
+                        updatedCart
                 )
         );
     }
@@ -502,6 +504,105 @@ public class DiscountController {
                         HttpStatus.OK.value(),
                         "Discounts applied to employee cart successfully",
                         response
+                )
+        );
+    }
+
+    @PostMapping("/filter-by-ids")
+    @Transactional(readOnly = true)
+    @Operation(
+            summary = "Get discounts by a list of IDs with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved discounts",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<DiscountResponseDTO>> findDiscountsByIds(
+            @RequestBody List<String> discountIds,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Discount> discountPages = discountService.findAllDiscounts(pageable, discountIds);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Discounts retrieved successfully",
+                        DiscountResponseDTO.convert(discountPages.getContent()),
+                        new PageResponse.PagingResponse(
+                                discountPages.getNumber(),
+                                discountPages.getSize(),
+                                discountPages.getTotalElements(),
+                                discountPages.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @GetMapping("/active-not-expired")
+    @Transactional(readOnly = true)
+    @Operation(
+            summary = "Get all active discounts that are not expired (before expired date) with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved active, not expired discounts",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<DiscountResponseDTO>> findAllDiscountsWithBeforeExpiredDate(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Discount> discountPages = discountService.findAllDiscountsWithBeforeExpiredDate(pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Active, not expired discounts retrieved successfully",
+                        DiscountResponseDTO.convert(discountPages.getContent()),
+                        new PageResponse.PagingResponse(
+                                discountPages.getNumber(),
+                                discountPages.getSize(),
+                                discountPages.getTotalElements(),
+                                discountPages.getTotalPages()
+                        )
                 )
         );
     }

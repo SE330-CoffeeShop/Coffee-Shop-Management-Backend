@@ -20,7 +20,6 @@ public class CartResponseDTO {
             example = "91b2999d-d327-4dc8-9956-2fadc0dc8778"
     )
     private String id;
-
     private BigDecimal cartTotalCost;
     private BigDecimal cartDiscountCost;
     private BigDecimal cartTotalCostAfterDiscount;

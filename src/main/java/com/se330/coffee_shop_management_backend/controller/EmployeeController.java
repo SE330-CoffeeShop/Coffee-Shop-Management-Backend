@@ -222,8 +222,54 @@ public class EmployeeController {
         );
     }
 
+    @PostMapping("/branch-manager/{branchId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @Operation(
+            summary = "Create a branch manager for a specific branch",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Branch manager created successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<EmployeeResponseDTO>> createBranchManager(
+            @RequestBody RegisterRequest request,
+            @PathVariable UUID branchId
+    ) throws BindException {
+        EmployeeResponseDTO employee = EmployeeResponseDTO.convert(employeeService.createBranchManager(request, branchId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Branch manager created successfully",
+                        employee
+                )
+        );
+    }
+
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Update employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -274,7 +320,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Delete employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

@@ -14,6 +14,7 @@ public class ShiftDetail {
     private String shiftId;
     private LocalTime startTime;
     private LocalTime endTime;
+    private String daysOfWeek;
     private BigDecimal shiftSalary;
     private int totalShiftCheckins;
     private BigDecimal totalShiftSalary;
