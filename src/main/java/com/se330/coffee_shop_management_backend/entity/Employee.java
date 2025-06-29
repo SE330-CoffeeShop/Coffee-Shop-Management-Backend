@@ -5,7 +5,6 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -19,17 +18,14 @@ import java.util.List;
         @AttributeOverride(name = "id", column = @Column(name = "employee_id"))
 })
 public class Employee extends AbstractBaseEntity {
-    @Column(name = "employee_position", nullable = false)
-    private String employeePosition = "";
-
-    @Column(name = "employee_department", nullable = false)
-    private String employeeDepartment = "";
-
     @Column(name = "employee_hire_date", nullable = false)
     private LocalDateTime employeeHireDate;
 
+    @OneToOne(mappedBy = "manager", fetch = FetchType.LAZY)
+    private Branch managedBranch;
+
     // Many employees can belong to one branch
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "branch_id",
             foreignKey = @ForeignKey(
@@ -40,7 +36,7 @@ public class Employee extends AbstractBaseEntity {
     private Branch branch;
 
     // One employee is associated with exactly one user
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
             unique = true,
@@ -51,10 +47,19 @@ public class Employee extends AbstractBaseEntity {
     )
     private User user;
 
-    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Order order;
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Order> orders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Shift> shifts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<SubCheckin> subCheckins = new ArrayList<>();
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Salary> salaries = new ArrayList<>();
 }

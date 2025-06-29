@@ -55,7 +55,11 @@ public class WebSecurityConfig {
                     "/api-docs/**",
                     "/swagger-ui/**",
                     "/webjars/**",
-                    "/ws/**"
+                    "/ws/**",
+                    "/payment/paypal/**",
+                    "/payment/vnpay/**",
+                    "/payment/success/**",
+                    "/payment/cancel/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasAuthority(Constants.RoleEnum.ADMIN.name())
                 .anyRequest().authenticated()

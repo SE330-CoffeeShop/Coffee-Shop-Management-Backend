@@ -20,7 +20,7 @@ public class TransferDetail extends AbstractBaseEntity {
     @Column(name = "transfer_detail_unit", nullable = false)
     private String transferDetailUnit;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "ingredient_id",
             foreignKey = @ForeignKey(
@@ -30,7 +30,7 @@ public class TransferDetail extends AbstractBaseEntity {
     )
     private Ingredient ingredient;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "transfer_id",
             foreignKey = @ForeignKey(

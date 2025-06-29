@@ -11,6 +11,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -27,16 +29,19 @@ public class ImpCommentService implements ICommentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Comment findByIdComment(int id) {
         return commentRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Comment> findAllComments(Pageable pageable) {
         return commentRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Comment> findAllCommentsByProductId(String productId, Pageable pageable) {
         Product product = productRepository.findById(UUID.fromString(productId))
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + productId));
@@ -44,6 +49,7 @@ public class ImpCommentService implements ICommentService {
     }
 
     @Override
+    @Transactional
     public Comment createComment(CommentCreateRequestDTO commentCreateRequestDTO) {
         Product product = productRepository.findById(UUID.fromString(commentCreateRequestDTO.getProductId()))
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + commentCreateRequestDTO.getProductId()));
@@ -61,6 +67,7 @@ public class ImpCommentService implements ICommentService {
     }
 
     @Override
+    @Transactional
     public Comment updateComment(CommentUpdateDTO commentUpdateDTO) {
         int commentId = commentUpdateDTO.getCommentId();
 
@@ -75,6 +82,7 @@ public class ImpCommentService implements ICommentService {
     }
 
     @Override
+    @Transactional
     public void deleteComment(int id) {
         Comment existingComment = commentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found with ID: " + id));

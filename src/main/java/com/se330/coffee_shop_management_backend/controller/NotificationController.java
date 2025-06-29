@@ -1,9 +1,11 @@
 package com.se330.coffee_shop_management_backend.controller;
 
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationCreateRequestDTO;
+import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationForManyCreateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.request.notification.NotificationUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.notification.NotificationResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Notification;
 import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -44,20 +47,12 @@ public class NotificationController {
                             description = "Successfully retrieved notification",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = NotificationResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid ID format",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -73,13 +68,164 @@ public class NotificationController {
                     )
             }
     )
-    public ResponseEntity<NotificationResponseDTO> findByIdNotification(@PathVariable UUID id) {
-        return ResponseEntity.ok(NotificationResponseDTO.convert(notificationService.findByIdNotification(id)));
+    public ResponseEntity<SingleResponse<NotificationResponseDTO>> findByIdNotification(@PathVariable String id) {
+        NotificationResponseDTO notification = NotificationResponseDTO.convert(notificationService.findByIdNotification(UUID.fromString(id)));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Notification retrieved successfully",
+                        notification
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Get all notifications with pagination",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Successfully retrieved notification list",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllNotifications(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "desc") String sortType,
+            @RequestParam(defaultValue = "createdAt") String sortBy
+    ) {
+        Integer offset = (page - 1) * limit;
+        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
+        Page<Notification> notificationPage = notificationService.findAllNotifications(pageable);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Notifications retrieved successfully",
+                        NotificationResponseDTO.convert(notificationPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @Operation(
+            summary = "Create new notification",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Notification created successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<NotificationResponseDTO>> createNotification(@RequestBody NotificationCreateRequestDTO notificationCreateRequestDTO) {
+        NotificationResponseDTO notification = NotificationResponseDTO.convert(notificationService.createNotification(notificationCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Notification created successfully",
+                        notification
+                )
+        );
+    }
+
+    @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @Operation(
+            summary = "Update notification",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Notification updated successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Notification not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<NotificationResponseDTO>> updateNotification(@RequestBody NotificationUpdateRequestDTO notificationUpdateRequestDTO) {
+        NotificationResponseDTO notification = NotificationResponseDTO.convert(notificationService.updateNotification(notificationUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Notification updated successfully",
+                        notification
+                )
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    @Operation(
+            summary = "Delete notification",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Notification deleted successfully"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Notification not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<Void> deleteNotification(@PathVariable UUID id) {
+        notificationService.deleteNotification(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/user")
+    @Operation(
+            summary = "Get all notifications for a user with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
@@ -100,88 +246,39 @@ public class NotificationController {
                     )
             }
     )
-    public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllNotifications(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
-            @RequestParam(defaultValue = "desc") String sortType,
-            @RequestParam(defaultValue = "createdAt") String sortBy
-    ) {
-        Integer offset = (page - 1) * limit;
-        Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Notification> notificationPage = notificationService.findAllNotifications(pageable);
-
-        return ResponseEntity.ok(
-                new PageResponse<>(
-                        NotificationResponseDTO.convert(notificationPage.getContent()),
-                        notificationPage.getTotalElements(),
-                        notificationPage.getNumber(),
-                        notificationPage.getSize()
-                )
-        );
-    }
-
-    @GetMapping("/user/{userId}")
-    @Operation(
-            summary = "Get all notifications for a specific user",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Successfully retrieved user notifications",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = PageResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "User not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
     public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllNotificationsByUserId(
-            @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Notification> notificationPage = notificationService.findAllNotificationsByUserId(userId, pageable);
+        Page<Notification> notificationPage = notificationService.findAllNotificationsByUserId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "User notifications retrieved successfully",
                         NotificationResponseDTO.convert(notificationPage.getContent()),
-                        notificationPage.getTotalElements(),
-                        notificationPage.getNumber(),
-                        notificationPage.getSize()
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
                 )
         );
     }
 
-    @GetMapping("/sent/{userId}")
+    @GetMapping("/sent/user")
     @Operation(
-            summary = "Get all sent notifications by a specific user",
+            summary = "Get all sent notifications by a user with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved sent notifications",
+                            description = "Successfully retrieved notification list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
@@ -190,14 +287,6 @@ public class NotificationController {
                     @ApiResponse(
                             responseCode = "401",
                             description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "User not found",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -206,35 +295,38 @@ public class NotificationController {
             }
     )
     public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllSentNotificationsByUserId(
-            @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Notification> notificationPage = notificationService.findAllSentNotificationsByUserId(pageable, userId);
+        Page<Notification> notificationPage = notificationService.findAllSentNotificationsByUserId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Sent notifications retrieved successfully",
                         NotificationResponseDTO.convert(notificationPage.getContent()),
-                        notificationPage.getTotalElements(),
-                        notificationPage.getNumber(),
-                        notificationPage.getSize()
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
                 )
         );
     }
 
-    @GetMapping("/received/{userId}")
+    @GetMapping("/received/user")
     @Operation(
-            summary = "Get all received notifications for a specific user",
+            summary = "Get all received notifications by a user with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved received notifications",
+                            description = "Successfully retrieved notification list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
@@ -247,87 +339,46 @@ public class NotificationController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "User not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
     public ResponseEntity<PageResponse<NotificationResponseDTO>> findAllReceivedNotificationsByUserId(
-            @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<Notification> notificationPage = notificationService.findAllReceivedNotificationsByUserId(pageable, userId);
+        Page<Notification> notificationPage = notificationService.findAllReceivedNotificationsByUserId(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Received notifications retrieved successfully",
                         NotificationResponseDTO.convert(notificationPage.getContent()),
-                        notificationPage.getTotalElements(),
-                        notificationPage.getNumber(),
-                        notificationPage.getSize()
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
                 )
         );
     }
 
-    @PostMapping("/")
+    @PostMapping("/send-to-many")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @Operation(
-            summary = "Create new notification",
-            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
-            responses = {
-                    @ApiResponse(
-                            responseCode = "201",
-                            description = "Notification created successfully",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = NotificationResponseDTO.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    )
-            }
-    )
-    public ResponseEntity<NotificationResponseDTO> createNotification(@RequestBody NotificationCreateRequestDTO notificationCreateRequestDTO) {
-        NotificationResponseDTO createdNotification = NotificationResponseDTO.convert(
-                notificationService.createNotification(notificationCreateRequestDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdNotification);
-    }
-
-    @PatchMapping("/")
-    @Operation(
-            summary = "Update notification",
+            summary = "Send notification to multiple users",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Notification updated successfully",
+                            description = "Notifications sent successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = NotificationResponseDTO.class)
+                                    schema = @Schema(implementation = PageResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -337,46 +388,82 @@ public class NotificationController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Notification not found",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<NotificationResponseDTO> updateNotification(@RequestBody NotificationUpdateRequestDTO notificationUpdateRequestDTO) {
-        NotificationResponseDTO updatedNotification = NotificationResponseDTO.convert(
-                notificationService.updateNotification(notificationUpdateRequestDTO));
-        return ResponseEntity.ok(updatedNotification);
+    public ResponseEntity<PageResponse<NotificationResponseDTO>> sendNotificationToMany(
+            @RequestBody NotificationForManyCreateRequestDTO notificationForManyCreateRequestDTO) {
+        Page<Notification> notificationPage = notificationService.sendNotificationToMany(notificationForManyCreateRequestDTO);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Notifications sent to multiple users successfully",
+                        NotificationResponseDTO.convert(notificationPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
+                )
+        );
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/send-to-all")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @Operation(
-            summary = "Delete notification",
+            summary = "Send notification to all users",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
-                            responseCode = "204",
-                            description = "Notification deleted successfully"
+                            responseCode = "200",
+                            description = "Notifications sent successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = PageResponse.class)
+                            )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
+                            responseCode = "400",
+                            description = "Invalid input data",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<PageResponse<NotificationResponseDTO>> sendNotificationToAllUsers(
+            @RequestBody NotificationCreateRequestDTO notificationCreateRequestDTO) {
+        Page<Notification> notificationPage = notificationService.sendNotificationToAllUsers(notificationCreateRequestDTO);
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Notifications sent to all users successfully",
+                        NotificationResponseDTO.convert(notificationPage.getContent()),
+                        new PageResponse.PagingResponse(
+                                notificationPage.getNumber(),
+                                notificationPage.getSize(),
+                                notificationPage.getTotalElements(),
+                                notificationPage.getTotalPages()
+                        )
+                )
+        );
+    }
+
+    @PatchMapping("/read/{id}")
+    @Operation(
+            summary = "Mark notification as read",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Notification marked as read successfully",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -389,8 +476,15 @@ public class NotificationController {
                     )
             }
     )
-    public ResponseEntity<Void> deleteNotification(@PathVariable UUID id) {
-        notificationService.deleteNotification(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<SingleResponse<NotificationResponseDTO>> readNotification(@PathVariable String id) {
+        UUID testUUID = UUID.fromString(id);
+        NotificationResponseDTO notification = NotificationResponseDTO.convert(notificationService.readNotification(testUUID));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Notification marked as read successfully",
+                        notification
+                )
+        );
     }
 }

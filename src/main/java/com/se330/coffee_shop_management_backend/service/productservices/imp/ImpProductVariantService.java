@@ -7,6 +7,7 @@ import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductRepository;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.service.productservices.IProductVariantService;
+import com.se330.coffee_shop_management_backend.util.CreateSlug;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,16 +30,24 @@ public class ImpProductVariantService implements IProductVariantService {
         this.productRepository = productRepository;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ProductVariant findByIdProductVariant(UUID id) {
         return productVariantRepository.findById(id).orElse(null);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<ProductVariant> findAllProductVariants(Pageable pageable) {
         return productVariantRepository.findAll(pageable);
     }
 
+    @Override
+    public Page<ProductVariant> findAllProductVariantsByProductId(UUID productId, Pageable pageable) {
+        return productVariantRepository.findAllByProduct_Id(productId, pageable);
+    }
+
+    @Transactional
     @Override
     public ProductVariant createProductVariant(ProductVariantCreateRequestDTO productVariantCreateRequestDTO) {
         Product product = productRepository.findById(productVariantCreateRequestDTO.getProduct())
@@ -50,10 +59,9 @@ public class ImpProductVariantService implements IProductVariantService {
                         .variantDefault(productVariantCreateRequestDTO.getVariantDefault())
                         .variantPrice(productVariantCreateRequestDTO.getVariantPrice())
                         .product(product)
-                        .variantSlug("")
-                        .variantSort(0)
-                        .variantStock(0)
-                        .variantIsPublished(false)
+                        .variantSlug(CreateSlug.createSlug(productVariantCreateRequestDTO.getVariantTierIdx()))
+                        .variantSort(productVariantCreateRequestDTO.getVariantSort())
+                        .variantIsPublished(true)
                         .variantIsDeleted(false)
                         .build()
         );
@@ -77,10 +85,9 @@ public class ImpProductVariantService implements IProductVariantService {
 
         existingVariant.setVariantTierIdx(productVariantUpdateRequestDTO.getVariantTierIdx());
         existingVariant.setVariantDefault(productVariantUpdateRequestDTO.getVariantDefault());
-        existingVariant.setVariantSlug(productVariantUpdateRequestDTO.getVariantSlug());
+        existingVariant.setVariantSlug(CreateSlug.createSlug(productVariantUpdateRequestDTO.getVariantTierIdx()));
         existingVariant.setVariantSort(productVariantUpdateRequestDTO.getVariantSort());
         existingVariant.setVariantPrice(productVariantUpdateRequestDTO.getVariantPrice());
-        existingVariant.setVariantStock(productVariantUpdateRequestDTO.getVariantStock());
         existingVariant.setVariantIsPublished(productVariantUpdateRequestDTO.getVariantIsPublished());
         existingVariant.setVariantIsDeleted(productVariantUpdateRequestDTO.getVariantIsDeleted());
 

@@ -42,7 +42,7 @@ public class Comment {
     @Column(name = "comment_is_deleted", nullable = false)
     private boolean commentIsDeleted;
 
-    @Column(name = "comment_rating", nullable = false, precision = 2, scale = 2)
+    @Column(name = "comment_rating", nullable = false, precision = 3, scale = 2)
     private BigDecimal commentRating;
 
     @ManyToOne(fetch = FetchType.LAZY)

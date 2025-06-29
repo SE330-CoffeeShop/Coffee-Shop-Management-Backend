@@ -2,7 +2,11 @@ server:
   port: ${SERVER_PORT}
   servlet:
     context-path: ${SERVER_SERVLET_CONTEXT_PATH}
+    encoding:
+      enabled: true
+      charset: UTF-8
   forward-headers-strategy: framework
+  address: ${SERVER_ADDRESS}
 
 app:
   secret: ${APP_SECRET}
@@ -38,6 +42,14 @@ spring:
         show_sql: true
         format_sql: true
         globally_quoted_identifiers: true
+        search:
+          backend:
+            type: lucene
+            directory:
+              root: ./data/index
+            analysis:
+              configurer: com.se330.coffee_shop_management_backend.config.fts.VietnameseAnalysisConfigurer
+            create_missing_directories: true
     open-in-view: false
   datasource:
     url: jdbc:postgresql://${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRESQL_DB}
@@ -59,8 +71,14 @@ spring:
       max-request-size: ${MULTIPART_MAX_REQUEST_SIZE}
   messages:
     basename: locales.messages
-    encoding: UTF-8
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force-encoding: true
     cache-duration: ${MESSAGES_CACHE_DURATION}
+  http:
+    encoding:
+      force-encoding: true
   jackson:
     mapper:
       accept-case-insensitive-enums: true
@@ -119,3 +137,27 @@ logging:
   logback:
     rollingpolicy:
       file-name-pattern: ./var/logs/app.%d{yyyy-MM-dd}.%i.log
+
+cloudinary:
+    cloud-name: ${CLOUD_NAME}
+    api-key: ${CLOUDINARY_API_KEY}
+    api-secret: ${CLOUDINARY_API_SECRET}
+
+firebase:
+  credentials:
+    file: ${FIREBASE_CREDENTIALS_FILE}
+  project-id: ${FIREBASE_PROJECT_ID}
+
+paypal:
+  client-id: ${CLIENT_ID}
+  client-secret: ${SECRET_KEY}
+  mode: ${PAYPAL_MODE}
+
+momo:
+  partner-code: MOMO
+  return-url: ${SUCCESS_REDIRECT_URL}
+  end-point: https://test-payment.momo.vn/v2/gateway/api
+  ipn-url: http://localhost:3000/
+  access-key: F8BBA842ECF85
+  secret-key: K95186PE1waDMi640xX08PD3vg6EkVLz
+  request-type: captureWallet

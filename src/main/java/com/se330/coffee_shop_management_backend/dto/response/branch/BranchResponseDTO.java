@@ -1,10 +1,8 @@
 package com.se330.coffee_shop_management_backend.dto.response.branch;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.Branch;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -13,11 +11,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class BranchResponseDTO extends AbstractBaseResponse {
+public class BranchResponseDTO {
 
     @Schema(
             name = "id",
@@ -47,10 +44,8 @@ public class BranchResponseDTO extends AbstractBaseResponse {
     private String branchAddress;
     private String branchPhone;
     private String branchEmail;
-    private List<String> employeeIds;
-    private List<String> transferIds;
-    private List<String> inventoryIds;
-    private List<String> discountIds;
+    private String managerId;
+    private String managerName;
 
     public static BranchResponseDTO convert(Branch branch) {
         return BranchResponseDTO.builder()
@@ -61,18 +56,8 @@ public class BranchResponseDTO extends AbstractBaseResponse {
                 .branchAddress(branch.getBranchAddress())
                 .branchPhone(branch.getBranchPhone())
                 .branchEmail(branch.getBranchEmail())
-                .employeeIds(branch.getEmployees() != null ? branch.getEmployees().stream()
-                        .map(employee -> employee.getId().toString())
-                        .collect(Collectors.toList()) : Collections.emptyList())
-                .transferIds(branch.getTransfers() != null ? branch.getTransfers().stream()
-                        .map(transfer -> transfer.getId().toString())
-                        .collect(Collectors.toList()) : Collections.emptyList())
-                .inventoryIds(branch.getInventories() != null ? branch.getInventories().stream()
-                        .map(inventory -> inventory.getId().toString())
-                        .collect(Collectors.toList()) : Collections.emptyList())
-                .discountIds(branch.getDiscounts() != null ? branch.getDiscounts().stream()
-                        .map(discount -> discount.getId().toString())
-                        .collect(Collectors.toList()) : Collections.emptyList())
+                .managerId(branch.getManager() != null ? branch.getManager().getId().toString() : null)
+                .managerName(branch.getManager() != null ? branch.getManager().getUser().getFullName() : null)
                 .build();
     }
 

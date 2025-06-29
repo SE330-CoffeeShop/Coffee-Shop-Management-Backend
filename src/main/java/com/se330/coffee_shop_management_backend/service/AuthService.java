@@ -1,6 +1,5 @@
 package com.se330.coffee_shop_management_backend.service;
 
-import com.se330.coffee_shop_management_backend.dto.response.auth.TokenExpiresInResponse;
 import com.se330.coffee_shop_management_backend.dto.response.auth.TokenResponse;
 import com.se330.coffee_shop_management_backend.entity.JwtToken;
 import com.se330.coffee_shop_management_backend.entity.User;
@@ -8,6 +7,7 @@ import com.se330.coffee_shop_management_backend.exception.NotFoundException;
 import com.se330.coffee_shop_management_backend.exception.RefreshTokenExpiredException;
 import com.se330.coffee_shop_management_backend.security.JwtTokenProvider;
 import com.se330.coffee_shop_management_backend.security.JwtUserDetails;
+import com.se330.coffee_shop_management_backend.service.notificationservices.INotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -37,6 +38,8 @@ public class AuthService {
 
     private final MessageSourceService messageSourceService;
 
+    private final INotificationService notificationService;
+
     /**
      * Authenticate user.
      *
@@ -45,13 +48,15 @@ public class AuthService {
      * @param rememberMe Boolean
      * @return TokenResponse
      */
+    @Transactional
     public TokenResponse login(String email, final String password, final Boolean rememberMe) {
         log.info("Login request received: {}", email);
 
         String badCredentialsMessage = messageSourceService.get("bad_credentials");
 
+        User user = null;
         try {
-            User user = userService.findByEmail(email);
+            user = userService.findByEmail(email);
             email = user.getEmail();
         } catch (NotFoundException e) {
             log.error("User not found with email: {}", email);
@@ -63,6 +68,8 @@ public class AuthService {
         try {
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             JwtUserDetails jwtUserDetails = jwtTokenProvider.getPrincipal(authentication);
+
+            notificationService.sendLoginPushNotification(user);
 
             return generateTokens(UUID.fromString(jwtUserDetails.getId()), rememberMe);
         } catch (NotFoundException e) {
@@ -77,6 +84,7 @@ public class AuthService {
      * @param bearer String
      * @return TokenResponse
      */
+    @Transactional
     public TokenResponse refreshFromBearerString(final String bearer) {
         return refresh(jwtTokenProvider.extractJwtFromBearerString(bearer));
     }
@@ -86,6 +94,7 @@ public class AuthService {
      *
      * @param email String
      */
+    @Transactional
     public void resetPassword(String email) {
         log.info("Reset password request received: {}", email);
         userService.sendEmailPasswordResetMail(email);
@@ -97,6 +106,7 @@ public class AuthService {
      * @param user   User
      * @param bearer String
      */
+    @Transactional
     public void logout(User user, final String bearer) {
         JwtToken jwtToken = jwtTokenService.findByTokenOrRefreshToken(
             jwtTokenProvider.extractJwtFromBearerString(bearer));
@@ -114,6 +124,7 @@ public class AuthService {
      *
      * @param user User
      */
+    @Transactional
     public void logout(User user) {
         logout(user, httpServletRequest.getHeader(TOKEN_HEADER));
     }
@@ -124,7 +135,8 @@ public class AuthService {
      * @param refreshToken String
      * @return TokenResponse
      */
-    private TokenResponse refresh(final String refreshToken) {
+    @Transactional
+    public TokenResponse refresh(final String refreshToken) {
         log.info("Refresh request received: {}", refreshToken);
 
         if (!jwtTokenProvider.validateToken(refreshToken)) {
@@ -154,7 +166,8 @@ public class AuthService {
      * @param rememberMe Boolean option to set the expiration time for refresh token
      * @return an object of TokenResponse
      */
-    private TokenResponse generateTokens(final UUID id, final Boolean rememberMe) {
+    @Transactional
+    public TokenResponse generateTokens(final UUID id, final Boolean rememberMe) {
         String token = jwtTokenProvider.generateJwt(id.toString());
         String refreshToken = jwtTokenProvider.generateRefresh(id.toString());
         if (rememberMe) {
@@ -172,15 +185,14 @@ public class AuthService {
             .build());
         log.info("Token generated for user: {}", id);
 
+        User user = userService.findById(id);
+        String role = user.getRole().getName().getValue();
+
         return TokenResponse.builder()
-            .token(token)
+            .accessToken(token)
             .refreshToken(refreshToken)
-            .expiresIn(
-                TokenExpiresInResponse.builder()
-                    .token(jwtTokenProvider.getTokenExpiresIn())
-                    .refreshToken(jwtTokenProvider.getRefreshTokenExpiresIn())
-                    .build()
-            )
+            .id(String.valueOf(id))
+            .role(role)
             .build();
     }
 }

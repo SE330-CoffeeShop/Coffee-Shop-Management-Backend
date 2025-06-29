@@ -33,7 +33,7 @@ import static com.se330.coffee_shop_management_backend.util.Constants.PASSWORD_R
 @NoArgsConstructor
 @AllArgsConstructor
 public class PasswordResetToken extends AbstractBaseEntity {
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(
         name = "user_id",

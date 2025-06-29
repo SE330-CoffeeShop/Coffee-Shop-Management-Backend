@@ -159,10 +159,10 @@ public class JwtTokenProvider {
         parseToken(token);
         try {
             JwtToken jwtToken = jwtTokenService.findByTokenOrRefreshToken(token);
-            if (isHttp && !httpServletRequest.getHeader("User-agent").equals(jwtToken.getUserAgent())) {
-                log.error("[JWT] User-agent is not matched");
-                return false;
-            }
+//            if (isHttp && !httpServletRequest.getHeader("User-agent").equals(jwtToken.getUserAgent())) {
+//                log.error("[JWT] User-agent is not matched");
+//                return false;
+//            }
         } catch (NotFoundException e) {
             log.error("[JWT] Token could not found in Redis");
             return false;

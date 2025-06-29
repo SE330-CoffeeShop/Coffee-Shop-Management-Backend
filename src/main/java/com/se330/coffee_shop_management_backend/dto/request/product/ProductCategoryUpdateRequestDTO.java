@@ -11,5 +11,6 @@ public class ProductCategoryUpdateRequestDTO {
     private UUID categoryId;
     private String categoryName;
     private String categoryDescription;
+    private Integer catalogId;
 }
 

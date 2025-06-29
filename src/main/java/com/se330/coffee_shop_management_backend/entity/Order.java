@@ -1,7 +1,9 @@
 package com.se330.coffee_shop_management_backend.entity;
 
+import com.se330.coffee_shop_management_backend.util.Constants;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.NaturalId;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,20 +20,28 @@ import java.util.List;
         @AttributeOverride(name = "id", column = @Column(name = "order_id"))
 })
 public class Order extends AbstractBaseEntity {
+
+    @Column(name = "order_total_cost_after_discount", nullable = false)
+    private BigDecimal orderTotalCostAfterDiscount;
+
+    @Column(name = "order_discount_cost", nullable = false)
+    private BigDecimal orderDiscountCost;
+
     @Column(name = "order_total_cost", nullable = false)
     private BigDecimal orderTotalCost;
 
-    @Column(name = "order_status", nullable = false)
-    private boolean orderStatus;
+    @Column(name = "order_status")
+    @Enumerated(EnumType.STRING)
+    private Constants.OrderStatusEnum orderStatus;
 
     @Column(name = "order_tracking_number", nullable = false)
-    private BigDecimal orderTrackingNumber;
+    private String orderTrackingNumber;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "employee_id",
             foreignKey = @ForeignKey(
@@ -41,17 +51,10 @@ public class Order extends AbstractBaseEntity {
     )
     private Employee employee;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(
-            name = "payment_method_id",
-            foreignKey = @ForeignKey(
-                    name = "fk_order_payment_method",
-                    foreignKeyDefinition = "FOREIGN KEY (payment_method_id) REFERENCES payment_methods (payment_method_id) ON DELETE CASCADE"
-            )
-    )
-    private PaymentMethods paymentMethod;
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private OrderPayment orderPayment;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_id",
             foreignKey = @ForeignKey(
@@ -61,13 +64,23 @@ public class Order extends AbstractBaseEntity {
     )
     private User user;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "shipping_address_id",
             foreignKey = @ForeignKey(
                     name = "fk_order_shipping_address",
-                    foreignKeyDefinition = "FOREIGN KEY (shipping_address_id) REFERENCES shipping_addresses (shipping_address_id) ON DELETE CASCADE"
+                    foreignKeyDefinition = "FOREIGN KEY (shipping_address_id) REFERENCES shipping_addresses (shipping_address_id)"
             )
     )
     private ShippingAddresses shippingAddress;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "branch_id",
+            foreignKey = @ForeignKey(
+                    name = "fk_order_branch",
+                    foreignKeyDefinition = "FOREIGN KEY (branch_id) REFERENCES branches (branch_id) ON DELETE CASCADE"
+            )
+    )
+    private Branch branch;
 }

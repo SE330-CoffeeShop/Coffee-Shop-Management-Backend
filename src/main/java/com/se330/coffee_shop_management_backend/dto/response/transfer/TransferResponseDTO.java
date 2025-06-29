@@ -1,10 +1,8 @@
 package com.se330.coffee_shop_management_backend.dto.response.transfer;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.Transfer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -12,11 +10,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class TransferResponseDTO extends AbstractBaseResponse {
+public class TransferResponseDTO{
     @Schema(
             name = "id",
             description = "UUID",
@@ -46,7 +43,6 @@ public class TransferResponseDTO extends AbstractBaseResponse {
     private BigDecimal transferTotalCost;
     private String branchId;
     private String warehouseId;
-    private List<String> transferDetailIds;
 
     public static TransferResponseDTO convert(Transfer transfer) {
         return TransferResponseDTO.builder()
@@ -58,9 +54,6 @@ public class TransferResponseDTO extends AbstractBaseResponse {
                 .transferTotalCost(transfer.getTransferTotalCost())
                 .branchId(transfer.getBranch().getId().toString())
                 .warehouseId(transfer.getWarehouse().getId().toString())
-                .transferDetailIds(transfer.getTransferDetails().stream()
-                        .map(detail -> detail.getId().toString())
-                        .toList())
                 .build();
     }
 

@@ -23,7 +23,7 @@ public class Inventory extends AbstractBaseEntity {
     @Column(name = "inventory_expire_date", nullable = false)
     private LocalDateTime inventoryExpireDate;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "branch_id",
             foreignKey = @ForeignKey(
@@ -33,7 +33,7 @@ public class Inventory extends AbstractBaseEntity {
     )
     private Branch branch;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "ingredient_id",
             foreignKey = @ForeignKey(

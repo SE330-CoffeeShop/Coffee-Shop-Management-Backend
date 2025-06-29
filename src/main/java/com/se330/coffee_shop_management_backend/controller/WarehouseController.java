@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.warehouse.WarehouseC
 import com.se330.coffee_shop_management_backend.dto.request.warehouse.WarehouseUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.warehouse.WarehouseResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Warehouse;
 import com.se330.coffee_shop_management_backend.service.warehouse.IWarehouseService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -35,6 +37,7 @@ public class WarehouseController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get warehouse detail",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -44,7 +47,7 @@ public class WarehouseController {
                             description = "Successfully retrieved warehouse",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = WarehouseResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -56,14 +59,6 @@ public class WarehouseController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
                             responseCode = "404",
                             description = "Warehouse not found",
                             content = @Content(
@@ -73,11 +68,19 @@ public class WarehouseController {
                     )
             }
     )
-    public ResponseEntity<WarehouseResponseDTO> findByIdWarehouse(@PathVariable UUID id) {
-        return ResponseEntity.ok(WarehouseResponseDTO.convert(warehouseService.findByIdWarehouse(id)));
+    public ResponseEntity<SingleResponse<WarehouseResponseDTO>> findByIdWarehouse(@PathVariable UUID id) {
+        WarehouseResponseDTO warehouse = WarehouseResponseDTO.convert(warehouseService.findByIdWarehouse(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Warehouse retrieved successfully",
+                        warehouse
+                )
+        );
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Get all warehouses with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -89,21 +92,12 @@ public class WarehouseController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
     public ResponseEntity<PageResponse<WarehouseResponseDTO>> findAllWarehouses(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
@@ -113,15 +107,21 @@ public class WarehouseController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Warehouses retrieved successfully",
                         WarehouseResponseDTO.convert(warehousePage.getContent()),
-                        warehousePage.getTotalElements(),
-                        warehousePage.getNumber(),
-                        warehousePage.getSize()
+                        new PageResponse.PagingResponse(
+                                warehousePage.getNumber(),
+                                warehousePage.getSize(),
+                                warehousePage.getTotalElements(),
+                                warehousePage.getTotalPages()
+                        )
                 )
         );
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Create new warehouse",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -131,7 +131,7 @@ public class WarehouseController {
                             description = "Warehouse created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = WarehouseResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -141,26 +141,22 @@ public class WarehouseController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<WarehouseResponseDTO> createWarehouse(@RequestBody WarehouseCreateRequestDTO warehouseCreateRequestDTO) {
+    public ResponseEntity<SingleResponse<WarehouseResponseDTO>> createWarehouse(@RequestBody WarehouseCreateRequestDTO warehouseCreateRequestDTO) {
+        WarehouseResponseDTO warehouse = WarehouseResponseDTO.convert(warehouseService.createWarehouse(warehouseCreateRequestDTO));
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                WarehouseResponseDTO.convert(
-                        warehouseService.createWarehouse(warehouseCreateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Warehouse created successfully",
+                        warehouse
                 )
         );
     }
 
     @PatchMapping("/")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Update warehouse",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -170,20 +166,12 @@ public class WarehouseController {
                             description = "Warehouse updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = WarehouseResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -199,15 +187,19 @@ public class WarehouseController {
                     )
             }
     )
-    public ResponseEntity<WarehouseResponseDTO> updateWarehouse(@RequestBody WarehouseUpdateRequestDTO warehouseUpdateRequestDTO) {
+    public ResponseEntity<SingleResponse<WarehouseResponseDTO>> updateWarehouse(@RequestBody WarehouseUpdateRequestDTO warehouseUpdateRequestDTO) {
+        WarehouseResponseDTO warehouse = WarehouseResponseDTO.convert(warehouseService.updateWarehouse(warehouseUpdateRequestDTO));
         return ResponseEntity.ok(
-                WarehouseResponseDTO.convert(
-                        warehouseService.updateWarehouse(warehouseUpdateRequestDTO)
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Warehouse updated successfully",
+                        warehouse
                 )
         );
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'EMPLOYEE')")
     @Operation(
             summary = "Delete warehouse",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -215,14 +207,6 @@ public class WarehouseController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Warehouse deleted successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     ),
                     @ApiResponse(
                             responseCode = "404",

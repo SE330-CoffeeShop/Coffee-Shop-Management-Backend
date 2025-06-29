@@ -1,21 +1,18 @@
 package com.se330.coffee_shop_management_backend.dto.response.supplier;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.Supplier;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class SupplierResponseDTO extends AbstractBaseResponse {
+public class SupplierResponseDTO {
     @Schema(
             name = "id",
             description = "UUID",
@@ -44,8 +41,6 @@ public class SupplierResponseDTO extends AbstractBaseResponse {
     private String supplierPhone;
     private String supplierEmail;
     private String supplierAddress;
-    private List<String> stockIds;
-    private List<String> invoiceIds;
 
     public static SupplierResponseDTO convert(Supplier supplier) {
         return SupplierResponseDTO.builder()
@@ -56,10 +51,6 @@ public class SupplierResponseDTO extends AbstractBaseResponse {
                 .supplierPhone(supplier.getSupplierPhone())
                 .supplierEmail(supplier.getSupplierEmail())
                 .supplierAddress(supplier.getSupplierAddress())
-                .stockIds(supplier.getStocks() != null ? supplier.getStocks().stream()
-                        .map(stock -> stock.getId().toString()).toList() : List.of())
-                .invoiceIds(supplier.getInvoices() != null ? supplier.getInvoices().stream()
-                        .map(invoice -> invoice.getId().toString()).toList() : List.of())
                 .build();
     }
 

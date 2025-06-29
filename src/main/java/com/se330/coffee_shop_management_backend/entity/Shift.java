@@ -1,10 +1,13 @@
 package com.se330.coffee_shop_management_backend.entity;
 
+import com.se330.coffee_shop_management_backend.util.Constants;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "shifts")
@@ -18,12 +21,12 @@ import java.util.Date;
 })
 public class Shift extends AbstractBaseEntity {
     @Column(name = "shift_start_time", nullable = false)
-    private LocalDateTime shiftStartTime;
+    private LocalTime shiftStartTime;
 
     @Column(name = "shift_end_time", nullable = false)
-    private LocalDateTime shiftEndTime;
+    private LocalTime shiftEndTime;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "employee_id",
             foreignKey = @ForeignKey(
@@ -32,4 +35,20 @@ public class Shift extends AbstractBaseEntity {
             )
     )
     private Employee employee;
+
+    @Column(name = "day_of_week", nullable = false)
+    private Constants.DayOfWeekEnum dayOfWeek;
+
+    @Column(name = "month", nullable = false)
+    private int month;
+
+    @Column(name = "year", nullable = false)
+    private int year;
+
+    @Column(name = "shift_salary", nullable = false)
+    private BigDecimal shiftSalary;
+
+    @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Checkin> checkins = new ArrayList<>();
 }

@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -34,16 +36,30 @@ public class ImpInventoryService implements IInventoryService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Inventory findByIdInventory(UUID id) {
         return inventoryRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Inventory> findAllInventories(Pageable pageable) {
         return inventoryRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<Inventory> findAllInventoriesByBrachId(UUID branchId, Pageable pageable) {
+        return inventoryRepository.findAllByBranch_Id(branchId, pageable);
+    }
+
+    @Override
+    public Page<Inventory> findAllInventoriesByBranchIdAndIngredientId(UUID branchId, UUID ingredientId, Pageable pageable) {
+        return inventoryRepository.findAllByBranch_IdAndIngredient_Id(branchId, ingredientId, pageable);
+    }
+
+    @Override
+    @Transactional
     public Inventory createInventory(InventoryCreateRequestDTO inventoryCreateRequestDTO) {
         Ingredient existingIngredient = ingredientRepository.findById(inventoryCreateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));
@@ -51,7 +67,7 @@ public class ImpInventoryService implements IInventoryService {
         Branch existingBranch = branchRepository.findById(inventoryCreateRequestDTO.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Branch not found"));
 
-        return inventoryRepository.save(
+        Inventory newInventory = inventoryRepository.save(
                 Inventory.builder()
                         .ingredient(existingIngredient)
                         .branch(existingBranch)
@@ -59,6 +75,8 @@ public class ImpInventoryService implements IInventoryService {
                         .inventoryExpireDate(inventoryCreateRequestDTO.getInventoryExpireDate())
                         .build()
         );
+
+        return findByIdInventory(newInventory.getId());
     }
 
     @Transactional
@@ -88,7 +106,9 @@ public class ImpInventoryService implements IInventoryService {
         existingInventory.setInventoryQuantity(inventoryUpdateRequestDTO.getInventoryQuantity());
         existingInventory.setInventoryExpireDate(inventoryUpdateRequestDTO.getInventoryExpireDate());
 
-        return inventoryRepository.save(existingInventory);
+        inventoryRepository.save(existingInventory);
+
+        return findByIdInventory(existingInventory.getId());
     }
 
     @Transactional

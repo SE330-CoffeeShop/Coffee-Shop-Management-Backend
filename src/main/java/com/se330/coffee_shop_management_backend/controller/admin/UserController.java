@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.controller.AbstractBaseControlle
 import com.se330.coffee_shop_management_backend.dto.request.user.CreateUserRequest;
 import com.se330.coffee_shop_management_backend.dto.request.user.UpdateUserRequest;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.user.UserResponse;
 import com.se330.coffee_shop_management_backend.dto.response.user.UsersPaginationResponse;
 import com.se330.coffee_shop_management_backend.entity.User;
@@ -11,6 +12,7 @@ import com.se330.coffee_shop_management_backend.entity.specification.criteria.Pa
 import com.se330.coffee_shop_management_backend.entity.specification.criteria.UserCriteria;
 import com.se330.coffee_shop_management_backend.service.MessageSourceService;
 import com.se330.coffee_shop_management_backend.service.UserService;
+import com.se330.coffee_shop_management_backend.service.adminservices.IAdminService;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,11 +39,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
@@ -57,6 +63,8 @@ public class UserController extends AbstractBaseController {
     private final UserService userService;
 
     private final MessageSourceService messageSourceService;
+
+    private final IAdminService adminService;
 
     @GetMapping
     @Operation(
@@ -332,5 +340,37 @@ public class UserController extends AbstractBaseController {
         userService.delete(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/update-database")
+    @Operation(
+            summary = "Update database endpoint",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Success operation",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = SingleResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Full authentication is required to access this resource",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<SingleResponse<Void>> updateDatabase() {
+        adminService.updateDatabase();
+        return ResponseEntity.ok(new SingleResponse<>(
+                200,
+                "Cập nhật cơ sở dữ liệu thành công",
+                null
+        ));
     }
 }

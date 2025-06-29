@@ -1,19 +1,7 @@
 package com.se330.coffee_shop_management_backend.entity;
 
 import com.se330.coffee_shop_management_backend.util.Constants;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,31 +24,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Role extends AbstractBaseEntity {
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
-    @JoinTable(name = "user_roles",
-        joinColumns = @JoinColumn(
-            name = "role_id",
-            foreignKey = @ForeignKey(
-                name = "fk_user_roles_role_id",
-                foreignKeyDefinition = "FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE"
-            ),
-            nullable = false
-        ),
-        inverseJoinColumns = @JoinColumn(
-            name = "user_id",
-            foreignKey = @ForeignKey(
-                name = "fk_user_roles_user_id",
-                foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE"
-            ),
-            nullable = false
-        ),
-        uniqueConstraints = {
-            @UniqueConstraint(
-                columnNames = {"user_id", "role_id"},
-                name = "uk_user_roles_user_id_role_id"
-            )
-        }
-    )
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
     @Builder.Default
     private Set<User> users = new HashSet<>();
 

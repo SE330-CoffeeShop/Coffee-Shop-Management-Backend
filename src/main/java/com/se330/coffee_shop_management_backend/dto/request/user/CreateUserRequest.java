@@ -1,7 +1,5 @@
 package com.se330.coffee_shop_management_backend.dto.request.user;
 
-import com.se330.coffee_shop_management_backend.dto.annotation.MinListSize;
-import com.se330.coffee_shop_management_backend.dto.annotation.ValueOfEnum;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
@@ -11,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
 
 @Getter
 @Setter
@@ -19,16 +16,7 @@ import java.util.List;
 @SuperBuilder
 public class CreateUserRequest extends AbstractBaseCreateUserRequest {
     @NotEmpty(message = "{not_blank}")
-    @MinListSize(min = 1, message = "{min_list_size}")
-    @Schema(
-        name = "roles",
-        description = "Roles of the user",
-        type = "List<String>",
-        requiredMode = Schema.RequiredMode.REQUIRED,
-        allowableValues = {"ADMIN", "USER"},
-        example = "[\"USER\"]"
-    )
-    private List<@ValueOfEnum(enumClass = Constants.RoleEnum.class) String> roles;
+    private Constants.RoleEnum role;
 
     @Schema(
         name = "isEmailVerified",

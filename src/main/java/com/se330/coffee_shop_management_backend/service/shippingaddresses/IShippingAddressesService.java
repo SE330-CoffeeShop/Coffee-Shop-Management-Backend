@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface IShippingAddressesService {
     ShippingAddresses findByIdShippingAddresses(UUID id);
     Page<ShippingAddresses> findAllShippingAddresses(Pageable pageable);
+    Page<ShippingAddresses> findAllShippingAddressesByMe(Pageable pageable);
     ShippingAddresses createShippingAddresses(ShippingAddressesCreateRequestDTO shippingAddressesCreateRequestDTO);
     ShippingAddresses updateShippingAddresses(ShippingAddressesUpdateRequestDTO shippingAddressesUpdateRequestDTO);
     void deleteShippingAddresses(UUID id);

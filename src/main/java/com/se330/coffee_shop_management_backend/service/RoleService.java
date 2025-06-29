@@ -6,6 +6,7 @@ import com.se330.coffee_shop_management_backend.repository.RoleRepository;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class RoleService {
      *
      * @return Long
      */
+    @Transactional
     public long count() {
         return roleRepository.count();
     }
@@ -31,6 +33,7 @@ public class RoleService {
      * @param name Constants.RoleEnum
      * @return Role
      */
+    @Transactional
     public Role findByName(final Constants.RoleEnum name) {
         return roleRepository.findByName(name)
             .orElseThrow(() -> new NotFoundException(messageSourceService.get("role_not_found")));
@@ -42,6 +45,7 @@ public class RoleService {
      * @param role Role
      * @return Role
      */
+    @Transactional
     public Role create(final Role role) {
         return roleRepository.save(role);
     }
@@ -52,6 +56,7 @@ public class RoleService {
      * @param roleList List
      * @return List
      */
+    @Transactional
     public List<Role> saveList(List<Role> roleList) {
         return roleRepository.saveAll(roleList);
     }

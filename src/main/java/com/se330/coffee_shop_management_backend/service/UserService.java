@@ -19,7 +19,6 @@ import com.se330.coffee_shop_management_backend.repository.UserRepository;
 import com.se330.coffee_shop_management_backend.security.JwtUserDetails;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import com.se330.coffee_shop_management_backend.util.PageRequestBuilder;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,16 +30,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,6 +62,8 @@ public class UserService {
 
     private final MessageSourceService messageSourceService;
 
+    private final CloudinaryService cloudinaryService;
+
     /**
      * Get authentication.
      *
@@ -75,6 +78,7 @@ public class UserService {
      *
      * @return user User
      */
+    @Transactional(readOnly = true)
     public User getUser() {
         Authentication authentication = getAuthentication();
         if (authentication.isAuthenticated()) {
@@ -95,6 +99,7 @@ public class UserService {
      *
      * @return Long
      */
+    @Transactional(readOnly = true)
     public long count() {
         return userRepository.count();
     }
@@ -106,6 +111,7 @@ public class UserService {
      * @param paginationCriteria PaginationCriteria
      * @return Page
      */
+    @Transactional(readOnly = true)
     public Page<User> findAll(UserCriteria criteria, PaginationCriteria paginationCriteria) {
         return userRepository.findAll(new UserFilterSpecification(criteria),
             PageRequestBuilder.build(paginationCriteria));
@@ -117,6 +123,7 @@ public class UserService {
      * @param id UUID
      * @return User
      */
+    @Transactional(readOnly = true)
     public User findById(UUID id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
@@ -129,6 +136,7 @@ public class UserService {
      * @param id String
      * @return User
      */
+    @Transactional(readOnly = true)
     public User findById(String id) {
         return findById(UUID.fromString(id));
     }
@@ -139,6 +147,7 @@ public class UserService {
      * @param email String.
      * @return User
      */
+    @Transactional(readOnly = true)
     public User findByEmail(final String email) {
         return userRepository.findByEmail(email)
             .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
@@ -152,6 +161,7 @@ public class UserService {
      * @return UserDetails
      * @throws UsernameNotFoundException email not found exception.
      */
+    @Transactional(readOnly = true)
     public UserDetails loadUserByEmail(final String email) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
@@ -166,6 +176,7 @@ public class UserService {
      * @param id String
      * @return UserDetails
      */
+    @Transactional(readOnly = true)
     public UserDetails loadUserById(final String id) {
         User user = userRepository.findById(UUID.fromString(id))
             .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
@@ -180,6 +191,7 @@ public class UserService {
      * @param authentication Wrapper for security context
      * @return the Principal being authenticated or the authenticated principal after authentication.
      */
+    @Transactional(readOnly = true)
     public JwtUserDetails getPrincipal(final Authentication authentication) {
         return (JwtUserDetails) authentication.getPrincipal();
     }
@@ -190,11 +202,12 @@ public class UserService {
      * @param request RegisterRequest
      * @return User
      */
+    @Transactional
     public User register(final RegisterRequest request) throws BindException {
         log.info("Registering user with email: {}", request.getEmail());
 
         User user = createUser(request);
-        user.setRoles(List.of(roleService.findByName(Constants.RoleEnum.USER)));
+        user.setRole(roleService.findByName(Constants.RoleEnum.CUSTOMER));
         userRepository.save(user);
 
         emailVerificationEventPublisher(user);
@@ -210,12 +223,12 @@ public class UserService {
      * @param request CreateUserRequest
      * @return User
      */
+    @Transactional
     public User create(final CreateUserRequest request) throws BindException {
         log.info("Creating user with email: {}", request.getEmail());
 
         User user = createUser(request);
-        request.getRoles().forEach(role -> user.getRoles()
-            .add(roleService.findByName(Constants.RoleEnum.get(role))));
+        user.setRole(roleService.findByName(request.getRole()));
 
         if (request.getIsEmailVerified() != null && request.getIsEmailVerified()) {
             user.setEmailVerifiedAt(LocalDateTime.now());
@@ -239,6 +252,7 @@ public class UserService {
      * @param request UpdateUserRequest
      * @return User
      */
+    @Transactional
     public User update(UUID id, UpdateUserRequest request) throws BindException {
         User user = findById(id);
         user.setEmail(request.getEmail());
@@ -249,10 +263,8 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
-        if (request.getRoles() != null) {
-            user.setRoles(request.getRoles().stream()
-                .map(role -> roleService.findByName(Constants.RoleEnum.get(role)))
-                .collect(Collectors.toList()));
+        if (request.getRole() != null) {
+            user.setRole(roleService.findByName(request.getRole()));
         }
 
         if (request.getIsEmailVerified() != null) {
@@ -273,6 +285,7 @@ public class UserService {
      * @param request UpdateUserRequest
      * @return User
      */
+    @Transactional
     public User update(String id, UpdateUserRequest request) throws BindException {
         return update(UUID.fromString(id), request);
     }
@@ -282,6 +295,7 @@ public class UserService {
      *
      * @param request UpdatePasswordRequest
      */
+    @Transactional
     public User updatePassword(UpdatePasswordRequest request) throws BindException {
         User user = getUser();
         log.info("Updating password for user with email: {}", user.getEmail());
@@ -314,6 +328,7 @@ public class UserService {
      * @param token String
      * @param request ResetPasswordRequest
      */
+    @Transactional
     public void resetPassword(String token, ResetPasswordRequest request) {
         User user = passwordResetTokenService.getUserByToken(token);
         log.info("Resetting password for user with email: {}", user.getEmail());
@@ -327,6 +342,7 @@ public class UserService {
     /**
      * Resend e-mail verification mail.
      */
+    @Transactional
     public void resendEmailVerificationMail() {
         User user = getUser();
         log.info("Resending e-mail verification mail to email: {}", user.getEmail());
@@ -343,6 +359,7 @@ public class UserService {
      *
      * @param token String
      */
+    @Transactional
     public void verifyEmail(String token) {
         log.info("Verifying e-mail with token: {}", token);
         User user = emailVerificationTokenService.getUserByToken(token);
@@ -358,6 +375,7 @@ public class UserService {
      *
      * @param email String
      */
+    @Transactional
     public void sendEmailPasswordResetMail(String email) {
         log.info("Sending password reset mail to email: {}", email);
         User user = userRepository.findByEmail(email)
@@ -373,6 +391,7 @@ public class UserService {
      *
      * @param id UUID
      */
+    @Transactional
     public void delete(String id) {
         userRepository.delete(findById(id));
     }
@@ -383,25 +402,29 @@ public class UserService {
      * @param request AbstractBaseCreateUserRequest
      * @return User
      */
-    private User createUser(AbstractBaseCreateUserRequest request) throws BindException {
+    @Transactional
+    protected User createUser(AbstractBaseCreateUserRequest request) throws BindException {
         BindingResult bindingResult = new BeanPropertyBindingResult(request, "request");
         userRepository.findByEmail(request.getEmail())
-            .ifPresent(user -> {
-                log.error("User with email: {} already exists", request.getEmail());
-                bindingResult.addError(new FieldError(bindingResult.getObjectName(), "email",
-                    messageSourceService.get("unique_email")));
-            });
+                .ifPresent(user -> {
+                    log.error("User with email: {} already exists", request.getEmail());
+                    bindingResult.addError(new FieldError(bindingResult.getObjectName(), "email",
+                            messageSourceService.get("unique_email")));
+                });
 
         if (bindingResult.hasErrors()) {
             throw new BindException(bindingResult);
         }
-
         return User.builder()
-            .email(request.getEmail())
-            .password(passwordEncoder.encode(request.getPassword()))
-            .name(request.getName())
-            .lastName(request.getLastName())
-            .build();
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .name(request.getName())
+                .lastName(request.getLastName())
+                .gender(request.getGender())
+                .phoneNumber(request.getPhoneNumber())
+                .birthDate(request.getBirthDate())
+                .avatar(cloudinaryService.getAvatarDefault())
+                .build();
     }
 
     /**
@@ -411,12 +434,13 @@ public class UserService {
      * @param request UpdateUserRequest
      * @return User
      */
-    private User updateUser(User user, AbstractBaseUpdateUserRequest request) throws BindException {
+    @Transactional
+    protected User updateUser(User user, AbstractBaseUpdateUserRequest request) throws BindException {
         BindingResult bindingResult = new BeanPropertyBindingResult(request, "request");
         if (!user.getEmail().equals(request.getEmail()) &&
-            userRepository.existsByEmailAndIdNot(request.getEmail(), user.getId())) {
+                userRepository.existsByEmailAndIdNot(request.getEmail(), user.getId())) {
             bindingResult.addError(new FieldError(bindingResult.getObjectName(), "email",
-                messageSourceService.get("already_exists")));
+                    messageSourceService.get("already_exists")));
         }
 
         boolean isRequiredEmailVerification = false;
@@ -452,6 +476,7 @@ public class UserService {
      *
      * @param user User
      */
+    @Transactional
     protected void emailVerificationEventPublisher(User user) {
         user.setEmailVerificationToken(emailVerificationTokenService.create(user));
         eventPublisher.publishEvent(new UserEmailVerificationSendEvent(this, user));
@@ -462,8 +487,94 @@ public class UserService {
      *
      * @param user User
      */
-    private void passwordResetEventPublisher(User user) {
+    @Transactional
+    protected void passwordResetEventPublisher(User user) {
         user.setPasswordResetToken(passwordResetTokenService.create(user));
         eventPublisher.publishEvent(new UserPasswordResetSendEvent(this, user));
+    }
+
+    /**
+     * Upload user avatar image.
+     *
+     * @param userId UUID of the user
+     * @param file MultipartFile image to upload
+     * @return String URL of the uploaded image
+     * @throws Exception if there's an error during upload
+     */
+    @Transactional
+    public String uploadUserAvatar(UUID userId, MultipartFile file) throws Exception {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
+                        new String[]{messageSourceService.get("user")})));
+
+        // Check if the file is empty
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File must not be empty");
+        }
+
+        // Check if the current avatar is the default image
+        if (existingUser.getAvatar().equals(cloudinaryService.getAvatarDefault())) {
+            // Upload the new image
+            Map uploadResult = cloudinaryService.uploadFile(file, "avatars");
+            String imageUrl = uploadResult.get("secure_url").toString();
+            // Update the user's avatar URL
+            existingUser.setAvatar(imageUrl);
+            userRepository.save(existingUser);
+
+            return imageUrl;
+        } else {
+            // Delete the old image from Cloudinary
+            try {
+                cloudinaryService.deleteFile(existingUser.getAvatar());
+            } catch (IOException e) {
+                log.error("Failed to delete old user avatar: {}", e.getMessage());
+                // Continue with upload even if delete fails
+            }
+
+            // Upload the new image
+            Map uploadResult = cloudinaryService.uploadFile(file, "avatars");
+            String imageUrl = uploadResult.get("secure_url").toString();
+
+            // Update the user's avatar URL
+            existingUser.setAvatar(imageUrl);
+            userRepository.save(existingUser);
+
+            return imageUrl;
+        }
+    }
+
+    /**
+     * Delete the user avatar and set back to default.
+     *
+     * @param userId UUID of the user
+     * @return String URL of the default avatar
+     * @throws Exception if there's an error during deletion
+     */
+    @Transactional
+    public String deleteUserAvatar(UUID userId) throws Exception {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(messageSourceService.get("not_found_with_param",
+                        new String[]{messageSourceService.get("user")})));
+
+        String defaultAvatarUrl = cloudinaryService.getAvatarDefault();
+
+        // If the current avatar is already the default, no need to do anything
+        if (existingUser.getAvatar().equals(defaultAvatarUrl)) {
+            return defaultAvatarUrl;
+        }
+
+        // Delete the current avatar from Cloudinary
+        try {
+            cloudinaryService.deleteFile(existingUser.getAvatar());
+        } catch (IOException e) {
+            log.error("Failed to delete user avatar: {}", e.getMessage());
+            // Continue even if delete fails
+        }
+
+        // Set the user's avatar back to the default
+        existingUser.setAvatar(defaultAvatarUrl);
+        userRepository.save(existingUser);
+
+        return defaultAvatarUrl;
     }
 }

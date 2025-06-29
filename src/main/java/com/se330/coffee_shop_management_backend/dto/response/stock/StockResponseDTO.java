@@ -1,21 +1,18 @@
 package com.se330.coffee_shop_management_backend.dto.response.stock;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.Stock;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class StockResponseDTO extends AbstractBaseResponse {
+public class StockResponseDTO  {
     @Schema(
             name = "id",
             description = "UUID",
@@ -41,10 +38,9 @@ public class StockResponseDTO extends AbstractBaseResponse {
     private LocalDateTime updatedAt;
 
     private int stockQuantity;
-    private int stockUnit;
+    private String stockUnit;
     private String ingredientId;
     private String warehouseId;
-    private String supplierId;
 
     public static StockResponseDTO convert(Stock stock) {
         return StockResponseDTO.builder()
@@ -55,7 +51,6 @@ public class StockResponseDTO extends AbstractBaseResponse {
                 .stockUnit(stock.getStockUnit())
                 .ingredientId(stock.getIngredient() != null ? stock.getIngredient().getId().toString() : null)
                 .warehouseId(stock.getWarehouse() != null ? stock.getWarehouse().getId().toString() : null)
-                .supplierId(stock.getSupplier() != null ? stock.getSupplier().getId().toString() : null)
                 .build();
     }
 

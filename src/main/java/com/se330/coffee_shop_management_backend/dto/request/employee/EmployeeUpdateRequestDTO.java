@@ -10,9 +10,5 @@ import java.util.UUID;
 @NoArgsConstructor
 public class EmployeeUpdateRequestDTO {
     private UUID employeeId;
-    private String employeePosition;
-    private String employeeDepartment;
     private LocalDateTime employeeHireDate;
-    private UUID branchId;
-    private UUID userId;
 }

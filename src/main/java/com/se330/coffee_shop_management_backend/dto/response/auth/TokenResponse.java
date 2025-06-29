@@ -1,6 +1,5 @@
 package com.se330.coffee_shop_management_backend.dto.response.auth;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,14 +8,14 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class TokenResponse extends AbstractBaseResponse {
+public class TokenResponse {
     @Schema(
         name = "token",
         description = "Token",
         type = "String",
         example = "eyJhbGciOiJIUzUxMiJ9..."
     )
-    private String token;
+    private String accessToken;
 
     @Schema(
         name = "refreshToken",
@@ -26,10 +25,6 @@ public class TokenResponse extends AbstractBaseResponse {
     )
     private String refreshToken;
 
-    @Schema(
-        name = "expiresIn",
-        description = "Expires In",
-        type = "TokenExpiresInResponse"
-    )
-    private TokenExpiresInResponse expiresIn;
+    private String id;
+    private String role;
 }

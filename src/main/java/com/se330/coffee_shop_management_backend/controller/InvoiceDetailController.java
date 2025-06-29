@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.invoice.InvoiceDetai
 import com.se330.coffee_shop_management_backend.dto.request.invoice.InvoiceDetailUpdateRequestDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.invoice.InvoiceDetailResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.InvoiceDetail;
 import com.se330.coffee_shop_management_backend.service.invoiceservices.IInvoiceDetailService;
@@ -44,20 +45,12 @@ public class InvoiceDetailController {
                             description = "Successfully retrieved invoice detail",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InvoiceDetailResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid ID format",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -73,8 +66,15 @@ public class InvoiceDetailController {
                     )
             }
     )
-    public ResponseEntity<InvoiceDetailResponseDTO> findByIdInvoiceDetail(@PathVariable UUID id) {
-        return ResponseEntity.ok(InvoiceDetailResponseDTO.convert(invoiceDetailService.findByIdInvoiceDetail(id)));
+    public ResponseEntity<SingleResponse<InvoiceDetailResponseDTO>> findByIdInvoiceDetail(@PathVariable UUID id) {
+        InvoiceDetailResponseDTO detail = InvoiceDetailResponseDTO.convert(invoiceDetailService.findByIdInvoiceDetail(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Invoice detail retrieved successfully",
+                        detail
+                )
+        );
     }
 
     @GetMapping("/all")
@@ -89,34 +89,30 @@ public class InvoiceDetailController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
     public ResponseEntity<PageResponse<InvoiceDetailResponseDTO>> findAllInvoiceDetails(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
         Integer offset = (page - 1) * limit;
         Pageable pageable = createPageable(page, limit, offset, sortType, sortBy);
-        Page<InvoiceDetail> invoiceDetailPage = invoiceDetailService.findAllInvoiceDetails(pageable);
+        Page<InvoiceDetail> detailPages = invoiceDetailService.findAllInvoiceDetails(pageable);
 
         return ResponseEntity.ok(
                 new PageResponse<>(
-                        InvoiceDetailResponseDTO.convert(invoiceDetailPage.getContent()),
-                        invoiceDetailPage.getTotalElements(),
-                        invoiceDetailPage.getNumber(),
-                        invoiceDetailPage.getSize()
+                        HttpStatus.OK.value(),
+                        "Invoice details retrieved successfully",
+                        InvoiceDetailResponseDTO.convert(detailPages.getContent()),
+                        new PageResponse.PagingResponse(
+                                detailPages.getNumber(),
+                                detailPages.getSize(),
+                                detailPages.getTotalElements(),
+                                detailPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -131,7 +127,7 @@ public class InvoiceDetailController {
                             description = "Invoice detail created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InvoiceDetailResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -141,20 +137,18 @@ public class InvoiceDetailController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     )
             }
     )
-    public ResponseEntity<InvoiceDetailResponseDTO> createInvoiceDetail(@RequestBody InvoiceDetailCreateRequestDTO invoiceDetailCreateRequestDTO) {
-        InvoiceDetail createdInvoiceDetail = invoiceDetailService.createInvoiceDetail(invoiceDetailCreateRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(InvoiceDetailResponseDTO.convert(createdInvoiceDetail));
+    public ResponseEntity<SingleResponse<InvoiceDetailResponseDTO>> createInvoiceDetail(@RequestBody InvoiceDetailCreateRequestDTO invoiceDetailCreateRequestDTO) {
+        InvoiceDetailResponseDTO detail = InvoiceDetailResponseDTO.convert(invoiceDetailService.createInvoiceDetail(invoiceDetailCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Invoice detail created successfully",
+                        detail
+                )
+        );
     }
 
     @PatchMapping("/")
@@ -167,20 +161,12 @@ public class InvoiceDetailController {
                             description = "Invoice detail updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = InvoiceDetailResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
                             responseCode = "400",
                             description = "Invalid input data",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
@@ -196,9 +182,15 @@ public class InvoiceDetailController {
                     )
             }
     )
-    public ResponseEntity<InvoiceDetailResponseDTO> updateInvoiceDetail(@RequestBody InvoiceDetailUpdateRequestDTO invoiceDetailUpdateRequestDTO) {
-        InvoiceDetail updatedInvoiceDetail = invoiceDetailService.updateInvoiceDetail(invoiceDetailUpdateRequestDTO);
-        return ResponseEntity.ok(InvoiceDetailResponseDTO.convert(updatedInvoiceDetail));
+    public ResponseEntity<SingleResponse<InvoiceDetailResponseDTO>> updateInvoiceDetail(@RequestBody InvoiceDetailUpdateRequestDTO invoiceDetailUpdateRequestDTO) {
+        InvoiceDetailResponseDTO detail = InvoiceDetailResponseDTO.convert(invoiceDetailService.updateInvoiceDetail(invoiceDetailUpdateRequestDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Invoice detail updated successfully",
+                        detail
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -209,14 +201,6 @@ public class InvoiceDetailController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Invoice detail deleted successfully"
-                    ),
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Unauthorized",
-                            content = @Content(
-                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
                     ),
                     @ApiResponse(
                             responseCode = "404",

@@ -1,19 +1,18 @@
 package com.se330.coffee_shop_management_backend.dto.response.user;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.User;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
 @SuperBuilder
-public class UserResponse extends AbstractBaseResponse {
+public class UserResponse {
     @Schema(
         name = "id",
         description = "UUID",
@@ -46,13 +45,12 @@ public class UserResponse extends AbstractBaseResponse {
     )
     private String lastName;
 
-    @Schema(
-        name = "roles",
-        description = "role of the user",
-        type = "List",
-        example = "[\"USER\"]"
-    )
-    private List<String> roles;
+    private String gender;
+    private String phoneNumber;
+    private LocalDateTime birthday;
+
+    private String role;
+    private String branchId;
 
     @Schema(
         name = "emailVerifiedAt",
@@ -78,6 +76,8 @@ public class UserResponse extends AbstractBaseResponse {
     )
     private LocalDateTime createdAt;
 
+    private String avatar;
+
     @Schema(
         name = "updatedAt",
         type = "LocalDateTime",
@@ -85,6 +85,9 @@ public class UserResponse extends AbstractBaseResponse {
         example = "2022-09-29T22:37:31"
     )
     private LocalDateTime updatedAt;
+
+
+
 
     /**
      * Convert User to UserResponse
@@ -97,11 +100,16 @@ public class UserResponse extends AbstractBaseResponse {
             .email(user.getEmail())
             .name(user.getName())
             .lastName(user.getLastName())
-            .roles(user.getRoles().stream().map(role -> role.getName().name()).toList())
+            .role(String.valueOf(user.getRole().getName()))
+            .branchId(user.getEmployee() != null ? user.getEmployee().getBranch().getId().toString() : null)
             .emailVerifiedAt(user.getEmailVerifiedAt())
+            .gender(user.getGender())
+            .phoneNumber(user.getPhoneNumber())
+            .birthday(user.getBirthDate())
             .blockedAt(user.getBlockedAt())
             .createdAt(user.getCreatedAt())
             .updatedAt(user.getUpdatedAt())
+            .avatar(user.getAvatar())
             .build();
     }
 }

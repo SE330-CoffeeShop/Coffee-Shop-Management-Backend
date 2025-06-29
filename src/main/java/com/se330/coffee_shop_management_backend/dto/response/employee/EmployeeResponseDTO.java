@@ -1,24 +1,20 @@
 package com.se330.coffee_shop_management_backend.dto.response.employee;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.entity.Employee;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @SuperBuilder
-public class EmployeeResponseDTO extends AbstractBaseResponse {
+public class EmployeeResponseDTO {
 
     @Schema(
             name = "id",
@@ -43,31 +39,38 @@ public class EmployeeResponseDTO extends AbstractBaseResponse {
             example = "2022-09-29T22:37:31"
     )
     private LocalDateTime updatedAt;
-
-    private String employeePosition;
-    private String employeeDepartment;
     private LocalDateTime employeeHireDate;
 
     // Related entities
     private String branchId;
+    private String branchName;
     private String userId;
     private String userFullName;
-    private List<String> shiftIds;
+    private String userAvatarUrl;
+    private LocalDateTime userDoB;
+    private String userPhone;
+    private String userGender;
+    private String userEmail;
+    private String userRole;
+    private String managedBranchId;
 
     public static EmployeeResponseDTO convert(Employee employee) {
         return EmployeeResponseDTO.builder()
                 .id(employee.getId().toString())
                 .createdAt(employee.getCreatedAt())
                 .updatedAt(employee.getUpdatedAt())
-                .employeePosition(employee.getEmployeePosition())
-                .employeeDepartment(employee.getEmployeeDepartment())
                 .employeeHireDate(employee.getEmployeeHireDate())
+                .managedBranchId(employee.getManagedBranch() != null ? employee.getManagedBranch().getId().toString() : null)
                 .branchId(employee.getBranch() != null ? employee.getBranch().getId().toString() : null)
                 .userId(employee.getUser() != null ? employee.getUser().getId().toString() : null)
                 .userFullName(employee.getUser() != null ? employee.getUser().getFullName() : null)
-                .shiftIds(employee.getShifts() != null ? employee.getShifts().stream()
-                        .map(shift -> shift.getId().toString())
-                        .collect(Collectors.toList()) : Collections.emptyList())
+                .userAvatarUrl(employee.getUser() != null ? employee.getUser().getAvatar() : null)
+                .userDoB(employee.getUser() != null ? employee.getUser().getBirthDate() : null)
+                .userPhone(employee.getUser() != null ? employee.getUser().getPhoneNumber() : null)
+                .userGender(employee.getUser() != null ? employee.getUser().getGender() : null)
+                .userEmail(employee.getUser() != null ? employee.getUser().getEmail() : null)
+                .userRole(employee.getUser() != null && employee.getUser().getRole() != null ? employee.getUser().getRole().getName().getValue() : null)
+                .branchName(employee.getBranch() != null ? employee.getBranch().getBranchName() : null)
                 .build();
     }
 

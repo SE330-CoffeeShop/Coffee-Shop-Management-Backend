@@ -1,6 +1,5 @@
 package com.se330.coffee_shop_management_backend.dto.response.auth;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +8,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class TokenExpiresInResponse extends AbstractBaseResponse {
+public class TokenExpiresInResponse {
     @Schema(
         name = "token",
         description = "Token expires In",

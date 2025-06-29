@@ -1,6 +1,5 @@
 package com.se330.coffee_shop_management_backend.dto.response.auth;
 
-import com.se330.coffee_shop_management_backend.dto.response.AbstractBaseResponse;
 import com.se330.coffee_shop_management_backend.dto.response.user.UserResponse;
 import com.se330.coffee_shop_management_backend.entity.PasswordResetToken;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +13,7 @@ import java.util.Date;
 @Getter
 @Setter
 @SuperBuilder
-public class PasswordResetResponse extends AbstractBaseResponse {
+public class PasswordResetResponse  {
     @Schema(
         name = "id",
         description = "UUID",

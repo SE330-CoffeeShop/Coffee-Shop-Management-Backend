@@ -4,6 +4,7 @@ import com.se330.coffee_shop_management_backend.dto.request.comment.CommentCreat
 import com.se330.coffee_shop_management_backend.dto.request.comment.CommentUpdateDTO;
 import com.se330.coffee_shop_management_backend.dto.response.ErrorResponse;
 import com.se330.coffee_shop_management_backend.dto.response.PageResponse;
+import com.se330.coffee_shop_management_backend.dto.response.SingleResponse;
 import com.se330.coffee_shop_management_backend.dto.response.comment.CommentResponseDTO;
 import com.se330.coffee_shop_management_backend.entity.Comment;
 import com.se330.coffee_shop_management_backend.service.commentservices.ICommentService;
@@ -18,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 import static com.se330.coffee_shop_management_backend.util.Constants.SECURITY_SCHEME_NAME;
 import static com.se330.coffee_shop_management_backend.util.CreatePageHelper.createPageable;
@@ -42,7 +45,7 @@ public class CommentController {
                             description = "Successfully retrieved comment",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = CommentResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -71,8 +74,15 @@ public class CommentController {
                     )
             }
     )
-    public ResponseEntity<CommentResponseDTO> findByIdComment(@PathVariable int id) {
-        return ResponseEntity.ok(CommentResponseDTO.convert(commentService.findByIdComment(id)));
+    public ResponseEntity<SingleResponse<CommentResponseDTO>> findByIdComment(@PathVariable int id) {
+        CommentResponseDTO comment = CommentResponseDTO.convert(commentService.findByIdComment(id));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Comment retrieved successfully",
+                        comment
+                )
+        );
     }
 
     @GetMapping("/all")
@@ -101,7 +111,6 @@ public class CommentController {
     public ResponseEntity<PageResponse<CommentResponseDTO>> findAllComments(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
@@ -111,22 +120,27 @@ public class CommentController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Comments retrieved successfully",
                         CommentResponseDTO.convert(commentPages.getContent()),
-                        commentPages.getTotalElements(),
-                        commentPages.getNumber(),
-                        commentPages.getSize()
+                        new PageResponse.PagingResponse(
+                                commentPages.getNumber(),
+                                commentPages.getSize(),
+                                commentPages.getTotalElements(),
+                                commentPages.getTotalPages()
+                        )
                 )
         );
     }
 
     @GetMapping("/product/{productId}")
     @Operation(
-            summary = "Get comments by product ID with pagination",
+            summary = "Get all comments for a product with pagination",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
-                            description = "Successfully retrieved comment list by product",
+                            description = "Successfully retrieved comment list",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = PageResponse.class)
@@ -139,14 +153,21 @@ public class CommentController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Product not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
                     )
             }
     )
-    public ResponseEntity<PageResponse<CommentResponseDTO>> findCommentsByProductId(
+    public ResponseEntity<PageResponse<CommentResponseDTO>> findAllCommentsByProductId(
             @PathVariable String productId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "15") int limit,
-            @RequestParam(defaultValue = "vi") String lan,
             @RequestParam(defaultValue = "desc") String sortType,
             @RequestParam(defaultValue = "createdAt") String sortBy
     ) {
@@ -156,10 +177,15 @@ public class CommentController {
 
         return ResponseEntity.ok(
                 new PageResponse<>(
+                        HttpStatus.OK.value(),
+                        "Product comments retrieved successfully",
                         CommentResponseDTO.convert(commentPages.getContent()),
-                        commentPages.getTotalElements(),
-                        commentPages.getNumber(),
-                        commentPages.getSize()
+                        new PageResponse.PagingResponse(
+                                commentPages.getNumber(),
+                                commentPages.getSize(),
+                                commentPages.getTotalElements(),
+                                commentPages.getTotalPages()
+                        )
                 )
         );
     }
@@ -174,7 +200,7 @@ public class CommentController {
                             description = "Comment created successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = CommentResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -192,11 +218,26 @@ public class CommentController {
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                                     schema = @Schema(implementation = ErrorResponse.class)
                             )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Product not found",
+                            content = @Content(
+                                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
                     )
             }
     )
-    public ResponseEntity<CommentResponseDTO> createComment(@RequestBody CommentCreateRequestDTO commentRequestDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(CommentResponseDTO.convert(commentService.createComment(commentRequestDTO)));
+    public ResponseEntity<SingleResponse<CommentResponseDTO>> createComment(@RequestBody CommentCreateRequestDTO commentCreateRequestDTO) {
+        CommentResponseDTO comment = CommentResponseDTO.convert(commentService.createComment(commentCreateRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new SingleResponse<>(
+                        HttpStatus.CREATED.value(),
+                        "Comment created successfully",
+                        comment
+                )
+        );
     }
 
     @PatchMapping("/")
@@ -209,7 +250,7 @@ public class CommentController {
                             description = "Comment updated successfully",
                             content = @Content(
                                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = CommentResponseDTO.class)
+                                    schema = @Schema(implementation = SingleResponse.class)
                             )
                     ),
                     @ApiResponse(
@@ -238,8 +279,15 @@ public class CommentController {
                     )
             }
     )
-    public ResponseEntity<CommentResponseDTO> updateComment(@RequestBody CommentUpdateDTO commentRequestDTO) {
-        return ResponseEntity.ok(CommentResponseDTO.convert(commentService.updateComment(commentRequestDTO)));
+    public ResponseEntity<SingleResponse<CommentResponseDTO>> updateComment(@RequestBody CommentUpdateDTO commentUpdateDTO) {
+        CommentResponseDTO comment = CommentResponseDTO.convert(commentService.updateComment(commentUpdateDTO));
+        return ResponseEntity.ok(
+                new SingleResponse<>(
+                        HttpStatus.OK.value(),
+                        "Comment updated successfully",
+                        comment
+                )
+        );
     }
 
     @DeleteMapping("/{id}")

@@ -39,33 +39,24 @@ public class User extends AbstractBaseEntity {
     @Column(name = "avatar", columnDefinition = "text")
     private String avatar;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
-    @JoinTable(name = "user_roles",
-        joinColumns = @JoinColumn(
-            name = "user_id",
-            foreignKey = @ForeignKey(
-                name = "fk_user_roles_user_id",
-                foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE"
-            ),
-            nullable = false
-        ),
-        inverseJoinColumns = @JoinColumn(
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Column(name = "gender", length = 10)
+    private String gender;
+
+    @Column(name = "birth_date", nullable = false)
+    private LocalDateTime birthDate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
             name = "role_id",
             foreignKey = @ForeignKey(
-                name = "fk_user_roles_role_id",
-                foreignKeyDefinition = "FOREIGN KEY (role_id) REFERENCES roles (id) ON DELETE CASCADE"
-            ),
-            nullable = false
-        ),
-        uniqueConstraints = {
-            @UniqueConstraint(
-                columnNames = {"user_id", "role_id"},
-                name = "uk_user_roles_user_id_role_id"
+                    name = "fk_users_role_id",
+                    foreignKeyDefinition = "FOREIGN KEY (role_id) REFERENCES roles (id)"
             )
-        }
     )
-    @Builder.Default
-    private List<Role> roles = new ArrayList<>();
+    private Role role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private EmailVerificationToken emailVerificationToken;
@@ -80,28 +71,35 @@ public class User extends AbstractBaseEntity {
     private LocalDateTime blockedAt;
 
     // association with employee
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Employee employee;
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Notification> sentNotifications = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Notification> receivedNotifications = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Order> orders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<PaymentMethods> paymentMethods = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<ShippingAddresses> shippingAddresses = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Cart cart;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<FavoriteDrink> favoriteDrinks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<UserRecipientToken> recipientTokens = new ArrayList<>();
 
     /**
      * Get full name of user.

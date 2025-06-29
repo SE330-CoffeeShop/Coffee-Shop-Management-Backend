@@ -1,7 +1,11 @@
 package com.se330.coffee_shop_management_backend.entity;
 
+import com.se330.coffee_shop_management_backend.util.Constants;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "payment_methods")
@@ -14,25 +18,16 @@ import lombok.*;
         @AttributeOverride(name = "id", column = @Column(name = "payment_method_id"))
 })
 public class PaymentMethods extends AbstractBaseEntity {
-    @Column(name = "method_type", nullable = false)
-    private String methodType;
+    @Column(name = "payment_method_name", nullable = false, unique = true)
+    private Constants.PaymentMethodEnum paymentMethodName;
 
-    @Column(name = "method_details", nullable = false)
-    private String methodDetails;
+    @Column(name = "payment_method_description")
+    private String paymentMethodDescription;
 
-    @Column(name = "method_is_default", nullable = false)
-    private boolean methodIsDefault;
+    @Column(name = "is_active")
+    private boolean isActive;
 
-    @OneToOne(mappedBy = "paymentMethod", fetch = FetchType.EAGER)
-    private Order order;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(
-            name = "user_id",
-            foreignKey = @ForeignKey(
-                    name = "fk_payment_method_user",
-                    foreignKeyDefinition = "FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE"
-            )
-    )
-    private User user;
+    @OneToMany(mappedBy = "paymentMethod", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<OrderPayment> orderPayments = new ArrayList<>();
 }

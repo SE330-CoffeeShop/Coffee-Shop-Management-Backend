@@ -22,16 +22,19 @@ public class ImpIngredientService implements IIngredientService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Ingredient findByIdIngredient(UUID id) {
         return ingredientRepository.findById(id).orElse(null);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Ingredient> findAllIngredients(Pageable pageable) {
         return ingredientRepository.findAll(pageable);
     }
 
     @Override
+    @Transactional
     public Ingredient createIngredient(IngredientCreateRequestDTO ingredientCreateRequestDTO) {
         return ingredientRepository.save(
                 Ingredient.builder()
@@ -39,11 +42,13 @@ public class ImpIngredientService implements IIngredientService {
                         .ingredientDescription(ingredientCreateRequestDTO.getIngredientDescription())
                         .ingredientPrice(ingredientCreateRequestDTO.getIngredientPrice())
                         .ingredientType(ingredientCreateRequestDTO.getIngredientType())
+                        .shelfLifeDays(ingredientCreateRequestDTO.getShelfLifeDays())
                         .build()
         );
     }
 
     @Override
+    @Transactional
     public Ingredient updateIngredient(IngredientUpdateRequestDTO ingredientUpdateRequestDTO) {
         Ingredient existingIngredient = ingredientRepository.findById(ingredientUpdateRequestDTO.getIngredientId())
                 .orElseThrow(() -> new RuntimeException("Ingredient not found"));
@@ -52,6 +57,7 @@ public class ImpIngredientService implements IIngredientService {
         existingIngredient.setIngredientDescription(ingredientUpdateRequestDTO.getIngredientDescription());
         existingIngredient.setIngredientPrice(ingredientUpdateRequestDTO.getIngredientPrice());
         existingIngredient.setIngredientType(ingredientUpdateRequestDTO.getIngredientType());
+        existingIngredient.setShelfLifeDays(ingredientUpdateRequestDTO.getShelfLifeDays());
 
         return ingredientRepository.save(existingIngredient);
     }

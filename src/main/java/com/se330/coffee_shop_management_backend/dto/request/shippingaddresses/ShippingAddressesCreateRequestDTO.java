@@ -8,7 +8,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 public class ShippingAddressesCreateRequestDTO {
-    private UUID userId;
     private String addressLine;
     private String addressCity;
     private String addressDistrict;

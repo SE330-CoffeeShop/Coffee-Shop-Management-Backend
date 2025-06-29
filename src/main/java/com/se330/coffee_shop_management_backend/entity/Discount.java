@@ -1,6 +1,7 @@
 package com.se330.coffee_shop_management_backend.entity;
 
 import com.se330.coffee_shop_management_backend.entity.product.ProductVariant;
+import com.se330.coffee_shop_management_backend.util.Constants;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +29,7 @@ public class Discount extends AbstractBaseEntity {
     private String discountDescription;
 
     @Column(name = "discount_type", nullable = false)
-    private String discountType;
+    private Constants.DiscountTypeEnum discountType;
 
     @Column(name = "discount_value", nullable = false)
     private BigDecimal discountValue;
@@ -52,12 +53,12 @@ public class Discount extends AbstractBaseEntity {
     private int discountMaxPerUser;
 
     @Column(name = "discount_min_order_value", nullable = false)
-    private int discountMinOrderValue;
+    private BigDecimal discountMinOrderValue;
 
     @Column(name = "discount_is_active", nullable = false)
     private boolean discountIsActive;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "branch_id",
             foreignKey = @ForeignKey(
@@ -67,7 +68,11 @@ public class Discount extends AbstractBaseEntity {
     )
     private Branch branch;
 
-    @ManyToMany(mappedBy = "discounts", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "discounts", fetch = FetchType.LAZY)
     @Builder.Default
     private List<ProductVariant> productVariants = new ArrayList<>();
+
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<UsedDiscount> usedDiscounts = new ArrayList<>();
 }
