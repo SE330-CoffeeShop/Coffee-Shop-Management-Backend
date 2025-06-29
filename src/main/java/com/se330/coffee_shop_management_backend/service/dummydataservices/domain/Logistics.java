@@ -6,6 +6,8 @@ import com.se330.coffee_shop_management_backend.repository.*;
 import com.se330.coffee_shop_management_backend.repository.productrepositories.ProductVariantRepository;
 import com.se330.coffee_shop_management_backend.util.Constants;
 import com.se330.coffee_shop_management_backend.util.CreateTrackingNumber;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,8 @@ public class Logistics {
     private final OrderPaymentRepository orderPaymentRepository;
     private final CartRepository cartRepository;
     private final CartDetailRepository cartDetailRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     public void create() {
@@ -72,7 +76,7 @@ public class Logistics {
 
         Random random = new Random();
         List<Order> orders = new ArrayList<>();
-        int orderCount = 1000000; // Reduced for testing
+        int orderCount = 50000; // Reduced for testing
 
         // Create orders
         for (int i = 0; i < orderCount; i++) {
@@ -129,8 +133,16 @@ public class Logistics {
             LocalDateTime randomCreatedAt = LocalDateTime.ofInstant(Instant.ofEpochSecond(randomEpoch), zone);
             order.setCreatedAt(randomCreatedAt);
 
+            entityManager.persist(order);
+
             orders.add(order);
+            if (i % 1000 == 0) {
+                entityManager.flush();
+                entityManager.clear();
+            }
         }
+        entityManager.flush();
+        entityManager.clear();
 
         orderRepository.saveAll(orders);
         log.info("Created {} orders", orders.size());
