@@ -59,7 +59,7 @@ public class KpiData {
         LocalTime afternoonStart = LocalTime.of(14, 0);
         LocalTime afternoonEnd = LocalTime.of(22, 0);
         LocalTime nightStart = LocalTime.of(22, 0);
-        LocalTime nightEnd = LocalTime.of(6, 0);
+        LocalTime nightEnd = LocalTime.of(24, 0);
 
         // Current year and month
         LocalDateTime now = LocalDateTime.now();
