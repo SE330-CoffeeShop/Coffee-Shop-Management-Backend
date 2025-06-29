@@ -68,8 +68,8 @@ public class NotificationController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<NotificationResponseDTO>> findByIdNotification(@PathVariable UUID id) {
-        NotificationResponseDTO notification = NotificationResponseDTO.convert(notificationService.findByIdNotification(id));
+    public ResponseEntity<SingleResponse<NotificationResponseDTO>> findByIdNotification(@PathVariable String id) {
+        NotificationResponseDTO notification = NotificationResponseDTO.convert(notificationService.findByIdNotification(UUID.fromString(id)));
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),
@@ -476,8 +476,9 @@ public class NotificationController {
                     )
             }
     )
-    public ResponseEntity<SingleResponse<NotificationResponseDTO>> readNotification(@PathVariable UUID id) {
-        NotificationResponseDTO notification = NotificationResponseDTO.convert(notificationService.readNotification(id));
+    public ResponseEntity<SingleResponse<NotificationResponseDTO>> readNotification(@PathVariable String id) {
+        UUID testUUID = UUID.fromString(id);
+        NotificationResponseDTO notification = NotificationResponseDTO.convert(notificationService.readNotification(testUUID));
         return ResponseEntity.ok(
                 new SingleResponse<>(
                         HttpStatus.OK.value(),

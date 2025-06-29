@@ -414,6 +414,10 @@ public class BranchController {
     }
 
     @GetMapping("/all-with-revenue/year")
+    @Operation(
+            summary = "Get all branches with revenue by year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME)
+    )
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PageResponse<BranchIdWithRevenueResponseDTO>> findAllBranchesWithRevenueByYear(
             @RequestParam(defaultValue = "1") int page,
@@ -442,6 +446,10 @@ public class BranchController {
     }
 
     @GetMapping("/all-with-revenue/month-year")
+    @Operation(
+            summary = "Get all branches with revenue by month and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME)
+    )
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PageResponse<BranchIdWithRevenueResponseDTO>> findAllBranchesWithRevenueByMonthYear(
             @RequestParam(defaultValue = "1") int page,
@@ -471,6 +479,10 @@ public class BranchController {
     }
 
     @GetMapping("/all-with-revenue/day-month-year")
+    @Operation(
+            summary = "Get all branches with revenue by day, month and year",
+            security = @SecurityRequirement(name = SECURITY_SCHEME_NAME)
+    )
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PageResponse<BranchIdWithRevenueResponseDTO>> findAllBranchesWithRevenueByDayMonthYear(
             @RequestParam(defaultValue = "1") int page,
