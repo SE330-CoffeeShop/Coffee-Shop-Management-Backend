@@ -313,7 +313,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Delete product",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -338,7 +338,7 @@ public class ProductController {
     }
 
     @PostMapping("/image/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Upload product image",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -392,7 +392,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/image/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(
             summary = "Delete product image",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),

@@ -269,7 +269,7 @@ public class EmployeeController {
     }
 
     @PatchMapping("/")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Update employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
@@ -320,7 +320,7 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Delete employee",
             security = @SecurityRequirement(name = SECURITY_SCHEME_NAME),
