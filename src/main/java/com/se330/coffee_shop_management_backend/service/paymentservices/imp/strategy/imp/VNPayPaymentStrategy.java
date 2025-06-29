@@ -74,27 +74,31 @@ public class VNPayPaymentStrategy implements PaymentStrategy {
 
         if (vnp_ResponseCode.equals("00")) {
             currentOrderPayment.setStatus(Constants.PaymentStatusEnum.COMPLETED);
-            notificationService.createNotification(
-                    NotificationCreateRequestDTO.builder()
-                            .notificationType(Constants.NotificationTypeEnum.PAYMENT)
-                            .notificationContent("Thanh toán thành công cho đơn hàng " + currentOrderPayment.getOrder().getId())
-                            .senderId(null)
-                            .receiverId(currentOrderPayment.getOrder().getUser().getId())
-                            .isRead(false)
-                            .build()
-            );
+            if (currentOrderPayment.getOrder() != null && currentOrderPayment.getOrder().getUser() != null) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.PAYMENT)
+                                .notificationContent("Thanh toán thành công cho đơn hàng " + currentOrderPayment.getOrder().getId())
+                                .senderId(null)
+                                .receiverId(currentOrderPayment.getOrder().getUser().getId())
+                                .isRead(false)
+                                .build()
+                );
+            }
         } else {
             currentOrderPayment.setStatus(Constants.PaymentStatusEnum.FAILED);
             currentOrderPayment.setFailureReason("VNPay payment failed with response code: " + vnp_ResponseCode);
-            notificationService.createNotification(
-                    NotificationCreateRequestDTO.builder()
-                            .notificationType(Constants.NotificationTypeEnum.PAYMENT)
-                            .notificationContent("Thanh toán thất bại cho đơn hàng " + currentOrderPayment.getOrder().getId())
-                            .senderId(null)
-                            .receiverId(currentOrderPayment.getOrder().getUser().getId())
-                            .isRead(false)
-                            .build()
-            );
+            if (currentOrderPayment.getOrder() != null && currentOrderPayment.getOrder().getUser() != null) {
+                notificationService.createNotification(
+                        NotificationCreateRequestDTO.builder()
+                                .notificationType(Constants.NotificationTypeEnum.PAYMENT)
+                                .notificationContent("Thanh toán thành công cho đơn hàng " + currentOrderPayment.getOrder().getId())
+                                .senderId(null)
+                                .receiverId(currentOrderPayment.getOrder().getUser().getId())
+                                .isRead(false)
+                                .build()
+                );
+            }
         }
 
         return orderPaymentRepository.save(currentOrderPayment);

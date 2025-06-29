@@ -61,7 +61,7 @@ public class ImpProductVariantService implements IProductVariantService {
                         .product(product)
                         .variantSlug(CreateSlug.createSlug(productVariantCreateRequestDTO.getVariantTierIdx()))
                         .variantSort(productVariantCreateRequestDTO.getVariantSort())
-                        .variantIsPublished(false)
+                        .variantIsPublished(true)
                         .variantIsDeleted(false)
                         .build()
         );
