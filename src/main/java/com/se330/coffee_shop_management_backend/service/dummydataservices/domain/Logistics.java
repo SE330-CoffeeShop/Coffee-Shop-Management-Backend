@@ -76,7 +76,7 @@ public class Logistics {
 
         Random random = new Random();
         List<Order> orders = new ArrayList<>();
-        int orderCount = 50000; // Reduced for testing
+        int orderCount = 5000; // Reduced for testing
 
         // Create orders
         for (int i = 0; i < orderCount; i++) {
@@ -123,7 +123,7 @@ public class Logistics {
                     .shippingAddress(shippingAddress)
                     .build();
 
-            LocalDateTime startDate = LocalDateTime.of(2023, 1, 1, 0, 0);
+            LocalDateTime startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
             LocalDateTime endDate = LocalDateTime.of(2025, 6, 30, 23, 59);
             ZoneId zone = ZoneId.systemDefault();
             long startEpoch = startDate.atZone(zone).toEpochSecond();
