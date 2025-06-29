@@ -452,7 +452,7 @@ public class DiscountController {
         );
     }
 
-    @GetMapping("/employee/apply-to-cart")
+    @PutMapping("/employee/apply-to-cart")
     @Transactional
     @PreAuthorize("hasAnyAuthority('EMPLOYEE')")
     @Operation(
